@@ -399,7 +399,8 @@ const STANDINGS_MS = 4000;
 const FAST_ANSWER_MS = 5000;
 const SOLO_COUNT = 30;
 const MIN_PLAYERS = 5; // כשמגיעים למספר הזה המנחה מקבל התראה להתחיל
-const CURRENT_ROOM_DOC = 'current'; // מסמך שמצביע על החדר הפתוח כרגע — כך השחקנים נכנסים בלי קוד
+const CURRENT_ROOM_DOC = 'current';
+const LOBBY_MAX_AGE_MS = 12*60*60*1000; // חדר המתנה ישן מ-12 שעות לא ממוחזר — נפתח חדש // מסמך שמצביע על החדר הפתוח כרגע — כך השחקנים נכנסים בלי קוד
 const SOLO_REVEAL_MS = 1800;
 
 const T1='בודפשט והונגריה', T2='עולם תורני, הלכה ומנהג', T3='היסטוריה יהודית וגדולי ישראל', T4='ידע כללי, מדע וטבע', T5='מקרא, מסורת ופולקלור', T6='תחבורה, תעופה וחלל', T7='פוליטיקה ומדינה', T8='ערים בישראל', T9='ארצות העולם', T10='טיולים ונופים', T11='חשבון ומספרים', T12='מוזיקה ושירה יהודית', T13='אדמו"רים ורבנים', T14='סקרים מהמסע';
@@ -1704,7 +1705,7 @@ let audioCtx=null, lastBeepSec=null, lastBeepStartedAt=null, wakeLock=null;
 let watchdogHandle=null, advancingLock=false, hostEndedFlag=false;
 let revealSoundPlayedFor=-1, countAnimatedFor=-1;
 let soloState=null;
-let hostAlertedFor=null, waitRoomUnsub=null, playerRoomUnsub=null, playerListUnsub=null;
+let hostAlertedFor=null, playerRoomUnsub=null, playerListUnsub=null;
 
 function $(id){return document.getElementById(id);}
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');}
@@ -1905,7 +1906,6 @@ async function hostResume(code){
   if(!snap.exists){ alert('החדר הזה כבר לא קיים או פג תוקפו'); return; }
   ensureAudio(); requestWakeLock();
   role='host'; roomCode=code; hostEndedFlag=false;
-  await publishCurrentRoom();
   showScreen('s-host');
   subscribeRoomHost();
   subscribePlayersHost();
@@ -1921,7 +1921,21 @@ function renderLandingBest(){
   el.textContent = p ? ('🏅 ' + p.name + ' — השיא שלך: ' + b + ' נקודות') : '';
 }
 
+const APP_VERSION = '2026-10-07a';
+// טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
+function checkForNewVersion(){
+  if(location.protocol.indexOf('http')!==0) return;
+  fetch(location.pathname + '?v=' + Date.now(), {cache:'no-store'}).then(r=>r.text()).then(t=>{
+    const m = t.match(/const APP_VERSION = '([^']+)'/);
+    if(!m || m[1]===APP_VERSION) return;
+    let tried = null; try{ tried = sessionStorage.getItem('trivia_reload_for'); }catch(e){}
+    if(tried===m[1]) return;
+    try{ sessionStorage.setItem('trivia_reload_for', m[1]); }catch(e){}
+    const u = new URL(location.href); u.searchParams.set('v', m[1]); location.replace(u.toString());
+  }).catch(()=>{});
+}
 function init(){
+  checkForNewVersion();
   showScreen('s-landing');
   renderHostedRooms();
   renderLandingBest();
@@ -1943,7 +1957,7 @@ document.addEventListener('visibilitychange', ()=>{
   if(document.visibilityState!=='visible' || role!=='player' || !roomCode || !playerId) return;
   subscribeRoomPlayer(); subscribeMyPlayer();
 });
-$('btn-pjoin-back').addEventListener('click', ()=>{ stopWaitRoom(); role=null; showScreen('s-landing'); });
+$('btn-pjoin-back').addEventListener('click', ()=>{ role=null; showScreen('s-landing'); });
 $('btn-howto').addEventListener('click', ()=>showScreen('s-howto'));
 $('howto-back').addEventListener('click', ()=>showScreen('s-landing'));
 $('btn-solo').addEventListener('click', soloEntry);
@@ -2002,9 +2016,10 @@ async function watchdogTick(isFallback){
 // ---------- HOST ----------
 async function hostStart(){
   ensureAudio(); requestWakeLock();
-  role='host'; roomCode=genCode(); hostEndedFlag=false;
-  await roomRef().set({phase:'lobby', qIndex:-1, questionStartedAt:null, revealWinners:null, phaseAt:Date.now()});
-  await publishCurrentRoom();
+  hostEndedFlag=false;
+  try{ roomCode = await getOrCreateLobby(); }
+  catch(e){ alert('לא הצלחנו להתחבר לחדר ההמתנה. בדקו את החיבור לאינטרנט ונסו שוב.'); return; }
+  role='host';
   saveHostedRoom(roomCode);
   showScreen('s-host');
   subscribeRoomHost();
@@ -2046,7 +2061,36 @@ function watchAnswersIfNeeded(){
 }
 function joinUrl(){ return location.origin + location.pathname + '?join=1'; }
 function currentRoomRef(){ return db.collection('rooms').doc(CURRENT_ROOM_DOC); }
-function publishCurrentRoom(){ return currentRoomRef().set({code:roomCode, at:Date.now()}).catch(()=>{}); }
+function genRoomCode(){ return genId().slice(0,6).toUpperCase(); }
+function newLobbyData(){ return {phase:'lobby', qIndex:-1, questionStartedAt:null, revealWinners:null, phaseAt:Date.now()}; }
+// תמיד יש חדר המתנה אחד בלבד: מחזיר את החדר הפתוח (שעוד לא התחיל), או פותח חדש אם אין.
+// רץ בטרנזקציה, כך ששני אנשים שנכנסים באותו רגע לא יפתחו שני חדרים.
+function getOrCreateLobby(){
+  const curRef = currentRoomRef();
+  return db.runTransaction(async tx=>{
+    const cur = await tx.get(curRef);
+    const code = cur.exists && cur.data().code;
+    if(code){
+      const r = await tx.get(db.collection('rooms').doc(code));
+      if(r.exists && r.data().phase==='lobby' && Date.now()-(r.data().phaseAt||0) < LOBBY_MAX_AGE_MS) return code;
+    }
+    const nc = genRoomCode();
+    tx.set(db.collection('rooms').doc(nc), newLobbyData());
+    tx.set(curRef, {code:nc, at:Date.now()});
+    return nc;
+  });
+}
+// ברגע שהמשחק מתחיל — נפתח חדר המתנה חדש למשחק הבא, והמשחק הנוכחי ממשיך בחדר שלו
+function openNextLobby(startedCode){
+  const curRef = currentRoomRef();
+  return db.runTransaction(async tx=>{
+    const cur = await tx.get(curRef);
+    if(cur.exists && cur.data().code && cur.data().code!==startedCode) return;
+    const nc = genRoomCode();
+    tx.set(db.collection('rooms').doc(nc), newLobbyData());
+    tx.set(curRef, {code:nc, at:Date.now()});
+  }).catch(()=>{});
+}
 function notifyHostReady(total){
   if(hostAlertedFor===roomCode) return;
   hostAlertedFor = roomCode;
@@ -2095,7 +2139,7 @@ function renderHost(){
     if(total>=MIN_PLAYERS) notifyHostReady(total);
     try{ if('Notification' in window && Notification.permission==='default') Notification.requestPermission(); }catch(e){}
     if(!$('qr').hasChildNodes()) new QRCode($('qr'), {text: joinUrl(), width:200, height:200});
-    $('h-start').addEventListener('click', ()=> goToQuestion(0));
+    $('h-start').addEventListener('click', ()=>{ const code=roomCode; goToQuestion(0).then(()=>openNextLobby(code)); });
     $('h-back').addEventListener('click', hostBack);
     return;
   }
@@ -2281,55 +2325,14 @@ async function joinGame(){
   ensureAudio(); requestWakeLock();
   playerName = (fname+' '+lname).trim();
   role='player';
-  if(!roomCode){
-    const code = await findOpenRoom();
-    if(!code){ showWaitForHost(); return; }
-    roomCode = code;
-    await enterRoom();
-    followCurrentRoom();
-    return;
-  }
-  await enterRoom();
-}
-// אם המנחה פותח חדר חדש בזמן שהשחקן עוד בחדר ההמתנה של חדר ישן — עוברים אליו אוטומטית
-function followCurrentRoom(){
-  stopWaitRoom();
-  waitRoomUnsub = currentRoomRef().onSnapshot(snap=>{
-    const code = snap.exists && snap.data().code;
-    if(role!=='player' || !code || code===roomCode) return;
-    if(curState.phase==='lobby' || curState.phase==='ended'){
-      roomCode = code; curState = {phase:'lobby', qIndex:-1}; playersMap={}; playersOrder=[];
-      enterRoom();
-    }
-  });
-}
-// מחפש את החדר שהמנחה פתח כרגע (אם הוא לא הסתיים)
-async function findOpenRoom(){
+  const btn = $('btn-pjoin-go'); btn.disabled = true;
   try{
-    const cur = await currentRoomRef().get();
-    const code = cur.exists && cur.data().code;
-    if(!code) return null;
-    const room = await db.collection('rooms').doc(code).get();
-    if(!room.exists || room.data().phase==='ended') return null;
-    return code;
-  }catch(e){ return null; }
-}
-function stopWaitRoom(){ if(waitRoomUnsub){ waitRoomUnsub(); waitRoomUnsub=null; } }
-// אין עדיין חדר פתוח — ממתינים עד שהמנחה יפתח, ואז נכנסים אוטומטית
-function showWaitForHost(){
-  showScreen('s-player');
-  $('player-body').innerHTML = `<div class="wait-hero">
-      <div class="wait-icon">🚌</div>
-      <div class="wait-title">חדר ההמתנה</div>
-      <div class="wait-sub">שלום <b>${esc(playerName)}</b>!<br>מנחה המשחק עוד לא פתח את המשחק.<br>הישארו במסך הזה — תיכנסו אוטומטית ברגע שייפתח.</div>
-      <div class="wait-dots"><span></span><span></span><span></span></div>
-    </div>`;
-  stopWaitRoom();
-  waitRoomUnsub = currentRoomRef().onSnapshot(async ()=>{
-    if(role!=='player' || roomCode) return;
-    const code = await findOpenRoom();
-    if(code && !roomCode && role==='player'){ roomCode = code; await enterRoom(); followCurrentRoom(); }
-  });
+    if(!roomCode) roomCode = await getOrCreateLobby();
+    await enterRoom();
+  }catch(e){
+    roomCode = null; role = null;
+    alert('לא הצלחנו להתחבר לחדר ההמתנה. בדקו את החיבור לאינטרנט ונסו שוב.');
+  }finally{ btn.disabled = false; }
 }
 async function enterRoom(){
   // מזהה שחקן נשמר לכל לשונית בנפרד (sessionStorage) — כך כמה לשוניות/שחקנים באותו דפדפן לא דורסים זה את זה,
