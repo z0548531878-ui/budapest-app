@@ -239,6 +239,11 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
 .wait-card-head{font-weight:700;font-size:15px;margin-bottom:12px;}
 .wait-card-head b{color:var(--line-yellow);font-size:18px;}
 .pchip.me{background:rgba(212,175,55,.22);border:1px solid var(--line-yellow);color:var(--gold-light);}
+.goal-track{height:12px;border-radius:8px;background:rgba(255,255,255,.08);overflow:hidden;margin:4px 0 8px;}
+.goal-track div{height:100%;background:linear-gradient(90deg,var(--gold-light),var(--line-yellow));transition:width .5s;}
+.goal-note{font-size:14px;color:var(--ink-dim);text-align:center;line-height:1.5;}
+.goal-note b{color:var(--line-yellow);}
+.ready-alert{background:linear-gradient(135deg,#34c26f,#1b7a43);color:#fff;border-radius:16px;padding:14px 16px;font-weight:800;font-size:17px;text-align:center;margin:14px 0;box-shadow:0 0 24px rgba(61,190,114,.5);animation:correctGlow 1.5s ease-in-out infinite;}
 .record-strip{background:rgba(94,200,216,.1);border:1px solid rgba(94,200,216,.45);color:#BFEFF7;border-radius:12px;padding:8px 12px;font-size:13px;font-weight:700;text-align:center;margin:-8px 0 14px;}
 .record-strip b{color:#fff;}
 .record-strip.beat{background:linear-gradient(90deg,var(--gold-light),var(--line-yellow));color:#1B1706;border-color:var(--line-yellow);}
@@ -332,10 +337,6 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
   <button class="btn btn-solo btn-xl" id="btn-solo" style="margin-top:0;">🎯 משחק עצמאי</button>
   <div class="solo-best-note" id="solo-best-note"></div>
   <button class="btn btn-outline-gold btn-xl" id="btn-join-manual" style="margin-top:14px;">👥 משחק קבוצתי</button>
-  <div id="manual-join-box" style="display:none;margin-top:14px;">
-    <input type="text" id="manual-code" placeholder="קוד החדר שהמנחה נתן (4 ספרות)" maxlength="4" inputmode="numeric">
-    <button class="btn btn-primary" id="btn-manual-go">הצטרפו</button>
-  </div>
   <div class="journey-strip"><div class="track"></div><div class="bus">🚌</div></div>
   <div class="landing-foot">
     <button class="host-link" id="btn-host">🎤 כניסת מנחה משחק</button>
@@ -347,7 +348,7 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
 <section class="screen" id="s-howto">
   <div class="eyebrow">לפני שמתחילים</div>
   <h1>איך <span>משחקים</span></h1>
-  <div class="rule-card"><span class="ricon">📲</span><div class="rtext"><b>הצטרפות</b><br>סורקים את קוד ה-QR של המנחה, או מזינים ידנית את קוד החדר בן 4 הספרות, וכותבים שם.</div></div>
+  <div class="rule-card"><span class="ricon">📲</span><div class="rtext"><b>הצטרפות</b><br>לוחצים על "משחק קבוצתי" (או סורקים את קוד ה-QR של המנחה), כותבים שם ונכנסים לחדר ההמתנה — בלי שום קוד. כשיצטרפו 5 שחקנים, מנחה המשחק יתחיל את המשחק.</div></div>
   <div class="rule-card"><span class="ricon">⚡</span><div class="rtext"><b>עונים מהר</b><br>כל שאלה נפתחת לכולם בדיוק באותו רגע. יש לכם 11 שניות לבחור תשובה, עם מנגינה שמדרבנת אתכם וצפצוף בשניות האחרונות — הזריזות קובעת לא פחות מהדיוק!</div></div>
   <div class="rule-card"><span class="ricon">🏆</span><div class="rtext"><b>איך מנקדים</b><br>תשובה נכונה שווה 10 נקודות בסיס, ועוד נקודה נוספת על כל שנייה שנשארה בטיימר ברגע שעניתם. ככל שעונים מהר יותר וגם נכון — כך מקבלים יותר נקודות.</div></div>
   <div class="rule-card"><span class="ricon">🗳️</span><div class="rtext"><b>שאלות סקר</b><br>בשאלות מסוג סקר אין תשובה נכונה מראש — מי שבחר כמו הרוב מקבל את הנקודות.</div></div>
@@ -361,12 +362,13 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
 <section class="screen" id="s-pjoin">
   <div class="eyebrow">הצטרפות למשחק</div>
   <h1>איך <span>קוראים לך?</span></h1>
-  <p class="sub">חדר <b id="pjoin-code"></b></p>
+  <p class="sub">כותבים שם ונכנסים לחדר ההמתנה של המשחק הקבוצתי</p>
   <div class="name-row">
     <input type="text" id="pjoin-fname" placeholder="שם פרטי" maxlength="18">
     <input type="text" id="pjoin-lname" placeholder="שם משפחה" maxlength="18">
   </div>
-  <button class="btn btn-primary" id="btn-pjoin-go">הצטרפו למשחק</button>
+  <button class="btn btn-primary" id="btn-pjoin-go">כניסה לחדר ההמתנה</button>
+  <button class="btn btn-ghost" id="btn-pjoin-back" style="margin-top:10px;">חזרה</button>
 </section>
 
 <section class="screen" id="s-host"><div id="host-body"></div></section>
@@ -396,46 +398,73 @@ const INTRO_MS = 4000;
 const STANDINGS_MS = 4000;
 const FAST_ANSWER_MS = 5000;
 const SOLO_COUNT = 30;
+const MIN_PLAYERS = 5; // כשמגיעים למספר הזה המנחה מקבל התראה להתחיל
+const CURRENT_ROOM_DOC = 'current'; // מסמך שמצביע על החדר הפתוח כרגע — כך השחקנים נכנסים בלי קוד
 const SOLO_REVEAL_MS = 1800;
 
-const T1='בודפשט והונגריה', T2='עולם תורני, הלכה ומנהג', T3='היסטוריה יהודית וגדולי ישראל', T4='ידע כללי, מדע וטבע', T5='מקרא, מסורת ופולקלור', T6='תחבורה, תעופה וחלל', T7='פוליטיקה ומדינה', T8='ערים בישראל', T9='ארצות העולם', T10='טיולים ונופים', T11='חשבון ומספרים', T12='מוזיקה ושירה יהודית', T13='אדמו"רים ורבנים';
+const T1='בודפשט והונגריה', T2='עולם תורני, הלכה ומנהג', T3='היסטוריה יהודית וגדולי ישראל', T4='ידע כללי, מדע וטבע', T5='מקרא, מסורת ופולקלור', T6='תחבורה, תעופה וחלל', T7='פוליטיקה ומדינה', T8='ערים בישראל', T9='ארצות העולם', T10='טיולים ונופים', T11='חשבון ומספרים', T12='מוזיקה ושירה יהודית', T13='אדמו"רים ורבנים', T14='סקרים מהמסע';
 
 const QUESTIONS = [
- {topic:T1, type:'trivia', q:'נהר הדנובה מחלק את בודפשט לשני חלקים היסטוריים: בודה ופשט. איזה צד מאופיין בגבעות, נופים ומצודות עתיקות?', a:['פשט','בודה','האי מרגיט','שניהם מישוריים לגמרי'], c:1},
- {topic:T1, type:'trivia', q:'בית הכנסת הגדול ברחוב דוהאני בבודפשט מחזיק בשיא מיוחד. מהו?', a:['בית הכנסת הגדול ביותר באירופה','בית הכנסת העתיק ביותר בעולם שעדיין פעיל','בית הכנסת הראשון בעולם שנבנה עם מעלית שבת','בית הכנסת היחיד שנבנה כולו מעץ אלון'], c:0},
- {topic:T1, type:'trivia', q:'מי מבין הממציאים המפורסמים הבאים היה יהודי-הונגרי יליד בודפשט?', a:['אלכסנדר גרהם בל (ממציא הטלפון)','לאסלו בירו (ממציא העט הכדורי)','תומאס אדיסון (ממציא הנורה החשמלית)','גוליילמו מרקוני (ממציא הרדיו)'], c:1},
- {topic:T1, type:'trivia', q:'איזה מאכל הונגרי מסורתי נמכר כמאפה שמרים חם, חלול וגלילי המצופה בסוכר וקינמון?', a:['גולאש','לנגוש','קירטוש (Kürtőskalács)','פלאצ\'ינטה'], c:2},
- {topic:T1, type:'trivia', q:'מהו שמו של המטבע הרשמי שבו משתמשים בהונגריה?', a:['אירו','פורינט','קורונה','זלוטי'], c:1},
- {topic:T1, type:'trivia', q:'מה שמו של הגשר העתיק והמפורסם ביותר שמחבר בין בודה לפשט, ושבכניסותיו ניצבים פסלי אריות?', a:['גשר השלשלאות (גשר סצ\'ניי)','גשר אליזבת','גשר החירות','גשר מרגיט'], c:0},
- {topic:T1, type:'poll', q:'למה אתם הכי מחכים במסע הזה?', a:['העלייה לציון בקרסטיר','השיעורים והחברותא','השייט על הדנובה','הסעודות המשותפות']},
- {topic:T2, type:'trivia', q:'מאיזה בעל חיים מפיקים את הצמר שחייב מן התורה במצוות ציצית יחד עם פשתן?', a:['כבשים ואילים בלבד','כל חיה בעלת צמר (כולל גמלים וארנבות)','כבשים ועזים','אלפקות וכבשים'], c:0},
- {topic:T2, type:'trivia', q:'על איזה מהמאכלים או המשקאות הבאים מברכים בתחילה "שהכול" ולבסוף "בורא נפשות"?', a:['תפוח עץ','שוקולד','עוגת טורט','תמר מג\'הול'], c:1},
- {topic:T2, type:'trivia', q:'מהו השם הכולל שניתן בהלכה לשבעת המשקים שחייבים בנטילת ידיים לפני טבילת אוכל בהם ("דבר שטיבולו במשקה")?', a:['י"ד שח"ט ד"ם','ש"ס ופוסקים','גז"ש ופר"ט','חב"ד ובר"ס'], c:0},
- {topic:T2, type:'trivia', q:'איזו מסכת בש"ס הבבלי היא הארוכה ביותר מבחינת מספר הדפים שבה?', a:['שבת','בבא בתרא','ברכות','סנהדרין'], c:1},
- {topic:T2, type:'trivia', q:'מהו המקור ההלכתי הבסיסי לחבישת כיפה או כיסוי ראש לגברים במשך היום?', a:['מצוות עשה מפורשת מן התורה','מנהג ישראל שהתקבל כהלכה מחמת יראת שמיים וכבוד שמיים','גזירת אנשי כנסת הגדולה','הלכה למשה מסיני'], c:1},
- {topic:T2, type:'trivia', q:'כמה פרשיות מהתורה כתובות בתוך התפילין (בקלף של יד ובארבעת הבתים של ראש)?', a:['2','3','4','5'], c:2},
- {topic:T2, type:'trivia', q:'כמה ברכות נאמרות תחת החופה בסדר "שבע ברכות" (כולל ברכת בורא פרי הגפן)?', a:['5','6','7','8'], c:2},
- {topic:T2, type:'poll', q:'מתי הלימוד הכי "נכנס" לכם?', a:['מוקדם בבוקר, לפני התפילה','בסדר הבוקר הקבוע','בלילה, כשהבית שקט','דווקא בנסיעות ובהמתנות']},
- {topic:T3, type:'trivia', q:'איזה מגדולי הראשונים חיבר את "ספר המצוות", "משנה תורה" ו"מורה הנבוכים"?', a:['רש"י','הרמב"ם','הרי"ף','הרמב"ן'], c:1},
- {topic:T3, type:'trivia', q:'מיהו הרב המפורסם, מראשי יהדות הונגריה, שטבע את המוטו ההלכתי "חדש אסור מן התורה"?', a:['החתם סופר (הרב משה סופר)','רבי ישעיהל\'ה מקרסטיר','המהר"ם שיק','הנודע ביהודה'], c:0},
- {topic:T3, type:'trivia', q:'העיירה ההונגרית בודרוגקרסטור (קרסטיר), המשמשת מוקד עלייה לרגל, מפורסמת בזכות קברו של איזה צדיק?', a:['רבי שמעון שקופ','רבי אלימלך מליז\'נסק','רבי ישעיה שטיינר (ר\' ישעיהל\'ה)','ה"בני יששכר"'], c:2},
- {topic:T3, type:'trivia', q:'מה היה שמו של המבצע הצבאי שבו חילץ צה"ל חטופים יהודים וישראלים מאוגנדה בשנת 1976?', a:['מבצע מוקד','מבצע שלמה','מבצע יונתן (אנטבה)','מבצע קדש'], c:2},
- {topic:T3, type:'trivia', q:'באיזו שנה הוכרז והחל מפעל לימוד "הדף היומי" בש"ס, ביוזמתו של רבי מאיר שפירא מלובלין?', a:['1905','1923 (תרפ"ג)','1948','1967'], c:1},
- {topic:T3, type:'trivia', q:'מי היה הדיפלומט השוודי שפעל בבודפשט והציל עשרות אלפי יהודים באמצעות חלוקת דרכוני חסות?', a:['ראול ולנברג','אוסקר שינדלר','צ\'יאונה סוגיהארה','יאן קרסקי'], c:0},
- {topic:T3, type:'poll', q:'אם הייתה לכם שעה אחת עם אחד מגדולי ישראל — במי הייתם בוחרים?', a:['הרמב"ם','החתם סופר','החפץ חיים','הבעל שם טוב']},
- {topic:T4, type:'trivia', q:'מהי המדינה בעלת השטח היבשתי הגדול ביותר בעולם?', a:['קנדה','ארצות הברית','סין','רוסיה'], c:3},
- {topic:T4, type:'trivia', q:'כמה עצמות יש בשלדו של אדם בוגר בממוצע?', a:['156','206','270','312'], c:1},
- {topic:T4, type:'trivia', q:'איזה איבר בגוף האדם צורך את האחוז הגבוה ביותר של חמצן ואנרגיה (כ-20% מכלל הגוף)?', a:['הלב','הכבד','המוח','הריאות'], c:2},
- {topic:T4, type:'trivia', q:'מי צייר את היצירה הנודעת "מונה ליזה"?', a:['מיכלאנג\'לו','לאונרדו דה וינצ\'י','רפאל','וינסנט ואן גוך'], c:1},
- {topic:T4, type:'trivia', q:'איזה כוכב לכת הוא הגדול ביותר במערכת השמש?', a:['שבתאי','נפטון','צדק','מאדים'], c:2},
- {topic:T4, type:'trivia', q:'מהו ההר הגבוה ביותר בעולם מעל פני הים?', a:['הר אוורסט','הר K2','הר קילימנג\'רו','הר המון בלאן'], c:0},
- {topic:T4, type:'trivia', q:'איזה תבלין נחשב ליקר ביותר בעולם לפי משקל, בשל עבודת היד המרובה הדרושה להפקתו?', a:['וניל טהור','זעפרן','הל שחור','קינמון ציילוני'], c:1},
- {topic:T4, type:'poll', q:'על מה הכי קשה לכם לוותר ביום רגיל?', a:['הקפה של הבוקר','שנ"צ קצרה','משהו מתוק אחרי האוכל','הטלפון (הכשר, כמובן)']},
- {topic:T5, type:'trivia', q:'כמה זמן שהו נח ומשפחתו בתיבה, מרגע תחילת המבול ועד שיצאו ליבשה?', a:['40 יום בדיוק','150 יום','שנה תמימה (שנת חמה)','שלוש שנים'], c:2},
- {topic:T5, type:'trivia', q:'מי מבין ארבע האמהות נקברה לצד הדרך ליד בית לחם ולא במערת המכפלה?', a:['שרה','רבקה','לאה','רחל'], c:3},
- {topic:T5, type:'trivia', q:'על פי המדרש וחז"ל, איזה מלך בנה כיסא מלכות מפואר ומשוכלל עם מנגנוני חיות שהגישו לו את הכתר?', a:['שלמה המלך','דוד המלך','אחשוורוש','חזקיהו המלך'], c:0},
- {topic:T5, type:'trivia', q:'מאיזה חומר היו עשויים הלוחות הראשונים שקיבל משה רבנו בהר סיני לפי המדרש?', a:['שיש לבן','אבן בזלת','אבן ספיר','זהב טהור'], c:2},
- {topic:T5, type:'poll', q:'איזו דמות מהתנ"ך הכי מעוררת בכם השראה?', a:['אברהם אבינו','יוסף הצדיק','משה רבנו','דוד המלך']}
+ {topic:T1, type:'trivia', q:'מהי עיר הבירה של הונגריה?', a:['ורשה','וינה','בודפשט','פראג'], c:2},
+ {topic:T1, type:'trivia', q:'איזה נהר גדול זורם באמצע בודפשט?', a:['הירדן','הנילוס','התמזה','הדנובה'], c:3},
+ {topic:T1, type:'trivia', q:'מהו המטבע שמשתמשים בו בהונגריה?', a:['שקל','פורינט','ליש"ט','דולר'], c:1},
+ {topic:T1, type:'trivia', q:'איזה תבלין אדום מפורסם במיוחד במטבח ההונגרי?', a:['כורכום','זעפרן','פפריקה','קינמון'], c:2},
+ {topic:T1, type:'trivia', q:'כמה זמן נמשכת בערך טיסה ישירה מישראל לבודפשט?', a:['כ-30 דקות','כ-3.5 שעות','כ-12 שעות','כ-8 שעות'], c:1},
+ {topic:T1, type:'poll', q:'מה תקנו ראשון בבודפשט?', a:['מזכרת לילדים','ממתקים ושוקולד','פפריקה ותבלינים','כלום — רק מסתכלים']},
+ {topic:T4, type:'trivia', q:'כמה ימים יש בשנה מעוברת לפי הלוח הלועזי?', a:['364','360','366','365'], c:2},
+ {topic:T4, type:'trivia', q:'איזה בעל חיים מכונה "ספינת המדבר"?', a:['סוס','פיל','חמור','גמל'], c:3},
+ {topic:T4, type:'trivia', q:'כמה צבעים יש בקשת בענן לפי המקובל?', a:['9','7','6','5'], c:1},
+ {topic:T4, type:'trivia', q:'מאיזה פרי מכינים צימוקים?', a:['שזיפים','תאנים','ענבים','תמרים'], c:2},
+ {topic:T4, type:'trivia', q:'איזה צבע מתקבל מערבוב של כחול וצהוב?', a:['סגול','חום','כתום','ירוק'], c:3},
+ {topic:T4, type:'trivia', q:'איזה איבר בגוף מזרים את הדם לכל הגוף?', a:['הכליות','הלב','הכבד','הריאות'], c:1},
+ {topic:T4, type:'trivia', q:'מה מודד מדחום?', a:['מהירות רוח','לחץ אוויר','לחות','טמפרטורה'], c:3},
+ {topic:T4, type:'trivia', q:'באיזו עונה נושרים העלים מרוב העצים?', a:['חורף','אביב','סתיו','קיץ'], c:2},
+ {topic:T4, type:'trivia', q:'מה אוכלת הפנדה בעיקר?', a:['דגים','אצות ים','במבוק','בננות'], c:2},
+ {topic:T4, type:'poll', q:'באיזה מזג אוויר הכי נעים לכם לטייל?', a:['שמש נעימה של אביב','קריר עם רוח קלה','חם — העיקר שיש מזגן','גשם — ולהסתכל עליו מהחלון']},
+ {topic:T2, type:'trivia', q:'כמה נרות מדליקים בלילה השלישי של חנוכה, בלי השמש?', a:['4','8','2','3'], c:3},
+ {topic:T2, type:'trivia', q:'איזו ברכה מברכים על תפוח עץ?', a:['בורא פרי העץ','בורא פרי האדמה','שהכול נהיה בדברו','בורא מיני מזונות'], c:0},
+ {topic:T2, type:'trivia', q:'איזו ברכה מברכים על תפוח אדמה?', a:['בורא פרי האדמה','בורא מיני מזונות','בורא פרי העץ','שהכול נהיה בדברו'], c:0},
+ {topic:T2, type:'trivia', q:'מה מציין ט"ו בשבט?', a:['ניצחון החשמונאים','ראש השנה לאילנות','יום מתן תורה','זכר ליציאת מצרים'], c:1},
+ {topic:T2, type:'trivia', q:'כמה ימים נמשך חג החנוכה?', a:['6','8','10','7'], c:1},
+ {topic:T2, type:'trivia', q:'מה אוכלים בליל הסדר זכר לטיט שעבדו בו אבותינו במצרים?', a:['ביצה','מרור','כרפס','חרוסת'], c:3},
+ {topic:T2, type:'trivia', q:'איך נקראת התפילה שמתפללים בבוקר?', a:['שחרית','ערבית','מנחה','נעילה'], c:0},
+ {topic:T2, type:'trivia', q:'מה כתוב בקלף שבתוך המזוזה?', a:['עשרת הדברות','פרשיות "שמע" ו"והיה אם שמוע"','ברכת הבית','מזמורי תהלים'], c:1},
+ {topic:T2, type:'trivia', q:'באיזה חודש חל חג הפסח?', a:['אדר','אייר','תשרי','ניסן'], c:3},
+ {topic:T2, type:'poll', q:'איזה חג הכי אהוב עליכם?', a:['פסח','סוכות','פורים','חנוכה']},
+ {topic:T14, type:'poll', q:'איזה דבר אף אישה לא שכחה להביא למסע?', a:['מטען לטלפון','כדורים לכאב ראש','נשנושים לדרך','סוודר ליתר ביטחון']},
+ {topic:T14, type:'poll', q:'כמה לדעתכם מרוויח הרב זאיד על הרצאה של שעה?', a:['עד 1,000 ₪','1,000–3,000 ₪','3,000–6,000 ₪','יותר מ-6,000 ₪']},
+ {topic:T14, type:'poll', q:'מה הדבר הראשון שתעשו כשתחזרו הביתה?', a:['לישון','לחבק את הילדים','להכניס כביסה למכונה','לספר לכולם על המסע']},
+ {topic:T14, type:'poll', q:'מה הכי חסר לכם מהבית במסע?', a:['המיטה שלי','המשפחה','האוכל של הבית','השקט']},
+ {topic:T14, type:'poll', q:'כמה מזוודות לדעתכם יחזרו כבדות יותר משיצאו?', a:['כמעט כולן','בערך חצי','רק מעטות','אף אחת — לא קנינו כלום']},
+ {topic:T14, type:'poll', q:'מה הכי מתאים בנסיעה ארוכה באוטובוס?', a:['לשיר ביחד','לשמוע שיעור','שקט ונמנום','חידון כמו זה']},
+ {topic:T14, type:'poll', q:'באיזו שעה לדעתכם יירדמו רוב המשתתפים הלילה?', a:['לפני 23:00','בין 23:00 לחצות','אחרי חצות','מי בכלל ישן במסע?']},
+ {topic:T14, type:'poll', q:'מה הכי מרגש אתכם במסע?', a:['התפילה בקברי הצדיקים','החברה והגיבוש','הנופים','האוכל']},
+ {topic:T14, type:'poll', q:'כמה תמונות לדעתכם יצלם משתתף ממוצע במסע?', a:['פחות מ-50','50–200','200–500','יותר מ-500']},
+ {topic:T14, type:'poll', q:'מה תמיד יש אצלכם בתיק?', a:['תהלים קטן','מסטיק או סוכריות','מגבונים','הכול — שואלים אותי על כל דבר']},
+ {topic:T5, type:'trivia', q:'מי בנה את התיבה לפני המבול?', a:['משה','נח','יונה','אברהם'], c:1},
+ {topic:T5, type:'trivia', q:'כמה דיברות היו כתובות על הלוחות?', a:['7','10','12','613'], c:1},
+ {topic:T5, type:'trivia', q:'מי היה אחיו של משה רבנו?', a:['חור','יהושע','כלב','אהרן'], c:3},
+ {topic:T5, type:'trivia', q:'מה היה שמה של אשת אברהם אבינו?', a:['שרה','רבקה','רחל','לאה'], c:0},
+ {topic:T5, type:'trivia', q:'לאיזה גיבור מהתנ"ך היה כוח עצום שהיה תלוי בשערו?', a:['שמשון','דוד','גדעון','יפתח'], c:0},
+ {topic:T5, type:'trivia', q:'כמה שבטים היו לעם ישראל?', a:['7','10','13','12'], c:3},
+ {topic:T5, type:'trivia', q:'מה ראה משה רבנו במדבר בוער באש ואיננו אוכל?', a:['עץ זית','סנה','דקל','גפן'], c:1},
+ {topic:T5, type:'trivia', q:'איזה מאכל ירד לבני ישראל מן השמיים במדבר?', a:['חלב','חיטה','תמרים','מן'], c:3},
+ {topic:T5, type:'trivia', q:'איזו מלכה הצילה את היהודים בסיפור פורים?', a:['אסתר','רות','ושתי','דבורה'], c:0},
+ {topic:T5, type:'poll', q:'איזה סיפור מהתנ"ך הכי ריגש אתכם בילדות?', a:['קריעת ים סוף','יוסף ואחיו','דוד וגלית','יונה בבטן הדג']},
+ {topic:T9, type:'trivia', q:'באיזו מדינה נמצא מגדל פיזה הנטוי?', a:['יוון','צרפת','איטליה','ספרד'], c:2},
+ {topic:T9, type:'trivia', q:'באיזו עיר נמצא מגדל אייפל?', a:['לונדון','ברלין','פריז','רומא'], c:2},
+ {topic:T9, type:'trivia', q:'מהי המדינה הגדולה בעולם בשטחה?', a:['קנדה','סין','רוסיה','ארצות הברית'], c:2},
+ {topic:T9, type:'trivia', q:'באיזו מדינה נמצאות הפירמידות המפורסמות של גיזה?', a:['מקסיקו','מרוקו','מצרים','ירדן'], c:2},
+ {topic:T9, type:'trivia', q:'באיזו יבשת נמצאת ברזיל?', a:['דרום אמריקה','אסיה','אפריקה','אוסטרליה'], c:0},
+ {topic:T9, type:'trivia', q:'מהי עיר הבירה של בריטניה?', a:['ליברפול','מנצ\'סטר','אדינבורו','לונדון'], c:3},
+ {topic:T9, type:'poll', q:'לאן הייתם רוצים לטוס במסע הבא?', a:['שווייץ','פולין — מסע קברי צדיקים','אנגליה','איטליה']},
+ {topic:T9, type:'poll', q:'מה הכי חשוב לכם בבית מלון?', a:['מיטה נוחה','ארוחת בוקר עשירה','נוף מהחלון','מיקום מרכזי']},
+ {topic:T11, type:'trivia', q:'כמה זה 9 כפול 6?', a:['54','56','45','63'], c:0},
+ {topic:T11, type:'trivia', q:'כמה דקות יש בשעה וחצי?', a:['90','100','150','60'], c:0},
+ {topic:T11, type:'trivia', q:'כמה זה חצי מ-50?', a:['25','15','20','30'], c:0},
+ {topic:T11, type:'trivia', q:'בקבוצה יש 40 משתתפים, ו-12 מהם יצאו לשוק. כמה נשארו?', a:['38','22','28','32'], c:2},
+ {topic:T11, type:'trivia', q:'כמה ביצים יש בתריסר?', a:['24','6','12','10'], c:2},
+ {topic:T11, type:'poll', q:'כמה כסף לדעתכם מוציא משתתף ממוצע על קניות במסע?', a:['עד 100 ₪','100–300 ₪','300–600 ₪','יותר מ-600 ₪']}
 ];
 
 // ===== מאגר 1,217 שאלות למשחק העצמאי (התשובה הנכונה נכתבת ראשונה — המשחק מערבב את הסדר בכל פעם) =====
@@ -1675,6 +1704,7 @@ let audioCtx=null, lastBeepSec=null, lastBeepStartedAt=null, wakeLock=null;
 let watchdogHandle=null, advancingLock=false, hostEndedFlag=false;
 let revealSoundPlayedFor=-1, countAnimatedFor=-1;
 let soloState=null;
+let hostAlertedFor=null, waitRoomUnsub=null, playerRoomUnsub=null, playerListUnsub=null;
 
 function $(id){return document.getElementById(id);}
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');}
@@ -1696,6 +1726,7 @@ function topicIcon(topic){
   if(topic===T11) return '🔢';
   if(topic===T12) return '🎵';
   if(topic===T13) return '🕯️';
+  if(topic===T14) return '🗳️';
   return '';
 }
 function animateCount(el, target, ms){
@@ -1874,6 +1905,7 @@ async function hostResume(code){
   if(!snap.exists){ alert('החדר הזה כבר לא קיים או פג תוקפו'); return; }
   ensureAudio(); requestWakeLock();
   role='host'; roomCode=code; hostEndedFlag=false;
+  await publishCurrentRoom();
   showScreen('s-host');
   subscribeRoomHost();
   subscribePlayersHost();
@@ -1895,7 +1927,8 @@ function init(){
   renderLandingBest();
   const params = new URLSearchParams(location.search);
   const rp = params.get('room');
-  if(rp){ roomCode = rp.toUpperCase(); $('pjoin-code').textContent = roomCode; showScreen('s-pjoin'); }
+  if(rp){ roomCode = rp.toUpperCase(); showScreen('s-pjoin'); }
+  else if(params.get('join')){ roomCode = null; showScreen('s-pjoin'); }
 }
 
 $('btn-host').addEventListener('click', ()=>{
@@ -1904,13 +1937,9 @@ $('btn-host').addEventListener('click', ()=>{
   if(entered.trim()!==HOST_PIN){ alert('קוד שגוי — רק המנחה המורשה יכול לפתוח חדר.'); return; }
   hostStart();
 });
-$('btn-join-manual').addEventListener('click', ()=>{ $('manual-join-box').style.display='block'; });
-$('btn-manual-go').addEventListener('click', ()=>{
-  const c = $('manual-code').value.trim();
-  if(c.length!==4) return;
-  roomCode = c; $('pjoin-code').textContent = roomCode; showScreen('s-pjoin');
-});
+$('btn-join-manual').addEventListener('click', ()=>{ roomCode = null; showScreen('s-pjoin'); });
 $('btn-pjoin-go').addEventListener('click', joinGame);
+$('btn-pjoin-back').addEventListener('click', ()=>{ stopWaitRoom(); role=null; showScreen('s-landing'); });
 $('btn-howto').addEventListener('click', ()=>showScreen('s-howto'));
 $('howto-back').addEventListener('click', ()=>showScreen('s-landing'));
 $('btn-solo').addEventListener('click', soloEntry);
@@ -1971,6 +2000,7 @@ async function hostStart(){
   ensureAudio(); requestWakeLock();
   role='host'; roomCode=genCode(); hostEndedFlag=false;
   await roomRef().set({phase:'lobby', qIndex:-1, questionStartedAt:null, revealWinners:null, phaseAt:Date.now()});
+  await publishCurrentRoom();
   saveHostedRoom(roomCode);
   showScreen('s-host');
   subscribeRoomHost();
@@ -2010,7 +2040,19 @@ function watchAnswersIfNeeded(){
     else if(curState.phase==='reveal') renderHost();
   });
 }
-function joinUrl(){ return location.origin + location.pathname + '?room=' + roomCode; }
+function joinUrl(){ return location.origin + location.pathname + '?join=1'; }
+function currentRoomRef(){ return db.collection('rooms').doc(CURRENT_ROOM_DOC); }
+function publishCurrentRoom(){ return currentRoomRef().set({code:roomCode, at:Date.now()}).catch(()=>{}); }
+function notifyHostReady(total){
+  if(hostAlertedFor===roomCode) return;
+  hostAlertedFor = roomCode;
+  playHappyChime(); setTimeout(playHappyChime, 450);
+  try{ if(navigator.vibrate) navigator.vibrate([200,100,200,100,300]); }catch(e){}
+  try{
+    if('Notification' in window && Notification.permission==='granted' && document.hidden)
+      new Notification('טריוויה על הגלגלים', {body: total + ' שחקנים ממתינים — אפשר להתחיל את המשחק!'});
+  }catch(e){}
+}
 
 function goToQuestion(idx){
   if(hostEndedFlag) return Promise.resolve();
@@ -2033,17 +2075,21 @@ function renderHost(){
   if(curState.phase==='lobby'){
     body.innerHTML = `
       <button class="btn btn-ghost" id="h-back" style="margin-bottom:14px;">→ חזרה</button>
-      <div class="eyebrow">חדר משחק</div>
-      <h1>מזמינים <span>לסרוק ולהצטרף</span></h1>
+      <div class="eyebrow">חדר המתנה</div>
+      <h1>השחקנים <span>נכנסים לחדר ההמתנה</span></h1>
+      <div class="sub" style="text-align:center;">השחקנים לוחצים על "משחק קבוצתי" באפליקציה (או סורקים) — בלי קוד</div>
       <div class="qr-wrap"><div id="qr"></div></div>
-      <div class="room-code">${roomCode}</div>
-      <div class="room-code-label">או להיכנס ידנית עם הקוד הזה</div>
-      <div class="card"><b>${total}</b> שחקנים הצטרפו:
+      ${total>=MIN_PLAYERS ? `<div class="ready-alert">🔔 יש כבר ${total} שחקנים בחדר ההמתנה — אפשר ללחוץ על "התחל משחק"!</div>` : ''}
+      <div class="card"><b>${total}</b> שחקנים ממתינים:
+        <div class="goal-track"><div style="width:${Math.min(100, Math.round(total/MIN_PLAYERS*100))}%"></div></div>
+        <div class="goal-note">${total>=MIN_PLAYERS ? 'הגעתם ליעד של ' + MIN_PLAYERS + ' שחקנים ✓' : 'כשיצטרפו <b>' + MIN_PLAYERS + '</b> שחקנים תקבלו התראה (חסרים עוד ' + (MIN_PLAYERS-total) + ')'}</div>
         <div class="player-chip-row" style="margin-top:10px;">
           ${playersOrder.map(id=>`<span class="pchip">${esc(playersMap[id].name||'')}</span>`).join('') || '<span class="center-note">עדיין אין מצטרפים</span>'}
         </div>
       </div>
-      <button class="btn btn-primary" id="h-start" ${total<1?'disabled':''}>התחילו את המשחק</button>`;
+      <button class="btn btn-primary btn-xl" id="h-start" ${total<1?'disabled':''}>▶ התחל משחק</button>`;
+    if(total>=MIN_PLAYERS) notifyHostReady(total);
+    try{ if('Notification' in window && Notification.permission==='default') Notification.requestPermission(); }catch(e){}
     if(!$('qr').hasChildNodes()) new QRCode($('qr'), {text: joinUrl(), width:200, height:200});
     $('h-start').addEventListener('click', ()=> goToQuestion(0));
     $('h-back').addEventListener('click', hostBack);
@@ -2231,6 +2277,57 @@ async function joinGame(){
   ensureAudio(); requestWakeLock();
   playerName = (fname+' '+lname).trim();
   role='player';
+  if(!roomCode){
+    const code = await findOpenRoom();
+    if(!code){ showWaitForHost(); return; }
+    roomCode = code;
+    await enterRoom();
+    followCurrentRoom();
+    return;
+  }
+  await enterRoom();
+}
+// אם המנחה פותח חדר חדש בזמן שהשחקן עוד בחדר ההמתנה של חדר ישן — עוברים אליו אוטומטית
+function followCurrentRoom(){
+  stopWaitRoom();
+  waitRoomUnsub = currentRoomRef().onSnapshot(snap=>{
+    const code = snap.exists && snap.data().code;
+    if(role!=='player' || !code || code===roomCode) return;
+    if(curState.phase==='lobby' || curState.phase==='ended'){
+      roomCode = code; curState = {phase:'lobby', qIndex:-1}; playersMap={}; playersOrder=[];
+      enterRoom();
+    }
+  });
+}
+// מחפש את החדר שהמנחה פתח כרגע (אם הוא לא הסתיים)
+async function findOpenRoom(){
+  try{
+    const cur = await currentRoomRef().get();
+    const code = cur.exists && cur.data().code;
+    if(!code) return null;
+    const room = await db.collection('rooms').doc(code).get();
+    if(!room.exists || room.data().phase==='ended') return null;
+    return code;
+  }catch(e){ return null; }
+}
+function stopWaitRoom(){ if(waitRoomUnsub){ waitRoomUnsub(); waitRoomUnsub=null; } }
+// אין עדיין חדר פתוח — ממתינים עד שהמנחה יפתח, ואז נכנסים אוטומטית
+function showWaitForHost(){
+  showScreen('s-player');
+  $('player-body').innerHTML = `<div class="wait-hero">
+      <div class="wait-icon">🚌</div>
+      <div class="wait-title">חדר ההמתנה</div>
+      <div class="wait-sub">שלום <b>${esc(playerName)}</b>!<br>מנחה המשחק עוד לא פתח את המשחק.<br>הישארו במסך הזה — תיכנסו אוטומטית ברגע שייפתח.</div>
+      <div class="wait-dots"><span></span><span></span><span></span></div>
+    </div>`;
+  stopWaitRoom();
+  waitRoomUnsub = currentRoomRef().onSnapshot(async ()=>{
+    if(role!=='player' || roomCode) return;
+    const code = await findOpenRoom();
+    if(code && !roomCode && role==='player'){ roomCode = code; await enterRoom(); followCurrentRoom(); }
+  });
+}
+async function enterRoom(){
   playerId = localStorage.getItem('trivia_pid_'+roomCode) || genId();
   localStorage.setItem('trivia_pid_'+roomCode, playerId);
   const existing = await playersRef().doc(playerId).get();
@@ -2241,7 +2338,8 @@ async function joinGame(){
   startWatchdog(true);
 }
 function subscribeRoomPlayer(){
-  roomRef().onSnapshot(snap=>{
+  if(playerRoomUnsub) playerRoomUnsub();
+  playerRoomUnsub = roomRef().onSnapshot(snap=>{
     if(!snap.exists) return;
     curState = snap.data();
     renderPlayer();
@@ -2254,7 +2352,8 @@ function scoreHeaderInner(){
   return `<div class="score-header"><span>🏆 הניקוד שלך: <b>${me.score||0}</b></span><span>מקום #${myRank||'-'} מתוך ${sorted.length}</span></div>`;
 }
 function subscribeMyPlayer(){
-  playersRef().onSnapshot(snap=>{
+  if(playerListUnsub) playerListUnsub();
+  playerListUnsub = playersRef().onSnapshot(snap=>{
     playersMap={}; playersOrder=[];
     snap.docs.forEach(d=>{ playersMap[d.id]=d.data(); playersOrder.push(d.id); });
     if(curState.phase==='question'){ const h=$('p-header'); if(h) h.innerHTML = scoreHeaderInner(); }
@@ -2300,12 +2399,14 @@ function renderPlayer(){
     const waiting = sortedPlayers().sort((a,b)=>(a.joinedAt||0)-(b.joinedAt||0));
     body.innerHTML = `<div class="wait-hero">
         <div class="wait-icon">🚌</div>
-        <div class="wait-title">אנא המתינו במסך זה</div>
-        <div class="wait-sub">המשחק ייפתח בעוד רגע על ידי המנחה.<br>שלום <b>${esc(me.name||playerName)}</b>, אתם רשומים ✓</div>
+        <div class="wait-title">חדר ההמתנה</div>
+        <div class="wait-sub">שלום <b>${esc(me.name||playerName)}</b>, אתם בפנים ✓<br>כשיצטרפו ${MIN_PLAYERS} שחקנים, מנחה המשחק יתחיל את המשחק.</div>
         <div class="wait-dots"><span></span><span></span><span></span></div>
       </div>
       <div class="wait-card">
-        <div class="wait-card-head">👥 <b>${waiting.length}</b> משתתפים כבר ממתינים לפתיחת המשחק</div>
+        <div class="wait-card-head">👥 <b>${waiting.length}</b> ממתינים בחדר ההמתנה (כולל אותך)</div>
+        <div class="goal-track"><div style="width:${Math.min(100, Math.round(waiting.length/MIN_PLAYERS*100))}%"></div></div>
+        <div class="goal-note" style="margin-bottom:12px;">${waiting.length>=MIN_PLAYERS ? 'יש כבר ' + waiting.length + ' שחקנים — המנחה יתחיל את המשחק בכל רגע! 🎉' : 'עוד <b>' + (MIN_PLAYERS-waiting.length) + '</b> שחקנים וממשיכים — ' + waiting.length + ' מתוך ' + MIN_PLAYERS}</div>
         <div class="player-chip-row" style="margin-bottom:0;">${waiting.map(p=>`<span class="pchip ${p.id===playerId?'me':''}">${esc(p.name||'')}</span>`).join('')}</div>
       </div>`;
     return;
