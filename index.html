@@ -1939,6 +1939,10 @@ $('btn-host').addEventListener('click', ()=>{
 });
 $('btn-join-manual').addEventListener('click', ()=>{ roomCode = null; showScreen('s-pjoin'); });
 $('btn-pjoin-go').addEventListener('click', joinGame);
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState!=='visible' || role!=='player' || !roomCode || !playerId) return;
+  subscribeRoomPlayer(); subscribeMyPlayer();
+});
 $('btn-pjoin-back').addEventListener('click', ()=>{ stopWaitRoom(); role=null; showScreen('s-landing'); });
 $('btn-howto').addEventListener('click', ()=>showScreen('s-howto'));
 $('howto-back').addEventListener('click', ()=>showScreen('s-landing'));
@@ -2328,8 +2332,11 @@ function showWaitForHost(){
   });
 }
 async function enterRoom(){
-  playerId = localStorage.getItem('trivia_pid_'+roomCode) || genId();
-  localStorage.setItem('trivia_pid_'+roomCode, playerId);
+  // מזהה שחקן נשמר לכל לשונית בנפרד (sessionStorage) — כך כמה לשוניות/שחקנים באותו דפדפן לא דורסים זה את זה,
+  // ורענון של אותה לשונית עדיין מחזיר את השחקן לאותו מקום
+  const pidKey = 'trivia_pid_'+roomCode;
+  try{ playerId = sessionStorage.getItem(pidKey); }catch(e){ playerId = null; }
+  if(!playerId){ playerId = genId(); try{ sessionStorage.setItem(pidKey, playerId); }catch(e){} }
   const existing = await playersRef().doc(playerId).get();
   if(!existing.exists) await playersRef().doc(playerId).set({name:playerName, score:0, joinedAt:Date.now()});
   showScreen('s-player');
@@ -2397,6 +2404,7 @@ function renderPlayer(){
   const header = `<div id="p-header">${scoreHeaderInner()}</div>`;
   if(curState.phase==='lobby'){
     const waiting = sortedPlayers().sort((a,b)=>(a.joinedAt||0)-(b.joinedAt||0));
+    if(playerId && !playersMap[playerId]) waiting.push({id:playerId, name:playerName});
     body.innerHTML = `<div class="wait-hero">
         <div class="wait-icon">🚌</div>
         <div class="wait-title">חדר ההמתנה</div>
