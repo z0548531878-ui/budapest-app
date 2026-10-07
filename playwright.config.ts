@@ -13,6 +13,11 @@ export default defineConfig({
     baseURL: 'http://localhost:4173',
     locale: 'he-IL',
     trace: 'retain-on-failure',
+    // emulator mode: the page (localhost:4173) talks to the emulator (127.0.0.1:8080); Chrome's local-network
+    // checks block that once requests are intercepted, which never happens on the real site
+    launchOptions: process.env.FIRESTORE_EMULATOR_HOST
+      ? { args: ['--disable-features=LocalNetworkAccessChecks,BlockInsecurePrivateNetworkRequests,PrivateNetworkAccessRespectPreflightResults'] }
+      : {},
   },
   webServer: {
     command: 'node e2e/serve.mjs',

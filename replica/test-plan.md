@@ -2,6 +2,7 @@
 
 Date: 2026-10-07  Env: local (`node e2e/serve.mjs`), in-memory Firestore stand-in (`e2e/fake-firestore.ts`), Chromium, Pixel 7 viewport.
 The tests never touch the live Firebase project.
+`npm test` runs on the in-memory stand-in. `npm run test:rules` runs the same specs on the Firestore emulator with the real SDK and `firestore.rules` (all 18 + SEC-1 pass).
 
 Flows (derived from the code, there is no recon map): F01 solo game, F02 duel (ראש בראש), F03 group game (host + players).
 
@@ -24,6 +25,8 @@ Flows (derived from the code, there is no recon map): F01 solo game, F02 duel (�
 | F03-E2 | group | negative: wrong host PIN | enter 1111 | "קוד שגוי", no room opened | e2e | pass |
 | F03-E3 | group | edge: same name twice | join twice with the same name (extra space) | listed once | e2e | pass |
 | F03-E4 | group | edge: pause | pause 12s, resume | timer resumes where it stopped | e2e | pass |
+| F03-E5 | group | security: quotes in a name | join as `אבי" onclick="…"`, host taps avatar | no attribute injected, nothing runs | e2e | pass (after fix, BUG-004) |
+| SEC-1 | rules | security: console attacks | delete / lower / inflate leaderboard rows, other collections, delete room | all refused, normal play allowed | e2e (emulator) | pass |
 | A11Y | all | axe scan | see `/design:accessibility-review` step | | e2e | see `replica/a11y.md` |
 
 Manual (not automatable here): sound and vibration on real phones, iPhone wake lock, real network loss mid-game, push notification to the host.

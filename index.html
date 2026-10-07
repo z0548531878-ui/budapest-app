@@ -3188,7 +3188,9 @@ function $(id){return document.getElementById(id);}
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active'); fxOnScreen(id);}
 function genCode(){return String(Math.floor(1000+Math.random()*9000));}
 function genId(){return Math.random().toString(36).slice(2,10);}
-function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+// מנקה טקסט לפני שמכניסים אותו ל-HTML — כולל מירכאות, כי שמות נכנסים גם לתוך מאפיינים (title="...")
+const ESC_MAP = {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'};
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c=>ESC_MAP[c]); }
 function letterFor(i){return ['א','ב','ג','ד','ה','ו'][i]||String(i+1);}
 function topicIcon(topic){
   if(topic===T1) return '🏰';
@@ -4115,7 +4117,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-08t';
+const APP_VERSION = '2026-10-08u';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;

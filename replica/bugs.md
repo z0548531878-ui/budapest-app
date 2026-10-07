@@ -43,6 +43,16 @@ Status: fixed
 - Expected: button reads "🎯 הרשמה והמשך". Actual: "הרשמה והמשך".
 - Status: fixed
 
+### BUG-004: a player name with a quote mark runs code on other players' phones
+
+- Severity: S1 (security)
+- Flow / case: F03 / F03-E5
+- Steps: join the group lobby with the name `אבי" onclick="window.__pwned=1`; the host taps the avatar.
+- Expected: the name is shown as text. Actual: `esc()` left quotes alone, the name closed the `title="…"` attribute and added an `onclick` that ran on the host's phone.
+- Evidence: F03-E5 failed with `onclick = "window.__pwned=1"`.
+- Fix: `esc()` escapes `"` and `'` too. Details in `replica/security.md`.
+- Status: fixed
+
 ## To check (not reproduced)
 
 - Duel and solo scores are computed on the phone and written straight to Firestore, so a technical user could write any score. See the security review (`replica/security.md`).

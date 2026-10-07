@@ -1,4 +1,4 @@
-import { test, expect, openPlayer, enterName } from './helpers';
+import { test, expect, openPlayer, enterName, type Db } from './helpers';
 
 const SOLO = 'solo_players_s5';
 
@@ -8,7 +8,7 @@ test.describe('F01 solo game', () => {
     await page.getByRole('button', { name: /משחק עצמאי/ }).click();
     await enterName(page, 'משה כהן');
     await expect(page.getByText('שלום,')).toBeVisible();
-    expect(db.get(`${SOLO}/משה כהן`)).toMatchObject({ name: 'משה כהן', best: 0 });
+    expect(await db.get(`${SOLO}/משה כהן`)).toMatchObject({ name: 'משה כהן', best: 0 });
 
     await page.getByRole('button', { name: /התחילו סבב חדש/ }).click();
     let score = 0;
@@ -27,8 +27,8 @@ test.describe('F01 solo game', () => {
     }
     await expect(page.getByText(/סיימתם סבב/)).toBeVisible();
     await expect(page.locator('#s-final')).toHaveText(String(score));
-    await expect.poll(() => db.get(`${SOLO}/משה כהן`)?.games).toBe(1);
-    expect(db.get(`${SOLO}/משה כהן`)).toMatchObject({ best: score, bestQ: 30 });
+    await expect.poll(async () => (await db.get(`${SOLO}/משה כהן`))?.games).toBe(1);
+    expect(await db.get(`${SOLO}/משה כהן`)).toMatchObject({ best: score, bestQ: 30 });
     if (score > 0) await expect(page.locator('#s-end-lb .board-row.mine')).toContainText('משה כהן');
     expect(errors).toEqual([]);
   });
@@ -39,7 +39,7 @@ test.describe('F01 solo game', () => {
     await enterName(page, 'משה');
     await expect.poll(() => dialogs.length).toBe(1);
     expect(dialogs[0]).toContain('שם ושם משפחה');
-    expect(db.list(SOLO)).toEqual([]);
+    expect(await db.list(SOLO)).toEqual([]);
   });
 
   test('F01-E2 double click on an answer scores it once', async ({ browser, db }) => {
@@ -61,7 +61,7 @@ test.describe('F01 solo game', () => {
   });
 
   test('F01-E3 names with quotes and markup are shown as text, not HTML', async ({ browser, db }) => {
-    db.put(`${SOLO}/x`, { name: '<img src=x onerror="window.__pwned=1">', best: 500, bestQ: 30 });
+    await db.put(`${SOLO}/x`, { name: '<img src=x onerror="window.__pwned=1">', best: 500, bestQ: 30 });
     const { page } = await openPlayer(browser, db);
     await page.getByRole('button', { name: /משחק עצמאי/ }).click();
     await enterName(page, 'אבי "הגדול" כץ');
@@ -90,7 +90,7 @@ test.describe('F01 solo game', () => {
     await page.getByRole('button', { name: /יציאה למסך הבית/ }).click();
     await expect(page.getByRole('button', { name: /משחק עצמאי/ })).toBeVisible();
     await page.waitForTimeout(1500);
-    expect(db.get(`${SOLO}/יוסי מזרחי`)).toMatchObject({ games: 0 });
+    expect(await db.get(`${SOLO}/יוסי מזרחי`)).toMatchObject({ games: 0 });
   });
 
   test('F01-E6 a returning player skips registration and keeps the record', async ({ browser, db }) => {

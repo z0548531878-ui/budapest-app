@@ -1,21 +1,21 @@
-import { test, expect, openPlayer, enterName, type Player } from './helpers';
-import type { FakeFirestore } from './fake-firestore';
+import { test, expect, openPlayer, enterName, type Player, type Db } from './helpers';
+
 import type { Browser } from '@playwright/test';
 
-async function openHost(browser: Browser, db: FakeFirestore) {
+async function openHost(browser: Browser, db: Db) {
   const host = await openPlayer(browser, db, { answers: ['2026'] });
   await host.page.getByRole('button', { name: /כניסת מנחה משחק/ }).click();
   await expect(host.page.getByRole('button', { name: /התחל משחק/ })).toBeVisible();
   return host;
 }
-async function joinGroup(browser: Browser, db: FakeFirestore, name: string) {
+async function joinGroup(browser: Browser, db: Db, name: string) {
   const p = await openPlayer(browser, db);
   await p.page.getByRole('button', { name: /משחק קבוצתי/ }).click();
   await enterName(p.page, name);
   await expect(p.page.locator('.wait-title')).toBeVisible();
   return p;
 }
-function roomCode(db: FakeFirestore) { return db.get('rooms/current')!.code as string; }
+async function roomCode(db: Db) { return (await db.get('rooms/current'))!.code as string; }
 async function answerFirst(p: Player) {
   const b = p.page.locator('#p-answers').getByRole('button').first();
   await expect(b).toBeEnabled();
@@ -29,7 +29,7 @@ test.describe('F03 group game', () => {
     const b = await joinGroup(browser, db, 'בתיה לוי');
     await expect(host.page.locator('.host-names')).toContainText('אלי כהן');
     await expect(host.page.locator('.host-names')).toContainText('בתיה לוי');
-    const code = roomCode(db);
+    const code = await roomCode(db);
 
     await host.page.getByRole('button', { name: /התחל משחק/ }).click();
     // a new lobby opens for the next game while this one runs
@@ -41,13 +41,13 @@ test.describe('F03 group game', () => {
       // everyone answered → the answer is revealed without waiting for the clock
       await expect(host.page.locator('.reveal-card')).toBeVisible({ timeout: 5_000 });
     }
-    const players = db.list(`rooms/${code}/players`);
+    const players = await db.list(`rooms/${code}/players`);
     expect(players.every(p => p.data.answered === 3)).toBe(true);
 
     await host.page.locator('#h-endgame').click();
     await expect(a.page.getByText('סוף המשחק')).toBeVisible();
     await expect(host.page.locator('#h-restart')).toBeVisible();
-    const total = (db.list(`rooms/${code}/players`).find(p => p.data.name === 'אלי כהן')!.data.score) || 0;
+    const total = ((await db.list(`rooms/${code}/players`)).find(p => p.data.name === 'אלי כהן')!.data.score) || 0;
     await expect(a.page.locator('.se-score')).toHaveText(String(total));
     for (const p of [host, a, b]) expect(p.errors).toEqual([]);
     expect(db.failures, 'Firestore writes that failed').toEqual([]);
@@ -57,11 +57,11 @@ test.describe('F03 group game', () => {
     const host = await openHost(browser, db);
     const a = await joinGroup(browser, db, 'אלי כהן');
     const sleepy = await joinGroup(browser, db, 'נתן ישנוני');
-    const code = roomCode(db);
+    const code = await roomCode(db);
     await expect(host.page.locator('.host-names')).toContainText('נתן ישנוני');
     // the host prunes players whose heartbeat stopped (phone locked > 90s): simulate that prune
-    const sleepyId = db.list(`rooms/${code}/players`).find(p => p.data.name === 'נתן ישנוני')!.id;
-    db.remove(`rooms/${code}/players/${sleepyId}`);
+    const sleepyId = (await db.list(`rooms/${code}/players`)).find(p => p.data.name === 'נתן ישנוני')!.id;
+    await db.remove(`rooms/${code}/players/${sleepyId}`);
     await expect(host.page.locator('.host-names')).not.toContainText('נתן ישנוני');
 
     await host.page.getByRole('button', { name: /התחל משחק/ }).click();
@@ -72,7 +72,7 @@ test.describe('F03 group game', () => {
     await answerFirst(a);
     await expect(host.page.locator('.reveal-card')).toBeVisible({ timeout: 20_000 });
     await expect(a.page.getByText(/שאלה 2 מתוך/)).toBeVisible({ timeout: 20_000 });
-    expect(db.list(`rooms/${code}/players`).find(p => p.data.name === 'אלי כהן')!.data.answered).toBe(1);
+    expect((await db.list(`rooms/${code}/players`)).find(p => p.data.name === 'אלי כהן')!.data.answered).toBe(1);
     expect(db.failures, 'Firestore writes that failed').toEqual([]);
   });
 
@@ -81,14 +81,14 @@ test.describe('F03 group game', () => {
     await p.page.getByRole('button', { name: /כניסת מנחה משחק/ }).click();
     await expect.poll(() => p.dialogs.length).toBe(2);
     expect(p.dialogs[1]).toContain('קוד שגוי');
-    expect(db.get('rooms/current')).toBeUndefined();
+    expect(await db.get('rooms/current')).toBeUndefined();
   });
 
   test('F03-E3 the same name joining twice is listed once', async ({ browser, db }) => {
     const host = await openHost(browser, db);
     await joinGroup(browser, db, 'אלי כהן');
     await joinGroup(browser, db, 'אלי  כהן');
-    await expect.poll(() => db.list(`rooms/${roomCode(db)}/players`).length).toBe(1);
+    await expect.poll(async () => (await db.list(`rooms/${await roomCode(db)}/players`)).length).toBe(1);
     await expect(host.page.locator('.host-names .pchip')).toHaveCount(1);
   });
 
@@ -103,5 +103,15 @@ test.describe('F03 group game', () => {
     await host.page.getByRole('button', { name: /המשיכו/ }).click();
     await expect(a.page.locator('#p-answers').getByRole('button').first()).toBeEnabled();
     expect(Number(await a.page.locator('#p-timer-num').innerText())).toBeGreaterThan(3);
+  });
+
+  test('F03-E5 a name with quotes cannot inject attributes into other players\' screens', async ({ browser, db }) => {
+    const host = await openHost(browser, db);
+    await joinGroup(browser, db, 'אבי" onclick="window.__pwned=1');
+    const av = host.page.locator('.crowd-wall .av').first();
+    await expect(av).toBeVisible();
+    expect(await av.getAttribute('onclick')).toBeNull();
+    await av.click();
+    expect(await host.page.evaluate(() => (window as any).__pwned)).toBeUndefined();
   });
 });

@@ -2,10 +2,12 @@
   "name": "budapest-trivia",
   "private": true,
   "scripts": {
-    "test": "playwright test"
+    "test": "playwright test",
+    "test:rules": "npx -y firebase-tools@13.35.1 emulators:exec --only firestore --project demo-trivia \"playwright test\""
   },
   "devDependencies": {
     "@axe-core/playwright": "4.10.2",
-    "@playwright/test": "1.56.1"
+    "@playwright/test": "1.56.1",
+    "firebase": "^10.12.2"
   }
 }

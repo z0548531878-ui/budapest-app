@@ -1,8 +1,8 @@
-import { test, expect, openPlayer, enterName } from './helpers';
-import type { FakeFirestore } from './fake-firestore';
+import { test, expect, openPlayer, enterName, type Db } from './helpers';
+
 import type { Browser } from '@playwright/test';
 
-async function enterLobby(browser: Browser, db: FakeFirestore, name: string) {
+async function enterLobby(browser: Browser, db: Db, name: string) {
   const p = await openPlayer(browser, db);
   await p.page.getByRole('button', { name: /משחק ראש בראש/ }).click();
   await enterName(p.page, name);
@@ -29,10 +29,10 @@ test.describe('F02 duel', () => {
     }
     await expect(a.page.getByText('הדו-קרב הסתיים')).toBeVisible({ timeout: 20_000 });
     await expect(b.page.getByText('הדו-קרב הסתיים')).toBeVisible();
-    const room = db.list('rooms').find(r => r.id.startsWith('D'))!.data;
+    const room = (await db.list('rooms')).find(r => r.id.startsWith('D'))!.data;
     await expect(a.page.locator('.duel-final .dp').first().locator('.ds')).toHaveText(String(room.s1));
     await expect(b.page.locator('.duel-final .dp').first().locator('.ds')).toHaveText(String(room.s2));
-    await expect.poll(() => db.list('duel_players_s1').length).toBe(2);
+    await expect.poll(async () => (await db.list('duel_players_s1')).length).toBe(2);
     for (const p of [a, b]) expect(p.errors).toEqual([]);
   });
 
@@ -61,7 +61,7 @@ test.describe('F02 duel', () => {
       b.page.getByRole('button', { name: /הזמנה/ }).click(),
     ]);
     await a.page.waitForTimeout(2000);
-    const lobby = db.get('rooms/duel_lobby')!;
+    const lobby = (await db.get('rooms/duel_lobby'))!;
     expect(Object.keys(lobby.inv || {}).length).toBeLessThanOrEqual(1);
   });
 
