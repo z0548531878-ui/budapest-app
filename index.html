@@ -798,6 +798,16 @@ button,a,.btn,.answer-btn{touch-action:manipulation;}
 @media (max-height:780px){ .q-sign svg{width:100px;height:100px;} }
 @media (max-height:700px){ .q-sign svg{width:80px;height:80px;} .q-card:has(.q-sign) ~ .answers .answer-btn{min-height:56px;} }
 @media (prefers-reduced-motion:reduce){ .q-sign svg{animation:none;} }
+
+/* תמונות מקומות ואישים — מוצגות במלואן, בלי חיתוך */
+.q-photo{background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.06),rgba(0,0,0,.35));border:2px solid rgba(212,175,55,.45);box-shadow:0 12px 28px rgba(0,0,0,.55);}
+.q-photo img{width:100%;height:190px;object-fit:contain;border:none;box-shadow:none;background:transparent;border-radius:12px;animation:photoIn .7s cubic-bezier(.2,1.2,.4,1) both !important;image-rendering:auto;}
+@media (max-height:780px){ .q-photo img{height:150px;} }
+@media (max-height:700px){ .q-photo img{height:118px;} }
+.q-flag img{height:128px;image-rendering:auto;}
+@media (max-height:780px){ .q-flag img{height:100px;} }
+.q-sign svg{width:136px;height:136px;shape-rendering:geometricPrecision;}
+@media (max-height:780px){ .q-sign svg{width:108px;height:108px;} }
 </style>
 </head>
 <body>
@@ -929,7 +939,7 @@ const CURRENT_ROOM_DOC = 'current';
 const LOBBY_MAX_AGE_MS = 12*60*60*1000; // חדר המתנה ישן מ-12 שעות לא ממוחזר — נפתח חדש // מסמך שמצביע על החדר הפתוח כרגע — כך השחקנים נכנסים בלי קוד
 const SOLO_REVEAL_MS = 1100;
 
-const T1='בודפשט והונגריה', T2='עולם תורני, הלכה ומנהג', T3='היסטוריה יהודית וגדולי ישראל', T4='ידע כללי, מדע וטבע', T5='מקרא, מסורת ופולקלור', T6='תחבורה, תעופה וחלל', T7='פוליטיקה ומדינה', T8='ערים בישראל', T9='ארצות העולם', T10='טיולים ונופים', T11='חשבון ומספרים', T12='מוזיקה ושירה יהודית', T13='אדמו"רים ורבנים', T14='סקרים מהמסע', T15='ספורט ומשחקים', T16='חידות והיגיון', T17='דגלים של מדינות', T18='מקומות מפורסמים', T19='תמרורים', T20='זיהוי בתמונה';
+const T1='בודפשט והונגריה', T2='עולם תורני, הלכה ומנהג', T3='היסטוריה יהודית וגדולי ישראל', T4='ידע כללי, מדע וטבע', T5='מקרא, מסורת ופולקלור', T6='תחבורה, תעופה וחלל', T7='פוליטיקה ומדינה', T8='ערים בישראל', T9='ארצות העולם', T10='טיולים ונופים', T11='חשבון ומספרים', T12='מוזיקה ושירה יהודית', T13='אדמו"רים ורבנים', T14='סקרים מהמסע', T15='ספורט ומשחקים', T16='חידות והיגיון', T17='דגלים של מדינות', T18='מקומות מפורסמים', T19='תמרורים', T20='זיהוי בתמונה', T21='אישים מפורסמים';
 
 const QUESTIONS = [
  {topic:T1, type:'trivia', q:'באיזו שנה אוחדו בודה, פשט ואובודה לעיר אחת?', a:['1848','1900','1873','1920'], c:2},
@@ -986,10 +996,11 @@ const QUESTIONS = [
  {topic:T9, type:'trivia', q:'באיזו מדינה נמצאת העיר אנטוורפן?', a:['בלגיה','הולנד','גרמניה','שווייץ'], c:0},
  {topic:T9, type:'poll', q:'לאן הייתם רוצים לטוס במסע הבא?', a:['שווייץ','פולין — מסע קברי צדיקים','אנגליה','איטליה']},
  {topic:T9, type:'poll', q:'מה הכי חשוב לכם בבית מלון?', a:['מיטה נוחה','ארוחת בוקר עשירה','נוף מהחלון','מיקום מרכזי']},
- {topic:T20, type:'trivia', q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/hu.png', a:['איטליה','הונגריה','בולגריה','מקסיקו'], c:1},
- {topic:T20, type:'trivia', q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/at.png', a:['לטביה','פולין','אוסטריה','פרו'], c:2},
- {topic:T20, type:'trivia', q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Sz%C3%A9chenyi_Chain_Bridge_in_Budapest_at_night.jpg?width=640', a:['גשר השלשלאות בבודפשט','גשר טאואר בלונדון','גשר קארל בפראג','גשר שער הזהב'], c:0},
- {topic:T20, type:'trivia', q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Al_Khazneh_Petra_edit.jpg?width=640', a:['מצדה','קומראן','ממשית','פטרה בירדן'], c:3},
+ {topic:T20, type:'trivia', q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/hu.svg', a:['איטליה','הונגריה','בולגריה','מקסיקו'], c:1},
+ {topic:T20, type:'trivia', q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/at.svg', a:['לטביה','פולין','אוסטריה','פרו'], c:2},
+ {topic:T20, type:'trivia', q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Sz%C3%A9chenyi_Chain_Bridge_in_Budapest_at_night.jpg?width=800', a:['גשר השלשלאות בבודפשט','גשר טאואר בלונדון','גשר קארל בפראג','גשר שער הזהב'], c:0},
+ {topic:T20, type:'trivia', q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Al_Khazneh_Petra_edit.jpg?width=800', a:['מצדה','קומראן','ממשית','פטרה בירדן'], c:3},
+ {topic:T20, type:'trivia', q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Theodor_Herzl_portrait.jpg?width=800', a:['חיים ויצמן','מקס נורדאו','בנימין זאב הרצל','אליעזר בן יהודה'], c:2},
  {topic:T20, type:'trivia', q:'מה פירוש התמרור הזה?', img:'sign:no_stopping', a:['החניה אסורה','העצירה והחניה אסורות','אין כניסה','צומת לפניך'], c:1},
  {topic:T20, type:'trivia', q:'מה פירוש התמרור הזה?', img:'sign:give_way', a:['עצור','סכנה — זהירות מיוחדת','תן זכות קדימה','אין כניסה'], c:2},
  {topic:T10, type:'trivia', q:'מהו ההר הגבוה ביותר בתחומי הקו הירוק?', a:['הר תבור','הר מירון','הר הכרמל','הר גלבוע'], c:1},
@@ -1000,7 +1011,7 @@ const QUESTIONS = [
  {topic:T10, type:'poll', q:'מה הכי כיף בטיול?', a:['הנופים','החברה','האוכל','התמונות למזכרת']}
 ];
 
-// ===== מאגר 1,784 שאלות למשחק העצמאי (התשובה הנכונה נכתבת ראשונה — המשחק מערבב את הסדר בכל פעם) =====
+// ===== מאגר 1,884 שאלות למשחק העצמאי (התשובה הנכונה נכתבת ראשונה — המשחק מערבב את הסדר בכל פעם) =====
 const SOLO_QUESTIONS = [
  {topic:T2, q:'באיזה חודש עברי חל חג השבועות?', a:['סיוון','אייר','ניסן','תמוז']},
  {topic:T2, q:'מה נוהגים לאכול בליל ראש השנה כסימן לשנה מתוקה?', a:['תפוח בדבש','מצה בחרוסת','ביצה במלח','אגוזים בסוכר']},
@@ -2701,61 +2712,61 @@ const SOLO_QUESTIONS = [
  {topic:T4, q:'איזה פרי הוא משבעת המינים ויש בו הרבה גרעינים אדומים?', a:['רימון','תאנה','ענב','תמר']},
  {topic:T5, q:'כמה שבטים היו לעם ישראל?', a:['12','10','7','13']},
  {topic:T5, q:'מה היה שמו של בנו של אברהם מהגר?', a:['ישמעאל','יצחק','עשו','מדין']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/il.png', a:['ישראל','ארגנטינה','ניקרגואה','הונדורס']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/jp.png', a:['יפן','בנגלדש','קוריאה הדרומית','סין']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/fr.png', a:['צרפת','הולנד','רוסיה','איטליה']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/it.png', a:['איטליה','אירלנד','מקסיקו','הונגריה']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/de.png', a:['גרמניה','בלגיה','ליטא','אוסטריה']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/us.png', a:['ארצות הברית','ליבריה','מלזיה','צ\'ילה']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/ca.png', a:['קנדה','פרו','אוסטריה','לבנון']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/hu.png', a:['הונגריה','איטליה','בולגריה','מקסיקו']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/at.png', a:['אוסטריה','לטביה','פולין','פרו']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/nl.png', a:['הולנד','צרפת','רוסיה','לוקסמבורג']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/be.png', a:['בלגיה','גרמניה','רומניה','צ\'אד']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/pl.png', a:['פולין','אינדונזיה','מונקו','אוסטריה']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/ua.png', a:['אוקראינה','קזחסטן','רומניה','קולומביה']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/ru.png', a:['רוסיה','סלובניה','צרפת','הולנד']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/in.png', a:['הודו','ניז\'ר','אירלנד','חוף השנהב']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/cn.png', a:['סין','וייטנאם','טורקיה','מרוקו']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/br.png', a:['ברזיל','פורטוגל','ארגנטינה','קולומביה']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/ar.png', a:['ארגנטינה','אורוגוואי','ישראל','גואטמלה']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/mx.png', a:['מקסיקו','איטליה','אירלנד','הונגריה']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/kr.png', a:['קוריאה הדרומית','יפן','סין','תאילנד']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/ie.png', a:['אירלנד','חוף השנהב','איטליה','הודו']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/cz.png', a:['צ\'כיה','הפיליפינים','סלובקיה','פולין']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/ro.png', a:['רומניה','צ\'אד','בלגיה','מולדובה']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/th.png', a:['תאילנד','קוסטה ריקה','הולנד','לאוס']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/ee.png', a:['אסטוניה','לטביה','ליטא','פינלנד']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Tour_Eiffel_Wikimedia_Commons.jpg?width=640', a:['מגדל אייפל','מגדל טוקיו','מגדל בלקפול','מגדל הטלוויזיה בברלין']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Colosseo_2020.jpg?width=640', a:['הקולוסיאום ברומא','האמפיתאטרון בקיסריה','הארנה בוורונה','האקרופוליס באתונה']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Kheops-Pyramid.jpg?width=640', a:['הפירמידה הגדולה בגיזה','פירמידת השמש במקסיקו','פירמידת הזכוכית בלובר','הזיגורת באור']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Taj_Mahal_(Edited).jpeg?width=640', a:['הטאג\' מהאל','ארמון טופקפי','המצודה האדומה בדלהי','ארמון אלהמברה']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/GoldenGateBridge-001.jpg?width=640', a:['גשר שער הזהב','גשר ברוקלין','גשר הנמל בסידני','גשר 25 באפריל בליסבון']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Sydney_(AU),_Opera_House_--_2019_--_3054.jpg?width=640', a:['בית האופרה של סידני','מרכז הקונגרסים בירושלים','גני המפרץ בסינגפור','מוזיאון גוגנהיים בבילבאו']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Burj_Khalifa_(16260269606).jpg?width=640', a:['בורג\' ח\'ליפה','מגדל שנגחאי','מגדלי פטרונס','ה-CN טאואר בטורונטו']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Tower_Bridge_from_Shad_Thames.jpg?width=640', a:['גשר טאואר בלונדון','גשר השלשלאות בבודפשט','גשר קארל בפראג','גשר ריאלטו בוונציה']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Great_Wall_of_China_July_2006.JPG?width=640', a:['החומה הסינית','חומת אדריאנוס','חומות ירושלים','חומת ברלין']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Italy_-_Pisa_-_Leaning_Tower.jpg?width=640', a:['מגדל פיזה הנטוי','מגדל השעון ביפו','מגדל גלטה באיסטנבול','מגדל בלם בליסבון']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Clock_Tower_-_Palace_of_Westminster,_London_-_May_2007.jpg?width=640', a:['ביג בן בלונדון','מגדל השעון ביפו','מגדל השעון בפראג','מגדל השעון בברן']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Empire_State_Building_(aerial_view).jpg?width=640', a:['האמפייר סטייט בילדינג','מגדלי עזריאלי','הקרייזלר בילדינג','מגדל ויליס בשיקגו']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Parliament_Building_Budapest_Hungary.jpg?width=640', a:['בניין הפרלמנט בבודפשט','ארמון וסטמינסטר בלונדון','משכן הכנסת בירושלים','הרייכסטאג בברלין']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Sz%C3%A9chenyi_Chain_Bridge_in_Budapest_at_night.jpg?width=640', a:['גשר השלשלאות בבודפשט','גשר טאואר בלונדון','גשר קארל בפראג','גשר שער הזהב']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Synagoge_Budapest_2014.jpg?width=640', a:['בית הכנסת הגדול ברחוב דוהאני','בית הכנסת אלטנוי בפראג','בית הכנסת החורבה בירושלים','בית הכנסת הספרדי באמסטרדם']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Horseshoe_Falls_(Niagara_Falls).jpg?width=640', a:['מפלי הניאגרה','מפלי ויקטוריה','מפלי איגואסו','מפל גמלא']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Mount_Fuji_from_Lake_Kawaguchi.jpg?width=640', a:['הר פוג\'י','הר האוורסט','הר קילימנג\'רו','הר החרמון']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Al_Khazneh_Petra_edit.jpg?width=640', a:['פטרה בירדן','מצדה','קומראן','ממשית']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Machu_Picchu,_Peru.jpg?width=640', a:['מאצ\'ו פיצ\'ו','צ\'יצ\'ן איצה','אנגקור וואט','מצדה']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Grand_Canyon_view_from_Pima_Point_2010.jpg?width=640', a:['הגרנד קניון','מכתש רמון','עמק המוות','נחל פרת']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Old_Jerusalem_Western_Wall_view_from_Aish_HaTorah.jpg?width=640', a:['הכותל המערבי','הכותל הקטן','חומות העיר העתיקה','מגדל דוד']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Israel-2013-Aerial_22-Masada.jpg?width=640', a:['מצדה','הרודיון','קרני חיטין','גמלא']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Tower_of_david_jerusalem.jpg?width=640', a:['מגדל דוד','מבצר נמרוד','מצודת יחיעם','חומות עכו']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Israel-2013-Aerial_05-Negev-Makhtesh_Ramon.jpg?width=640', a:['מכתש רמון','המכתש הגדול','הגרנד קניון','עמק תמנע']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Rosh_HaNikra_grottoes_(1).jpg?width=640', a:['נקרות ראש הנקרה','מערת הנטיפים','מערות בית גוברין','מערת אליהו הנביא']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Knesset_in_Jerusalem_Israel.jpg?width=640', a:['משכן הכנסת','בית המשפט העליון','בנייני האומה','מוזיאון ישראל']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Hebron_Cave_of_the_Patriarchs.jpg?width=640', a:['מערת המכפלה בחברון','קבר רחל','קבר שמואל הנביא','קבר יוסף בשכם']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Jaffa_Clock_Tower_(9869602164).jpg?width=640', a:['מגדל השעון ביפו','מגדל השעון בצפת','מגדל השעון בחיפה','ביג בן בלונדון']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Jerusalem_Chords_Bridge.JPG?width=640', a:['גשר המיתרים בירושלים','גשר ברוקלין','גשר שער הזהב','גשר מעריב בתל אביב']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Azrieli_Towers,_Tel_Aviv.jpg?width=640', a:['מגדלי עזריאלי','מגדל שלום','מגדלי פטרונס','מגדל משה אביב']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/il.svg', a:['ישראל','ארגנטינה','ניקרגואה','הונדורס']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/jp.svg', a:['יפן','בנגלדש','קוריאה הדרומית','סין']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/fr.svg', a:['צרפת','הולנד','רוסיה','איטליה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/it.svg', a:['איטליה','אירלנד','מקסיקו','הונגריה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/de.svg', a:['גרמניה','בלגיה','ליטא','אוסטריה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/us.svg', a:['ארצות הברית','ליבריה','מלזיה','צ\'ילה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/ca.svg', a:['קנדה','פרו','אוסטריה','לבנון']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/hu.svg', a:['הונגריה','איטליה','בולגריה','מקסיקו']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/at.svg', a:['אוסטריה','לטביה','פולין','פרו']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/nl.svg', a:['הולנד','צרפת','רוסיה','לוקסמבורג']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/be.svg', a:['בלגיה','גרמניה','רומניה','צ\'אד']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/pl.svg', a:['פולין','אינדונזיה','מונקו','אוסטריה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/ua.svg', a:['אוקראינה','קזחסטן','רומניה','קולומביה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/ru.svg', a:['רוסיה','סלובניה','צרפת','הולנד']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/in.svg', a:['הודו','ניז\'ר','אירלנד','חוף השנהב']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/cn.svg', a:['סין','וייטנאם','טורקיה','מרוקו']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/br.svg', a:['ברזיל','פורטוגל','ארגנטינה','קולומביה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/ar.svg', a:['ארגנטינה','אורוגוואי','ישראל','גואטמלה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/mx.svg', a:['מקסיקו','איטליה','אירלנד','הונגריה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/kr.svg', a:['קוריאה הדרומית','יפן','סין','תאילנד']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/ie.svg', a:['אירלנד','חוף השנהב','איטליה','הודו']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/cz.svg', a:['צ\'כיה','הפיליפינים','סלובקיה','פולין']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/ro.svg', a:['רומניה','ליטא','בלגיה','מולדובה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/th.svg', a:['תאילנד','קוסטה ריקה','הולנד','לאוס']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/ee.svg', a:['אסטוניה','לטביה','ליטא','פינלנד']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Tour_Eiffel_Wikimedia_Commons.jpg?width=800', a:['מגדל אייפל','מגדל טוקיו','מגדל בלקפול','מגדל הטלוויזיה בברלין']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Colosseo_2020.jpg?width=800', a:['הקולוסיאום ברומא','האמפיתאטרון בקיסריה','הארנה בוורונה','האקרופוליס באתונה']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Kheops-Pyramid.jpg?width=800', a:['הפירמידה הגדולה בגיזה','פירמידת השמש במקסיקו','פירמידת הזכוכית בלובר','הזיגורת באור']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Taj_Mahal_(Edited).jpeg?width=800', a:['הטאג\' מהאל','ארמון טופקפי','המצודה האדומה בדלהי','ארמון אלהמברה']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/GoldenGateBridge-001.jpg?width=800', a:['גשר שער הזהב','גשר ברוקלין','גשר הנמל בסידני','גשר 25 באפריל בליסבון']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Sydney_(AU),_Opera_House_--_2019_--_3054.jpg?width=800', a:['בית האופרה של סידני','מרכז הקונגרסים בירושלים','גני המפרץ בסינגפור','מוזיאון גוגנהיים בבילבאו']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Burj_Khalifa_(16260269606).jpg?width=800', a:['בורג\' ח\'ליפה','מגדל שנגחאי','מגדלי פטרונס','ה-CN טאואר בטורונטו']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Tower_Bridge_from_Shad_Thames.jpg?width=800', a:['גשר טאואר בלונדון','גשר השלשלאות בבודפשט','גשר קארל בפראג','גשר ריאלטו בוונציה']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Great_Wall_of_China_July_2006.JPG?width=800', a:['החומה הסינית','חומת אדריאנוס','חומות ירושלים','חומת ברלין']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Italy_-_Pisa_-_Leaning_Tower.jpg?width=800', a:['מגדל פיזה הנטוי','מגדל השעון ביפו','מגדל גלטה באיסטנבול','מגדל בלם בליסבון']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Clock_Tower_-_Palace_of_Westminster,_London_-_May_2007.jpg?width=800', a:['ביג בן בלונדון','מגדל השעון ביפו','מגדל השעון בפראג','מגדל השעון בברן']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Empire_State_Building_(aerial_view).jpg?width=800', a:['האמפייר סטייט בילדינג','מגדלי עזריאלי','הקרייזלר בילדינג','מגדל ויליס בשיקגו']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Parliament_Building_Budapest_Hungary.jpg?width=800', a:['בניין הפרלמנט בבודפשט','ארמון וסטמינסטר בלונדון','משכן הכנסת בירושלים','הרייכסטאג בברלין']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Sz%C3%A9chenyi_Chain_Bridge_in_Budapest_at_night.jpg?width=800', a:['גשר השלשלאות בבודפשט','גשר טאואר בלונדון','גשר קארל בפראג','גשר שער הזהב']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Synagoge_Budapest_2014.jpg?width=800', a:['בית הכנסת הגדול ברחוב דוהאני','בית הכנסת אלטנוי בפראג','בית הכנסת החורבה בירושלים','בית הכנסת הספרדי באמסטרדם']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Horseshoe_Falls_(Niagara_Falls).jpg?width=800', a:['מפלי הניאגרה','מפלי ויקטוריה','מפלי איגואסו','מפל גמלא']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Mount_Fuji_from_Lake_Kawaguchi.jpg?width=800', a:['הר פוג\'י','הר האוורסט','הר קילימנג\'רו','הר החרמון']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Al_Khazneh_Petra_edit.jpg?width=800', a:['פטרה בירדן','מצדה','קומראן','ממשית']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Machu_Picchu,_Peru.jpg?width=800', a:['מאצ\'ו פיצ\'ו','צ\'יצ\'ן איצה','אנגקור וואט','מצדה']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Grand_Canyon_view_from_Pima_Point_2010.jpg?width=800', a:['הגרנד קניון','מכתש רמון','עמק המוות','נחל פרת']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Old_Jerusalem_Western_Wall_view_from_Aish_HaTorah.jpg?width=800', a:['הכותל המערבי','הכותל הקטן','חומות העיר העתיקה','מגדל דוד']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Israel-2013-Aerial_22-Masada.jpg?width=800', a:['מצדה','הרודיון','קרני חיטין','גמלא']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Tower_of_david_jerusalem.jpg?width=800', a:['מגדל דוד','מבצר נמרוד','מצודת יחיעם','חומות עכו']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Israel-2013-Aerial_05-Negev-Makhtesh_Ramon.jpg?width=800', a:['מכתש רמון','המכתש הגדול','הגרנד קניון','עמק תמנע']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Rosh_HaNikra_grottoes_(1).jpg?width=800', a:['נקרות ראש הנקרה','מערת הנטיפים','מערות בית גוברין','מערת אליהו הנביא']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Knesset_in_Jerusalem_Israel.jpg?width=800', a:['משכן הכנסת','בית המשפט העליון','בנייני האומה','מוזיאון ישראל']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Hebron_Cave_of_the_Patriarchs.jpg?width=800', a:['מערת המכפלה בחברון','קבר רחל','קבר שמואל הנביא','קבר יוסף בשכם']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Jaffa_Clock_Tower_(9869602164).jpg?width=800', a:['מגדל השעון ביפו','מגדל השעון בצפת','מגדל השעון בחיפה','ביג בן בלונדון']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Jerusalem_Chords_Bridge.JPG?width=800', a:['גשר המיתרים בירושלים','גשר ברוקלין','גשר שער הזהב','גשר מעריב בתל אביב']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Azrieli_Towers,_Tel_Aviv.jpg?width=800', a:['מגדלי עזריאלי','מגדל שלום','מגדלי פטרונס','מגדל משה אביב']},
  {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:crossing_warn', a:['מעבר חציה להולכי רגל לפניך','ילדים בדרך','אסור מעבר להולכי רגל','שביל להולכי רגל בלבד']},
  {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:curve_right', a:['עקומה ימינה לפניך','פנייה ימינה בלבד','אסורה הפנייה ימינה','עבור מימין לתמרור']},
  {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:curve_left', a:['עקומה שמאלה לפניך','פנייה שמאלה בלבד','אסורה הפנייה שמאלה','עקומה ימינה לפניך']},
@@ -2785,7 +2796,107 @@ const SOLO_QUESTIONS = [
  {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:bike_path', a:['שביל לאופניים בלבד','אסורה הכניסה לאופניים','חניה לאופניים','מסלול לאופנועים']},
  {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:parking', a:['מקום חניה','החניה אסורה','תחנת משטרה','מגרש משחקים']},
  {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:crossing_info', a:['מעבר חציה להולכי רגל','מעבר חציה להולכי רגל לפניך','אסור מעבר להולכי רגל','גשר להולכי רגל']},
- {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:dead_end', a:['רחוב ללא מוצא','צומת T לפניך','אין כניסה','סוף הכביש המהיר']}
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:dead_end', a:['רחוב ללא מוצא','צומת T לפניך','אין כניסה','סוף הכביש המהיר']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/bg.svg', a:['בולגריה','הונגריה','ליטא','איראן']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/lt.svg', a:['ליטא','בוליביה','גאנה','אתיופיה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/lv.svg', a:['לטביה','אוסטריה','פולין','פרו']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/lu.svg', a:['לוקסמבורג','הולנד','רוסיה','קרואטיה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/id.svg', a:['אינדונזיה','פולין','יפן','סינגפור']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/co.svg', a:['קולומביה','אקוודור','ונצואלה','רומניה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/pe.svg', a:['פרו','קנדה','לטביה','אוסטריה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/cl.svg', a:['צ\'ילה','צ\'כיה','קובה','פנמה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/uy.svg', a:['אורוגוואי','ארגנטינה','יוון','ישראל']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/ng.svg', a:['ניגריה','אירלנד','איטליה','פקיסטן']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/eg.svg', a:['מצרים','עיראק','סוריה','תימן']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/vn.svg', a:['וייטנאם','סין','טורקיה','מרוקו']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/bd.svg', a:['בנגלדש','יפן','פלאו','פקיסטן']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/za.svg', a:['דרום אפריקה','ג\'מייקה','קניה','זימבבואה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/gh.svg', a:['גאנה','בוליביה','ליטא','קמרון']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/cm.svg', a:['קמרון','סנגל','גינאה','מאלי']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/sn.svg', a:['סנגל','קמרון','מאלי','גינאה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/kz.svg', a:['קזחסטן','אוקראינה','ארגנטינה','מונגוליה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/lb.svg', a:['לבנון','קנדה','פרו','אוסטריה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/jo.svg', a:['ירדן','סודן','כווית','איחוד האמירויות']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/cy.svg', a:['קפריסין','כוסובו','מלטה','יוון']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/hr.svg', a:['קרואטיה','סרביה','סלובניה','סלובקיה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/si.svg', a:['סלובניה','סלובקיה','רוסיה','קרואטיה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/my.svg', a:['מלזיה','ארצות הברית','ליבריה','סינגפור']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/sg.svg', a:['סינגפור','אינדונזיה','טורקיה','מונקו']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/ph.svg', a:['הפיליפינים','צ\'כיה','קובה','ניקרגואה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/cu.svg', a:['קובה','פוארטו ריקו','צ\'ילה','הפיליפינים']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/ke.svg', a:['קניה','דרום אפריקה','מלאווי','ג\'מייקה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/et.svg', a:['אתיופיה','גאנה','ליטא','בוליביה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/ae.svg', a:['איחוד האמירויות','כווית','ירדן','סודן']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Brandenburger_Tor_abends.jpg?width=800', a:['שער ברנדנבורג בברלין','שער הניצחון בפריז','שער הודו בדלהי','שער יפו בירושלים']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Paris_Arc_de_Triomphe.jpg?width=800', a:['שער הניצחון בפריז','שער ברנדנבורג בברלין','שער אלקלה במדריד','שער הודו בדלהי']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Louvre_Museum_Wikimedia_Commons.jpg?width=800', a:['מוזיאון הלובר בפריז','הבריטיש מיוזיאום בלונדון','מוזיאון ישראל','מוזיאון המטרופוליטן בניו יורק']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Atomium_Brussels.jpg?width=800', a:['האטומיום בבריסל','מגדל טוקיו','ספייס נידל בסיאטל','מצפה הכוכבים בגבעתיים']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Schloss_Neuschwanstein_2013.jpg?width=800', a:['טירת נוישוונשטיין בגרמניה','ארמון בודה','טירת אדינבורו','ארמון שנברון בווינה']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Buckingham_Palace,_London_-_April_2009.jpg?width=800', a:['ארמון בקינגהאם בלונדון','ארמון ורסאי','ארמון שנברון בווינה','הבית הלבן']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Stonehenge2007_07_30.jpg?width=800', a:['סטונהנג\' באנגליה','גלגל רפאים ברמת הגולן','קרני חיטין','מגליתי קרנאק בצרפת']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Petronas_twin_towers.jpg?width=800', a:['מגדלי פטרונס בקואלה לומפור','מגדלי עזריאלי','מרכז הסחר העולמי','מגדלי ג\'ומיירה בדובאי']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Marina_Bay_Sands,_Singapore,_August_2023.jpg?width=800', a:['מרינה ביי סנדס בסינגפור','בורג\' אל ערב בדובאי','מגדלי פטרונס','מלון המלך דוד']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/CN_Tower,_Toronto,_Canada_(29375403534).jpg?width=800', a:['מגדל CN בטורונטו','מגדל אייפל','ספייס נידל בסיאטל','מגדל הטלוויזיה בברלין']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Brooklyn_Bridge_Postdlf.jpg?width=800', a:['גשר ברוקלין בניו יורק','גשר טאואר בלונדון','גשר שער הזהב','גשר השלשלאות בבודפשט']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Victoria_falls,_zambia.jpg?width=800', a:['מפלי ויקטוריה באפריקה','מפלי הניאגרה','מפלי איגואסו','מפל הבניאס']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Cataratas_Iguacu_Iguazu_Falls.jpg?width=800', a:['מפלי איגואסו','מפלי הניאגרה','מפלי ויקטוריה','מפלי הריין']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Matterhorn_from_Domh%C3%BCtte.jpg?width=800', a:['הר המטרהורן בשווייץ','הר פוג\'י','הר האוורסט','הר החרמון']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Mount_Kilimanjaro_Dec_2009_edit1.jpg?width=800', a:['הר קילימנג\'רו','הר פוג\'י','הר סיני','הר אררט']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Table_Mountain_DanieVDM.jpg?width=800', a:['הר השולחן בקייפטאון','הר תבור','הר הכרמל','הר ארבל']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Uluru,_helicopter_view,_cropped.jpg?width=800', a:['סלע אולורו באוסטרליה','מצדה','הגרנד קניון','מכתש רמון']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Halong_Bay_in_Vietnam.jpg?width=800', a:['מפרץ הא לונג בווייטנאם','מפרץ אילת','הפיורדים בנורווגיה','האיים המלדיביים']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Budapest_-_Castillo_de_Buda_-_Buda_Castle_-_05.jpg?width=800', a:['ארמון בודה בבודפשט','בניין הפרלמנט בבודפשט','ארמון שנברון בווינה','טירת פראג']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Budapest_Szabadsag_Bridge.jpg?width=800', a:['גשר החירות בבודפשט','גשר השלשלאות בבודפשט','גשר טאואר בלונדון','גשר ברוקלין']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Mount_Sodom,_Dead_Sea_Outlook,_Israel_02.jpg?width=800', a:['ים המלח והר סדום','הכנרת','מכתש רמון','מפרץ אילת']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Sea_of_Galilee_View.jpg?width=800', a:['הכנרת','ים המלח','אגם החולה','הים התיכון']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Jerusalem_Jaffa_Gate_BW_1.JPG?width=800', a:['שער יפו בירושלים','שער שכם','שער האריות','שער ציון']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/En_Gedi_Waterfall.jpg?width=800', a:['מפל בנחל דוד בעין גדי','מפל הבניאס','מפל גמלא','מפל התנור']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Walls_of_Acre.jpg?width=800', a:['חומות עכו','חומות ירושלים','מבצר קיסריה','נמל יפו']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/High_Level_Aqueduct_of_Caesarea,_Israel_(15819311911).jpg?width=800', a:['אמת המים בקיסריה','חומות עכו','בית שאן העתיקה','נמל יפו']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Columnas_de_Salom%C3%B3n,_Timna_Park,_Israel,_2017_02.jpg?width=800', a:['עמודי שלמה בפארק תמנע','מכתש רמון','הר סדום','הקשתות בעין עבדת']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Banias_Waterfall.jpg?width=800', a:['מפל הבניאס','מפל התנור','מפל גמלא','מפל סער']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Shrine_of_the_Book,_Israel_Museum.jpg?width=800', a:['היכל הספר במוזיאון ישראל','משכן הכנסת','בנייני האומה','בית המשפט העליון']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Jerusalem_Old_city_panorama.jpg?width=800', a:['העיר העתיקה בירושלים','העיר העתיקה בצפת','העיר העתיקה בעכו','העיר העתיקה ביפו']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Chofetz_Chaim,_1923.jpg?width=800', a:['החפץ חיים','החזון איש','הגאון מווילנא','רבי חיים מבריסק']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Chazon_ish_in_israel.jpg?width=800', a:['החזון איש','החפץ חיים','הסטייפלר','הרב שך']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Ovadya_Yosef.jpg?width=800', a:['הרב עובדיה יוסף','הרב מרדכי אליהו','הבבא סאלי','הרב שלום משאש']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Rabbi_Menachem_Mendel_Schneerson2_crop.jpg?width=800', a:['הרבי מליובאוויטש','הרבי מסאטמר','האדמו"ר מבעלזא','האדמו"ר מגור']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Rabbi_shah.jpg?width=800', a:['הרב שך','הרב שטיינמן','הרב אלישיב','החזון איש']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Rabbi_Yosef_Shalom_Elyashiv.jpg?width=800', a:['הרב יוסף שלום אלישיב','הרב שלמה זלמן אויערבך','הרב שך','הרב חיים קניבסקי']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Rav_Chaim_Kanievsky_zt%27l.jpg?width=800', a:['הרב חיים קניבסקי','הסטייפלר','הרב אלישיב','הרב שטיינמן']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Rabbi_Israel_Abouhaseira,_dit_Baba_sal%C3%A9.JPG?width=800', a:['הבבא סאלי','הרב עובדיה יוסף','הבבא ברוך','רבי יעקב אבוחצירא']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Aharon_Leib_Shteinman.jpg?width=800', a:['הרב אהרן לייב שטיינמן','הרב שך','הרב חיים קניבסקי','הרב אלישיב']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/JTeitelbaum.jpg?width=800', a:['הרבי מסאטמר','הרבי מליובאוויטש','האדמו"ר מבעלזא','האדמו"ר מויז\'ניץ']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Reb_Moshe_Feinstein.jpg?width=800', a:['הרב משה פיינשטיין','הרב אהרן קוטלר','הרב יעקב קמנצקי','הרב יוסף דוב סולובייצ\'יק']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Avraham_Issac_Kook_portrait.JPG?width=800', a:['הרב אברהם יצחק הכהן קוק','הרב יוסף חיים זוננפלד','הרב צבי פסח פרנק','הרב בן ציון עוזיאל']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Yosef_Chaim_Sonnenfeld.jpg?width=800', a:['הרב יוסף חיים זוננפלד','הרב קוק','הרב שמואל סלנט','הרב יוסף צבי דושינסקי']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Mordechai_eliyahu.jpg?width=800', a:['הרב מרדכי אליהו','הרב עובדיה יוסף','הרב אליהו בקשי דורון','הרב שלמה עמאר']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Rabbi_Kanyevsky_of_Bnei_Brak_(cropped).JPG?width=800', a:['הסטייפלר','החזון איש','הרב חיים קניבסקי','הרב שך']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Theodor_Herzl_portrait.jpg?width=800', a:['בנימין זאב הרצל','חיים ויצמן','אליעזר בן יהודה','מקס נורדאו']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/David_Ben-Gurion_(D597-087).jpg?width=800', a:['דוד בן גוריון','לוי אשכול','משה שרת','חיים ויצמן']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Menachem_Begin_2.jpg?width=800', a:['מנחם בגין','יצחק שמיר','לוי אשכול','משה שרת']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Flickr_-_Israel_Defense_Forces_-_Life_of_Lt._Gen._Yitzhak_Rabin,_7th_IDF_Chief_of_Staff_in_photos_(11).jpg?width=800', a:['יצחק רבין','שמעון פרס','אהוד ברק','יצחק שמיר']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Shimon_Peres_by_David_Shankbone.jpg?width=800', a:['שמעון פרס','יצחק רבין','ראובן ריבלין','חיים הרצוג']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Netanyahu_official_portrait.jpg?width=800', a:['בנימין נתניהו','אהוד אולמרט','אהוד ברק','נפתלי בנט']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Chaim_Weizmann,_eerste_president_Israel,_RP-F-F01691.jpg?width=800', a:['חיים ויצמן','יצחק בן צבי','דוד בן גוריון','בנימין זאב הרצל']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Mosche_Dajan.jpg?width=800', a:['משה דיין','יצחק רבין','אריאל שרון','יגאל אלון']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Ariel_Sharon,_by_Jim_Wallace_(Smithsonian_Institution).jpg?width=800', a:['אריאל שרון','מנחם בגין','יצחק שמיר','משה דיין']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/ELIEZER_BEN_YEHUDA,_REVIVER_OF_HIS_HEBREW_LANGUAGE.D396-037.jpg?width=800', a:['אליעזר בן יהודה','בנימין זאב הרצל','אחד העם','חיים נחמן ביאליק']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Albert_Einstein_Head.jpg?width=800', a:['אלברט איינשטיין','אייזק ניוטון','תומאס אדיסון','זיגמונד פרויד']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Sir_Winston_Churchill_(19086236948).jpg?width=800', a:['וינסטון צ\'רצ\'יל','פרנקלין רוזוולט','הארי טרומן','שארל דה גול']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Abraham_Lincoln_O-77_matte_collodion_print.jpg?width=800', a:['אברהם לינקולן','ג\'ורג\' וושינגטון','תאודור רוזוולט','יוליסס גרנט']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Gilbert_Stuart_Williamstown_Portrait_of_George_Washington.jpg?width=800', a:['ג\'ורג\' וושינגטון','אברהם לינקולן','תומאס ג\'פרסון','בנג\'מין פרנקלין']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Mahatma-Gandhi,_studio,_1931.jpg?width=800', a:['מהטמה גנדי','נלסון מנדלה','ג\'ווהרלל נהרו','הדלאי לאמה']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Thomas_Edison2.jpg?width=800', a:['תומאס אדיסון','אלכסנדר גרהם בל','ניקולה טסלה','הנרי פורד']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/GodfreyKneller-IsaacNewton-1689.jpg?width=800', a:['אייזק ניוטון','גלילאו גליליי','אלברט איינשטיין','יוהנס קפלר']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Jacques-Louis_David_-_The_Emperor_Napoleon_in_His_Study_at_the_Tuileries_-_Google_Art_Project.jpg?width=800', a:['נפוליאון בונפרטה','לואי ה-14','יוליוס קיסר','ג\'ורג\' וושינגטון']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Neil_Armstrong_pose.jpg?width=800', a:['ניל ארמסטרונג','אילן רמון','יורי גגרין','באז אולדרין']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Nelson_Mandela_1994.jpg?width=800', a:['נלסון מנדלה','מרטין לותר קינג','ברק אובמה','מהטמה גנדי']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/John_F._Kennedy,_White_House_color_photo_portrait.jpg?width=800', a:['ג\'ון קנדי','רונלד רייגן','ריצ\'רד ניקסון','ביל קלינטון']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Portrait_of_Alexander_Graham_Bell.jpg?width=800', a:['אלכסנדר גרהם בל','תומאס אדיסון','גוליילמו מרקוני','לואי פסטר']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Portrait_of_a_Man,_Said_to_be_Christopher_Columbus.jpg?width=800', a:['כריסטופר קולומבוס','וסקו דה גאמה','פרדיננד מגלן','מרקו פולו']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Justus_Sustermans_-_Portrait_of_Galileo_Galilei,_1636.jpg?width=800', a:['גלילאו גליליי','אייזק ניוטון','ניקולאוס קופרניקוס','לאונרדו דה וינצ\'י']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Louis_Pasteur,_foto_av_Paul_Nadar,_Crisco_edit.jpg?width=800', a:['לואי פסטר','רוברט קוך','אלכסנדר פלמינג','יונס סאלק']}
 ].map(q=>({topic:q.topic, type:'trivia', q:q.q, img:q.img, a:q.a, c:0}));
 
 if(firebaseConfig.apiKey === 'YOUR_API_KEY'){ return; }
@@ -2833,6 +2944,7 @@ function topicIcon(topic){
   if(topic===T18) return '📸';
   if(topic===T19) return '🚦';
   if(topic===T20) return '🖼️';
+  if(topic===T21) return '👤';
   return '';
 }
 function animateCount(el, target, ms){
@@ -3207,7 +3319,7 @@ function duelQuestion(v, i){
   for(let k=order.length-1;k>0;k--){ const j=Math.floor(r()*(k+1)); const t=order[k]; order[k]=order[j]; order[j]=t; }
   return {topic:q.topic, type:'trivia', q:q.q, img:q.img, a:order.map(k=>q.a[k]), c:order.indexOf(q.c)};
 }
-function duelPickQs(){ const all=SOLO_QUESTIONS.map((_,i)=>i); return withMinImages(shuffleArr(all).slice(0, DUEL_Q_COUNT)); }
+function duelPickQs(){ const all=SOLO_QUESTIONS.map((_,i)=>i); return composeRound(shuffleArr(all).slice(0, DUEL_Q_COUNT)); }
 function duelMe(){
   let id=null; try{ id=sessionStorage.getItem('trivia_duel_pid'); }catch(e){}
   if(!id){ id=genId(); try{ sessionStorage.setItem('trivia_duel_pid', id); }catch(e){} }
@@ -3638,7 +3750,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-07y';
+const APP_VERSION = '2026-10-07z';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -4485,19 +4597,23 @@ function soloStart(){
 // בחירת שאלות לסבב: לא חוזרים על שאלה שהשחקן ראה בעשרת הסבבים האחרונים (ובפועל — עד שכל המאגר נגמר).
 // השאלות נשמרות לפי 'טביעת אצבע' של הטקסט, כך שהוספה או מחיקה של שאלות במאגר לא מבלבלת את המעקב.
 const SOLO_NO_REPEAT_ROUNDS = 10;
-// בכל סבב (עצמאי וראש בראש) יש לפחות 5 שאלות עם תמונה — דגלים, מקומות ותמרורים.
-// אם הבחירה האקראית יצאה עם פחות, מחליפים שאלות טקסט בשאלות תמונה (קודם כאלה שעוד לא נראו) ומערבבים.
-const MIN_IMG_Q = 5;
-function withMinImages(picked, unseen){
-  const isImg = i => !!SOLO_QUESTIONS[i].img;
-  let have = picked.filter(isImg).length;
-  if(have >= MIN_IMG_Q) return picked;
-  const inPick = new Set(picked);
-  const pool = shuffleArr(SOLO_QUESTIONS.map((_,i)=>i).filter(i=>isImg(i) && !inPick.has(i)));
-  if(unseen) pool.sort((a,b)=>(unseen.has(b)?1:0)-(unseen.has(a)?1:0));
-  const out = picked.slice();
-  for(let k=out.length-1; k>=0 && have<MIN_IMG_Q && pool.length; k--){ if(!isImg(out[k])){ out[k]=pool.shift(); have++; } }
-  return shuffleArr(out);
+// בכל סבב (עצמאי וראש בראש) יש בדיוק: 2 דגלים, 2 מקומות מפורסמים, תמרור 1 ותמונת אישיות 1.
+// שאר השאלות — שאלות טקסט. שאלות התמונה נבחרות קודם מאלה שהשחקן עוד לא ראה.
+const ROUND_IMG_MIX = [[T17,2],[T18,2],[T19,1],[T21,1]];
+function composeRound(picked, unseen){
+  const total = picked.length, isImg = i => !!SOLO_QUESTIONS[i].img;
+  const imgs = [];
+  ROUND_IMG_MIX.forEach(([t,n])=>{
+    const pool = shuffleArr(SOLO_QUESTIONS.map((_,i)=>i).filter(i=>SOLO_QUESTIONS[i].topic===t));
+    if(unseen) pool.sort((a,b)=>(unseen.has(b)?1:0)-(unseen.has(a)?1:0));
+    imgs.push(...pool.slice(0,n));
+  });
+  let out = picked.filter(i=>!isImg(i)).slice(0, total-imgs.length);
+  if(out.length < total-imgs.length){
+    const have = new Set(out);
+    out = out.concat(shuffleArr(SOLO_QUESTIONS.map((_,i)=>i).filter(i=>!isImg(i) && !have.has(i))).slice(0, total-imgs.length-out.length));
+  }
+  return shuffleArr(out.concat(imgs));
 }
 // ציורי התמרורים (וקטוריים, בתוך האפליקציה — נטענים מיד גם בלי רשת)
 const SIGN_SVG = {"crossing_warn": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 7 L94 87 H6 Z\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"7\" stroke-linejoin=\"round\"/><g transform=\"translate(50 66) scale(1.05)\" stroke=\"#111\" stroke-width=\"4\" stroke-linecap=\"round\" fill=\"none\"><circle cx=\"0\" cy=\"-16\" r=\"4.5\" fill=\"#111\" stroke=\"none\"/><line x1=\"0\" y1=\"-10\" x2=\"-2\" y2=\"6\"/><line x1=\"-2\" y1=\"6\" x2=\"-9\" y2=\"18\"/><line x1=\"-2\" y1=\"6\" x2=\"6\" y2=\"17\"/><line x1=\"0\" y1=\"-6\" x2=\"-8\" y2=\"2\"/><line x1=\"0\" y1=\"-6\" x2=\"8\" y2=\"0\"/></g><rect x=\"28\" y=\"80\" width=\"5\" height=\"3\" fill=\"#111\"/><rect x=\"37\" y=\"80\" width=\"5\" height=\"3\" fill=\"#111\"/><rect x=\"46\" y=\"80\" width=\"5\" height=\"3\" fill=\"#111\"/><rect x=\"55\" y=\"80\" width=\"5\" height=\"3\" fill=\"#111\"/><rect x=\"64\" y=\"80\" width=\"5\" height=\"3\" fill=\"#111\"/></svg>", "curve_right": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 7 L94 87 H6 Z\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"7\" stroke-linejoin=\"round\"/><path d=\"M44 80 V62 Q44 50 56 47\" stroke=\"#111\" stroke-width=\"7\" fill=\"none\"/><path d=\"M0 -8 L8 3.2 L-8 3.2 Z\" fill=\"#111\" transform=\"translate(60 46) rotate(75)\"/></svg>", "curve_left": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 7 L94 87 H6 Z\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"7\" stroke-linejoin=\"round\"/><path d=\"M56 80 V62 Q56 50 44 47\" stroke=\"#111\" stroke-width=\"7\" fill=\"none\"/><path d=\"M0 -8 L8 3.2 L-8 3.2 Z\" fill=\"#111\" transform=\"translate(40 46) rotate(-75)\"/></svg>", "t_junction": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 7 L94 87 H6 Z\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"7\" stroke-linejoin=\"round\"/><rect x=\"46.5\" y=\"50\" width=\"7\" height=\"32\" fill=\"#111\"/><rect x=\"28\" y=\"44\" width=\"44\" height=\"7\" fill=\"#111\"/></svg>", "roundabout_warn": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 7 L94 87 H6 Z\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"7\" stroke-linejoin=\"round\"/><g transform=\"rotate(0 50 63)\"><path d=\"M50 51 A12 12 0 0 1 61 58\" stroke=\"#111\" stroke-width=\"5\" fill=\"none\"/><path d=\"M0 -5 L5 2.0 L-5 2.0 Z\" fill=\"#111\" transform=\"translate(62 60) rotate(150)\"/></g><g transform=\"rotate(120 50 63)\"><path d=\"M50 51 A12 12 0 0 1 61 58\" stroke=\"#111\" stroke-width=\"5\" fill=\"none\"/><path d=\"M0 -5 L5 2.0 L-5 2.0 Z\" fill=\"#111\" transform=\"translate(62 60) rotate(150)\"/></g><g transform=\"rotate(240 50 63)\"><path d=\"M50 51 A12 12 0 0 1 61 58\" stroke=\"#111\" stroke-width=\"5\" fill=\"none\"/><path d=\"M0 -5 L5 2.0 L-5 2.0 Z\" fill=\"#111\" transform=\"translate(62 60) rotate(150)\"/></g></svg>", "traffic_light": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 7 L94 87 H6 Z\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"7\" stroke-linejoin=\"round\"/><rect x=\"41\" y=\"38\" width=\"18\" height=\"42\" rx=\"4\" fill=\"#111\"/><circle cx=\"50\" cy=\"46\" r=\"5\" fill=\"#e53935\"/><circle cx=\"50\" cy=\"59\" r=\"5\" fill=\"#fbc02d\"/><circle cx=\"50\" cy=\"72\" r=\"5\" fill=\"#43a047\"/></svg>", "steep_down": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 7 L94 87 H6 Z\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"7\" stroke-linejoin=\"round\"/><path d=\"M24 80 L76 80 L24 54 Z\" fill=\"#111\"/><text x=\"60\" y=\"66\" font-family=\"Arial\" font-weight=\"bold\" font-size=\"13\" fill=\"#111\" text-anchor=\"middle\">10%</text></svg>", "danger": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 7 L94 87 H6 Z\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"7\" stroke-linejoin=\"round\"/><rect x=\"45.5\" y=\"36\" width=\"9\" height=\"30\" rx=\"3\" fill=\"#111\"/><circle cx=\"50\" cy=\"75\" r=\"5\" fill=\"#111\"/></svg>", "two_way": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 7 L94 87 H6 Z\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"7\" stroke-linejoin=\"round\"/><line x1=\"42\" y1=\"80\" x2=\"42\" y2=\"48\" stroke=\"#111\" stroke-width=\"6\"/><path d=\"M0 -7 L7 2.8000000000000003 L-7 2.8000000000000003 Z\" fill=\"#111\" transform=\"translate(42 42) rotate(0)\"/><line x1=\"58\" y1=\"40\" x2=\"58\" y2=\"72\" stroke=\"#111\" stroke-width=\"6\"/><path d=\"M0 -7 L7 2.8000000000000003 L-7 2.8000000000000003 Z\" fill=\"#111\" transform=\"translate(58 78) rotate(180)\"/></svg>", "narrowing": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 7 L94 87 H6 Z\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"7\" stroke-linejoin=\"round\"/><path d=\"M34 82 V66 L42 52 V38 M66 82 V66 L58 52 V38\" stroke=\"#111\" stroke-width=\"6\" fill=\"none\"/></svg>", "stop": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M30 4 H70 L96 30 V70 L70 96 H30 L4 70 V30 Z\" fill=\"#d0021b\" stroke=\"#fff\" stroke-width=\"4\"/><g fill=\"#fff\"><rect x=\"35\" y=\"44\" width=\"30\" height=\"30\" rx=\"10\"/><rect x=\"35\" y=\"27\" width=\"6.5\" height=\"26\" rx=\"3.2\"/><rect x=\"43\" y=\"22\" width=\"6.5\" height=\"30\" rx=\"3.2\"/><rect x=\"51\" y=\"24\" width=\"6.5\" height=\"28\" rx=\"3.2\"/><rect x=\"58.5\" y=\"30\" width=\"6.5\" height=\"24\" rx=\"3.2\"/><rect x=\"24\" y=\"48\" width=\"18\" height=\"7\" rx=\"3.5\" transform=\"rotate(35 33 52)\"/></g></svg>", "give_way": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M6 12 H94 L50 92 Z\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"8\" stroke-linejoin=\"round\"/></svg>", "no_entry": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"46\" fill=\"#d0021b\"/><rect x=\"18\" y=\"42\" width=\"64\" height=\"16\" fill=\"#fff\"/></svg>", "closed_all": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"44\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"9\"/></svg>", "no_right": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"44\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"9\"/><path d=\"M42 80 V54 Q42 42 54 42 H58\" stroke=\"#111\" stroke-width=\"7\" fill=\"none\"/><path d=\"M0 -8 L8 3.2 L-8 3.2 Z\" fill=\"#111\" transform=\"translate(64 42) rotate(90)\"/><line x1=\"22\" y1=\"22\" x2=\"78\" y2=\"78\" stroke=\"#d0021b\" stroke-width=\"8\"/></svg>", "no_left": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"44\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"9\"/><path d=\"M58 80 V54 Q58 42 46 42 H42\" stroke=\"#111\" stroke-width=\"7\" fill=\"none\"/><path d=\"M0 -8 L8 3.2 L-8 3.2 Z\" fill=\"#111\" transform=\"translate(36 42) rotate(-90)\"/><line x1=\"22\" y1=\"22\" x2=\"78\" y2=\"78\" stroke=\"#d0021b\" stroke-width=\"8\"/></svg>", "no_uturn": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"44\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"9\"/><path d=\"M60 78 V46 Q60 32 48 32 Q36 32 36 46 V58\" stroke=\"#111\" stroke-width=\"7\" fill=\"none\"/><path d=\"M0 -8 L8 3.2 L-8 3.2 Z\" fill=\"#111\" transform=\"translate(36 64) rotate(180)\"/><line x1=\"22\" y1=\"22\" x2=\"78\" y2=\"78\" stroke=\"#d0021b\" stroke-width=\"8\"/></svg>", "speed50": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"44\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"9\"/><text x=\"50\" y=\"63\" font-family=\"Arial\" font-weight=\"bold\" font-size=\"38\" fill=\"#111\" text-anchor=\"middle\">50</text></svg>", "no_parking": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"44\" fill=\"#1d5fbf\" stroke=\"#d0021b\" stroke-width=\"9\"/><line x1=\"22\" y1=\"22\" x2=\"78\" y2=\"78\" stroke=\"#d0021b\" stroke-width=\"9\"/></svg>", "no_stopping": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"44\" fill=\"#1d5fbf\" stroke=\"#d0021b\" stroke-width=\"9\"/><line x1=\"22\" y1=\"22\" x2=\"78\" y2=\"78\" stroke=\"#d0021b\" stroke-width=\"9\"/><line x1=\"78\" y1=\"22\" x2=\"22\" y2=\"78\" stroke=\"#d0021b\" stroke-width=\"9\"/></svg>", "no_pedestrians": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"44\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"9\"/><g transform=\"translate(50 56) scale(1.25)\" stroke=\"#111\" stroke-width=\"4\" stroke-linecap=\"round\" fill=\"none\"><circle cx=\"0\" cy=\"-16\" r=\"4.5\" fill=\"#111\" stroke=\"none\"/><line x1=\"0\" y1=\"-10\" x2=\"-2\" y2=\"6\"/><line x1=\"-2\" y1=\"6\" x2=\"-9\" y2=\"18\"/><line x1=\"-2\" y1=\"6\" x2=\"6\" y2=\"17\"/><line x1=\"0\" y1=\"-6\" x2=\"-8\" y2=\"2\"/><line x1=\"0\" y1=\"-6\" x2=\"8\" y2=\"0\"/></g><line x1=\"22\" y1=\"22\" x2=\"78\" y2=\"78\" stroke=\"#d0021b\" stroke-width=\"8\"/></svg>", "no_bicycles": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"44\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"9\"/><g transform=\"translate(50 50) scale(1.25)\" stroke=\"#111\" stroke-width=\"3.2\" fill=\"none\" stroke-linejoin=\"round\"><circle cx=\"-13\" cy=\"6\" r=\"8\"/><circle cx=\"13\" cy=\"6\" r=\"8\"/><path d=\"M-13 6 L-4 -6 L8 -6 L13 6 M-4 -6 L0 6 L8 -6 M-6 -10 L-1 -10 M8 -6 L6 -12 L10 -12\"/></g><line x1=\"22\" y1=\"22\" x2=\"78\" y2=\"78\" stroke=\"#d0021b\" stroke-width=\"8\"/></svg>", "straight_only": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"46\" fill=\"#1d5fbf\" stroke=\"#fff\" stroke-width=\"2\"/><rect x=\"45\" y=\"40\" width=\"10\" height=\"38\" fill=\"#fff\"/><path d=\"M0 -15 L15 6.0 L-15 6.0 Z\" fill=\"#fff\" transform=\"translate(50 32) rotate(0)\"/></svg>", "right_only": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"46\" fill=\"#1d5fbf\" stroke=\"#fff\" stroke-width=\"2\"/><path d=\"M42 80 V56 Q42 44 54 44 H60\" stroke=\"#fff\" stroke-width=\"10\" fill=\"none\"/><path d=\"M0 -13 L13 5.2 L-13 5.2 Z\" fill=\"#fff\" transform=\"translate(68 44) rotate(90)\"/></svg>", "roundabout_mand": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"46\" fill=\"#1d5fbf\" stroke=\"#fff\" stroke-width=\"2\"/><g transform=\"rotate(0 50 50)\"><path d=\"M50 26 A24 24 0 0 1 70.8 38\" stroke=\"#fff\" stroke-width=\"8\" fill=\"none\"/><path d=\"M0 -9 L9 3.6 L-9 3.6 Z\" fill=\"#fff\" transform=\"translate(73 42) rotate(150)\"/></g><g transform=\"rotate(120 50 50)\"><path d=\"M50 26 A24 24 0 0 1 70.8 38\" stroke=\"#fff\" stroke-width=\"8\" fill=\"none\"/><path d=\"M0 -9 L9 3.6 L-9 3.6 Z\" fill=\"#fff\" transform=\"translate(73 42) rotate(150)\"/></g><g transform=\"rotate(240 50 50)\"><path d=\"M50 26 A24 24 0 0 1 70.8 38\" stroke=\"#fff\" stroke-width=\"8\" fill=\"none\"/><path d=\"M0 -9 L9 3.6 L-9 3.6 Z\" fill=\"#fff\" transform=\"translate(73 42) rotate(150)\"/></g></svg>", "keep_right": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"46\" fill=\"#1d5fbf\" stroke=\"#fff\" stroke-width=\"2\"/><line x1=\"34\" y1=\"34\" x2=\"60\" y2=\"60\" stroke=\"#fff\" stroke-width=\"10\"/><path d=\"M70 70 L48 66 L66 48 Z\" fill=\"#fff\"/></svg>", "bike_path": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"46\" fill=\"#1d5fbf\" stroke=\"#fff\" stroke-width=\"2\"/><g transform=\"translate(50 52) scale(1.3)\" stroke=\"#fff\" stroke-width=\"3.2\" fill=\"none\" stroke-linejoin=\"round\"><circle cx=\"-13\" cy=\"6\" r=\"8\"/><circle cx=\"13\" cy=\"6\" r=\"8\"/><path d=\"M-13 6 L-4 -6 L8 -6 L13 6 M-4 -6 L0 6 L8 -6 M-6 -10 L-1 -10 M8 -6 L6 -12 L10 -12\"/></g></svg>", "parking": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><rect x=\"5\" y=\"5\" width=\"90\" height=\"90\" rx=\"9\" fill=\"#1d5fbf\" stroke=\"#fff\" stroke-width=\"3\"/><text x=\"50\" y=\"74\" font-family=\"Arial\" font-weight=\"bold\" font-size=\"66\" fill=\"#fff\" text-anchor=\"middle\">P</text></svg>", "crossing_info": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><rect x=\"5\" y=\"5\" width=\"90\" height=\"90\" rx=\"9\" fill=\"#1d5fbf\" stroke=\"#fff\" stroke-width=\"3\"/><path d=\"M50 14 L88 84 H12 Z\" fill=\"#fff\"/><g transform=\"translate(50 62) scale(1.1)\" stroke=\"#111\" stroke-width=\"4\" stroke-linecap=\"round\" fill=\"none\"><circle cx=\"0\" cy=\"-16\" r=\"4.5\" fill=\"#111\" stroke=\"none\"/><line x1=\"0\" y1=\"-10\" x2=\"-2\" y2=\"6\"/><line x1=\"-2\" y1=\"6\" x2=\"-9\" y2=\"18\"/><line x1=\"-2\" y1=\"6\" x2=\"6\" y2=\"17\"/><line x1=\"0\" y1=\"-6\" x2=\"-8\" y2=\"2\"/><line x1=\"0\" y1=\"-6\" x2=\"8\" y2=\"0\"/></g><rect x=\"30\" y=\"76\" width=\"5\" height=\"3\" fill=\"#111\"/><rect x=\"39\" y=\"76\" width=\"5\" height=\"3\" fill=\"#111\"/><rect x=\"48\" y=\"76\" width=\"5\" height=\"3\" fill=\"#111\"/><rect x=\"57\" y=\"76\" width=\"5\" height=\"3\" fill=\"#111\"/><rect x=\"66\" y=\"76\" width=\"5\" height=\"3\" fill=\"#111\"/></svg>", "dead_end": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><rect x=\"5\" y=\"5\" width=\"90\" height=\"90\" rx=\"9\" fill=\"#1d5fbf\" stroke=\"#fff\" stroke-width=\"3\"/><rect x=\"43\" y=\"40\" width=\"14\" height=\"44\" fill=\"#fff\"/><rect x=\"22\" y=\"22\" width=\"56\" height=\"16\" fill=\"#d0021b\"/></svg>"};
@@ -4516,7 +4632,7 @@ function soloPickQuestions(){
     seen = seen.slice(-SOLO_COUNT*SOLO_NO_REPEAT_ROUNDS); seenSet = new Set(seen);
     avail = keys.map((k,i)=>seenSet.has(k)?-1:i).filter(i=>i>=0);
   }
-  const picked = withMinImages(shuffleArr(avail).slice(0, SOLO_COUNT), new Set(avail));
+  const picked = composeRound(shuffleArr(avail).slice(0, SOLO_COUNT), new Set(avail));
   seen = seen.concat(picked.map(i=>keys[i]));
   try{ localStorage.setItem(key, JSON.stringify(seen.slice(-SOLO_QUESTIONS.length))); }catch(e){}
   return picked;
