@@ -57,5 +57,5 @@ test('A11Y-3 the rules dialog takes focus, closes with Escape, and answers are a
   await p.page.getByRole('button', { name: /התחילו סבב חדש/ }).click();
   await expect(p.page.getByText('שאלה 1 מתוך 30')).toBeVisible();
   await p.page.locator('#s-answers').getByRole('button').first().click();
-  await expect(p.page.getByRole('status')).toHaveText(/נכון|לא נכון/);
+  await expect(p.page.getByRole('status')).toHaveText(/נכון|מהירות שיא/);
 });
