@@ -1,0 +1,53 @@
+rules_version = '2';
+// Security rules for the trivia game. The game has no login, so anyone with the page can read and play;
+// these rules stop the damage a visitor could do from the browser console with the public API key:
+// wiping or lowering the leaderboards, impossible scores, deleting rooms, or writing to other collections.
+// Publish in Firebase Console → Firestore → Rules (test in the Rules Playground first),
+// or with: firebase deploy --only firestore:rules
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function nameOk(n) { return n is string && n.size() > 0 && n.size() <= 60; }
+    function intIn(v, lo, hi) { return v is int && v >= lo && v <= hi; }
+    // 30 questions × 32 points (10 for a right answer + 2 per second left of 11)
+    function roundMax() { return 960; }
+
+    // ---- Leaderboards: solo_players_s<N>, duel_players_s<N> (and the first solo season, solo_players) ----
+    // Rows can be added and improved, never deleted, lowered or pushed past the highest possible score.
+    function isBoard(col) { return col.matches('solo_players(_s[0-9]+)?|duel_players_s[0-9]+'); }
+    function rowOk(d) {
+      return nameOk(d.name) && intIn(d.get('best', 0), 0, roundMax()) && intIn(d.get('games', 0), 0, 1000000) && d.size() <= 20
+        && (!('bestQ' in d) || intIn(d.bestQ, 0, 30))
+        && (!('bestCorrect' in d) || intIn(d.bestCorrect, 0, 30))
+        && (!('wins' in d) || intIn(d.wins, 0, 1000000));
+    }
+    match /{col}/{id} {
+      allow read: if isBoard(col);
+      allow create: if isBoard(col) && rowOk(request.resource.data);
+      allow update: if isBoard(col) && rowOk(request.resource.data)
+        && request.resource.data.get('best', 0) >= resource.data.get('best', 0)
+        && request.resource.data.get('games', 0) >= resource.data.get('games', 0);
+    }
+
+    // ---- Rooms: group lobbies and games, duels, the duel lobby, and the game's bookkeeping docs ----
+    match /rooms/{room} {
+      allow read: if true;
+      allow create, update: if (!('s1' in request.resource.data) || intIn(request.resource.data.s1, 0, roundMax()))
+        && (!('s2' in request.resource.data) || intIn(request.resource.data.s2, 0, roundMax()));
+      allow delete: if false;
+
+      match /players/{pid} {
+        allow read: if true;
+        allow create, update: if nameOk(request.resource.data.name)
+          && (!('score' in request.resource.data) || intIn(request.resource.data.score, 0, 5000));
+        // players leave the lobby and the host prunes players who left
+        allow delete: if true;
+      }
+      match /answers/{aid} {
+        allow read: if true;
+        allow create, update: if request.resource.data.playerId is string && request.resource.data.qIndex is int;
+        allow delete: if false;
+      }
+    }
+  }
+}

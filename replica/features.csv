@@ -1,0 +1,7 @@
+feature,area,priority,original,clone,notes
+Round review with the right answer to every question,solo,should,no,done,fixes.md #1 — added in this pass
+Report a wrong question (saved to rooms/reports),solo,should,no,done,fixes.md #1 — added in this pass
+Reading time before the clock starts (or longer clock for long questions),all modes,should,no,no,fixes.md #2 — changes scoring; owner decides
+Host-set timer length for group games,group,could,no,no,fixes.md #2
+No repeats across rounds,solo/duel/group,must,no,done,already in the game (seen-questions memory) — keep and say so
+No ads / no paid tier / up to 100 players,all modes,must,no,done,already true — the positioning
