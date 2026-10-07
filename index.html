@@ -754,6 +754,20 @@ button,a,.btn,.answer-btn{touch-action:manipulation;}
 .solo-home .sh-empty::before{content:"🏆";font-size:54px;animation:waitBob 2.6s ease-in-out infinite;filter:drop-shadow(0 6px 14px rgba(212,175,55,.45));}
 
 .duel-result.lose small{display:block;font-size:.5em;opacity:.85;margin-bottom:2px;}
+
+/* שאלות דגלים */
+.q-flag{display:flex;justify-content:center;margin:6px 0 12px;}
+.q-flag img{height:118px;max-width:86%;object-fit:contain;border-radius:10px;border:2px solid rgba(255,255,255,.18);box-shadow:0 10px 26px rgba(0,0,0,.55),0 0 0 4px rgba(212,175,55,.18);background:#fff;animation:flagWave 3s ease-in-out infinite;transform-origin:left center;}
+@keyframes flagWave{0%,100%{transform:perspective(500px) rotateY(0deg) skewY(0deg);}50%{transform:perspective(500px) rotateY(-8deg) skewY(-1.5deg);}}
+@media (max-height:780px){ .q-flag img{height:92px;} .q-flag{margin:2px 0 8px;} }
+@media (prefers-reduced-motion:reduce){ .q-flag img{animation:none;} }
+
+/* בשאלות דגל התשובות קצרות — רשת של 2×2 כדי שהכול ייכנס במסך אחד */
+.q-card:has(.q-flag) ~ .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.q-card:has(.q-flag) ~ .answers .answer-btn{min-height:64px;padding:10px 10px;font-size:17px;}
+.q-card:has(.q-flag) .question-text{font-size:19px;}
+.q-card:has(.q-flag){padding-bottom:14px;}
+@media (max-height:700px){ .q-flag img{height:72px;} .q-card:has(.q-flag) ~ .answers .answer-btn{min-height:54px;} }
 </style>
 </head>
 <body>
@@ -885,7 +899,7 @@ const CURRENT_ROOM_DOC = 'current';
 const LOBBY_MAX_AGE_MS = 12*60*60*1000; // חדר המתנה ישן מ-12 שעות לא ממוחזר — נפתח חדש // מסמך שמצביע על החדר הפתוח כרגע — כך השחקנים נכנסים בלי קוד
 const SOLO_REVEAL_MS = 1100;
 
-const T1='בודפשט והונגריה', T2='עולם תורני, הלכה ומנהג', T3='היסטוריה יהודית וגדולי ישראל', T4='ידע כללי, מדע וטבע', T5='מקרא, מסורת ופולקלור', T6='תחבורה, תעופה וחלל', T7='פוליטיקה ומדינה', T8='ערים בישראל', T9='ארצות העולם', T10='טיולים ונופים', T11='חשבון ומספרים', T12='מוזיקה ושירה יהודית', T13='אדמו"רים ורבנים', T14='סקרים מהמסע', T15='ספורט ומשחקים', T16='חידות והיגיון';
+const T1='בודפשט והונגריה', T2='עולם תורני, הלכה ומנהג', T3='היסטוריה יהודית וגדולי ישראל', T4='ידע כללי, מדע וטבע', T5='מקרא, מסורת ופולקלור', T6='תחבורה, תעופה וחלל', T7='פוליטיקה ומדינה', T8='ערים בישראל', T9='ארצות העולם', T10='טיולים ונופים', T11='חשבון ומספרים', T12='מוזיקה ושירה יהודית', T13='אדמו"רים ורבנים', T14='סקרים מהמסע', T15='ספורט ומשחקים', T16='חידות והיגיון', T17='דגלים של מדינות';
 
 const QUESTIONS = [
  {topic:T1, type:'trivia', q:'באיזו שנה אוחדו בודה, פשט ואובודה לעיר אחת?', a:['1848','1900','1873','1920'], c:2},
@@ -950,7 +964,7 @@ const QUESTIONS = [
  {topic:T10, type:'poll', q:'מה הכי כיף בטיול?', a:['הנופים','החברה','האוכל','התמונות למזכרת']}
 ];
 
-// ===== מאגר 1,699 שאלות למשחק העצמאי (התשובה הנכונה נכתבת ראשונה — המשחק מערבב את הסדר בכל פעם) =====
+// ===== מאגר 1,724 שאלות למשחק העצמאי (התשובה הנכונה נכתבת ראשונה — המשחק מערבב את הסדר בכל פעם) =====
 const SOLO_QUESTIONS = [
  {topic:T2, q:'באיזה חודש עברי חל חג השבועות?', a:['סיוון','אייר','ניסן','תמוז']},
  {topic:T2, q:'מה נוהגים לאכול בליל ראש השנה כסימן לשנה מתוקה?', a:['תפוח בדבש','מצה בחרוסת','ביצה במלח','אגוזים בסוכר']},
@@ -2650,8 +2664,33 @@ const SOLO_QUESTIONS = [
  {topic:T4, q:'מאיזה עץ מגיעים התמרים?', a:['דקל','זית','שקד','ברוש']},
  {topic:T4, q:'איזה פרי הוא משבעת המינים ויש בו הרבה גרעינים אדומים?', a:['רימון','תאנה','ענב','תמר']},
  {topic:T5, q:'כמה שבטים היו לעם ישראל?', a:['12','10','7','13']},
- {topic:T5, q:'מה היה שמו של בנו של אברהם מהגר?', a:['ישמעאל','יצחק','עשו','מדין']}
-].map(q=>({topic:q.topic, type:'trivia', q:q.q, a:q.a, c:0}));
+ {topic:T5, q:'מה היה שמו של בנו של אברהם מהגר?', a:['ישמעאל','יצחק','עשו','מדין']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/il.png', a:['ישראל','ארגנטינה','ניקרגואה','הונדורס']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/jp.png', a:['יפן','בנגלדש','קוריאה הדרומית','סין']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/fr.png', a:['צרפת','הולנד','רוסיה','איטליה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/it.png', a:['איטליה','אירלנד','מקסיקו','הונגריה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/de.png', a:['גרמניה','בלגיה','ליטא','אוסטריה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/us.png', a:['ארצות הברית','ליבריה','מלזיה','צ\'ילה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/ca.png', a:['קנדה','פרו','אוסטריה','לבנון']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/hu.png', a:['הונגריה','איטליה','בולגריה','מקסיקו']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/at.png', a:['אוסטריה','לטביה','פולין','פרו']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/nl.png', a:['הולנד','צרפת','רוסיה','לוקסמבורג']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/be.png', a:['בלגיה','גרמניה','רומניה','צ\'אד']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/pl.png', a:['פולין','אינדונזיה','מונקו','אוסטריה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/ua.png', a:['אוקראינה','קזחסטן','רומניה','קולומביה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/ru.png', a:['רוסיה','סלובניה','צרפת','הולנד']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/in.png', a:['הודו','ניז\'ר','אירלנד','חוף השנהב']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/cn.png', a:['סין','וייטנאם','טורקיה','מרוקו']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/br.png', a:['ברזיל','פורטוגל','ארגנטינה','קולומביה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/ar.png', a:['ארגנטינה','אורוגוואי','ישראל','גואטמלה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/mx.png', a:['מקסיקו','איטליה','אירלנד','הונגריה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/kr.png', a:['קוריאה הדרומית','יפן','סין','תאילנד']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/ie.png', a:['אירלנד','חוף השנהב','איטליה','הודו']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/cz.png', a:['צ\'כיה','הפיליפינים','סלובקיה','פולין']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/ro.png', a:['רומניה','צ\'אד','בלגיה','מולדובה']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/th.png', a:['תאילנד','קוסטה ריקה','הולנד','לאוס']},
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/ee.png', a:['אסטוניה','לטביה','ליטא','פינלנד']}
+].map(q=>({topic:q.topic, type:'trivia', q:q.q, img:q.img, a:q.a, c:0}));
 
 if(firebaseConfig.apiKey === 'YOUR_API_KEY'){ return; }
 document.getElementById('s-setup-missing').classList.remove('active');
@@ -2694,6 +2733,7 @@ function topicIcon(topic){
   if(topic===T14) return '🗳️';
   if(topic===T15) return '⚽';
   if(topic===T16) return '🧩';
+  if(topic===T17) return '🚩';
   return '';
 }
 function animateCount(el, target, ms){
@@ -2822,6 +2862,7 @@ function qCardHtml(num,total,q){
   return `<div class="q-card qanim"><div class="q-num">שאלה ${num} מתוך ${total}</div>
     <div class="q-topic">${topicIcon(q.topic)} ${esc(q.topic||'')}</div>
     ${q.type==='poll' ? '<div style="text-align:center;"><span class="qtag poll">🗳️ סקר — מי שבוחר כמו הרוב זוכה</span></div>' : ''}
+    ${q.img ? `<div class="q-flag"><img src="${esc(q.img)}" alt="דגל" draggable="false"></div>` : ''}
     <div class="question-text">${esc(q.q)}</div></div>`;
 }
 function clockHtml(prefix){ return `<div class="timer-bar qanim" id="${prefix}-clock-wrap"><div class="tb-head"><span class="tb-icon">⏱️</span><span class="tb-label">הזמן לענות אוזל...</span><span class="tb-num" id="${prefix}-timer-num">${QUESTION_MS/1000}</span></div><div class="tb-track"><div class="tb-fill" id="${prefix}-timer-ring"></div><div class="tb-ticks"></div></div></div>`; }
@@ -3065,7 +3106,7 @@ function duelQuestion(v, i){
   const q = SOLO_QUESTIONS[v.qs[i]]; const r = seededRand(v.seed + i*7919);
   const order = [0,1,2,3].slice(0,q.a.length);
   for(let k=order.length-1;k>0;k--){ const j=Math.floor(r()*(k+1)); const t=order[k]; order[k]=order[j]; order[j]=t; }
-  return {topic:q.topic, type:'trivia', q:q.q, a:order.map(k=>q.a[k]), c:order.indexOf(q.c)};
+  return {topic:q.topic, type:'trivia', q:q.q, img:q.img, a:order.map(k=>q.a[k]), c:order.indexOf(q.c)};
 }
 function duelPickQs(){ const all=SOLO_QUESTIONS.map((_,i)=>i); return shuffleArr(all).slice(0, DUEL_Q_COUNT); }
 function duelMe(){
@@ -3235,7 +3276,7 @@ async function dlobAccept(iv){
 function duelAttach(code, slot, me){
   duelStop();
   duel = {code, slot, me, v:null, unsub:null, hb:null, qi:-1, startLocal:0, myChoice:null, locked:false, revealedFor:-1, splashFor:false, endedFx:false, timers:[]};
-  duel.unsub = duelRef().onSnapshot(snap=>{ if(!duel || !snap.exists) return; duel.v = snap.data(); duelRender(); });
+  duel.unsub = duelRef().onSnapshot(snap=>{ if(!duel || !snap.exists) return; duel.v = snap.data(); if(!duel.preloaded && duel.v.qs){ duel.preloaded=true; preloadImgs(duel.v.qs.map(i=>SOLO_QUESTIONS[i])); } duelRender(); });
 }
 function duelStop(){
   if(!duel) return;
@@ -3498,7 +3539,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-07v';
+const APP_VERSION = '2026-10-07w';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -4333,8 +4374,9 @@ function soloStart(){
   role='solo';
   const pool = soloPickQuestions().map(i=>SOLO_QUESTIONS[i]).map(q=>{
     const order = shuffleArr(q.a.map((_,i)=>i));
-    return {topic:q.topic, type:'trivia', q:q.q, a:order.map(i=>q.a[i]), c:order.indexOf(q.c)};
+    return {topic:q.topic, type:'trivia', q:q.q, img:q.img, a:order.map(i=>q.a[i]), c:order.indexOf(q.c)};
   });
+  preloadImgs(pool);
   soloState = {qs:pool, i:0, score:0, correct:0, locked:false, startedAt:0};
   showScreen('s-solo');
   $('solo-body').innerHTML = '';
@@ -4344,7 +4386,8 @@ function soloStart(){
 // בחירת שאלות לסבב: לא חוזרים על שאלה שהשחקן ראה בעשרת הסבבים האחרונים (ובפועל — עד שכל המאגר נגמר).
 // השאלות נשמרות לפי 'טביעת אצבע' של הטקסט, כך שהוספה או מחיקה של שאלות במאגר לא מבלבלת את המעקב.
 const SOLO_NO_REPEAT_ROUNDS = 10;
-function qKey(q){ let h=5381; const t=q.q; for(let i=0;i<t.length;i++) h=((h<<5)+h+t.charCodeAt(i))>>>0; return h.toString(36); }
+function preloadImgs(qs){ qs.forEach(q=>{ if(q && q.img){ const im=new Image(); im.src=q.img; } }); }
+function qKey(q){ let h=5381; const t=q.q+(q.img||''); for(let i=0;i<t.length;i++) h=((h<<5)+h+t.charCodeAt(i))>>>0; return h.toString(36); }
 function soloPickQuestions(){
   const p = soloProfile(), key = 'trivia_solo_seen_v2_' + (p ? p.id : 'guest');
   let seen = [];
