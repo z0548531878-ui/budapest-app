@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>טריוויה על הגלגלים — חי</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -568,6 +568,45 @@ html,body{overflow-x:hidden;overflow-x:clip;max-width:100%;}
 .sh-act span{font-size:22px;line-height:1;}
 .sh-act[data-rules]{border-color:var(--line-yellow);color:var(--gold-light);}
 .sh-act:active{transform:translateY(2px);}
+
+/* ===== בלי זום — רק גלילה למעלה/למטה ===== */
+html,body{touch-action:pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+button,a,.btn,.answer-btn{touch-action:manipulation;}
+/* ===== רווח בין הכותרת לכפתורים במסך הפתיחה ===== */
+#s-landing h1{margin-bottom:26px !important;}
+#s-landing #btn-join-manual{margin-top:6px;}
+/* ===== תג השיא האישי במסך הפתיחה ===== */
+.solo-best-note{margin-top:16px;min-height:0;}
+.pb-badge{position:relative;display:flex;align-items:center;gap:12px;width:fit-content;max-width:100%;margin:0 auto;padding:10px 20px 10px 16px;border-radius:40px;background:linear-gradient(135deg,rgba(94,200,216,.16),rgba(212,175,55,.16));border:1.5px solid rgba(143,220,232,.55);overflow:hidden;box-shadow:0 0 24px rgba(94,200,216,.18);animation:pbIn .7s cubic-bezier(.2,1.5,.4,1) 1.05s both;}
+.pb-badge::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(110deg,transparent,rgba(255,255,255,.35),transparent);animation:logoShine 3.6s ease-in-out 2s infinite;}
+@keyframes pbIn{0%{opacity:0;transform:translateY(20px) scale(.7);}100%{opacity:1;transform:none;}}
+.pb-medal{font-size:34px;display:inline-block;transform-origin:50% 0;animation:medalSwing 2.8s ease-in-out 1.6s infinite;filter:drop-shadow(0 0 8px rgba(233,206,124,.6));}
+@keyframes medalSwing{0%,100%{transform:rotate(0);}15%{transform:rotate(16deg);}30%{transform:rotate(-12deg);}45%{transform:rotate(7deg);}60%{transform:rotate(-3deg);}75%{transform:rotate(0);}}
+.pb-txt{display:flex;flex-direction:column;line-height:1.25;text-align:right;}
+.pb-name{font-size:13px;font-weight:700;color:#BFEFF7;}
+.pb-line{font-size:16px;font-weight:700;color:var(--ink);}
+.pb-num{font-family:'Frank Ruhl Libre',serif;font-size:24px;font-weight:900;background:linear-gradient(90deg,#FFF3C4,#D4AF37,#FFF3C4);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:goldText 2.5s linear infinite;}
+@keyframes goldText{to{background-position:-200% 0;}}
+/* ===== כותרת הטריוויה מנצנצת בזהב אחרי שנבנתה ===== */
+#s-landing h1 .fx-letter{background:linear-gradient(100deg,currentColor 40%,#FFF8DC 50%,currentColor 60%);background-size:300% 100%;background-position:100% 0;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:letterDrop .7s cubic-bezier(.2,1.5,.4,1) both, titleShine 5s ease-in-out 2.2s infinite;}
+#s-landing h1 .fx-letter{color:var(--ink);animation-delay:calc(.1s + var(--i) * 40ms), calc(2.2s + var(--i) * 35ms) !important;}
+#s-landing h1 > span:not(.fx-word) .fx-letter{color:var(--line-yellow);}
+@keyframes titleShine{0%,60%{background-position:100% 0;}100%{background-position:-100% 0;}}
+/* ===== מעבר בין מסכים ===== */
+.screen.active{animation:screenIn .38s cubic-bezier(.22,.8,.25,1) both;}
+#s-landing.screen.active{animation:none;}
+@keyframes screenIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+/* ===== גל בנגיעה בכפתורים ===== */
+.ripple{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.45),rgba(255,255,255,0) 60%);transform:scale(0);animation:ripple .6s ease-out forwards;pointer-events:none;z-index:0;}
+@keyframes ripple{to{transform:scale(1);opacity:0;}}
+/* ===== הניקוד קופץ כשהוא עולה ===== */
+.score-header b.score-up{display:inline-block;animation:scoreUp .7s cubic-bezier(.2,1.8,.4,1);color:#8FF5B6;}
+@keyframes scoreUp{0%{transform:scale(1.9);}100%{transform:scale(1);}}
+/* ===== טיימר: הפס בוהק כשנשאר מעט זמן ===== */
+.timer-bar.danger .tb-fill{box-shadow:0 0 16px rgba(228,87,46,.8);}
+/* ===== שורות טבלה: הזוכה במקום הראשון מקבל כתר מקפץ ===== */
+.board-row.first .rank{display:inline-block;animation:crownHop 2.4s ease-in-out 1s infinite;}
+@keyframes crownHop{0%,80%,100%{transform:translateY(0);}88%{transform:translateY(-6px) rotate(-8deg);}94%{transform:translateY(0) rotate(4deg);}}
 </style>
 </head>
 <body>
@@ -2782,16 +2821,37 @@ function entryWire(inputId, goId){
   el.addEventListener('input', ()=>{ const r=el.getBoundingClientRect(); fxBurst(r.left + 30 + Math.random()*(r.width-60), r.top + r.height/2, 6, FX_GOLD, 2); el.closest('.entry-field').classList.toggle('filled', el.value.trim().split(/\s+/).length>=2); });
   el.closest('.entry-field').classList.toggle('filled', el.value.trim().split(/\s+/).length>=2);
 }
+
+// ---------- שדרוגי אנימציה כלליים ----------
+// אפקט "גל" במקום הנגיעה בכל כפתור
+document.addEventListener('pointerdown', e=>{
+  if(!FX_OK) return;
+  const b = e.target.closest && e.target.closest('.btn, .sh-act, .dl-inv, .host-link, .skip-btn, .end-btn, .pause-btn');
+  if(!b || b.disabled) return;
+  const r = b.getBoundingClientRect(), d = Math.max(r.width, r.height)*2;
+  const w = document.createElement('span'); w.className='ripple';
+  w.style.cssText = `width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;
+  if(getComputedStyle(b).position==='static') b.style.position='relative';
+  b.style.overflow='hidden'; b.appendChild(w); setTimeout(()=>w.remove(), 650);
+}, {passive:true});
+// אייפון מתעלם לפעמים מחסימת הזום — חוסמים גם צביטה ולחיצה כפולה
+document.addEventListener('gesturestart', e=>e.preventDefault());
+document.addEventListener('touchmove', e=>{ if(e.touches && e.touches.length>1) e.preventDefault(); }, {passive:false});
+let lastTouchEnd=0;
+document.addEventListener('touchend', e=>{ const now=Date.now(); if(now-lastTouchEnd<300 && !(e.target.closest && e.target.closest('input,textarea'))) e.preventDefault(); lastTouchEnd=now; }, {passive:false});
 // ---------- Solo best ----------
 function soloBest(){ return Number(localStorage.getItem('trivia_solo_best')||0); }
 function renderLandingBest(){
   const el = $('solo-best-note');
   if(!el) return;
   const p = soloProfile(), b = soloBest();
-  el.textContent = p ? ('🏅 ' + p.name + ' — השיא שלך: ' + b + ' נקודות') : '';
+  if(!p){ el.innerHTML=''; return; }
+  el.innerHTML = `<div class="pb-badge"><span class="pb-medal">🏅</span><span class="pb-txt"><span class="pb-name">${esc(p.name)}</span><span class="pb-line">השיא שלך: <b class="pb-num">0</b> נקודות</span></span></div>`;
+  const n = el.querySelector('.pb-num');
+  setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-07m';
+const APP_VERSION = '2026-10-07n';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -3254,11 +3314,13 @@ function subscribeRoomPlayer(){
     renderPlayer();
   });
 }
+let lastHeaderScore=null;
 function scoreHeaderInner(){
   const sorted = sortedPlayers();
   const me = playersMap[playerId] || {score:0};
   const myRank = sorted.findIndex(p=>p.id===playerId)+1;
-  return `<div class="score-header"><span>🏆 הניקוד שלך: <b>${me.score||0}</b></span><span>מקום #${myRank||'-'} מתוך ${sorted.length}</span></div>`;
+  const sc = me.score||0, up = lastHeaderScore!==null && sc>lastHeaderScore; lastHeaderScore = sc;
+  return `<div class="score-header"><span>🏆 הניקוד שלך: <b class="${up?'score-up':''}">${sc}</b></span><span>מקום #${myRank||'-'} מתוך ${sorted.length}</span></div>`;
 }
 function subscribeMyPlayer(){
   if(playerListUnsub) playerListUnsub();
