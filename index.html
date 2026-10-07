@@ -3464,7 +3464,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-08b';
+const APP_VERSION = '2026-10-08c';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -4125,7 +4125,7 @@ function playerLeave(){
 // ---------- SOLO MODE ----------
 const SOLO_PROFILE_KEY = 'trivia_solo_profile';
 // Competition season: bump this number to start a new competition (fresh records for everyone)
-const SOLO_SEASON = 3;
+const SOLO_SEASON = 4; // עונה 4 — איפוס השיאים אחרי מעבר לניקוד החדש (10 + 2 לשנייה)
 (function(){
   try{
     if(localStorage.getItem('trivia_solo_season') !== String(SOLO_SEASON)){
