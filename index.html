@@ -2316,7 +2316,7 @@ function lobbyCrowdHtml(list, meId){
       <div class="crowd-ring">
         <svg viewBox="0 0 150 150"><defs><linearGradient id="crowdGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF3C4"/><stop offset="1" stop-color="#D4AF37"/></linearGradient></defs>
           <circle class="trk" cx="75" cy="75" r="${R}"/><circle class="prg" cx="75" cy="75" r="${R}" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C*(1-frac)).toFixed(1)}"/></svg>
-        <div class="crowd-num"><b class="${bump?'bump':''}">${n}</b><span>${ready ? 'מתוך ' + MAX_PLAYERS + ' מקומות' : 'מתוך ' + MIN_PLAYERS + ' להתחלה'}</span></div>
+        <div class="crowd-num"><b class="${bump?'bump':''}">${n}</b><span>${ready ? 'מתוך ' + MAX_PLAYERS + ' מקומות' : 'מינימום ' + MIN_PLAYERS + ' להתחלה'}</span></div>
       </div>
       <div class="crowd-ticker">${latest ? `<span class="t" key="${esc(latest.id)}">✨ ${esc(latest.name||'')} ${latest.id===meId?'(את/ה) ':''}הצטרף/ה!</span>` : ''}</div>
       <div class="crowd-wall">${wall}</div>
@@ -2664,7 +2664,7 @@ function modeRules(mode){
   return {
     group: {title:'משחק קבוצתי 👥', items:[
       ['📲','נכנסים',`שם ושם משפחה ← חדר ההמתנה, בלי קוד. עד ${MAX_PLAYERS} משתתפים.`],
-      ['🎤','המנחה מתחיל',`לוחץ "התחל משחק" — ומקבל התראה כשיש ${MIN_PLAYERS} שחקנים.`],
+      ['🎤','המנחה מתחיל',`צריך מינימום ${MIN_PLAYERS} שחקנים. כשמגיעים אליו המנחה מקבל התראה ולוחץ "התחל משחק".`],
       ['❓',`${QUESTIONS.length} שאלות בנושאים`,'בסוף כל נושא מוצגת טבלת הניקוד.'],
       ['⚡',`${sec} שניות לשאלה`,'אפשר להחליף תשובה עד סוף הזמן. כשכולם ענו — נחשף מיד.'],
       ['🏆','ניקוד', pts + '.'],
@@ -2718,7 +2718,7 @@ function renderLandingBest(){
   el.textContent = p ? ('🏅 ' + p.name + ' — השיא שלך: ' + b + ' נקודות') : '';
 }
 
-const APP_VERSION = '2026-10-07j';
+const APP_VERSION = '2026-10-07k';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -2937,7 +2937,7 @@ function renderHost(){
       ${lobbyCrowdHtml(playersOrder.map(id=>({id, name:playersMap[id].name, joinedAt:playersMap[id].joinedAt})), null)}
       <div class="card"><b>${total}</b> שחקנים ממתינים:
         <div class="goal-track"><div style="width:${Math.min(100, Math.round(total/MIN_PLAYERS*100))}%"></div></div>
-        <div class="goal-note">${total>=MIN_PLAYERS ? 'הגעתם ליעד של ' + MIN_PLAYERS + ' שחקנים ✓' : 'כשיצטרפו <b>' + MIN_PLAYERS + '</b> שחקנים תקבלו התראה (חסרים עוד ' + (MIN_PLAYERS-total) + ')'}</div>
+        <div class="goal-note">${total>=MIN_PLAYERS ? 'הגעתם ליעד של ' + MIN_PLAYERS + ' שחקנים ✓' : 'מינימום <b>' + MIN_PLAYERS + '</b> שחקנים להתחלה — כשתגיעו אליו תקבלו התראה (חסרים עוד ' + (MIN_PLAYERS-total) + ')'}</div>
         <div class="player-chip-row host-names" style="margin-top:10px;">
           ${playersOrder.map(id=>`<span class="pchip ${chipPopClass(id)}">${esc(playersMap[id].name||'')}</span>`).join('') || '<span class="center-note">עדיין אין מצטרפים</span>'}
         </div>
@@ -3223,15 +3223,17 @@ function renderPlayer(){
     if(playerId && !playersMap[playerId]) waiting.push({id:playerId, name:playerName});
     body.innerHTML = `<div class="wait-hero">
         <div class="wait-title">חדר ההמתנה</div>
-        <div class="wait-sub">שלום <b>${esc(me.name||playerName)}</b>, אתם בפנים ✓<br>כשיצטרפו ${MIN_PLAYERS} שחקנים, מנחה המשחק יתחיל את המשחק.</div>
+        <div class="wait-sub">שלום <b>${esc(me.name||playerName)}</b>, אתם בפנים ✓<br>המשחק מתחיל כשיש מינימום ${MIN_PLAYERS} שחקנים — ומנחה המשחק לוחץ "התחל".</div>
       </div>
       ${lobbyCrowdHtml(waiting, playerId)}
       ${modeRulesHtml('group')}
       <div class="wait-card">
         <div class="wait-card-head">👥 <b>${waiting.length}</b> ממתינים בחדר ההמתנה (כולל אותך)</div>
         <div class="goal-track"><div style="width:${Math.min(100, Math.round(waiting.length/MIN_PLAYERS*100))}%"></div></div>
-        <div class="goal-note">${waiting.length>=MIN_PLAYERS ? 'יש כבר ' + waiting.length + ' שחקנים — המנחה יתחיל את המשחק בכל רגע! 🎉' : 'עוד <b>' + (MIN_PLAYERS-waiting.length) + '</b> שחקנים וממשיכים — ' + waiting.length + ' מתוך ' + MIN_PLAYERS}</div>
-      </div>`;
+        <div class="goal-note">${waiting.length>=MIN_PLAYERS ? 'עברנו את המינימום (' + waiting.length + ' שחקנים) — המנחה יתחיל את המשחק בכל רגע! 🎉' : 'חסרים עוד <b>' + (MIN_PLAYERS-waiting.length) + '</b> שחקנים למינימום של ' + MIN_PLAYERS}</div>
+      </div>
+      <button class="btn btn-ghost" id="p-lobby-exit">→ יציאה מחדר ההמתנה</button>`;
+    $('p-lobby-exit').addEventListener('click', playerExitLobby);
     fxCrowdCheck(waiting.length);
     return;
   }
@@ -3316,6 +3318,12 @@ function renderPlayer(){
     $('p-home').addEventListener('click', playerLeave);
     if(endedFxFor!==roomCode){ endedFxFor=roomCode; fxFireworks(myRank===1 ? 6000 : 3500); if(myRank===1) setTimeout(()=>fxRain('👑', 26), 500); else if(myRank<=3) setTimeout(()=>fxRain('⭐', 18), 500); }
   }
+}
+// יציאה מחדר ההמתנה של המשחק הקבוצתי: מוחקים את השחקן מהחדר וחוזרים למסך הבית
+function playerExitLobby(){
+  if(playerId && roomCode) playersRef().doc(playerId).delete().catch(()=>{});
+  try{ sessionStorage.removeItem('trivia_pid_'+roomCode); }catch(e){}
+  playerLeave();
 }
 function playerLeave(){
   if(playerRoomUnsub){ playerRoomUnsub(); playerRoomUnsub=null; }
