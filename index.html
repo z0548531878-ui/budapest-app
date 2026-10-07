@@ -609,6 +609,28 @@ html,body{overflow-x:hidden;overflow-x:clip;max-width:100%;}
 .sh-act:active{transform:translateY(2px);}
 .fx-tiles{margin-top:14px;}
 .fx-tiles.still .sh-act,.fx-tiles.still .sh-actions{animation:none !important;opacity:1;}
+/* מסכי סיום — במסך אחד; רק טבלת השיאים נגללת בתוך המקום שלה */
+.screen:has(.fit-screen){min-height:100dvh;padding-top:14px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));}
+.fit-screen{display:flex;flex-direction:column;height:calc(100dvh - 26px - env(safe-area-inset-bottom,0px));}
+.fit-screen > *{flex-shrink:0;}
+.fit-screen > .lb-box{flex:1 1 auto;min-height:110px;display:flex;flex-direction:column;margin-bottom:2px;}
+.lb-box .lb-title{display:flex;align-items:baseline;gap:8px;}
+.lb-count{margin-inline-start:auto;font-size:13px;font-weight:600;color:var(--ink-dim);}
+.lb-box .lb-scroll{position:relative;flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(212,175,55,.5) transparent;padding:2px 2px 10px;border-radius:14px;
+  -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 calc(100% - 22px),transparent);mask-image:linear-gradient(to bottom,#000 0,#000 calc(100% - 22px),transparent);}
+.lb-box .board-row{animation:none;padding:6px 12px;margin-bottom:5px;border-radius:12px;}
+.lb-box .board-row.mine{box-shadow:0 0 0 2px rgba(212,175,55,.75),0 0 14px rgba(212,175,55,.35);}
+.se-miss{text-align:center;font-size:15px;font-weight:700;color:#FFC9B5;background:rgba(255,138,107,.1);border:1px solid rgba(255,138,107,.35);border-radius:12px;padding:7px 10px;margin:0 0 8px;}
+.se-miss b{color:#FF9B7B;font-size:17px;}
+.grp-end h1{margin:0 0 6px;font-size:34px;}
+.grp-end .se-score{font-size:56px;margin:0;line-height:1.05;}
+.grp-end .se-stats{text-align:center;color:var(--ink-dim);font-size:15px;font-weight:700;margin:2px 0 8px;}
+.grp-end .se-stats b{color:var(--gold-light);}
+.grp-end .compliment-badge{margin:0 0 8px;}
+.grp-end #h-restart{margin-top:8px;}
+.grp-end .fx-tiles{margin-top:10px;}
+.grp-end .fx-tiles .sh-act{min-height:62px;font-size:16px;}
+.grp-end .fx-tiles .sh-act span{font-size:24px;}
 /* מסך סיום ראש בראש — הכול במסך אחד */
 .duel-end .duel-result{font-size:36px;margin:4px 0 6px;}
 .duel-end .duel-final{margin:6px 0 8px;gap:8px;}
@@ -3326,11 +3348,15 @@ function qCardHtml(num,total,q){
 function clockHtml(prefix){ return `<div class="timer-bar qanim" id="${prefix}-clock-wrap"><div class="tb-head"><span class="tb-icon">⏱️</span><span class="tb-worth" id="${prefix}-worth">💰 תשובה נכונה שווה עכשיו <b>${BASE_POINTS+SPEED_POINTS*QUESTION_MS/1000}</b><i>נק'</i></span><span class="tb-num" id="${prefix}-timer-num">${QUESTION_MS/1000}</span></div><div class="tb-track"><div class="tb-fill" id="${prefix}-timer-ring"></div><div class="tb-ticks"></div></div></div>`; }
 function answerTag(q){ return q.type==='poll' ? '✓ בחירת הרוב' : '✓ התשובה הנכונה'; }
 function rankLabel(i){ return i<3 ? ['🥇','🥈','🥉'][i] : String(i+1); }
-function sortedPlayers(){ return playersOrder.map(id=>({id,...playersMap[id]})).sort((a,b)=>(b.score||0)-(a.score||0)); }
+function sortedPlayers(){ return playersOrder.map(id=>({id,...playersMap[id]})).sort((a,b)=>(b.score||0)-(a.score||0) || (a.ms??1e12)-(b.ms??1e12)); }
 // זמן תשובה כולל: "48 שנ'" או "2:41 דק'"
 function fmtDur(ms){ const s=Math.round((ms||0)/1000); return s<60 ? `${s} שנ'` : `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')} דק'`; }
 function statSub(correct, total, ms){ return `<span class="board-sub">✅ <b>${correct||0}</b>${total?'/'+total:''} נכונות · ⏱️ <b>${fmtDur(ms)}</b></span>`; }
 function boardRow(p,i,highlightId){ return `<div class="board-row ${i===0?'first':''} ${p.id===highlightId?'mine':''}" style="--i:${i}"><div class="rank">${rankLabel(i)}</div><div class="board-name">${esc(p.name||'')}${p.answered!=null ? statSub(p.correct, 0, p.ms) : ''}</div><div class="board-score">${p.score||0}</div></div>`; }
+function groupEndBoxHtml(highlightId){
+  const sorted = sortedPlayers();
+  return `<div class="lb-box se-lb" id="g-end-lb">` + lbBoxHtml('🏆 טבלת המובילים', sorted.map((p,i)=>({rank:i+1, name:p.name, score:p.score||0, sub: p.answered!=null ? statSub(p.correct, 0, p.ms) : '', me: p.id===highlightId}))) + `</div>`;
+}
 function fullBoardHtml(highlightId, limit){
   const sorted = sortedPlayers();
   const lim = limit || sorted.length;
@@ -3806,17 +3832,17 @@ async function duelSaveAndShowBoard(name, score, st, res){
   }catch(e){}
   let top=[], mine=null, rank=null;
   try{
-    const snap = await duelPlayersRef().orderBy('best','desc').limit(10).get();
+    const snap = await duelPlayersRef().orderBy('best','desc').limit(300).get();
     top = snap.docs.map(x=>({id:x.id, ...x.data()})).filter(r=>(r.best||0)>0).sort((a,b)=>(b.best||0)-(a.best||0) || (a.bestMs??1e12)-(b.bestMs??1e12));
     const idx = top.findIndex(r=>r.id===id);
     if(idx>=0){ rank = idx+1; mine = top[idx]; }
     else { const md = await ref.get(); mine = md.exists ? md.data() : null; if(mine && mine.best>0){ const hi = await duelPlayersRef().where('best','>',mine.best).get(); rank = hi.docs.length+1; } }
   }catch(e){}
   const box = $('duel-lb'); if(!box || duel!==d0 || !top.length) return;
-  const row = (rk, r, isMe, i)=>`<div class="board-row ${rk===1?'first':''} ${isMe?'mine':''}" style="--i:${i}"><div class="rank">${rk<=3?['🥇','🥈','🥉'][rk-1]:rk}</div><div class="board-name">${esc(r.name||'')}${isMe?' <small>(אתם)</small>':''}${soloRowSub(r)}</div><div class="board-score">${r.best||0}</div></div>`;
-  let html = top.slice(0,5).map((r,i)=>row(i+1, r, r.id===id, i)).join('');
-  if(rank && rank>5 && mine) html += `<div class="sh-gap">⋯</div>` + row(rank, {...mine, name}, true, 6);
-  box.innerHTML = `<div class="lb-title">🏆 טבלת השיאים — ראש בראש</div>` + html;
+  box.innerHTML = lbBoxHtml('🏆 טבלת השיאים — ראש בראש', top.map((r,k)=>({rank:k+1, name:r.name, score:r.best, sub:soloRowSub(r), me:r.id===id})));
+  lbScrollToMe(box);
+  const rec = top[0], mb = $('duel-miss');
+  if(mb && rec) mb.innerHTML = (rec.id===id && (rec.best||0)<=score) ? '<div class="compliment-badge">👑 זה שיא ראש בראש! אתם במקום הראשון!</div>' : missHtml(`🎯 חסרו <b>${Math.max(1,(rec.best||0)-score+1)}</b> נק' לשבירת שיא ראש בראש (${rec.best})`);
 }
 function duelNames(v){ const me = duel.slot===1 ? v.p1 : v.p2, op = duel.slot===1 ? v.p2 : v.p1; return {me, op}; }
 function duelHeadHtml(v){
@@ -3904,13 +3930,14 @@ function duelRender(){
     const tm = slot=>v.qs.reduce((n,_,k)=>{ const a=v['a'+slot+'_'+k]; return n + (a ? Math.min(QUESTION_MS, a.ms||0) : QUESTION_MS); },0);
     const res = ms>os ? 'win' : ms<os ? 'lose' : 'tie';
     const myC=cnt(duel.slot), myT=tm(duel.slot);
-    body.innerHTML = `<div class="duel-end">
+    body.innerHTML = `<div class="duel-end fit-screen">
       <div class="duel-result ${res}">${res==='win' ? '🏆 ניצחת!' : res==='lose' ? `<small>🏆 הניצחון הפעם:</small>${esc(op.name)}` : '🤝 תיקו!'}</div>
       <div class="duel-final">
         <div class="dp ${ms>=os?'win':''}"><div class="dn">${esc(me.name)} (אתם)</div><div class="ds">${ms}</div><div class="dc">✅ ${myC}/${v.qs.length} · ⏱️ ${fmtDur(myT)}</div></div>
         <div class="dp ${os>=ms?'win':''}"><div class="dn">${esc(op.name)}</div><div class="ds">${os}</div><div class="dc">✅ ${cnt(3-duel.slot)}/${v.qs.length} · ⏱️ ${fmtDur(tm(3-duel.slot))}</div></div>
       </div>
-      <div id="duel-lb" class="se-lb"></div>
+      <div id="duel-miss"></div>
+      <div id="duel-lb" class="se-lb lb-box"><div class="lb-title">🏆 טבלת השיאים — ראש בראש</div><div class="lb-scroll"><div class="sh-empty">טוען את טבלת השיאים...</div></div></div>
       <button class="btn btn-primary btn-xl" id="duel-again">⚔️ לדו-קרב נוסף</button>
       ${navTilesHtml('duel','duel-home')}
     </div>`;
@@ -4059,7 +4086,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-08p';
+const APP_VERSION = '2026-10-08q';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -4413,12 +4440,17 @@ function renderHost(){
   }
   if(curState.phase==='ended'){
     stopWatchdog();
-    body.innerHTML = `
-      <div class="eyebrow">סוף המשחק</div>
-      <h1>טבלת <span>המובילים</span></h1>
-      <div class="final-prize">🎁 הפרס המפנק מחכה למקום הראשון!</div>
-      ${fullBoardHtml(null)}
-      <div class="footer-fixed"><button class="btn btn-ghost" id="h-restart">משחק חדש</button></div>`;
+    const hsig = JSON.stringify(sortedPlayers().map(p=>[p.id,p.score,p.ms,p.correct]));
+    if(body.dataset.endSig===hsig && $('h-restart')) return;
+    body.dataset.endSig = hsig;
+    const lead = sortedPlayers()[0];
+    body.innerHTML = `<div class="grp-end fit-screen">
+      <div class="eyebrow" style="text-align:center;">🏁 סוף המשחק</div>
+      <h1 style="text-align:center;">טבלת <span>המובילים</span></h1>
+      ${lead ? `<div class="compliment-badge">🏆 במקום הראשון: ${esc(lead.name||'')} עם ${lead.score||0} נקודות!</div>` : ''}
+      ${groupEndBoxHtml(null)}
+      <button class="btn btn-primary btn-xl" id="h-restart">🔁 משחק חדש</button>
+    </div>`;
     if(endedFxFor!==roomCode){ endedFxFor=roomCode; fxFireworks(5000); setTimeout(()=>fxRain('🏆', 18), 600); }
     $('h-restart').addEventListener('click', ()=>location.href=location.pathname);
   }
@@ -4699,11 +4731,19 @@ function renderPlayer(){
     stopWatchdog();
     const sorted = sortedPlayers();
     const myRank = sorted.findIndex(p=>p.id===playerId)+1;
-    body.innerHTML = `${header}<div class="eyebrow">סוף המשחק</div><h1>${myRank===1 ? '🏆 <span>מקום ראשון!</span>' : myRank<=3 ? 'עליתם <span>לפודיום!</span>' : 'תודה <span>ששיחקתם!</span>'}</h1>
-      <p class="sub">המקום שלך: #${myRank} עם ${me.score||0} נקודות</p>
-      <div class="final-prize">🎁 הפרס המפנק מחכה למקום הראשון!</div>
-      ${fullBoardHtml(playerId, 10)}
-      ${navTilesHtml('group','p-home')}`;
+    const psig = JSON.stringify(sorted.map(p=>[p.id,p.score,p.ms,p.correct]));
+    if(body.dataset.endSig===psig && $('p-home')) return;
+    body.dataset.endSig = psig;
+    const lead = sorted[0], miss = lead && myRank>1 ? Math.max(1,(lead.score||0)-(me.score||0)+1) : 0;
+    body.innerHTML = `<div class="grp-end fit-screen">
+      <div class="eyebrow" style="text-align:center;">🏁 סוף המשחק — ${myRank===1 ? '🏆 מקום ראשון!' : myRank<=3 ? 'עליתם לפודיום!' : 'תודה ששיחקתם!'}</div>
+      <div class="big-score se-score">${me.score||0}</div>
+      <div class="se-stats">🏅 מקום <b>${myRank}</b> מתוך ${sorted.length}${me.answered!=null ? ` · ✅ <b>${me.correct||0}</b> נכונות · ⏱️ <b>${fmtDur(me.ms)}</b>` : ''}</div>
+      ${myRank===1 ? '<div class="compliment-badge">👑 ניצחתם! הפרס המפנק מחכה לכם!</div>' : missHtml(`🎯 חסרו <b>${miss}</b> נק' כדי להגיע למקום הראשון`)}
+      ${groupEndBoxHtml(playerId)}
+      ${navTilesHtml('group','p-home')}
+    </div>`;
+    lbScrollToMe($('g-end-lb'));
     $('p-home').addEventListener('click', playerLeave);
     if(endedFxFor!==roomCode){ endedFxFor=roomCode; fxFireworks(myRank===1 ? 6000 : 3500); if(myRank===1) setTimeout(()=>fxRain('👑', 26), 500); else if(myRank<=3) setTimeout(()=>fxRain('⭐', 18), 500); }
   }
@@ -4843,6 +4883,11 @@ function soloHomeBoardHtml(){
   }
   return `<div class="lb-title">🏆 טבלת השיאים</div>` + html;
 }
+// טבלת שיאים מלאה בתוך תיבה נגללת (רק הטבלה נגללת — הכפתורים נשארים במקומם)
+function recRowHtml(rank, r, isMe){ return `<div class="board-row ${rank===1?'first':''} ${isMe?'mine':''}"><div class="rank">${rank<=3?['🥇','🥈','🥉'][rank-1]:rank}</div><div class="board-name">${esc(r.name||'')}${isMe?' <small>(אתם)</small>':''}${r.sub||''}</div><div class="board-score">${r.score||0}</div></div>`; }
+function lbBoxHtml(title, rows){ return `<div class="lb-title">${title}<span class="lb-count">${rows.length} משתתפים</span></div><div class="lb-scroll">${rows.map(r=>recRowHtml(r.rank, r, r.me)).join('')}</div>`; }
+function lbScrollToMe(box){ const sc = box && box.querySelector('.lb-scroll'), m = sc && sc.querySelector('.mine'); if(sc && m) sc.scrollTop = Math.max(0, m.offsetTop - sc.clientHeight/2 + m.offsetHeight/2); }
+function missHtml(txt){ return `<div class="se-miss">${txt}</div>`; }
 function soloEndBoardHtml(){
   const p = soloProfile(); if(!soloTop.length) return '';
   const row = (rank, r, isMe, i)=>`<div class="board-row ${rank===1?'first':''} ${isMe?'mine':''}" style="--i:${i}"><div class="rank">${rank<=3?['🥇','🥈','🥉'][rank-1]:rank}</div><div class="board-name">${esc(r.name||'')}${isMe?' <small>(אתם)</small>':''}${soloRowSub(r)}</div><div class="board-score">${r.best||0}</div></div>`;
@@ -5142,12 +5187,13 @@ function soloEnd(){
   if(isNew) localStorage.setItem('trivia_solo_best', String(s.score));
   if(isNew){ playHappyChime(); setTimeout(playHappyChime, 450); }
   const body = $('solo-body');
-  body.innerHTML = `<div class="solo-end">
+  body.innerHTML = `<div class="solo-end fit-screen">
     <div class="eyebrow" style="text-align:center;">🎉 סיימתם סבב! — הניקוד שלכם בסבב הזה</div>
     <div class="big-score se-score" id="s-final">0</div>
     <div class="se-stats">✅ <b>${s.correct}</b>/${s.qs.length} נכונות · ⏱️ <b>${fmtDur(s.totalMs)}</b></div>
     ${isGlobal ? '<div class="compliment-badge">👑 שברתם את שיא המשחק! אתם במקום הראשון!</div>' : (isNew ? '<div class="compliment-badge">🏆 שיא אישי חדש! כל הכבוד!</div>' : '')}
-    <div id="s-end-lb" class="se-lb"></div>
+    ${!isGlobal && g ? missHtml(p && g.id===p.id ? `🎯 חסרו <b>${Math.max(1, g.best - s.score + 1)}</b> נק' לשיפור שיא המשחק שלכם (${g.best})` : `🎯 חסרו <b>${Math.max(1, g.best - s.score + 1)}</b> נק' לשבירת שיא המשחק (${g.best})`) : ''}
+    <div id="s-end-lb" class="se-lb lb-box"><div class="lb-title">🏆 טבלת השיאים</div><div class="lb-scroll"><div class="sh-empty">טוען את טבלת השיאים...</div></div></div>
     <button class="btn btn-primary btn-xl" id="s-again">🔁 שחקו שוב</button>
     ${navTilesHtml('solo','s-home')}
   </div>`;
@@ -5157,7 +5203,12 @@ function soloEnd(){
   else { const c=fxCenter($('s-final')); fxConfetti(c.x, c.y, 60); }
   $('s-again').addEventListener('click', soloStart);
   $('s-home').addEventListener('click', soloQuit);
-  soloSaveResult(s.score, {bestCorrect:s.correct, bestQ:s.qs.length, bestMs:s.totalMs}).then(soloFetchTop).then(()=>{ const box=$('s-end-lb'); if(box && soloState===s) box.innerHTML = soloEndBoardHtml(); });
+  soloSaveResult(s.score, {bestCorrect:s.correct, bestQ:s.qs.length, bestMs:s.totalMs}).then(()=>{ soloFetchTop(); return soloPlayersRef().orderBy('best','desc').limit(300).get(); }).then(snap=>{
+    const box=$('s-end-lb'); if(!box || soloState!==s) return;
+    const all = snap.docs.map(d=>({id:d.id, ...d.data()})).filter(r=>(r.best||0)>0).sort((a,b)=>(b.best||0)-(a.best||0) || (a.bestMs??1e12)-(b.bestMs??1e12));
+    box.innerHTML = lbBoxHtml('🏆 טבלת השיאים', all.map((r,i)=>({rank:i+1, name:r.name, score:r.best, sub:soloRowSub(r), me: p && r.id===p.id})));
+    lbScrollToMe(box);
+  }).catch(()=>{ const box=$('s-end-lb'); if(box && soloState===s){ box.innerHTML = soloEndBoardHtml(); } });
 }
 function soloQuit(){
   clearQTimer();
