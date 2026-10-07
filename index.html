@@ -509,6 +509,30 @@ input.full-name{font-size:19px;padding:16px;text-align:center;margin-top:6px;}
 
 /* חדר ההמתנה של אחד על אחד */
 .dl-me{text-align:center;color:var(--ink-dim);font-size:15px;margin:6px 0 12px;}
+/* חדר ההמתנה של ראש בראש — מעוצב מחדש, ממורכז וגדול */
+.dl-lobby{display:flex;flex-direction:column;min-height:calc(100dvh - 70px);text-align:center;}
+.dl-hero{display:flex;flex-direction:column;align-items:center;}
+.dl-badge{font-size:50px;line-height:1;display:inline-block;filter:drop-shadow(0 6px 14px rgba(212,175,55,.45));animation:swordSwing 2.8s ease-in-out infinite;}
+@keyframes swordSwing{0%,100%{transform:rotate(-10deg) scale(1);}50%{transform:rotate(10deg) scale(1.1);}}
+.dl-lobby .eyebrow{text-align:center;margin-top:6px;font-size:15px;}
+.dl-lobby h1{text-align:center;font-size:46px;margin:2px 0 10px;}
+.dl-lobby .dl-me{display:inline-flex;align-items:center;gap:10px;font-size:18px;color:var(--ink);background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.4);border-radius:999px;padding:6px 16px 6px 8px;margin:0 auto 6px;}
+.dl-lobby .dl-me .av{width:34px;height:34px;font-size:16px;}
+.dl-me-sub{font-size:15px;color:var(--ink-dim);}
+.dl-lobby .dl-count{display:flex;align-items:center;justify-content:center;gap:10px;font-size:20px;margin:18px 0 10px;}
+.dl-count .live{width:11px;height:11px;border-radius:50%;background:#5BD07A;animation:liveDot 1.6s ease-out infinite;}
+@keyframes liveDot{0%{box-shadow:0 0 0 0 rgba(91,208,122,.75);}100%{box-shadow:0 0 0 12px rgba(91,208,122,0);}}
+.dl-lobby .radar.small{width:200px;height:200px;margin:14px auto 12px;}
+.dl-lobby .radar.small .me-dot{width:76px;height:76px;margin:-38px 0 0 -38px;font-size:36px;}
+.dl-empty-txt{font-size:18px;line-height:1.6;color:var(--ink-dim);max-width:330px;margin:0 auto;}
+.dl-lobby .dl-list{text-align:right;}
+.dl-lobby .dl-name{font-size:19px;}
+.dl-lobby .fx-tiles{margin-top:auto;padding-top:18px;}
+.dl-lobby.first .dl-badge{animation:iconDrop .7s cubic-bezier(.2,1.6,.4,1) both, swordSwing 2.8s ease-in-out .8s infinite;}
+.dl-lobby.first .eyebrow,.dl-lobby.first h1,.dl-lobby.first .dl-me,.dl-lobby.first .dl-me-sub{animation:qFadeUp .5s cubic-bezier(.22,.8,.25,1) both;}
+.dl-lobby.first h1{animation-delay:.08s;} .dl-lobby.first .dl-me{animation-delay:.16s;} .dl-lobby.first .dl-me-sub{animation-delay:.22s;}
+.dl-lobby.first .dl-count,.dl-lobby.first .radar,.dl-lobby.first .dl-empty-txt{animation:qFadeUp .5s cubic-bezier(.22,.8,.25,1) .3s both;}
+@media (max-height:720px){ .dl-badge{font-size:38px;} .dl-lobby h1{font-size:38px;} .dl-lobby .radar.small{width:150px;height:150px;} .dl-lobby .radar.small .me-dot{width:60px;height:60px;margin:-30px 0 0 -30px;font-size:28px;} .dl-lobby .dl-count{margin:10px 0 6px;} }
 .dl-me b{color:var(--gold-light);}
 .dl-count{font-weight:800;color:var(--gold-light);font-size:17px;margin:6px 0 10px;}
 .dl-list{display:flex;flex-direction:column;gap:8px;}
@@ -584,6 +608,23 @@ html,body{overflow-x:hidden;overflow-x:clip;max-width:100%;}
 .sh-act[data-rules]{border-color:var(--line-yellow);color:var(--gold-light);}
 .sh-act:active{transform:translateY(2px);}
 .fx-tiles{margin-top:14px;}
+.fx-tiles.still .sh-act,.fx-tiles.still .sh-actions{animation:none !important;opacity:1;}
+/* מסך סיום ראש בראש — הכול במסך אחד */
+.duel-end .duel-result{font-size:36px;margin:4px 0 6px;}
+.duel-end .duel-final{margin:6px 0 8px;gap:8px;}
+.duel-end .duel-final .dp{padding:8px 6px;border-radius:14px;}
+.duel-end .duel-final .ds{font-size:36px;line-height:1.1;}
+.duel-end .duel-final .dn{font-size:14px;}
+.duel-end .duel-final .dc{font-size:13px;}
+:is(.solo-end,.duel-end) .lb-title{margin:4px 0 6px;}
+:is(.solo-end,.duel-end) .board-row{padding:6px 12px;margin-bottom:5px;border-radius:12px;}
+:is(.solo-end,.duel-end) .board-sub{margin-top:1px;}
+:is(.solo-end,.duel-end) .sh-gap{text-align:center;color:var(--ink-dim);line-height:1;margin:0 0 4px;}
+.duel-end #duel-again{margin-top:8px;}
+.duel-end .fx-tiles{margin-top:10px;}
+.duel-end .fx-tiles .sh-act{min-height:62px;font-size:16px;}
+.duel-end .fx-tiles .sh-act span{font-size:24px;}
+@media (max-height:720px){ .duel-end .duel-result{font-size:30px;} .duel-end .board-row{padding:5px 12px;margin-bottom:4px;} .duel-end .fx-tiles .sh-act{min-height:54px;} }
 /* מסך סיום המשחק העצמאי — הכול במסך אחד */
 .solo-end .se-score{font-size:60px;margin:2px 0 0;line-height:1.05;}
 .solo-end .se-stats{text-align:center;color:var(--ink-dim);font-size:15px;font-weight:700;margin:2px 0 10px;}
@@ -3624,18 +3665,34 @@ function dlobRender(){
     return `<div class="dl-row ${isNew?'new':''}"><div class="av" style="background:${avColor(p.id)}">${esc((p.name||'?').charAt(0))}</div><div class="dl-name">${esc(p.name)}</div>
       ${invitedByMe ? '<span class="dl-wait">⏳ ממתין לאישור</span>' : taken ? '<span class="dl-busy">בהזמנה אחרת</span>' : `<button class="dl-inv" data-inv="${esc(p.id)}" ${dlob.inviting?'disabled':''}>⚔️ הזמנה</button>`}</div>`;
   }).join('');
-  body.innerHTML = `<div class="eyebrow">חדר ההמתנה — ראש בראש</div>
-    <h1>בחרו <span>יריב ⚔️</span></h1>
-    <div class="dl-me">אתם בחדר בתור <b>${esc(me.name)}</b> — אחרים יכולים להזמין אתכם</div>
+  const first = !dlob.rendered;
+  const html = `<div class="dl-lobby ${first?'first':''}">
+    <div class="dl-hero">
+      <div class="dl-badge">⚔️</div>
+      <div class="eyebrow">חדר ההמתנה — ראש בראש</div>
+      <h1>בחרו <span>יריב</span></h1>
+      <div class="dl-me"><span class="av" style="background:${avColor(me.id)}">${esc((me.name||'?').charAt(0))}</span>אתם בחדר: <b>${esc(me.name)}</b></div>
+      <div class="dl-me-sub">כל מי שבחדר רואה אתכם ויכול להזמין אתכם</div>
+    </div>
     ${dlob.inviting ? `<div class="dl-pending">⏳ שלחת הזמנה ל<b>${esc((players[dlob.inviting]||{}).name||'')}</b> — מחכים לאישור...<button class="skip-btn" id="dl-cancel-inv">ביטול ההזמנה</button></div>` : ''}
-    <div class="dl-count">👥 ${others.length ? others.length + ' שחקנים ממתינים בחדר' : 'עוד אין שחקנים אחרים בחדר'}</div>
-    ${others.length ? `<div class="dl-list">${rows}</div>` : `<div class="radar small"><div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div><div class="sweep"></div><div class="me-dot">${esc((me.name||'?').charAt(0))}</div></div><p class="sub" style="text-align:center;">ברגע שמישהו ייכנס ל"משחק ראש בראש" — הוא יופיע כאן ותוכלו להזמין אותו.</p>`}
+    <div class="dl-count"><span class="live"></span>${others.length ? (others.length===1 ? 'שחקן אחד ממתין בחדר' : others.length + ' שחקנים ממתינים בחדר') : 'מחפשים שחקנים בחדר...'}</div>
+    ${others.length ? `<div class="dl-list">${rows}</div>` : `<div class="radar small"><div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div><div class="sweep"></div><div class="me-dot">${esc((me.name||'?').charAt(0))}</div></div><p class="dl-empty-txt">ברגע שמישהו ייכנס ל"משחק ראש בראש" הוא יופיע כאן — ותוכלו להזמין אותו לדו-קרב</p>`}
     ${navTilesHtml('duel','duel-cancel')}
-    <div id="dl-toast"></div>`;
+  </div>
+  <div id="dl-toast"></div>`;
+  // מציירים מחדש רק כשמשהו השתנה — כך האנימציות לא "קופצות" בכל עדכון מהשרת
+  const sig = html.replace(' first','').replace(' still','');
+  if(dlob.lastHtml===sig && $('duel-cancel')){
+    const tt=$('dl-toast'), want = dlob.toast||'';
+    if(tt && tt.dataset.msg!==want){ tt.dataset.msg=want; tt.innerHTML = want ? `<div class="dl-toast">${esc(want)}</div>` : ''; }
+    return;
+  }
+  dlob.lastHtml = sig; dlob.rendered = true;
+  body.innerHTML = html;
   body.querySelectorAll('[data-inv]').forEach(b=>b.addEventListener('click', ()=>dlobInvite(b.dataset.inv)));
   const c=$('dl-cancel-inv'); if(c) c.addEventListener('click', ()=>dlobCancelInvite(false));
   $('duel-cancel').addEventListener('click', duelLeave);
-  if(dlob.toast){ $('dl-toast').innerHTML = `<div class="dl-toast">${esc(dlob.toast)}</div>`; }
+  if(dlob.toast){ const tt=$('dl-toast'); tt.dataset.msg=dlob.toast; tt.innerHTML = `<div class="dl-toast">${esc(dlob.toast)}</div>`; }
 }
 function dlobToast(msg){ if(!dlob) return; dlob.toast=msg; setTimeout(()=>{ if(dlob && dlob.toast===msg){ dlob.toast=null; const t=$('dl-toast'); if(t) t.innerHTML=''; } }, 3500); }
 async function dlobInvite(target){
@@ -3732,6 +3789,35 @@ function duelAdvance(fromStatus, fromI){
   }).catch(()=>{});
 }
 function duelLater(fn, ms){ if(!duel) return; const t=setTimeout(fn, ms); duel.timers.push(t); }
+// ---------- טבלת השיאים של ראש בראש: השיא של כל שחקן בדו-קרב אחד ----------
+const DUEL_SEASON = 1;
+function duelPlayersRef(){ return db.collection('duel_players_s' + DUEL_SEASON); }
+async function duelSaveAndShowBoard(name, score, st, res){
+  if(!duel || duel.boardDone) return; duel.boardDone = true;
+  const d0 = duel, id = soloNameKey(name), ref = duelPlayersRef().doc(id);
+  try{
+    await db.runTransaction(async tx=>{
+      const d = await tx.get(ref), cur = d.exists ? d.data() : null;
+      const better = !cur || score > (cur.best||0) || (score>0 && score===(cur.best||0) && (cur.bestMs==null || st.bestMs < cur.bestMs));
+      const upd = {name, games: FV.increment(1), wins: FV.increment(res==='win'?1:0), lastPlayedAt: Date.now()};
+      if(better) Object.assign(upd, {best:score, bestAt:Date.now()}, st);
+      if(d.exists) tx.update(ref, upd); else tx.set(ref, {name, best:score, ...st, games:1, wins:res==='win'?1:0, createdAt:Date.now(), lastPlayedAt:Date.now()});
+    });
+  }catch(e){}
+  let top=[], mine=null, rank=null;
+  try{
+    const snap = await duelPlayersRef().orderBy('best','desc').limit(10).get();
+    top = snap.docs.map(x=>({id:x.id, ...x.data()})).filter(r=>(r.best||0)>0).sort((a,b)=>(b.best||0)-(a.best||0) || (a.bestMs??1e12)-(b.bestMs??1e12));
+    const idx = top.findIndex(r=>r.id===id);
+    if(idx>=0){ rank = idx+1; mine = top[idx]; }
+    else { const md = await ref.get(); mine = md.exists ? md.data() : null; if(mine && mine.best>0){ const hi = await duelPlayersRef().where('best','>',mine.best).get(); rank = hi.docs.length+1; } }
+  }catch(e){}
+  const box = $('duel-lb'); if(!box || duel!==d0 || !top.length) return;
+  const row = (rk, r, isMe, i)=>`<div class="board-row ${rk===1?'first':''} ${isMe?'mine':''}" style="--i:${i}"><div class="rank">${rk<=3?['🥇','🥈','🥉'][rk-1]:rk}</div><div class="board-name">${esc(r.name||'')}${isMe?' <small>(אתם)</small>':''}${soloRowSub(r)}</div><div class="board-score">${r.best||0}</div></div>`;
+  let html = top.slice(0,5).map((r,i)=>row(i+1, r, r.id===id, i)).join('');
+  if(rank && rank>5 && mine) html += `<div class="sh-gap">⋯</div>` + row(rank, {...mine, name}, true, 6);
+  box.innerHTML = `<div class="lb-title">🏆 טבלת השיאים — ראש בראש</div>` + html;
+}
 function duelNames(v){ const me = duel.slot===1 ? v.p1 : v.p2, op = duel.slot===1 ? v.p2 : v.p1; return {me, op}; }
 function duelHeadHtml(v){
   const {me, op} = duelNames(v); const ms = v['s'+duel.slot]||0, os = v['s'+(3-duel.slot)]||0;
@@ -3817,14 +3903,18 @@ function duelRender(){
     const cnt = slot=>v.qs.reduce((n,_,k)=>{ const a=v['a'+slot+'_'+k]; return n + (a && a.c===duelQuestion(v,k).c ? 1 : 0); },0);
     const tm = slot=>v.qs.reduce((n,_,k)=>{ const a=v['a'+slot+'_'+k]; return n + (a ? Math.min(QUESTION_MS, a.ms||0) : QUESTION_MS); },0);
     const res = ms>os ? 'win' : ms<os ? 'lose' : 'tie';
-    body.innerHTML = `<div class="eyebrow" style="text-align:center;">הדו-קרב הסתיים</div>
+    const myC=cnt(duel.slot), myT=tm(duel.slot);
+    body.innerHTML = `<div class="duel-end">
       <div class="duel-result ${res}">${res==='win' ? '🏆 ניצחת!' : res==='lose' ? `<small>🏆 הניצחון הפעם:</small>${esc(op.name)}` : '🤝 תיקו!'}</div>
       <div class="duel-final">
-        <div class="dp ${ms>=os?'win':''}"><div class="dn">${esc(me.name)} (אתם)</div><div class="ds">${ms}</div><div class="dc">✅ ${cnt(duel.slot)} נכונות מתוך ${v.qs.length}</div><div class="dc">⏱️ זמן כולל ${fmtDur(tm(duel.slot))}</div></div>
-        <div class="dp ${os>=ms?'win':''}"><div class="dn">${esc(op.name)}</div><div class="ds">${os}</div><div class="dc">✅ ${cnt(3-duel.slot)} נכונות מתוך ${v.qs.length}</div><div class="dc">⏱️ זמן כולל ${fmtDur(tm(3-duel.slot))}</div></div>
+        <div class="dp ${ms>=os?'win':''}"><div class="dn">${esc(me.name)} (אתם)</div><div class="ds">${ms}</div><div class="dc">✅ ${myC}/${v.qs.length} · ⏱️ ${fmtDur(myT)}</div></div>
+        <div class="dp ${os>=ms?'win':''}"><div class="dn">${esc(op.name)}</div><div class="ds">${os}</div><div class="dc">✅ ${cnt(3-duel.slot)}/${v.qs.length} · ⏱️ ${fmtDur(tm(3-duel.slot))}</div></div>
       </div>
-      <button class="btn btn-primary btn-xl" id="duel-again">⚔️ חזרה לחדר ההמתנה לדו-קרב נוסף</button>
-      ${navTilesHtml('duel','duel-home')}`;
+      <div id="duel-lb" class="se-lb"></div>
+      <button class="btn btn-primary btn-xl" id="duel-again">⚔️ לדו-קרב נוסף</button>
+      ${navTilesHtml('duel','duel-home')}
+    </div>`;
+    duelSaveAndShowBoard(me.name, ms, {bestCorrect:myC, bestQ:v.qs.length, bestMs:myT}, res);
     $('duel-again').addEventListener('click', ()=>{ const n=duel.me.name; duelStop(); role='duel'; duelStart(n); });
     $('duel-home').addEventListener('click', duelLeave);
     if(!duel.endedFx){ duel.endedFx=true;
@@ -3892,7 +3982,7 @@ function modeRules(mode){
   }[mode];
 }
 // שורת הניווט התחתונה — אותן קוביות מונפשות בכל המסכים: הוראות + מסך הבית
-function navTilesHtml(mode, homeId){ return `<div class="fx-tiles"><div class="sh-actions"><button class="sh-act" data-rules="${mode}"><span>📖</span>הוראות</button><button class="sh-act" id="${homeId}"><span>🏠</span>מסך הבית</button></div></div>`; }
+function navTilesHtml(mode, homeId){ const still = !!document.getElementById(homeId); return `<div class="fx-tiles${still?' still':''}"><div class="sh-actions"><button class="sh-act" data-rules="${mode}"><span>📖</span>הוראות</button><button class="sh-act" id="${homeId}"><span>🏠</span>מסך הבית</button></div></div>`; }
 function modeRulesHtml(mode){ return `<button class="btn rules-btn" data-rules="${mode}">📖 הוראות המשחק</button>`; }
 // הוראות נפתחות כמסך אחד, בלי גלילה — אם המסך קטן, התוכן מוקטן כדי שייכנס כולו
 function openRules(mode){
@@ -3969,7 +4059,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-08n';
+const APP_VERSION = '2026-10-08p';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
