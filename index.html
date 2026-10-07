@@ -583,6 +583,9 @@ html,body{overflow-x:hidden;overflow-x:clip;max-width:100%;}
 .sh-act span{font-size:22px;line-height:1;}
 .sh-act[data-rules]{border-color:var(--line-yellow);color:var(--gold-light);}
 .sh-act:active{transform:translateY(2px);}
+.fx-tiles{margin-top:14px;}
+.fx-tiles .sh-actions{grid-template-columns:repeat(2,1fr);}
+.fx-tiles .sh-act{white-space:nowrap;padding:6px 4px;}
 
 /* ===== בלי זום — רק גלילה למעלה/למטה ===== */
 html,body{touch-action:pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
@@ -702,15 +705,15 @@ button,a,.btn,.answer-btn{touch-action:manipulation;}
 .solo-home .rec-name{font-size:15px;}
 .solo-home .rec-num{font-size:36px;}
 /* קוביות הפעולות למטה — גדולות ומונפשות */
-.solo-home .sh-actions{gap:10px;margin-top:12px;animation:none;}
-.solo-home .sh-act{position:relative;overflow:hidden;min-height:78px;font-size:15.5px;gap:5px;border-radius:18px;
+:is(.solo-home,.fx-tiles) .sh-actions{gap:10px;margin-top:12px;animation:none;}
+:is(.solo-home,.fx-tiles) .sh-act{position:relative;overflow:hidden;min-height:78px;font-size:15.5px;gap:5px;border-radius:18px;
   background:linear-gradient(160deg,rgba(52,58,70,.95),rgba(26,29,36,.98));border:2px solid #4A5160;
   box-shadow:0 5px 0 #14161B,0 8px 18px rgba(0,0,0,.35);transition:transform .15s, box-shadow .15s;
   animation:actPop .6s cubic-bezier(.2,1.6,.4,1) both;animation-delay:calc(.55s + var(--k,0) * 120ms);}
 .sh-act:nth-child(1){--k:0;} .sh-act:nth-child(2){--k:1;} .sh-act:nth-child(3){--k:2;}
-.solo-home .sh-act span{font-size:30px;display:inline-block;animation:actIcon 3.2s ease-in-out infinite;animation-delay:calc(1.4s + var(--k,0) * .5s);}
+:is(.solo-home,.fx-tiles) .sh-act span{font-size:30px;display:inline-block;animation:actIcon 3.2s ease-in-out infinite;animation-delay:calc(1.4s + var(--k,0) * .5s);}
 .sh-act::after{content:"";position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(110deg,transparent,rgba(255,255,255,.14),transparent);animation:logoShine 5s ease-in-out infinite;animation-delay:calc(2s + var(--k,0) * .7s);}
-.solo-home .sh-act{white-space:nowrap;padding:6px 4px;}
+:is(.solo-home,.fx-tiles) .sh-act{white-space:nowrap;padding:6px 4px;}
 .sh-act[data-rules]{background:linear-gradient(160deg,rgba(70,58,26,.95),rgba(30,26,16,.98));border-color:var(--line-yellow);}
 .sh-act:active{transform:translateY(4px);box-shadow:0 1px 0 #14161B,0 3px 8px rgba(0,0,0,.35);}
 @keyframes actPop{0%{opacity:0;transform:translateY(40px) scale(.6) rotate(-6deg);}70%{opacity:1;transform:translateY(-4px) scale(1.04);}100%{opacity:1;transform:none;}}
@@ -725,34 +728,34 @@ button,a,.btn,.answer-btn{touch-action:manipulation;}
   .solo-home .sh-tag{display:block;font-size:14px;}
   .solo-home .rec-num{font-size:30px;}
   .solo-home .rec-label,.solo-home .rec-name{font-size:14px;}
-  .sh-act,.solo-home .sh-act{min-height:68px;}
+  .sh-act,:is(.solo-home,.fx-tiles) .sh-act{min-height:68px;}
   .sh-act span{font-size:26px;}
   .solo-home .board-row{padding:7px 12px;margin-bottom:5px;}
 }
 @media (max-height:680px){
   .solo-home .sh-tag{display:none;}
   .solo-home .rec-ic{display:none;}
-  .sh-act,.solo-home .sh-act{min-height:58px;}
+  .sh-act,:is(.solo-home,.fx-tiles) .sh-act{min-height:58px;}
 }
 @media (prefers-reduced-motion:reduce){.sh-act,.sh-act span,.sh-act::after,.sh-name,.sh-tag{animation:none !important;}}
 
 /* קוביות הפעולות — מלל גדול ואנימציות חיות */
-.solo-home .sh-act{font-size:18px;font-weight:900;letter-spacing:.2px;min-height:84px;gap:6px;}
-.solo-home .sh-act span{font-size:34px;filter:drop-shadow(0 4px 6px rgba(0,0,0,.45));animation:actBob 2.8s ease-in-out infinite, actIcon 4.2s ease-in-out infinite;animation-delay:calc(var(--k,0) * .35s), calc(1.6s + var(--k,0) * .6s);}
-.solo-home .sh-act::before{content:"";position:absolute;inset:-2px;border-radius:inherit;padding:2px;background:conic-gradient(from var(--ang,0deg),transparent 0 70%,rgba(255,243,196,.95) 80%,transparent 90%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:actOrbit 3.6s linear infinite;animation-delay:calc(var(--k,0) * -1.2s);pointer-events:none;}
+:is(.solo-home,.fx-tiles) .sh-act{font-size:18px;font-weight:900;letter-spacing:.2px;min-height:84px;gap:6px;}
+:is(.solo-home,.fx-tiles) .sh-act span{font-size:34px;filter:drop-shadow(0 4px 6px rgba(0,0,0,.45));animation:actBob 2.8s ease-in-out infinite, actIcon 4.2s ease-in-out infinite;animation-delay:calc(var(--k,0) * .35s), calc(1.6s + var(--k,0) * .6s);}
+:is(.solo-home,.fx-tiles) .sh-act::before{content:"";position:absolute;inset:-2px;border-radius:inherit;padding:2px;background:conic-gradient(from var(--ang,0deg),transparent 0 70%,rgba(255,243,196,.95) 80%,transparent 90%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:actOrbit 3.6s linear infinite;animation-delay:calc(var(--k,0) * -1.2s);pointer-events:none;}
 @property --ang{syntax:'<angle>';initial-value:0deg;inherits:false;}
 @keyframes actOrbit{to{--ang:360deg;}}
 @keyframes actBob{0%,100%{translate:0 0;}50%{translate:0 -5px;}}
-.solo-home .sh-act[data-rules]{color:#FFE9A8;box-shadow:0 5px 0 #6E5716,0 0 18px rgba(212,175,55,.35);}
+:is(.solo-home,.fx-tiles) .sh-act[data-rules]{color:#FFE9A8;box-shadow:0 5px 0 #6E5716,0 0 18px rgba(212,175,55,.35);}
 @media (max-height:780px){
-  .solo-home .sh-act{min-height:76px;font-size:17px;}
-  .solo-home .sh-act span{font-size:30px;}
+  :is(.solo-home,.fx-tiles) .sh-act{min-height:76px;font-size:17px;}
+  :is(.solo-home,.fx-tiles) .sh-act span{font-size:30px;}
 }
 @media (max-height:680px){
-  .solo-home .sh-act{min-height:62px;font-size:15.5px;}
-  .solo-home .sh-act span{font-size:24px;}
+  :is(.solo-home,.fx-tiles) .sh-act{min-height:62px;font-size:15.5px;}
+  :is(.solo-home,.fx-tiles) .sh-act span{font-size:24px;}
 }
-@media (prefers-reduced-motion:reduce){.solo-home .sh-act::before,.solo-home .sh-act span{animation:none !important;}}
+@media (prefers-reduced-motion:reduce){:is(.solo-home,.fx-tiles) .sh-act::before,:is(.solo-home,.fx-tiles) .sh-act span{animation:none !important;}}
 
 /* מסכי שאלה בטלפונים נמוכים — הכול נכנס בלי גלילה, כולל כפתור היציאה */
 @media (max-height:820px){
@@ -1121,7 +1124,7 @@ const SOLO_QUESTIONS = [
  {topic:T4, q:'מהי החיה המהירה ביותר ביבשה?', a:['ברדלס','אריה','סוס','צבי']},
  {topic:T4, q:'מהו היונק הגדול בעולם?', a:['לוויתן כחול','פיל אפריקאי','ג\'ירפה','היפופוטם']},
  {topic:T4, q:'כמה רגליים יש לעכביש?', a:['8','6','10','4']},
- {topic:T4, q:'מהו כוכב הלכת הקרוב ביותר לשמש?', a:['כוכב חמה','נוגה','מאדים','כדור הארץ']},
+ {topic:T4, q:'מהו כוכב הלכת הקרוב ביותר לשמש?', a:['כוכב חמה','כוכב נוגה','מאדים','כדור הארץ']},
  {topic:T4, q:'איזה כוכב לכת מכונה "הכוכב האדום"?', a:['מאדים','צדק','נוגה','שבתאי']},
  {topic:T4, q:'מהו הכוכב הקרוב ביותר לכדור הארץ?', a:['השמש','הירח','כוכב הצפון','מאדים']},
  {topic:T4, q:'איזה גז קולטים הצמחים מהאוויר לצורך פוטוסינתזה?', a:['פחמן דו-חמצני','חמצן','חנקן','הליום']},
@@ -1173,7 +1176,7 @@ const SOLO_QUESTIONS = [
  {topic:T3, q:'מי עמד בראש המרד הגדול נגד הרומאים בשנת 132 לספירה?', a:['בר כוכבא','יוסף בן מתתיהו','יוחנן מגוש חלב','יהודה המכבי']},
  {topic:T3, q:'מי ביקש מאספסיינוס את "יבנה וחכמיה" בזמן חורבן הבית?', a:['רבן יוחנן בן זכאי','רבי עקיבא','רבן גמליאל','רבי יהושע בן חנניה']},
  {topic:T3, q:'מי נחשבים לעורכים שחתמו את התלמוד הבבלי?', a:['רב אשי ורבינא','אביי ורבא','רב ושמואל','רבי יוחנן וריש לקיש']},
- {topic:T3, q:'מי חיבר את שו"ת "אגרות משה"?', a:['רבי משה פיינשטיין','רבי שלמה זלמן אויערבך','רבי יוסף שלום אלישיב','רבי עובדיה יוסף']},
+ {topic:T3, q:'מי חיבר את שו"ת "אגרות משה"?', a:['רבי משה פיינשטיין','רבי משה שטרנבוך','רבי משה סופר','רבי משה איסרליש']},
  {topic:T3, q:'מי חיבר את שו"ת "יביע אומר"?', a:['רבי עובדיה יוסף','רבי מרדכי אליהו','רבי בן ציון אבא שאול','רבי יוסף חיים']},
  {topic:T3, q:'מי חיבר את הספר "בן איש חי"?', a:['רבי יוסף חיים מבגדאד','רבי חיים פלאג\'י','רבי עובדיה יוסף','רבי ישראל אבוחצירא']},
  {topic:T3, q:'מי מכונה "הבבא סאלי"?', a:['רבי ישראל אבוחצירא','רבי יעקב אבוחצירא','רבי חיים פינטו','רבי מאיר אבוחצירא']},
@@ -1554,7 +1557,7 @@ const SOLO_QUESTIONS = [
  {topic:T8, q:'באיזו עיר נמצא בית הכנסת "החורבה"?', a:['ירושלים','צפת','טבריה','חברון']},
  {topic:T8, q:'באיזו עיר נמצא בית הכנסת העתיק של האר"י?', a:['צפת','טבריה','ירושלים','מירון']},
  {topic:T8, q:'באיזו עיר נמצא הכותל המערבי?', a:['ירושלים','חברון','בית לחם','צפת']},
- {topic:T8, q:'איזו עיר בדרום מוכרת כמקום שבו חפר אברהם אבינו באר וכרת ברית עם אבימלך?', a:['באר שבע','ערד','דימונה','אופקים']},
+ {topic:T8, q:'באיזו עיר של היום כרת אברהם אבינו ברית עם אבימלך מלך גרר?', a:['באר שבע','ערד','דימונה','אופקים']},
  {topic:T8, q:'איזו עיר שוכנת בין ים המלח לבאר שבע ונוסדה ב-1962?', a:['ערד','דימונה','ירוחם','מצפה רמון']},
  {topic:T8, q:'איזו עיר חרדית גדולה נמצאת בדרום-מערב גוש עציון?', a:['ביתר עילית','מודיעין עילית','אלעד','עמנואל']},
  {topic:T8, q:'איזו עיר היא עיר החוף הצפונית ביותר בישראל?', a:['נהריה','עכו','חיפה','קריית ים']},
@@ -1642,7 +1645,7 @@ const SOLO_QUESTIONS = [
  {topic:T9, q:'מהו המטבע של ברזיל?', a:['ריאל','דולר','זלוטי','לירה']},
  {topic:T9, q:'מהו המטבע של דרום אפריקה?', a:['ראנד','אירו','דולר','יואן']},
  {topic:T9, q:'מהו המטבע של ארצות הברית?', a:['דולר','דינר','רובל','וון']},
- {topic:T9, q:'מהו המטבע של מצרים?', a:['לירה מצרית','דינר','ריאל','רובל']},
+ {topic:T9, q:'מהו המטבע של מצרים?', a:['לירה','דינר','ריאל','דירהם']},
  {topic:T9, q:'מהי השפה הרשמית של אוסטריה?', a:['גרמנית','הולנדית','צ\'כית','פולנית']},
  {topic:T9, q:'מהי השפה הרשמית של ארגנטינה?', a:['ספרדית','פורטוגזית','איטלקית','אנגלית']},
  {topic:T9, q:'מהי השפה הרשמית של איראן?', a:['פרסית','ערבית','טורקית','כורדית']},
@@ -1723,7 +1726,7 @@ const SOLO_QUESTIONS = [
  {topic:T10, q:'כמה קילומטרים הולך אדם בערך בשעה בהליכה רגילה?', a:['כ-5','כ-15','כ-2','כ-25']},
  {topic:T10, q:'מהו המקום הנמוך ביותר בעולם שאפשר לרחוץ בו במים?', a:['ים המלח','הכנרת','ים סוף','עמק המוות']},
  {topic:T10, q:'איך נקרא האזור בירושלים שבו נמצאים הכותל, רובע היהודי והר הבית?', a:['העיר העתיקה','עיר דוד','מאה שערים','נחלאות']},
- {topic:T10, q:'איזו שכונה ותיקה בירושלים נוסדה ב-1874 ונקראה על שם מאה השערים שבפסוק?', a:['מאה שערים','נחלת שבעה','משכנות שאננים','ימין משה']},
+ {topic:T10, q:'איזו שכונה ותיקה בירושלים נוסדה ב-1874 ונקראה על שם הפסוק "ויזרע יצחק בארץ ההיא"?', a:['מאה שערים','נחלת שבעה','משכנות שאננים','ימין משה']},
  {topic:T10, q:'באיזו מדינה נמצא הקבר של רבי נחמן מברסלב, שאליו עולים בראש השנה?', a:['אוקראינה','פולין','בלארוס','רוסיה']},
  {topic:T10, q:'באיזו עיר בפולין נמצא קברו של הרמ"א, אתר עלייה לרגל פופולרי?', a:['קרקוב','ורשה','לובלין','לודז\'']},
  {topic:T10, q:'באיזו עיירה בפולין נמצא קברו של רבי אלימלך, "הנועם אלימלך"?', a:['ליז\'נסק','לובלין','קרקוב','גור']},
@@ -1768,7 +1771,7 @@ const SOLO_QUESTIONS = [
  {topic:T12, q:'מאיזה מקור לקוחות המילים "אילו פינו מלא שירה כים" שמושרות בשירים רבים?', a:['מתפילת "נשמת כל חי"','מספר תהלים','מההגדה של פסח','מספר ישעיהו']},
  {topic:T12, q:'מאיזה מקור לקוחות המילים "אני מאמין באמונה שלמה בביאת המשיח" שמושרות בשירים רבים?', a:['מי"ג העיקרים של הרמב"ם','מספר תהלים','מתפילת עלינו לשבח','מספר ישעיהו']},
  {topic:T12, q:'מאיזה מקור לקוחות המילים "קול ששון וקול שמחה קול חתן וקול כלה" שמושרות בשירים רבים?', a:['מספר ירמיהו','משיר השירים','מספר תהלים','מספר רות']},
- {topic:T12, q:'מאיזה מקור לקוחות המילים "ישמחו במלכותך שומרי שבת" שמושרות בשירים רבים?', a:['מתפילת מוסף של שבת','מספר תהלים','מתפילת ערבית של חול','מספר ישעיהו']},
+ {topic:T12, q:'מאיזה מקור לקוחות המילים "ישמחו במלכותך" שמושרות בשירים רבים?', a:['מתפילת שבת','מספר תהלים','מתפילת הימים הנוראים','מפרקי אבות']},
  {topic:T12, q:'מאיזה מקור לקוחות המילים "ברוך הגבר אשר יבטח בה\'" שמושרות בשירים רבים?', a:['מספר ירמיהו','מספר תהלים','מספר משלי','מספר ישעיהו']},
  {topic:T12, q:'מאיזה מקור לקוחות המילים "גם כי אלך בגיא צלמוות" שמושרות בשירים רבים?', a:['מספר תהלים','מספר איוב','מספר ישעיהו','מספר איכה']},
  {topic:T12, q:'מאיזה מקור לקוחות המילים "רבי חנניא בן עקשיא אומר: רצה הקב"ה לזכות את ישראל" שמושרות בשירים רבים?', a:['ממשנה בסוף מסכת מכות','מספר תהלים','מתפילת שחרית','מספר ישעיהו']},
@@ -2029,7 +2032,7 @@ const SOLO_QUESTIONS = [
  {topic:T9, q:'מהי בירת צפון מקדוניה?', a:['סקופיה','טירנה','סלוניקי','סופיה']},
  {topic:T9, q:'מהי בירת מונטנגרו?', a:['פודגוריצה','קוטור','סרייבו','טירנה']},
  {topic:T9, q:'מהי בירת קפריסין?', a:['ניקוסיה','לימסול','לרנקה','פאפוס']},
- {topic:T9, q:'מהו המטבע של צ\'כיה?', a:['קורונה צ\'כית','אירו','זלוטי','פורינט']},
+ {topic:T9, q:'מהו המטבע של צ\'כיה?', a:['קורונה','אירו','זלוטי','לאו']},
  {topic:T9, q:'איזה נהר זורם דרך מספר הבירות הגדול ביותר בעולם, ובהן וינה, ברטיסלבה, בודפשט ובלגרד?', a:['הדנובה','הריין','הוולגה','האלבה']},
  {topic:T9, q:'לאיזה ים נשפך נהר הדנובה?', a:['הים השחור','הים התיכון','הים הבלטי','הים האדריאטי']},
  {topic:T9, q:'באיזו מדינה נובע נהר הדנובה?', a:['גרמניה','אוסטריה','שווייץ','הונגריה']},
@@ -2082,7 +2085,7 @@ const SOLO_QUESTIONS = [
  {topic:T15, q:'באיזה ספורט מתחרים על "החולצה הצהובה" במרוץ הגדול בצרפת?', a:['רכיבת אופניים','ריצה','שחייה','מרוצי מכוניות']},
  {topic:T15, q:'כמה גומות יש במגרש גולף רגיל?', a:['18','9','12','24']},
  {topic:T8, q:'איזו עיר חרדית גדולה גובלת ברמת גן ובתל אביב?', a:['בני ברק','ביתר עילית','אלעד','מודיעין עילית']},
- {topic:T8, q:'באיזו עיר נמצאות שכונות "רמת בית שמש" א\' וב\'?', a:['בית שמש','ירושלים','ביתר עילית','אלעד']},
+ {topic:T8, q:'באיזו עיר נמצאות השכונות "רמה א\'" ו"רמה ב\'" המוכרות בציבור החרדי?', a:['בית שמש','ירושלים','ביתר עילית','אלעד']},
  {topic:T8, q:'באיזו עיר נמצאת שכונת "קריית הרצוג"?', a:['בני ברק','ירושלים','אשדוד','חיפה']},
  {topic:T8, q:'באיזו עיר נמצאת שכונת "רמות"?', a:['ירושלים','בני ברק','אלעד','חיפה']},
  {topic:T8, q:'באיזו עיר נמצאת שכונת "הר נוף"?', a:['ירושלים','ביתר עילית','בית שמש','צפת']},
@@ -2217,7 +2220,7 @@ const SOLO_QUESTIONS = [
  {topic:T13, q:'מי היה "שר התורה" שחי בבני ברק ונפטר בשנת תשפ"ב?', a:['הרב חיים קניבסקי','הרב שך','החזון איש','הרב שטיינמן']},
  {topic:T13, q:'מי היה ראש ישיבת פוניבז\' שנודע בכינוי "מרן הרב שך"?', a:['הרב אלעזר מנחם מן שך','הרב יוסף שלמה כהנמן','הרב דוד פוברסקי','הרב שמואל רוזובסקי']},
  {topic:T13, q:'מי היה פוסק הדור שגר בשכונת מאה שערים ונפטר בגיל 102?', a:['הרב יוסף שלום אלישיב','הרב שלמה זלמן אויערבך','הרב משה פיינשטיין','הרב עובדיה יוסף']},
- {topic:T13, q:'מי היה גדול הפוסקים בארצות הברית שחיבר את "אגרות משה"?', a:['הרב משה פיינשטיין','הרב אהרן קוטלר','הרב יעקב קמנצקי','הרב יוסף דוב סולובייצ\'יק']},
+ {topic:T13, q:'מי היה גדול הפוסקים בארצות הברית שחיבר את "אגרות משה"?', a:['הרב משה פיינשטיין','הרב משה שטרנבוך','הרב משה הלברשטאם','הרב משה שניידר']},
  {topic:T13, q:'באיזו עיר עמד בראש ישיבת חכמי לובלין הרב שמואל וואזנר?', a:['בני ברק','ירושלים','לובלין','אלעד']},
  {topic:T13, q:'מי עמד בראש ישיבת פונביז\' לצד הרב שך והיה ידוע בשיעוריו?', a:['הרב שמואל רוזובסקי','הרב חיים קניבסקי','הרב יוסף שלום אלישיב','הרב שלמה זלמן אויערבך']},
  {topic:T13, q:'מי היה הרבי מבעלזא שהגיע לארץ ישראל אחרי השואה?', a:['הרב אהרן רוקח','הרב יואל טייטלבוים','הרב ישראל אלתר','הרב יקותיאל יהודה הלברשטאם']},
@@ -3117,8 +3120,7 @@ function dlobRender(){
     ${dlob.inviting ? `<div class="dl-pending">⏳ שלחת הזמנה ל<b>${esc((players[dlob.inviting]||{}).name||'')}</b> — מחכים לאישור...<button class="skip-btn" id="dl-cancel-inv">ביטול ההזמנה</button></div>` : ''}
     <div class="dl-count">👥 ${others.length ? others.length + ' שחקנים ממתינים בחדר' : 'עוד אין שחקנים אחרים בחדר'}</div>
     ${others.length ? `<div class="dl-list">${rows}</div>` : `<div class="radar small"><div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div><div class="sweep"></div><div class="me-dot">${esc((me.name||'?').charAt(0))}</div></div><p class="sub" style="text-align:center;">ברגע שמישהו ייכנס ל"משחק ראש בראש" — הוא יופיע כאן ותוכלו להזמין אותו.</p>`}
-    ${modeRulesHtml('duel')}
-    <button class="btn btn-ghost" id="duel-cancel">יציאה מחדר ההמתנה</button>
+    ${navTilesHtml('duel','duel-cancel')}
     <div id="dl-toast"></div>`;
   body.querySelectorAll('[data-inv]').forEach(b=>b.addEventListener('click', ()=>dlobInvite(b.dataset.inv)));
   const c=$('dl-cancel-inv'); if(c) c.addEventListener('click', ()=>dlobCancelInvite(false));
@@ -3242,8 +3244,7 @@ function duelRender(){
         <h1>מחפשים <span>יריב<span class="duel-dots"></span></span></h1>
         <div class="radar"><div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div><div class="sweep"></div><div class="me-dot">${esc((duel.me.name||'?').charAt(0))}</div></div>
         <p class="sub" style="text-align:center;">שלום <b>${esc(duel.me.name)}</b>! ברגע שעוד שחקן ייכנס ל"משחק ראש בראש" — הדו-קרב יתחיל אוטומטית.</p>
-        ${modeRulesHtml('duel')}
-        <button class="btn btn-ghost" id="duel-cancel">ביטול וחזרה</button>
+        ${navTilesHtml('duel','duel-cancel')}
       </div>`;
     $('duel-cancel').addEventListener('click', duelLeave);
     return;
@@ -3313,7 +3314,7 @@ function duelRender(){
         <div class="dp ${os>=ms?'win':''}"><div class="dn">${esc(op.name)}</div><div class="ds">${os}</div><div class="dc">✅ ${cnt(3-duel.slot)} נכונות מתוך ${v.qs.length}</div><div class="dc">⏱️ זמן כולל ${fmtDur(tm(3-duel.slot))}</div></div>
       </div>
       <button class="btn btn-primary btn-xl" id="duel-again">⚔️ חזרה לחדר ההמתנה לדו-קרב נוסף</button>
-      <button class="btn btn-ghost" id="duel-home">חזרה למסך הבית</button>`;
+      ${navTilesHtml('duel','duel-home')}`;
     $('duel-again').addEventListener('click', ()=>{ const n=duel.me.name; duelStop(); role='duel'; duelStart(n); });
     $('duel-home').addEventListener('click', duelLeave);
     if(!duel.endedFx){ duel.endedFx=true;
@@ -3380,6 +3381,8 @@ function modeRules(mode){
     ]}
   }[mode];
 }
+// שורת הניווט התחתונה — אותן קוביות מונפשות בכל המסכים: הוראות + מסך הבית
+function navTilesHtml(mode, homeId){ return `<div class="fx-tiles"><div class="sh-actions"><button class="sh-act" data-rules="${mode}"><span>📖</span>הוראות</button><button class="sh-act" id="${homeId}"><span>🏠</span>מסך הבית</button></div></div>`; }
 function modeRulesHtml(mode){ return `<button class="btn rules-btn" data-rules="${mode}">📖 הוראות המשחק</button>`; }
 // הוראות נפתחות כמסך אחד, בלי גלילה — אם המסך קטן, התוכן מוקטן כדי שייכנס כולו
 function openRules(mode){
@@ -3417,10 +3420,7 @@ function entryFormHtml(o){
       <div class="entry-label second"><span class="el-step">2</span> ולוחצים:</div>
       <button class="btn btn-primary btn-xl entry-go" id="${o.goId}">${o.goText}</button>
     </div>
-    <div class="entry-row">
-      <button class="btn btn-ghost" id="${o.backId}">→ חזרה</button>
-      ${modeRulesHtml(o.mode)}
-    </div>
+    ${navTilesHtml(o.mode, o.backId)}
   </div>`;
 }
 function entryWire(inputId, goId){
@@ -3459,7 +3459,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-08h';
+const APP_VERSION = '2026-10-08i';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -3697,7 +3697,6 @@ function renderHost(){
   if(curState.phase==='lobby'){
     hostPruneStale();
     body.innerHTML = `
-      <button class="btn btn-ghost" id="h-back" style="margin-bottom:14px;">→ חזרה</button>
       <div class="eyebrow">חדר המתנה</div>
       <h1>השחקנים <span>נכנסים לחדר ההמתנה</span></h1>
       <div class="sub" style="text-align:center;">השחקנים נכנסים דרך הכפתור "משחק קבוצתי" באפליקציה</div>
@@ -3710,7 +3709,8 @@ function renderHost(){
           ${lobbyActiveIds().map(id=>`<span class="pchip ${chipPopClass(id)}">${esc(playersMap[id].name||'')}</span>`).join('') || '<span class="center-note">עדיין אין מצטרפים</span>'}
         </div>
       </div>
-      <button class="btn btn-primary btn-xl" id="h-start" ${total<1?'disabled':''}>▶ התחל משחק</button>`;
+      <button class="btn btn-primary btn-xl" id="h-start" ${total<1?'disabled':''}>▶ התחל משחק</button>
+      ${navTilesHtml('group','h-back')}`;
     if(total>=MIN_PLAYERS) notifyHostReady(total);
     fxCrowdCheck(total);
     try{ if('Notification' in window && Notification.permission==='default') Notification.requestPermission(); }catch(e){}
@@ -4015,13 +4015,12 @@ function renderPlayer(){
         <div class="wait-sub">שלום <b>${esc(me.name||playerName)}</b>, אתם בפנים ✓<br>המשחק מתחיל כשיש מינימום ${MIN_PLAYERS} שחקנים — ומנחה המשחק לוחץ "התחל משחק".</div>
       </div>
       ${lobbyCrowdHtml(waiting, playerId)}
-      ${modeRulesHtml('group')}
       <div class="wait-card">
         <div class="wait-card-head">👥 <b>${waiting.length}</b> ממתינים בחדר ההמתנה (כולל אותך)</div>
         <div class="goal-track"><div style="width:${Math.min(100, Math.round(waiting.length/MIN_PLAYERS*100))}%"></div></div>
         <div class="goal-note">${waiting.length>=MIN_PLAYERS ? 'עברנו את המינימום (' + waiting.length + ' שחקנים) — המנחה יתחיל את המשחק בכל רגע! 🎉' : 'חסרים עוד <b>' + (MIN_PLAYERS-waiting.length) + '</b> שחקנים למינימום של ' + MIN_PLAYERS}</div>
       </div>
-      <button class="btn btn-ghost" id="p-lobby-exit">→ יציאה מחדר ההמתנה</button>`;
+      ${navTilesHtml('group','p-lobby-exit')}`;
     $('p-lobby-exit').addEventListener('click', playerExitLobby);
     fxCrowdCheck(waiting.length);
     return;
@@ -4104,7 +4103,7 @@ function renderPlayer(){
       <p class="sub">המקום שלך: #${myRank} עם ${me.score||0} נקודות</p>
       <div class="final-prize">🎁 הפרס המפנק מחכה למקום הראשון!</div>
       ${fullBoardHtml(playerId, 10)}
-      <div class="end-actions"><button class="btn btn-primary" id="p-home">חזרה למסך הבית</button></div>`;
+      ${navTilesHtml('group','p-home')}`;
     $('p-home').addEventListener('click', playerLeave);
     if(endedFxFor!==roomCode){ endedFxFor=roomCode; fxFireworks(myRank===1 ? 6000 : 3500); if(myRank===1) setTimeout(()=>fxRain('👑', 26), 500); else if(myRank<=3) setTimeout(()=>fxRain('⭐', 18), 500); }
   }
@@ -4427,7 +4426,7 @@ function soloShowQuestion(){
     ${clockHtml('s')}
     <div class="answers" id="s-answers">${q.a.map((t,i)=>`<button class="answer-btn" data-i="${i}"><span class="opt-letter">${letterFor(i)}</span><span class="opt-text">${esc(t)}</span></button>`).join('')}</div>
     <div class="center-note" id="s-note">⚡ ענו מהר — כל שנייה שווה 2 נקודות!</div>
-    <button class="skip-btn" id="s-quit">יציאה למסך הבית</button>`;
+    <button class="skip-btn" id="s-quit">🏠 יציאה למסך הבית</button>`;
   body.querySelectorAll('.answer-btn').forEach(b=>b.addEventListener('click', ()=>{ if(soloState && !soloState.locked) pressFeedback(b); soloReveal(Number(b.dataset.i)); }));
   $('s-quit').addEventListener('click', soloQuit);
   mountQTimer(s.startedAt, 's-timer-ring', 's-timer-num', 's-clock-wrap', ()=>soloReveal(null));
@@ -4484,7 +4483,7 @@ function soloEnd(){
     ${!isGlobal && g ? `<div class="record-strip" style="margin:0 0 14px;">👑 שיא המשחק: <b>${g.best}</b> — ${esc(g.name)}</div>` : ''}
     <div id="s-end-lb"></div>
     <button class="btn btn-primary btn-xl" id="s-again" style="margin-top:6px;">🔁 שחקו שוב</button>
-    <button class="btn btn-ghost" id="s-home">חזרה למסך הבית</button>`;
+    ${navTilesHtml('solo','s-home')}`;
   animateCount($('s-final'), s.score, 900);
   if(isGlobal){ fxFireworks(6000); setTimeout(()=>fxRain('👑', 26), 500); }
   else if(isNew){ fxFireworks(4000); setTimeout(()=>fxRain('🏆', 18), 500); }
