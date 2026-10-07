@@ -3000,8 +3000,19 @@ function duelEntry(){
 const DUEL_INV_TTL = 30000;
 let dlob = null; // מצב החדר אצלי
 function dlobRef(){ return db.collection('rooms').doc('duel_lobby'); }
-function dlobFresh(p){ return p && Date.now()-(p.hb||0) < DUEL_HB_STALE; }
-function dlobInvFresh(iv){ return iv && iv.st==='pending' && Date.now()-(iv.at||0) < DUEL_INV_TTL; }
+const dlobHbSeenAt = {}; // מתי ראינו כל "דופק" במכשיר הזה — כך הפרשי שעון בין טלפונים לא משנים
+function dlobFresh(p){
+  if(!p || !p.hb) return false;
+  if(Math.abs(Date.now()-p.hb) > 60000) return false; // רשומה ישנה — השחקן כבר לא כאן
+  if(!dlobHbSeenAt[p.hb]) dlobHbSeenAt[p.hb] = Date.now();
+  return Date.now()-dlobHbSeenAt[p.hb] < DUEL_HB_STALE;
+}
+const dlobInvSeenAt = {}; // מתי ההזמנה נראתה לראשונה במכשיר הזה — לא תלוי בשעון של הטלפון השני
+function dlobInvFresh(iv){
+  if(!iv || iv.st!=='pending') return false;
+  const k = iv.from+':'+iv.at; if(!dlobInvSeenAt[k]) dlobInvSeenAt[k] = Date.now();
+  return Date.now()-dlobInvSeenAt[k] < DUEL_INV_TTL;
+}
 async function duelStart(name){
   requestWakeLock();
   const me = {id:duelMe(), name};
@@ -3034,7 +3045,10 @@ function dlobRender(){
   if(dlob.inviting){
     const iv = inv[dlob.inviting];
     if(iv && iv.from===me.id && iv.st==='accepted' && iv.code){ const code=iv.code, t=dlob.inviting; const u={}; u['inv.'+t]=FV.delete(); dlobRef().update(u).catch(()=>{}); dlobStop(); duelAttach(code, 1, me); return; }
-    if(!iv || iv.from!==me.id || iv.st==='declined' || !dlobInvFresh(iv)){
+    const arrived = iv && iv.from===me.id && iv.at===dlob.invAt;
+    if(arrived) dlob.invArrived = true;
+    const notYet = !arrived && !dlob.invArrived && Date.now()-dlob.invSentAt < 10000; // ההזמנה עוד בדרך לשרת
+    if(!notYet && (!arrived || iv.st==='declined' || !dlobInvFresh(iv))){
       const who = (players[dlob.inviting]||{}).name || 'השחקן';
       const declined = iv && iv.st==='declined';
       dlobCancelInvite(true);
@@ -3073,17 +3087,17 @@ function dlobRender(){
 function dlobToast(msg){ if(!dlob) return; dlob.toast=msg; setTimeout(()=>{ if(dlob && dlob.toast===msg){ dlob.toast=null; const t=$('dl-toast'); if(t) t.innerHTML=''; } }, 3500); }
 async function dlobInvite(target){
   if(!dlob || dlob.inviting) return;
-  const me=dlob.me;
+  const me=dlob.me, at=Date.now();
   try{
     const ok = await db.runTransaction(async tx=>{
       const d = await tx.get(dlobRef()); if(!d.exists) return false;
       const v=d.data(), t=(v.players||{})[target];
       if(!dlobFresh(t) || t.busy || dlobInvFresh((v.inv||{})[target])) return false;
-      const u={}; u['inv.'+target]={from:me.id, fromName:me.name, at:Date.now(), st:'pending'}; u['players.'+me.id+'.busy']=true;
+      const u={}; u['inv.'+target]={from:me.id, fromName:me.name, at, st:'pending'}; u['players.'+me.id+'.busy']=true;
       tx.update(dlobRef(), u); return true;
     });
     if(!ok){ dlobToast('השחקן כבר לא פנוי — נסו מישהו אחר'); dlobRender(); return; }
-    dlob.inviting = target; beep(660,90); dlobRender();
+    dlob.inviting = target; dlob.invAt = at; dlob.invSentAt = Date.now(); dlob.invArrived = false; beep(660,90); dlobRender();
   }catch(e){ dlobToast('לא הצלחנו לשלוח הזמנה. נסו שוב.'); }
 }
 function dlobCancelInvite(silent){
@@ -3396,7 +3410,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-07q';
+const APP_VERSION = '2026-10-07r';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
