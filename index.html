@@ -320,7 +320,8 @@ input[type=text]::placeholder{color:#A69C84;opacity:1;}
 #s-landing .btn,#s-landing .btn-howto-link,#s-landing .landing-foot{animation:landIn .8s cubic-bezier(.2,1.4,.4,1) both;}
 #btn-join-manual{animation-delay:1.5s !important;}#btn-solo{animation-delay:1.65s !important;}#btn-howto{animation-delay:1.8s !important;}#s-landing .landing-foot{animation-delay:2s !important;}
 @keyframes landIn{0%{opacity:0;transform:translateY(40px) scale(.85);}100%{opacity:1;transform:none;}}
-.fx-ready #btn-join-manual,.fx-ready #btn-duel,.fx-ready #btn-solo{animation:ctaPulse 2.4s ease-out infinite !important;opacity:1;}
+#s-landing.fx-ready #btn-join-manual,#s-landing.fx-ready #btn-duel,#s-landing.fx-ready #btn-solo{animation:ctaPulse 2.4s ease-out infinite !important;opacity:1;}
+#s-landing.fx-ready #btn-duel{animation-delay:.8s !important;}#s-landing.fx-ready #btn-solo{animation-delay:1.6s !important;}
 #btn-duel,#btn-solo{margin-top:16px;}
 .fx-ready #btn-duel{animation-delay:.8s !important;}.fx-ready #btn-solo{animation-delay:1.6s !important;}
 @keyframes ctaPulse{0%{box-shadow:0 6px 0 #8A6E1E,0 0 0 0 rgba(255,243,196,.75);}70%{box-shadow:0 6px 0 #8A6E1E,0 0 0 16px rgba(255,243,196,0);}100%{box-shadow:0 6px 0 #8A6E1E,0 0 0 0 rgba(255,243,196,0);}}
@@ -468,10 +469,12 @@ input.full-name{font-size:19px;padding:16px;text-align:center;margin-top:6px;}
 .logo-flip .logo-clip.back{transform:rotateY(180deg);}
 /* כפתורי מסך הפתיחה נכנסים מהצד, אחד אחרי השני, מהר */
 #s-landing .btn,#s-landing .landing-foot{animation:slideInSide .55s cubic-bezier(.2,1.25,.4,1) both !important;}
-#btn-join-manual{animation-delay:.15s !important;}#btn-duel{animation-delay:.27s !important;}#btn-solo{animation-delay:.39s !important;}#s-landing .landing-foot{animation-delay:.5s !important;}
+#s-landing #btn-join-manual{animation-delay:.1s !important;}#s-landing #btn-duel{animation-delay:.38s !important;}#s-landing #btn-solo{animation-delay:.66s !important;}#s-landing .landing-foot{animation-delay:.94s !important;}
 @keyframes slideInSide{0%{opacity:0;transform:translateX(115%);}100%{opacity:1;transform:none;}}
+#s-landing .btn,#s-landing .landing-foot{animation-duration:.42s !important;}
 #btn-duel{--from:-115%;}
-.fx-ready #btn-join-manual,.fx-ready #btn-duel,.fx-ready #btn-solo{animation:ctaPulse 2.4s ease-out infinite !important;opacity:1;}
+#s-landing.fx-ready #btn-join-manual,#s-landing.fx-ready #btn-duel,#s-landing.fx-ready #btn-solo{animation:ctaPulse 2.4s ease-out infinite !important;opacity:1;}
+#s-landing.fx-ready #btn-duel{animation-delay:.8s !important;}#s-landing.fx-ready #btn-solo{animation-delay:1.6s !important;}
 .fx-letter{animation-delay:calc(.1s + var(--i) * 40ms) !important;}
 /* כפתור ההוראות ומסך ההוראות */
 .rules-btn{background:transparent;border:2px solid var(--line-yellow);color:var(--gold-light);font-size:18px;min-height:52px;margin-top:12px;}
@@ -488,6 +491,29 @@ input.full-name{font-size:19px;padding:16px;text-align:center;margin-top:6px;}
 .rules-row span{display:block;font-size:16px;line-height:1.4;color:var(--ink);}
 .rules-close{margin-top:6px;min-height:52px;font-size:18px;}
 .solo-lb{margin:14px 0 2px;}
+
+/* חדר ההמתנה של אחד על אחד */
+.dl-me{text-align:center;color:var(--ink-dim);font-size:15px;margin:6px 0 12px;}
+.dl-me b{color:var(--gold-light);}
+.dl-count{font-weight:800;color:var(--gold-light);font-size:17px;margin:6px 0 10px;}
+.dl-list{display:flex;flex-direction:column;gap:8px;}
+.dl-row{display:flex;align-items:center;gap:12px;background:var(--asphalt-2);border:1px solid rgba(212,175,55,.3);border-radius:16px;padding:10px 12px;}
+.dl-row.new{animation:slideInSide .4s cubic-bezier(.2,1.25,.4,1) both;}
+.dl-row .av{width:40px;height:40px;font-size:18px;flex-shrink:0;}
+.dl-name{flex:1;font-weight:700;font-size:17px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dl-inv{background:linear-gradient(180deg,var(--gold-light),var(--line-yellow));color:#1B1706;border:none;border-radius:12px;font-family:inherit;font-weight:800;font-size:15px;min-height:44px;padding:0 14px;cursor:pointer;box-shadow:0 4px 0 #8A6E1E;}
+.dl-inv:active{transform:translateY(3px);box-shadow:0 1px 0 #8A6E1E;}
+.dl-inv:disabled{opacity:.4;}
+.dl-wait{color:var(--gold-light);font-weight:700;font-size:14px;animation:waitDot 1.2s ease-in-out infinite;}
+.dl-busy{color:var(--ink-dim);font-size:13px;}
+.dl-pending{background:rgba(212,175,55,.12);border:2px dashed rgba(212,175,55,.6);border-radius:16px;padding:12px;text-align:center;font-weight:700;margin-bottom:10px;}
+.dl-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#2A2418;border:1px solid var(--line-yellow);color:var(--ink);border-radius:14px;padding:12px 18px;font-weight:700;z-index:65;animation:chipPop .4s cubic-bezier(.2,1.6,.4,1) both;max-width:90vw;text-align:center;}
+.radar.small{width:160px;height:160px;margin:10px auto;}
+.radar.small .me-dot{width:64px;height:64px;margin:-32px 0 0 -32px;font-size:30px;}
+.dl-inv-sheet{text-align:center;}
+.dl-inv-icon{font-size:64px;animation:iconDrop .7s cubic-bezier(.2,1.6,.4,1) both;}
+.dl-inv-from{font-size:20px;margin:8px 0 16px;line-height:1.5;}
+.dl-inv-from b{color:var(--gold-light);}
 </style>
 </head>
 <body>
@@ -2308,11 +2334,10 @@ let groupStreak=0, groupStreakQ=-1, endedFxFor=null, hostRevealFxFor=-1;
 
 
 // ---------- אחד על אחד (דו-קרב) ----------
-// שני שחקנים בלי מנחה: הראשון ממתין בחדר ההמתנה, השני שמצטרף מתחיל מיד דו-קרב של 20 שאלות זהות לשניהם.
-// הכול נשמר במסמך אחד באוסף rooms (מזהה שמתחיל ב-D), והמצביע לחדר ההמתנה של הדו-קרב הוא rooms/duel_open.
+// שני שחקנים בלי מנחה: בחדר ההמתנה רואים מי ממתין, שולחים הזמנה, וכשהשני מאשר מתחיל דו-קרב של 20 שאלות זהות לשניהם.
+// כל דו-קרב נשמר במסמך אחד באוסף rooms (מזהה שמתחיל ב-D).
 const DUEL_Q_COUNT = 20, DUEL_REVEAL_MS = 1600, DUEL_HB_MS = 4000, DUEL_HB_STALE = 15000;
 let duel = null;
-function duelPtrRef(){ return db.collection('rooms').doc('duel_open'); }
 function duelRef(){ return db.collection('rooms').doc(duel.code); }
 function seededRand(seed){ let a = seed>>>0; return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
 function duelQuestion(v, i){
@@ -2336,42 +2361,151 @@ function duelEntry(){
     <h1>משחק <span>אחד על אחד ⚔️</span></h1>
     <p class="sub">כתבו שם ושם משפחה ונכנסים לחדר ההמתנה</p>
     <input type="text" id="duel-name" class="full-name" placeholder="שם ושם משפחה" maxlength="36" autocomplete="name" value="${esc(nm)}">
-    <button class="btn btn-primary btn-xl" id="duel-go">⚔️ חפשו לי יריב</button>
+    <button class="btn btn-primary btn-xl" id="duel-go">⚔️ כניסה לחדר ההמתנה</button>
     <button class="btn btn-ghost" id="duel-back">חזרה</button>
     ${modeRulesHtml('duel')}`;
   $('duel-go').addEventListener('click', ()=>{ const n=readFullName('duel-name'); if(!n) return; duelStart(n); });
   $('duel-back').addEventListener('click', duelLeave);
 }
+// ---- חדר המתנה של אחד על אחד: רואים מי ממתין, שולחים הזמנה, והמשחק מתחיל רק כשהשני מאשר ----
+// מסמך אחד: rooms/duel_lobby = { players:{id:{name,hb,busy}}, inv:{מוזמן:{from,fromName,at,st,code}} }
+const DUEL_INV_TTL = 30000;
+let dlob = null; // מצב החדר אצלי
+function dlobRef(){ return db.collection('rooms').doc('duel_lobby'); }
+function dlobFresh(p){ return p && Date.now()-(p.hb||0) < DUEL_HB_STALE; }
+function dlobInvFresh(iv){ return iv && iv.st==='pending' && Date.now()-(iv.at||0) < DUEL_INV_TTL; }
 async function duelStart(name){
   requestWakeLock();
   const me = {id:duelMe(), name};
   const btn=$('duel-go'); if(btn) btn.disabled=true;
-  let res;
   try{
-    res = await db.runTransaction(async tx=>{
-      const ptr = await tx.get(duelPtrRef());
-      const code = ptr.exists && ptr.data().code;
-      if(code){
-        const ref = db.collection('rooms').doc(code); const d = await tx.get(ref);
-        if(d.exists){ const v=d.data();
-          if(v.status==='waiting' && v.p1 && v.p1.id===me.id) return {code, slot:1};
-          if(v.status==='waiting' && v.p1 && Date.now()-(v.hb1||0) < DUEL_HB_STALE){
-            tx.update(ref, {p2:me, status:'countdown', statusAt:Date.now()});
-            tx.set(duelPtrRef(), {code:null, at:Date.now()});
-            return {code, slot:2};
-          }
-        }
-      }
-      const nc = 'D' + genRoomCode();
-      tx.set(db.collection('rooms').doc(nc), {kind:'duel', status:'waiting', p1:me, p2:null, hb1:Date.now(), qs:duelPickQs(), seed:Math.floor(Math.random()*1e9), i:-1, s1:0, s2:0, createdAt:Date.now(), statusAt:Date.now()});
-      tx.set(duelPtrRef(), {code:nc, at:Date.now()});
-      return {code:nc, slot:1};
+    await db.runTransaction(async tx=>{
+      const d = await tx.get(dlobRef());
+      const entry = {name, hb:Date.now(), busy:false};
+      if(!d.exists) tx.set(dlobRef(), {players:{[me.id]:entry}, inv:{}});
+      else { const u={}; u['players.'+me.id]=entry; u['inv.'+me.id]=FV.delete(); tx.update(dlobRef(), u); }
     });
   }catch(e){ if(btn) btn.disabled=false; alert('לא הצלחנו להתחבר. בדקו את החיבור לאינטרנט ונסו שוב.'); return; }
+  duelStop(); dlobStop();
+  dlob = {me, v:null, unsub:null, hb:null, tick:null, inviting:null, shownInvite:null};
+  dlob.unsub = dlobRef().onSnapshot(snap=>{ if(!dlob || !snap.exists) return; dlob.v = snap.data(); dlobRender(); });
+  dlob.hb = setInterval(()=>{ if(dlob){ const u={}; u['players.'+dlob.me.id+'.hb']=Date.now(); dlobRef().update(u).catch(()=>{}); } }, DUEL_HB_MS);
+  dlob.tick = setInterval(()=>{ if(dlob && dlob.v) dlobRender(); }, 3000); // מעדכן "מי עדיין כאן" ופג תוקף להזמנות
+}
+function dlobStop(removeMe){
+  if(!dlob) return;
+  if(dlob.unsub) dlob.unsub(); clearInterval(dlob.hb); clearInterval(dlob.tick);
+  const m=$('dl-invite-modal'); if(m) m.remove();
+  if(removeMe){ const u={}; u['players.'+dlob.me.id]=FV.delete(); if(dlob.inviting) u['inv.'+dlob.inviting]=FV.delete(); dlobRef().update(u).catch(()=>{}); }
+  dlob = null;
+}
+function dlobRender(){
+  if(!dlob || !dlob.v || role!=='duel') return;
+  const v=dlob.v, me=dlob.me, players=v.players||{}, inv=v.inv||{};
+  // 1) הזמנה ששלחתי — אושרה / נדחתה / פג תוקפה
+  if(dlob.inviting){
+    const iv = inv[dlob.inviting];
+    if(iv && iv.from===me.id && iv.st==='accepted' && iv.code){ const code=iv.code, t=dlob.inviting; const u={}; u['inv.'+t]=FV.delete(); dlobRef().update(u).catch(()=>{}); dlobStop(); duelAttach(code, 1, me); return; }
+    if(!iv || iv.from!==me.id || iv.st==='declined' || !dlobInvFresh(iv)){
+      const who = (players[dlob.inviting]||{}).name || 'השחקן';
+      const declined = iv && iv.st==='declined';
+      dlobCancelInvite(true);
+      dlobToast(declined ? `${who} לא אישר/ה הפעם` : `${who} לא ענה/תה להזמנה`);
+    }
+  }
+  // 2) הזמנה שקיבלתי
+  const mine = inv[me.id];
+  if(dlobInvFresh(mine) && dlobFresh(players[mine.from])){ if(dlob.shownInvite!==mine.at) dlobShowInvite(mine); }
+  else { const m=$('dl-invite-modal'); if(m) m.remove(); dlob.shownInvite=null; }
+  // 3) רשימת הממתינים
+  const others = Object.keys(players).filter(id=>id!==me.id && players[id] && players[id].name && dlobFresh(players[id])).map(id=>({id, ...players[id]}));
+  dlob.seen = dlob.seen || new Set();
+  const body=$('duel-body');
+  const rows = others.map(p=>{
+    const invitedByMe = dlob.inviting===p.id;
+    const taken = !invitedByMe && (p.busy || dlobInvFresh(inv[p.id]));
+    const isNew = !dlob.seen.has(p.id); dlob.seen.add(p.id);
+    return `<div class="dl-row ${isNew?'new':''}"><div class="av" style="background:${avColor(p.id)}">${esc((p.name||'?').charAt(0))}</div><div class="dl-name">${esc(p.name)}</div>
+      ${invitedByMe ? '<span class="dl-wait">⏳ ממתין לאישור</span>' : taken ? '<span class="dl-busy">בהזמנה אחרת</span>' : `<button class="dl-inv" data-inv="${esc(p.id)}" ${dlob.inviting?'disabled':''}>⚔️ הזמנה</button>`}</div>`;
+  }).join('');
+  body.innerHTML = `<div class="eyebrow">חדר ההמתנה — אחד על אחד</div>
+    <h1>בחרו <span>יריב ⚔️</span></h1>
+    <div class="dl-me">אתם בחדר בתור <b>${esc(me.name)}</b> — אחרים יכולים להזמין אתכם</div>
+    ${dlob.inviting ? `<div class="dl-pending">⏳ שלחת הזמנה ל<b>${esc((players[dlob.inviting]||{}).name||'')}</b> — מחכים שיאשר/תאשר...<button class="skip-btn" id="dl-cancel-inv">ביטול ההזמנה</button></div>` : ''}
+    <div class="dl-count">👥 ${others.length ? others.length + ' שחקנים ממתינים בחדר' : 'עוד אין שחקנים אחרים בחדר'}</div>
+    ${others.length ? `<div class="dl-list">${rows}</div>` : `<div class="radar small"><div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div><div class="sweep"></div><div class="me-dot">${esc((me.name||'?').charAt(0))}</div></div><p class="sub" style="text-align:center;">ברגע שמישהו ייכנס ל"משחק אחד על אחד" — הוא יופיע כאן ותוכלו להזמין אותו.</p>`}
+    ${modeRulesHtml('duel')}
+    <button class="btn btn-ghost" id="duel-cancel">יציאה מחדר ההמתנה</button>
+    <div id="dl-toast"></div>`;
+  body.querySelectorAll('[data-inv]').forEach(b=>b.addEventListener('click', ()=>dlobInvite(b.dataset.inv)));
+  const c=$('dl-cancel-inv'); if(c) c.addEventListener('click', ()=>dlobCancelInvite(false));
+  $('duel-cancel').addEventListener('click', duelLeave);
+  if(dlob.toast){ $('dl-toast').innerHTML = `<div class="dl-toast">${esc(dlob.toast)}</div>`; }
+}
+function dlobToast(msg){ if(!dlob) return; dlob.toast=msg; setTimeout(()=>{ if(dlob && dlob.toast===msg){ dlob.toast=null; const t=$('dl-toast'); if(t) t.innerHTML=''; } }, 3500); }
+async function dlobInvite(target){
+  if(!dlob || dlob.inviting) return;
+  const me=dlob.me;
+  try{
+    const ok = await db.runTransaction(async tx=>{
+      const d = await tx.get(dlobRef()); if(!d.exists) return false;
+      const v=d.data(), t=(v.players||{})[target];
+      if(!dlobFresh(t) || t.busy || dlobInvFresh((v.inv||{})[target])) return false;
+      const u={}; u['inv.'+target]={from:me.id, fromName:me.name, at:Date.now(), st:'pending'}; u['players.'+me.id+'.busy']=true;
+      tx.update(dlobRef(), u); return true;
+    });
+    if(!ok){ dlobToast('השחקן כבר לא פנוי — נסו מישהו אחר'); dlobRender(); return; }
+    dlob.inviting = target; beep(660,90); dlobRender();
+  }catch(e){ dlobToast('לא הצלחנו לשלוח הזמנה. נסו שוב.'); }
+}
+function dlobCancelInvite(silent){
+  if(!dlob || !dlob.inviting) return;
+  const t=dlob.inviting, meId=dlob.me.id; dlob.inviting=null;
+  const u={}; u['players.'+meId+'.busy']=false;
+  db.runTransaction(async tx=>{ const d=await tx.get(dlobRef()); const iv=d.exists && (d.data().inv||{})[t]; if(iv && iv.from===meId && iv.st!=='accepted') u['inv.'+t]=FV.delete(); tx.update(dlobRef(), u); }).catch(()=>{});
+  if(!silent) dlobRender();
+}
+function dlobShowInvite(iv){
+  dlob.shownInvite = iv.at;
+  const old=$('dl-invite-modal'); if(old) old.remove();
+  const m=document.createElement('div'); m.id='dl-invite-modal'; m.className='rules-modal';
+  m.innerHTML = `<div class="rules-pop"><div class="rules-sheet dl-inv-sheet">
+      <div class="dl-inv-icon">⚔️</div>
+      <div class="rules-head">הזמנה לדו-קרב!</div>
+      <div class="dl-inv-from"><b>${esc(iv.fromName)}</b> מזמין/ה אותך למשחק אחד על אחד</div>
+      <button class="btn btn-primary btn-xl" id="dl-accept">✓ מאשר/ת — מתחילים!</button>
+      <button class="btn btn-ghost" id="dl-decline">לא עכשיו</button>
+    </div></div>`;
+  document.body.appendChild(m);
+  beep(880,110); setTimeout(()=>beep(1175,140),180);
+  try{ if(navigator.vibrate) navigator.vibrate([120,60,120]); }catch(e){}
+  $('dl-accept').addEventListener('click', ()=>dlobAccept(iv));
+  $('dl-decline').addEventListener('click', ()=>{ const u={}; u['inv.'+dlob.me.id+'.st']='declined'; dlobRef().update(u).catch(()=>{}); m.remove(); });
+}
+async function dlobAccept(iv){
+  if(!dlob) return; const me=dlob.me;
+  const btn=$('dl-accept'); if(btn) btn.disabled=true;
+  let code=null;
+  try{
+    code = await db.runTransaction(async tx=>{
+      const d=await tx.get(dlobRef()); if(!d.exists) return null;
+      const v=d.data(), cur=(v.inv||{})[me.id], from=(v.players||{})[iv.from];
+      if(!dlobInvFresh(cur) || cur.from!==iv.from || !dlobFresh(from)) return null;
+      const nc='D'+genRoomCode();
+      tx.set(db.collection('rooms').doc(nc), {kind:'duel', status:'countdown', p1:{id:iv.from, name:from.name}, p2:me, qs:duelPickQs(), seed:Math.floor(Math.random()*1e9), i:-1, s1:0, s2:0, createdAt:Date.now(), statusAt:Date.now()});
+      const u={}; u['inv.'+me.id]={...cur, st:'accepted', code:nc}; u['players.'+me.id]=FV.delete(); u['players.'+iv.from]=FV.delete();
+      tx.update(dlobRef(), u);
+      return nc;
+    });
+  }catch(e){ code=null; }
+  const m=$('dl-invite-modal'); if(m) m.remove();
+  if(!code){ dlobToast('ההזמנה כבר לא בתוקף'); dlobRender(); return; }
+  dlobStop(); duelAttach(code, 2, me);
+}
+function duelAttach(code, slot, me){
   duelStop();
-  duel = {code:res.code, slot:res.slot, me, v:null, unsub:null, hb:null, qi:-1, startLocal:0, myChoice:null, locked:false, revealedFor:-1, splashFor:false, endedFx:false, timers:[]};
+  duel = {code, slot, me, v:null, unsub:null, hb:null, qi:-1, startLocal:0, myChoice:null, locked:false, revealedFor:-1, splashFor:false, endedFx:false, timers:[]};
   duel.unsub = duelRef().onSnapshot(snap=>{ if(!duel || !snap.exists) return; duel.v = snap.data(); duelRender(); });
-  if(res.slot===1) duel.hb = setInterval(()=>{ if(duel && duel.v && duel.v.status==='waiting') duelRef().update({hb1:Date.now()}).catch(()=>{}); }, DUEL_HB_MS);
 }
 function duelStop(){
   if(!duel) return;
@@ -2381,13 +2515,7 @@ function duelStop(){
   duel = null;
 }
 function duelLeave(){
-  if(duel && duel.v && duel.v.status==='waiting' && duel.slot===1){
-    const code=duel.code;
-    db.runTransaction(async tx=>{ const ref=db.collection('rooms').doc(code); const d=await tx.get(ref); const ptr=await tx.get(duelPtrRef());
-      if(d.exists && d.data().status==='waiting') tx.update(ref,{status:'cancelled'});
-      if(ptr.exists && ptr.data().code===code) tx.set(duelPtrRef(),{code:null, at:Date.now()}); }).catch(()=>{});
-  }
-  duelStop(); role=null; showScreen('s-landing'); renderLandingBest();
+  dlobStop(true); duelStop(); role=null; showScreen('s-landing'); renderLandingBest();
 }
 function duelAdvance(fromStatus, fromI){
   if(!duel) return;
@@ -2494,7 +2622,7 @@ function duelRender(){
         <div class="dp ${ms>=os?'win':''}"><div class="dn">${esc(me.name)} (את/ה)</div><div class="ds">${ms}</div><div class="dc">${cnt(duel.slot)} / ${v.qs.length} נכונות</div></div>
         <div class="dp ${os>=ms?'win':''}"><div class="dn">${esc(op.name)}</div><div class="ds">${os}</div><div class="dc">${cnt(3-duel.slot)} / ${v.qs.length} נכונות</div></div>
       </div>
-      <button class="btn btn-duel btn-xl" id="duel-again">⚔️ דו-קרב נוסף</button>
+      <button class="btn btn-primary btn-xl" id="duel-again">⚔️ חזרה לחדר ההמתנה לדו-קרב נוסף</button>
       <button class="btn btn-ghost" id="duel-home">חזרה למסך הבית</button>`;
     $('duel-again').addEventListener('click', ()=>{ const n=duel.me.name; duelStop(); role='duel'; duelStart(n); });
     $('duel-home').addEventListener('click', duelLeave);
@@ -2545,11 +2673,12 @@ function modeRules(mode){
       ['🎁','הפרס','למי שמסיים במקום הראשון!']
     ]},
     duel: {title:'משחק אחד על אחד ⚔️', items:[
-      ['🚪','נכנסים','שם ושם משפחה ← חדר ההמתנה. כשעוד שחקן נכנס — הדו-קרב מתחיל מיד, בלי מנחה.'],
+      ['🚪','נכנסים','שם ושם משפחה ← חדר ההמתנה. שם רואים מי ממתין.'],
+      ['📨','בוחרים יריב','לוחצים "הזמנה" ליד השם. כשהשני מאשר — הדו-קרב מתחיל מיד, בלי מנחה.'],
       ['❓',`${DUEL_Q_COUNT} שאלות`,'אותן שאלות בדיוק לשניכם, באותו סדר.'],
       ['⚡',`${sec} שניות לשאלה`,'עונים פעם אחת. כששניכם עניתם — עוברים מיד הלאה.'],
       ['🏆','ניקוד', pts + '. הניקוד של שניכם מוצג כל הזמן.'],
-      ['👑','מי מנצח?',`מי שצבר יותר נקודות אחרי ${DUEL_Q_COUNT} שאלות. אפשר "דו-קרב נוסף".`]
+      ['👑','מי מנצח?',`מי שצבר יותר נקודות אחרי ${DUEL_Q_COUNT} שאלות. בסוף חוזרים לחדר ההמתנה לדו-קרב נוסף.`]
     ]},
     solo: {title:'משחק עצמאי 🎯', items:[
       ['📝','נרשמים פעם אחת','עם שם ושם משפחה — ומהפעם הבאה נכנסים ישר.'],
@@ -2589,7 +2718,7 @@ function renderLandingBest(){
   el.textContent = p ? ('🏅 ' + p.name + ' — השיא שלך: ' + b + ' נקודות') : '';
 }
 
-const APP_VERSION = '2026-10-07i';
+const APP_VERSION = '2026-10-07j';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
