@@ -3248,19 +3248,33 @@ function ensureAudio(){
   if(!audioCtx){ try{ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
   if(audioCtx && audioCtx.state==='suspended'){ audioCtx.resume(); }
 }
-function beep(freq, durMs){
+// כל האפקטים באותו "צליל" של המוזיקה: מעטפת רכה, גוון משולש עם מעט סינוס, ובאותו סולם (לה מינור)
+let sfxBus=null;
+function getSfxBus(){
+  if(sfxBus || !audioCtx) return sfxBus;
+  try{ const lp=audioCtx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=5200; lp.Q.value=0.4;
+    const g=audioCtx.createGain(); g.gain.value=1; g.connect(lp); lp.connect(audioCtx.destination); sfxBus=g; }catch(e){}
+  return sfxBus;
+}
+function beep(freq, durMs, vol){
   if(!audioCtx) return;
   try{
-    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
-    osc.type='sine'; osc.frequency.value=freq||880;
-    gain.gain.value=0.18;
-    osc.connect(gain); gain.connect(audioCtx.destination);
-    osc.start();
-    osc.stop(audioCtx.currentTime + (durMs||150)/1000);
+    const bus=getSfxBus(); if(!bus) return;
+    const t=audioCtx.currentTime+0.005, dur=Math.max(0.06,(durMs||150)/1000), v=vol||0.13;
+    [['triangle',1],['sine',0.45]].forEach(([type,k])=>{
+      const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+      o.type=type; o.frequency.setValueAtTime(freq||880,t);
+      g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(v*k,t+0.008); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+      o.connect(g); g.connect(bus); o.start(t); o.stop(t+dur+0.05);
+    });
   }catch(e){}
 }
-function playHappyChime(){ if(!audioCtx) return; [660,880,1100].forEach((f,i)=>{ setTimeout(()=>beep(f,140), i*90); }); }
-function playSadTone(){ if(!audioCtx) return; beep(300,140); setTimeout(()=>beep(210,240),150); }
+// תשובה נכונה: ארפג'ו עולה דו-מי-סול-דו | טעות: פה→מי יורד | פתיחת נושא/דו-קרב: לה→מי→לה
+function playHappyChime(){ if(!audioCtx) return; [523,659,784,1047].forEach((f,i)=>{ setTimeout(()=>beep(f, i===3?260:120, i===3?0.12:0.1), i*75); }); }
+function playSadTone(){ if(!audioCtx) return; beep(349,170,0.11); setTimeout(()=>beep(330,320,0.11),170); }
+function playSting(){ if(!audioCtx) return; beep(440,150,0.11); setTimeout(()=>beep(659,150,0.11),140); setTimeout(()=>beep(880,340,0.12),280); }
+let lastStingKey=null;
+function playTopicSting(key){ if(lastStingKey===key) return; lastStingKey=key; playSting(); }
 
 let musicOn=false, musicTimer=null, musicStep=0, musicFast=false, musicBus=null, noiseBuf=null;
 // Elegant, rhythmic loop in A minor: Am - F - C - G, one bar = 8 eighth-notes
@@ -3328,7 +3342,7 @@ function stopMusic(){ musicOn=false; if(musicTimer){ clearTimeout(musicTimer); m
 function pressFeedback(btn){
   if(!btn) return;
   btn.classList.remove('pressed'); void btn.offsetWidth; btn.classList.add('pressed');
-  beep(620,45);
+  beep(659,45,0.07);
   try{ if(navigator.vibrate) navigator.vibrate(25); }catch(e){}
 }
 
@@ -3472,7 +3486,7 @@ function fxFireworks(ms){
     if(Date.now()>end) return;
     const x=fx.w*(0.15+Math.random()*0.7), y=fx.h*(0.12+Math.random()*0.35);
     const pal=[FX_GOLD,['#8FF5B6','#3DBE72','#fff'],['#5EC8D8','#BFEFF7','#fff'],['#FF8A6B','#FFD1C2','#fff'],['#E08DB0','#FFD6E7','#fff']][(Math.random()*5)|0];
-    fxBurst(x,y,70,pal,6.5); if(Math.random()<0.5) beep(200+Math.random()*120, 60);
+    fxBurst(x,y,70,pal,6.5); if(Math.random()<0.5) beep([220,262,330][Math.floor(Math.random()*3)], 60, 0.06);
     setTimeout(shoot, 280+Math.random()*320);
   })();
 }
@@ -3700,7 +3714,7 @@ function dlobRender(){
       <div class="dl-me"><span class="av" style="background:${avColor(me.id)}">${esc((me.name||'?').charAt(0))}</span>אתם בחדר: <b>${esc(me.name)}</b></div>
       <div class="dl-me-sub">כל מי שבחדר רואה אתכם ויכול להזמין אתכם</div>
     </div>
-    ${dlob.inviting ? `<div class="dl-pending">⏳ שלחת הזמנה ל<b>${esc((players[dlob.inviting]||{}).name||'')}</b> — מחכים לאישור...<button class="skip-btn" id="dl-cancel-inv">ביטול ההזמנה</button></div>` : ''}
+    ${dlob.inviting ? `<div class="dl-pending">⏳ שלחתם הזמנה ל<b>${esc((players[dlob.inviting]||{}).name||'')}</b> — מחכים לאישור...<button class="skip-btn" id="dl-cancel-inv">ביטול ההזמנה</button></div>` : ''}
     <div class="dl-count"><span class="live"></span>${others.length ? (others.length===1 ? 'שחקן אחד ממתין בחדר' : others.length + ' שחקנים ממתינים בחדר') : 'מחפשים שחקנים בחדר...'}</div>
     ${others.length ? `<div class="dl-list">${rows}</div>` : `<div class="radar small"><div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div><div class="sweep"></div><div class="me-dot">${esc((me.name||'?').charAt(0))}</div></div><p class="dl-empty-txt">ברגע שמישהו ייכנס ל"משחק ראש בראש" הוא יופיע כאן — ותוכלו להזמין אותו לדו-קרב</p>`}
     ${navTilesHtml('duel','duel-cancel')}
@@ -3733,7 +3747,7 @@ async function dlobInvite(target){
       tx.update(dlobRef(), u); return true;
     });
     if(!ok){ dlobToast('השחקן כבר לא פנוי — נסו מישהו אחר'); dlobRender(); return; }
-    dlob.inviting = target; dlob.invAt = at; dlob.invSentAt = Date.now(); dlob.invArrived = false; beep(660,90); dlobRender();
+    dlob.inviting = target; dlob.invAt = at; dlob.invSentAt = Date.now(); dlob.invArrived = false; beep(659,110); dlobRender();
   }catch(e){ dlobToast('לא הצלחנו לשלוח הזמנה. נסו שוב.'); }
 }
 function dlobCancelInvite(silent){
@@ -3755,7 +3769,7 @@ function dlobShowInvite(iv){
       <button class="btn btn-ghost" id="dl-decline">לא עכשיו</button>
     </div></div>`;
   document.body.appendChild(m);
-  beep(880,110); setTimeout(()=>beep(1175,140),180);
+  beep(880,120); setTimeout(()=>beep(1319,200),160);
   try{ if(navigator.vibrate) navigator.vibrate([120,60,120]); }catch(e){}
   $('dl-accept').addEventListener('click', ()=>dlobAccept(iv));
   $('dl-decline').addEventListener('click', ()=>{ const u={}; u['inv.'+dlob.me.id+'.st']='declined'; dlobRef().update(u).catch(()=>{}); m.remove(); });
@@ -3876,7 +3890,7 @@ function duelRender(){
     const {me, op} = duelNames(v);
     const ov=document.createElement('div'); ov.className='vs-splash';
     ov.innerHTML = `<div class="vs-row"><div class="vs-name a">${esc(me.name)}</div><div class="vs-mark">VS</div><div class="vs-name b">${esc(op.name)}</div></div><div class="vs-sub">נמצא יריב! הדו-קרב מתחיל...</div>`;
-    document.body.appendChild(ov); beep(330,120); setTimeout(()=>beep(495,160),450);
+    document.body.appendChild(ov); playSting();
     try{ if(navigator.vibrate) navigator.vibrate([60,60,120]); }catch(e){}
     duelLater(()=>{ ov.remove(); const ref = duel; soloCountdown({__duel:true}, ()=>{ if(duel===ref) duelAdvance('countdown'); }, ()=>duel===ref); }, 2200);
     return;
@@ -3895,7 +3909,7 @@ function duelRender(){
       ${qCardHtml(i+1, v.qs.length, q)}
       ${clockHtml('d')}
       <div class="answers" id="d-answers">${q.a.map((t,k)=>`<button class="answer-btn" data-i="${k}"><span class="opt-letter">${letterFor(k)}</span><span class="opt-text">${esc(t)}</span></button>`).join('')}</div>
-      <div class="center-note" id="d-note">⚡ כל שנייה שעוברת = 2 נקודות פחות — מהר!</div>`;
+      <div class="center-note" id="d-note">⚡ ענו מהר — כל שנייה שווה 2 נקודות!</div>`;
     body.querySelectorAll('.answer-btn').forEach(b=>b.addEventListener('click', ()=>duelAnswer(Number(b.dataset.i), b)));
     mountQTimer(duel.startLocal, 'd-timer-ring', 'd-timer-num', 'd-clock-wrap', ()=>{ duelLockButtons(); duelLater(()=>duelAdvance('question', i), 300); });
     return;
@@ -3908,12 +3922,12 @@ function duelRender(){
     const {op} = duelNames(v);
     const right = mine && mine.c===q.c;
     body.innerHTML = `<div id="d-header">${duelHeadHtml(v)}</div>
-      <div class="result-banner ${right?'correct':'wrong'}">${!mine ? '⏰ לא הספקת לענות' : right ? `🎉 נכון! +${mine.p} נקודות` : '❌ לא נכון הפעם'}</div>
+      <div class="result-banner ${right?'correct':'wrong'}">${!mine ? '⏰ לא הספקתם לענות' : right ? `🎉 נכון! +${mine.p} נקודות` : '❌ לא נכון הפעם'}</div>
       ${right ? speedBreakHtml(mine.p) : ''}
       <div class="q-card" style="padding:16px;"><div class="question-text" style="font-size:16px;">${esc(q.q)}</div></div>
       <div class="answers">${q.a.map((t,k)=>{
         let cls='dim', tag='';
-        if(k===q.c){ cls='correct'; tag='✓ התשובה הנכונה'; } else if(mine && k===mine.c){ cls='wrong'; tag='✗ הבחירה שלך'; }
+        if(k===q.c){ cls='correct'; tag='✓ התשובה הנכונה'; } else if(mine && k===mine.c){ cls='wrong'; tag='✗ הבחירה שלכם'; }
         const opp = theirs && theirs.c===k ? ` data-opp="${esc(op.name)} ${theirs.c===q.c?'✓':'✗'}"` : '';
         return `<div class="answer-btn ${cls}" ${tag?`data-tag="${tag}"`:''}${opp}><span class="opt-letter">${letterFor(k)}</span><span class="opt-text">${esc(t)}</span></div>`;
       }).join('')}</div>
@@ -3931,14 +3945,15 @@ function duelRender(){
     const res = ms>os ? 'win' : ms<os ? 'lose' : 'tie';
     const myC=cnt(duel.slot), myT=tm(duel.slot);
     body.innerHTML = `<div class="duel-end fit-screen">
-      <div class="duel-result ${res}">${res==='win' ? '🏆 ניצחת!' : res==='lose' ? `<small>🏆 הניצחון הפעם:</small>${esc(op.name)}` : '🤝 תיקו!'}</div>
+      <div class="eyebrow" style="text-align:center;">🏁 הדו-קרב הסתיים</div>
+      <div class="duel-result ${res}">${res==='win' ? '🏆 ניצחתם!' : res==='lose' ? `<small>🏆 הניצחון הפעם:</small>${esc(op.name)}` : '🤝 תיקו!'}</div>
       <div class="duel-final">
         <div class="dp ${ms>=os?'win':''}"><div class="dn">${esc(me.name)} (אתם)</div><div class="ds">${ms}</div><div class="dc">✅ ${myC}/${v.qs.length} · ⏱️ ${fmtDur(myT)}</div></div>
         <div class="dp ${os>=ms?'win':''}"><div class="dn">${esc(op.name)}</div><div class="ds">${os}</div><div class="dc">✅ ${cnt(3-duel.slot)}/${v.qs.length} · ⏱️ ${fmtDur(tm(3-duel.slot))}</div></div>
       </div>
       <div id="duel-miss"></div>
       <div id="duel-lb" class="se-lb lb-box"><div class="lb-title">🏆 טבלת השיאים — ראש בראש</div><div class="lb-scroll"><div class="sh-empty">טוען את טבלת השיאים...</div></div></div>
-      <button class="btn btn-primary btn-xl" id="duel-again">⚔️ לדו-קרב נוסף</button>
+      <button class="btn btn-primary btn-xl" id="duel-again">🔁 לדו-קרב נוסף</button>
       ${navTilesHtml('duel','duel-home')}
     </div>`;
     duelSaveAndShowBoard(me.name, ms, {bestCorrect:myC, bestQ:v.qs.length, bestMs:myT}, res);
@@ -3960,7 +3975,7 @@ function duelAnswer(k, btn){
   const pts = k===q.c ? BASE_POINTS + SPEED_POINTS*Math.max(0, Math.floor((QUESTION_MS-ms)/1000)) : 0;
   lockWorth('d', duel.startLocal, ms);
   const box=$('d-answers');
-  if(box) box.querySelectorAll('.answer-btn').forEach(b=>{ b.disabled=true; if(b===btn){ b.classList.add('selected'); b.dataset.tag='✓ הבחירה שלך'; pressFeedback(b); } });
+  if(box) box.querySelectorAll('.answer-btn').forEach(b=>{ b.disabled=true; if(b===btn){ b.classList.add('selected'); b.dataset.tag='✓ הבחירה שלכם'; pressFeedback(b); } });
   const note=$('d-note'); if(note) note.textContent='התשובה נשלחה ✓ — ממתינים ליריב...';
   const upd = {}; upd['a'+duel.slot+'_'+i] = {c:k, ms, p:pts}; if(pts) upd['s'+duel.slot] = FV.increment(pts);
   // אם היריב כבר ענה — עוברים מיד לחשיפה, בלי לחכות לסבב נוסף מול השרת
@@ -4081,12 +4096,12 @@ function renderLandingBest(){
   if(!el) return;
   const p = soloProfile(), b = soloBest();
   if(!p){ el.innerHTML=''; return; }
-  el.innerHTML = `<div class="pb-badge"><span class="pb-medal">🏅</span><span class="pb-txt"><span class="pb-name">${esc(p.name)}</span><span class="pb-line">השיא שלך: <b class="pb-num">0</b> נקודות</span></span></div>`;
+  el.innerHTML = `<div class="pb-badge"><span class="pb-medal">🏅</span><span class="pb-txt"><span class="pb-name">${esc(p.name)}</span><span class="pb-line">השיא שלכם: <b class="pb-num">0</b> נקודות</span></span></div>`;
   const n = el.querySelector('.pb-num');
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-08q';
+const APP_VERSION = '2026-10-08r';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -4172,10 +4187,10 @@ function mountQTimer(startedAt, ringId, numId, wrapId, onExpire){
     if(wrapEl){ wrapEl.classList.toggle('warn', secs<=6 && secs>3); wrapEl.classList.toggle('danger', secs<=3 && remain>0); }
     document.body.classList.toggle('tick-danger', secs<=3 && remain>0);
     musicFast = secs<=3;
-    if(secs<=3 && secs>=1 && secs!==lastBeepSec){ lastBeepSec=secs; beep(880,120); }
+    if(secs<=3 && secs>=1 && secs!==lastBeepSec){ lastBeepSec=secs; beep(880,110,0.11); }
     if(remain<=0 && !expired){
       expired = true;
-      if(lastBeepSec!==0){ lastBeepSec=0; beep(440,320); }
+      if(lastBeepSec!==0){ lastBeepSec=0; beep(440,380,0.12); }
       if(wrapEl){ wrapEl.classList.remove('danger'); wrapEl.classList.remove('warn'); wrapEl.classList.add('done'); }
       clearQTimer(); if(onExpire) onExpire();
     }
@@ -4320,6 +4335,7 @@ function renderHost(){
   if(role!=='host') return;
   clearQTimer();
   const body = $('host-body');
+  if(curState && curState.phase!=='intermission' && body) delete body.dataset.view;
   const total = curState.phase==='lobby' ? lobbyActiveIds().length : playersOrder.length;
   if(curState.phase==='lobby'){
     hostPruneStale();
@@ -4352,6 +4368,8 @@ function renderHost(){
     return;
   }
   if(curState.phase==='intermission'){
+    if(body.dataset.view==='inter'+curState.qIndex+roomCode) return;
+    body.dataset.view='inter'+curState.qIndex+roomCode; playTopicSting(roomCode+curState.qIndex);
     body.innerHTML = `
       ${miniBoardHtml()}
       ${topicStageHtml(curState.introTopic)}
@@ -4592,7 +4610,7 @@ function scoreHeaderInner(){
   const me = playersMap[playerId] || {score:0};
   const myRank = sorted.findIndex(p=>p.id===playerId)+1;
   const sc = me.score||0, up = lastHeaderScore!==null && sc>lastHeaderScore; lastHeaderScore = sc;
-  return `<div class="score-header"><span>🏆 הניקוד שלך: <b class="${up?'score-up':''}">${sc}</b></span><span>מקום #${myRank||'-'} מתוך ${sorted.length}</span></div>`;
+  return `<div class="score-header"><span>🏆 הניקוד שלכם: <b class="${up?'score-up':''}">${sc}</b></span><span>מקום #${myRank||'-'} מתוך ${sorted.length}</span></div>`;
 }
 function subscribeMyPlayer(){
   if(playerListUnsub) playerListUnsub();
@@ -4608,14 +4626,14 @@ function lockPlayerAnswers(q){
   if(box){
     box.querySelectorAll('.answer-btn').forEach((b,i)=>{
       b.disabled = true; b.classList.remove('selected'); delete b.dataset.tag;
-      if(q.type==='poll'){ if(i===myChoiceForQ){ b.classList.add('selected'); b.dataset.tag='✓ הבחירה שלך'; } return; }
+      if(q.type==='poll'){ if(i===myChoiceForQ){ b.classList.add('selected'); b.dataset.tag='✓ הבחירה שלכם'; } return; }
       if(i===q.c){ b.classList.add('correct'); b.dataset.tag = answerTag(q); }
-      else if(i===myChoiceForQ){ b.classList.add('wrong'); b.dataset.tag = '✗ הבחירה שלך'; }
+      else if(i===myChoiceForQ){ b.classList.add('wrong'); b.dataset.tag = '✗ הבחירה שלכם'; }
       else b.classList.add('dim');
     });
   }
   const note = $('p-answer-note');
-  if(note) note.textContent = myChoiceForQ===null ? 'לא הספקת לענות...' : (q.type==='poll' ? 'ממתינים לתוצאות הסקר...' : (myChoiceForQ===q.c ? 'כל הכבוד, נכון! 🎉' : 'לא נכון הפעם'));
+  if(note) note.textContent = myChoiceForQ===null ? 'לא הספקתם לענות...' : (q.type==='poll' ? 'ממתינים לתוצאות הסקר...' : (myChoiceForQ===q.c ? 'כל הכבוד, נכון! 🎉' : 'לא נכון הפעם'));
 }
 function selectAnswer(choice, btnEl){
   if(curState.phase!=='question') return;
@@ -4627,7 +4645,7 @@ function selectAnswer(choice, btnEl){
   if(box){
     box.querySelectorAll('.answer-btn').forEach(b=>{ b.classList.remove('selected'); delete b.dataset.tag; });
     const btn = btnEl || box.querySelector('[data-i="'+choice+'"]');
-    if(btn){ btn.classList.add('selected'); btn.dataset.tag = '✓ הבחירה שלך'; pressFeedback(btn); }
+    if(btn){ btn.classList.add('selected'); btn.dataset.tag = '✓ הבחירה שלכם'; pressFeedback(btn); }
   }
   const note=$('p-answer-note'); if(note) note.textContent='התשובה נשלחה ✓ — אפשר להחליף כל עוד יש זמן';
   answersRef().doc(curState.qIndex+'-'+playerId).set({playerId, qIndex:curState.qIndex, choice, answeredAt:now}).catch(()=>{});
@@ -4637,6 +4655,7 @@ function renderPlayer(){
   if(role!=='player') return;
   clearQTimer();
   const body = $('player-body');
+  if(curState && curState.phase!=='intermission' && body) delete body.dataset.view;
   const me = playersMap[playerId] || {name:playerName, score:0};
   const header = `<div id="p-header">${scoreHeaderInner()}</div>`;
   if(curState.phase==='lobby'){
@@ -4648,7 +4667,7 @@ function renderPlayer(){
       </div>
       ${lobbyCrowdHtml(waiting, playerId)}
       <div class="wait-card">
-        <div class="wait-card-head">👥 <b>${waiting.length}</b> ממתינים בחדר ההמתנה (כולל אותך)</div>
+        <div class="wait-card-head">👥 <b>${waiting.length}</b> ממתינים בחדר ההמתנה (כולל אתכם)</div>
         <div class="goal-track"><div style="width:${Math.min(100, Math.round(waiting.length/MIN_PLAYERS*100))}%"></div></div>
         <div class="goal-note">${waiting.length>=MIN_PLAYERS ? 'עברנו את המינימום (' + waiting.length + ' שחקנים) — המנחה יתחיל את המשחק בכל רגע! 🎉' : 'חסרים עוד <b>' + (MIN_PLAYERS-waiting.length) + '</b> שחקנים למינימום של ' + MIN_PLAYERS}</div>
       </div>
@@ -4658,11 +4677,13 @@ function renderPlayer(){
     return;
   }
   if(curState.phase==='intermission'){
+    if(body.dataset.view==='inter'+curState.qIndex+roomCode){ const ph=$('p-header'); if(ph) ph.innerHTML=scoreHeaderInner(); return; }
+    body.dataset.view='inter'+curState.qIndex+roomCode; playTopicSting(roomCode+curState.qIndex);
     body.innerHTML = `${header}${topicStageHtml(curState.introTopic)}
       <div class="eyebrow" style="text-align:center;">הנושא הבא</div>
       <div class="topic-title">${esc(curState.introTopic||'')}</div>
       ${topicSubHtml()}
-      <div class="center-note">מתכוננים...</div>`;
+      <div class="center-note">מתחילים בעוד רגע...</div>`;
     fxSplitLetters(body.querySelector('.topic-title'));
     return;
   }
@@ -4680,8 +4701,8 @@ function renderPlayer(){
       ${progressHtml(curState.qIndex, QUESTIONS.length)}
       ${qCardHtml(curState.qIndex+1, QUESTIONS.length, q)}
       ${clockHtml('p')}
-      <div class="answers" id="p-answers">${q.a.map((t,i)=>`<button class="answer-btn ${myChoiceForQ===i?'selected':''}" data-i="${i}" ${myChoiceForQ===i?'data-tag="✓ הבחירה שלך"':''}><span class="opt-letter">${letterFor(i)}</span><span class="opt-text">${esc(t)}</span></button>`).join('')}</div>
-      <div class="center-note" id="p-answer-note">${myChoiceForQ===null ? '⚡ ענו מהר — כל שנייה שווה 2 נקודות! (אפשר להחליף עד סוף הזמן)' : 'התשובה נשלחה ✓ — אפשר להחליף כל עוד יש זמן'}</div>`;
+      <div class="answers" id="p-answers">${q.a.map((t,i)=>`<button class="answer-btn ${myChoiceForQ===i?'selected':''}" data-i="${i}" ${myChoiceForQ===i?'data-tag="✓ הבחירה שלכם"':''}><span class="opt-letter">${letterFor(i)}</span><span class="opt-text">${esc(t)}</span></button>`).join('')}</div>
+      <div class="center-note" id="p-answer-note">${myChoiceForQ===null ? '⚡ ענו מהר — כל שנייה שווה 2 נקודות!' : 'התשובה נשלחה ✓ — אפשר להחליף כל עוד יש זמן'}</div>`;
     body.querySelectorAll('.answer-btn').forEach(b=>b.addEventListener('click', ()=>selectAnswer(Number(b.dataset.i), b)));
     mountQTimer(curState.questionStartedAt, 'p-timer-ring', 'p-timer-num', 'p-clock-wrap', ()=>lockPlayerAnswers(q));
     return;
@@ -4704,13 +4725,13 @@ function renderPlayer(){
     body.innerHTML = `${header}
       ${fastAnswer ? '<div class="compliment-badge">⚡ מהירות שיא! עניתם תוך פחות מ-5 שניות!</div>' : ''}
       ${wasRight ? streakHtml(groupStreak) : ''}
-      <div class="result-banner ${wasRight?'correct':'wrong'}">${!gotIt ? '⏰ לא הספקת לענות' : wasRight ? `🎉 כל הכבוד! +<span id="p-score-count" class="count-num">${firstReveal?0:pts}</span> נקודות` : (q.type==='poll'?'לא בחרת כמו הרוב':'❌ לא נכון הפעם')}</div>
+      <div class="result-banner ${wasRight?'correct':'wrong'}">${!gotIt ? '⏰ לא הספקתם לענות' : wasRight ? `🎉 כל הכבוד! +<span id="p-score-count" class="count-num">${firstReveal?0:pts}</span> נקודות` : (q.type==='poll'?'לא בחרתם כמו הרוב':'❌ לא נכון הפעם')}</div>
       ${wasRight && q.type!=='poll' ? speedBreakHtml(pts) : ''}
       <div class="q-card" style="padding:16px;"><div class="question-text" style="font-size:16px;">${esc(q.q)}</div></div>
       <div class="answers">${q.a.map((t,i)=>{
         let cls='dim', tag='';
         if(winners.includes(i)){ cls='correct'; tag=answerTag(q); }
-        else if(gotIt && i===myChoiceForQ){ cls='wrong'; tag='✗ הבחירה שלך'; }
+        else if(gotIt && i===myChoiceForQ){ cls='wrong'; tag='✗ הבחירה שלכם'; }
         return `<div class="answer-btn ${cls}" ${tag?`data-tag="${tag}"`:''}><span class="opt-letter">${letterFor(i)}</span><span class="opt-text">${esc(t)}</span></div>`;
       }).join('')}</div>`;
     if(wasRight && firstReveal){
@@ -4885,7 +4906,7 @@ function soloHomeBoardHtml(){
 }
 // טבלת שיאים מלאה בתוך תיבה נגללת (רק הטבלה נגללת — הכפתורים נשארים במקומם)
 function recRowHtml(rank, r, isMe){ return `<div class="board-row ${rank===1?'first':''} ${isMe?'mine':''}"><div class="rank">${rank<=3?['🥇','🥈','🥉'][rank-1]:rank}</div><div class="board-name">${esc(r.name||'')}${isMe?' <small>(אתם)</small>':''}${r.sub||''}</div><div class="board-score">${r.score||0}</div></div>`; }
-function lbBoxHtml(title, rows){ return `<div class="lb-title">${title}<span class="lb-count">${rows.length} משתתפים</span></div><div class="lb-scroll">${rows.map(r=>recRowHtml(r.rank, r, r.me)).join('')}</div>`; }
+function lbBoxHtml(title, rows){ return `<div class="lb-title">${title}<span class="lb-count">${rows.length===1 ? 'משתתף אחד' : rows.length + ' משתתפים'}</span></div><div class="lb-scroll">${rows.map(r=>recRowHtml(r.rank, r, r.me)).join('')}</div>`; }
 function lbScrollToMe(box){ const sc = box && box.querySelector('.lb-scroll'), m = sc && sc.querySelector('.mine'); if(sc && m) sc.scrollTop = Math.max(0, m.offsetTop - sc.clientHeight/2 + m.offsetHeight/2); }
 function missHtml(txt){ return `<div class="se-miss">${txt}</div>`; }
 function soloEndBoardHtml(){
@@ -4920,7 +4941,7 @@ function renderSoloHome(){
       <div class="sh-hello"><div class="sh-hi1">שלום,</div><div class="sh-name">${esc(p.name)} <span class="wave">👋</span></div><div class="sh-tag">מוכנים לשבור שיא?</div></div>
     </div>
     <div class="rec-grid">
-      <div class="rec-card"><div class="rec-ic">🏅</div><div class="rec-label">השיא שלך</div><div class="rec-num" id="sh-mine">${mine}</div>${soloMyRank ? `<div class="rec-name">מקום ${soloMyRank} בטבלה</div>` : '<div class="rec-name">&nbsp;</div>'}</div>
+      <div class="rec-card"><div class="rec-ic">🏅</div><div class="rec-label">השיא שלכם</div><div class="rec-num" id="sh-mine">${mine}</div>${soloMyRank ? `<div class="rec-name">מקום ${soloMyRank} בטבלה</div>` : '<div class="rec-name">&nbsp;</div>'}</div>
       <div class="rec-card top"><div class="rec-ic">👑</div><div class="rec-label">שיא המשחק</div><div class="rec-num" id="sh-top">${g ? gb : (soloTopLoaded ? '—' : '...')}</div><div class="rec-name">${g ? (iHold ? 'זה אתם! 🎉' : esc(g.name)) : (soloTopLoaded ? 'עדיין לא נקבע' : 'טוען...')}</div></div>
     </div>
     <div class="sh-progress"><div class="shp-bar"><div class="shp-fill" style="--w:${pct}%"></div></div><div class="shp-txt">${goal}</div></div>
@@ -4976,12 +4997,12 @@ function soloCountdown(s, done, alive){
     if(!isAlive()){ ov.remove(); return; }
     if(k>=steps.length){
       ov.innerHTML = '<div class="cd-num go">יוצאים!</div>';
-      beep(1175,220);
+      beep(880,120); setTimeout(()=>beep(1319,260),110);
       setTimeout(()=>{ ov.remove(); if(isAlive()) done(); }, 650);
       return;
     }
     ov.innerHTML = '<div class="cd-num">'+steps[k]+'</div>';
-    beep(660,140);
+    beep(659,140);
     try{ if(navigator.vibrate) navigator.vibrate(30); }catch(e){}
     setTimeout(()=>show(k+1), 900);
   }
@@ -5123,8 +5144,8 @@ function soloHeaderInner(){
   const s = soloState;
   const g = globalBest(), mine = soloBest();
   const beatGlobal = g && s.score > g.best;
-  return `<div class="score-header"><span>🎯 ניקוד: <b>${s.score}</b></span><span>🏅 השיא שלך: ${Math.max(mine, s.score)}</span></div>
-    <div class="record-strip ${beatGlobal?'beat':''}">${beatGlobal ? '🔥 אתם מעל שיא המשחק! (' + g.best + ')' : (g ? `👑 שיא המשחק: <b>${g.best}</b> — ${esc(g.name)}` : '👑 שיא המשחק: עדיין לא נקבע — קבעו אותו!')}</div>`;
+  return `<div class="score-header"><span>🎯 ניקוד: <b>${s.score}</b></span><span>🏅 השיא שלכם: ${Math.max(mine, s.score)}</span></div>
+    <div class="record-strip ${beatGlobal?'beat':''}">${beatGlobal ? '🔥 אתם מעל שיא המשחק! (' + g.best + ')' : (g ? (soloProfile() && g.id===soloProfile().id ? `👑 שיא המשחק (${g.best}) שלכם — נסו לשפר אותו!` : `👑 שיא המשחק: <b>${g.best}</b> — ${esc(g.name)}`) : '👑 שיא המשחק: עדיין לא נקבע — קבעו אותו!')}</div>`;
 }
 function soloShowQuestion(){
   const s = soloState; if(!s) return;
@@ -5157,7 +5178,7 @@ function soloReveal(choice){
   if(box) box.querySelectorAll('.answer-btn').forEach((b,i)=>{
     b.disabled = true;
     if(i===q.c){ b.classList.add('correct'); b.dataset.tag = '✓ התשובה הנכונה'; }
-    else if(i===choice){ b.classList.add('wrong'); b.dataset.tag = '✗ הבחירה שלך'; }
+    else if(i===choice){ b.classList.add('wrong'); b.dataset.tag = '✗ הבחירה שלכם'; }
     else b.classList.add('dim');
   });
   if(choice!==null) lockWorth('s', s.startedAt, elapsed, right ? `✅ הרווחתם <b>${pts}</b><i>נק'</i>` : `❌ לא נכון הפעם <b>0</b><i>נק'</i>`, right?'':'lost');
@@ -5188,7 +5209,7 @@ function soloEnd(){
   if(isNew){ playHappyChime(); setTimeout(playHappyChime, 450); }
   const body = $('solo-body');
   body.innerHTML = `<div class="solo-end fit-screen">
-    <div class="eyebrow" style="text-align:center;">🎉 סיימתם סבב! — הניקוד שלכם בסבב הזה</div>
+    <div class="eyebrow" style="text-align:center;">🏁 סיימתם סבב! — הניקוד שלכם בסבב הזה</div>
     <div class="big-score se-score" id="s-final">0</div>
     <div class="se-stats">✅ <b>${s.correct}</b>/${s.qs.length} נכונות · ⏱️ <b>${fmtDur(s.totalMs)}</b></div>
     ${isGlobal ? '<div class="compliment-badge">👑 שברתם את שיא המשחק! אתם במקום הראשון!</div>' : (isNew ? '<div class="compliment-badge">🏆 שיא אישי חדש! כל הכבוד!</div>' : '')}
