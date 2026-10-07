@@ -768,6 +768,23 @@ button,a,.btn,.answer-btn{touch-action:manipulation;}
 .q-card:has(.q-flag) .question-text{font-size:19px;}
 .q-card:has(.q-flag){padding-bottom:14px;}
 @media (max-height:700px){ .q-flag img{height:72px;} .q-card:has(.q-flag) ~ .answers .answer-btn{min-height:54px;} }
+
+/* שאלות תמונה של מקומות מפורסמים */
+.q-photo{position:relative;display:flex;justify-content:center;margin:6px 0 12px;min-height:60px;}
+.q-photo img{width:100%;height:170px;object-fit:cover;border-radius:14px;border:2px solid rgba(212,175,55,.45);box-shadow:0 12px 28px rgba(0,0,0,.55);background:#1a1712;animation:photoIn .7s cubic-bezier(.2,1.2,.4,1) both, photoZoom 9s ease-in-out .7s infinite alternate;}
+.q-photo{overflow:hidden;border-radius:14px;}
+.q-credit{position:absolute;bottom:6px;left:8px;font-size:10.5px;color:#fff;background:rgba(0,0,0,.55);padding:2px 7px;border-radius:8px;}
+.q-photo.err img{display:none;} .q-photo.err::before{content:"📷 התמונה לא נטענה — נסו לנחש לפי התשובות";color:var(--ink-dim);font-size:14px;padding:18px;}
+@keyframes photoIn{0%{opacity:0;transform:scale(1.15);filter:blur(6px);}100%{opacity:1;transform:scale(1);filter:none;}}
+@keyframes photoZoom{to{transform:scale(1.08);}}
+.q-card:has(.q-photo) ~ .answers{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.q-card:has(.q-photo) ~ .answers .answer-btn{min-height:66px;padding:8px 8px;font-size:15px;line-height:1.25;gap:8px;}
+.q-card:has(.q-photo) ~ .answers .opt-letter{width:28px;height:28px;font-size:14px;flex-shrink:0;}
+.q-card:has(.q-photo) .question-text{font-size:18px;}
+.q-card:has(.q-photo){padding-top:22px;padding-bottom:12px;}
+@media (max-height:780px){ .q-photo img{height:132px;} .q-photo{margin:2px 0 8px;} }
+@media (max-height:700px){ .q-photo img{height:104px;} .q-card:has(.q-photo) ~ .answers .answer-btn{min-height:56px;} }
+@media (prefers-reduced-motion:reduce){ .q-photo img{animation:none;} }
 </style>
 </head>
 <body>
@@ -899,7 +916,7 @@ const CURRENT_ROOM_DOC = 'current';
 const LOBBY_MAX_AGE_MS = 12*60*60*1000; // חדר המתנה ישן מ-12 שעות לא ממוחזר — נפתח חדש // מסמך שמצביע על החדר הפתוח כרגע — כך השחקנים נכנסים בלי קוד
 const SOLO_REVEAL_MS = 1100;
 
-const T1='בודפשט והונגריה', T2='עולם תורני, הלכה ומנהג', T3='היסטוריה יהודית וגדולי ישראל', T4='ידע כללי, מדע וטבע', T5='מקרא, מסורת ופולקלור', T6='תחבורה, תעופה וחלל', T7='פוליטיקה ומדינה', T8='ערים בישראל', T9='ארצות העולם', T10='טיולים ונופים', T11='חשבון ומספרים', T12='מוזיקה ושירה יהודית', T13='אדמו"רים ורבנים', T14='סקרים מהמסע', T15='ספורט ומשחקים', T16='חידות והיגיון', T17='דגלים של מדינות';
+const T1='בודפשט והונגריה', T2='עולם תורני, הלכה ומנהג', T3='היסטוריה יהודית וגדולי ישראל', T4='ידע כללי, מדע וטבע', T5='מקרא, מסורת ופולקלור', T6='תחבורה, תעופה וחלל', T7='פוליטיקה ומדינה', T8='ערים בישראל', T9='ארצות העולם', T10='טיולים ונופים', T11='חשבון ומספרים', T12='מוזיקה ושירה יהודית', T13='אדמו"רים ורבנים', T14='סקרים מהמסע', T15='ספורט ומשחקים', T16='חידות והיגיון', T17='דגלים של מדינות', T18='מקומות מפורסמים';
 
 const QUESTIONS = [
  {topic:T1, type:'trivia', q:'באיזו שנה אוחדו בודה, פשט ואובודה לעיר אחת?', a:['1848','1900','1873','1920'], c:2},
@@ -964,7 +981,7 @@ const QUESTIONS = [
  {topic:T10, type:'poll', q:'מה הכי כיף בטיול?', a:['הנופים','החברה','האוכל','התמונות למזכרת']}
 ];
 
-// ===== מאגר 1,724 שאלות למשחק העצמאי (התשובה הנכונה נכתבת ראשונה — המשחק מערבב את הסדר בכל פעם) =====
+// ===== מאגר 1,754 שאלות למשחק העצמאי (התשובה הנכונה נכתבת ראשונה — המשחק מערבב את הסדר בכל פעם) =====
 const SOLO_QUESTIONS = [
  {topic:T2, q:'באיזה חודש עברי חל חג השבועות?', a:['סיוון','אייר','ניסן','תמוז']},
  {topic:T2, q:'מה נוהגים לאכול בליל ראש השנה כסימן לשנה מתוקה?', a:['תפוח בדבש','מצה בחרוסת','ביצה במלח','אגוזים בסוכר']},
@@ -2689,7 +2706,37 @@ const SOLO_QUESTIONS = [
  {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/cz.png', a:['צ\'כיה','הפיליפינים','סלובקיה','פולין']},
  {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/ro.png', a:['רומניה','צ\'אד','בלגיה','מולדובה']},
  {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/th.png', a:['תאילנד','קוסטה ריקה','הולנד','לאוס']},
- {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/ee.png', a:['אסטוניה','לטביה','ליטא','פינלנד']}
+ {topic:T17, q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/ee.png', a:['אסטוניה','לטביה','ליטא','פינלנד']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Tour_Eiffel_Wikimedia_Commons.jpg?width=640', a:['מגדל אייפל','מגדל טוקיו','מגדל בלקפול','מגדל הטלוויזיה בברלין']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Colosseo_2020.jpg?width=640', a:['הקולוסיאום ברומא','האמפיתאטרון בקיסריה','הארנה בוורונה','האקרופוליס באתונה']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Kheops-Pyramid.jpg?width=640', a:['הפירמידה הגדולה בגיזה','פירמידת השמש במקסיקו','פירמידת הזכוכית בלובר','הזיגורת באור']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Taj_Mahal_(Edited).jpeg?width=640', a:['הטאג\' מהאל','ארמון טופקפי','המצודה האדומה בדלהי','ארמון אלהמברה']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/GoldenGateBridge-001.jpg?width=640', a:['גשר שער הזהב','גשר ברוקלין','גשר הנמל בסידני','גשר 25 באפריל בליסבון']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Sydney_(AU),_Opera_House_--_2019_--_3054.jpg?width=640', a:['בית האופרה של סידני','מרכז הקונגרסים בירושלים','גני המפרץ בסינגפור','מוזיאון גוגנהיים בבילבאו']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Burj_Khalifa_(16260269606).jpg?width=640', a:['בורג\' ח\'ליפה','מגדל שנגחאי','מגדלי פטרונס','ה-CN טאואר בטורונטו']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Tower_Bridge_from_Shad_Thames.jpg?width=640', a:['גשר טאואר בלונדון','גשר השלשלאות בבודפשט','גשר קארל בפראג','גשר ריאלטו בוונציה']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Great_Wall_of_China_July_2006.JPG?width=640', a:['החומה הסינית','חומת אדריאנוס','חומות ירושלים','חומת ברלין']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Italy_-_Pisa_-_Leaning_Tower.jpg?width=640', a:['מגדל פיזה הנטוי','מגדל השעון ביפו','מגדל גלטה באיסטנבול','מגדל בלם בליסבון']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Clock_Tower_-_Palace_of_Westminster,_London_-_May_2007.jpg?width=640', a:['ביג בן בלונדון','מגדל השעון ביפו','מגדל השעון בפראג','מגדל השעון בברן']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Empire_State_Building_(aerial_view).jpg?width=640', a:['האמפייר סטייט בילדינג','מגדלי עזריאלי','הקרייזלר בילדינג','מגדל ויליס בשיקגו']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Parliament_Building_Budapest_Hungary.jpg?width=640', a:['בניין הפרלמנט בבודפשט','ארמון וסטמינסטר בלונדון','משכן הכנסת בירושלים','הרייכסטאג בברלין']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Sz%C3%A9chenyi_Chain_Bridge_in_Budapest_at_night.jpg?width=640', a:['גשר השלשלאות בבודפשט','גשר טאואר בלונדון','גשר קארל בפראג','גשר שער הזהב']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Synagoge_Budapest_2014.jpg?width=640', a:['בית הכנסת הגדול ברחוב דוהאני','בית הכנסת אלטנוי בפראג','בית הכנסת החורבה בירושלים','בית הכנסת הספרדי באמסטרדם']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Horseshoe_Falls_(Niagara_Falls).jpg?width=640', a:['מפלי הניאגרה','מפלי ויקטוריה','מפלי איגואסו','מפל גמלא']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Mount_Fuji_from_Lake_Kawaguchi.jpg?width=640', a:['הר פוג\'י','הר האוורסט','הר קילימנג\'רו','הר החרמון']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Al_Khazneh_Petra_edit.jpg?width=640', a:['פטרה בירדן','מצדה','קומראן','ממשית']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Machu_Picchu,_Peru.jpg?width=640', a:['מאצ\'ו פיצ\'ו','צ\'יצ\'ן איצה','אנגקור וואט','מצדה']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Grand_Canyon_view_from_Pima_Point_2010.jpg?width=640', a:['הגרנד קניון','מכתש רמון','עמק המוות','נחל פרת']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Old_Jerusalem_Western_Wall_view_from_Aish_HaTorah.jpg?width=640', a:['הכותל המערבי','הכותל הקטן','חומות העיר העתיקה','מגדל דוד']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Israel-2013-Aerial_22-Masada.jpg?width=640', a:['מצדה','הרודיון','קרני חיטין','גמלא']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Tower_of_david_jerusalem.jpg?width=640', a:['מגדל דוד','מבצר נמרוד','מצודת יחיעם','חומות עכו']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Israel-2013-Aerial_05-Negev-Makhtesh_Ramon.jpg?width=640', a:['מכתש רמון','המכתש הגדול','הגרנד קניון','עמק תמנע']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Rosh_HaNikra_grottoes_(1).jpg?width=640', a:['נקרות ראש הנקרה','מערת הנטיפים','מערות בית גוברין','מערת אליהו הנביא']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Knesset_in_Jerusalem_Israel.jpg?width=640', a:['משכן הכנסת','בית המשפט העליון','בנייני האומה','מוזיאון ישראל']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Hebron_Cave_of_the_Patriarchs.jpg?width=640', a:['מערת המכפלה בחברון','קבר רחל','קבר שמואל הנביא','קבר יוסף בשכם']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Jaffa_Clock_Tower_(9869602164).jpg?width=640', a:['מגדל השעון ביפו','מגדל השעון בצפת','מגדל השעון בחיפה','ביג בן בלונדון']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Jerusalem_Chords_Bridge.JPG?width=640', a:['גשר המיתרים בירושלים','גשר ברוקלין','גשר שער הזהב','גשר מעריב בתל אביב']},
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Azrieli_Towers,_Tel_Aviv.jpg?width=640', a:['מגדלי עזריאלי','מגדל שלום','מגדלי פטרונס','מגדל משה אביב']}
 ].map(q=>({topic:q.topic, type:'trivia', q:q.q, img:q.img, a:q.a, c:0}));
 
 if(firebaseConfig.apiKey === 'YOUR_API_KEY'){ return; }
@@ -2734,6 +2781,7 @@ function topicIcon(topic){
   if(topic===T15) return '⚽';
   if(topic===T16) return '🧩';
   if(topic===T17) return '🚩';
+  if(topic===T18) return '📸';
   return '';
 }
 function animateCount(el, target, ms){
@@ -2862,7 +2910,7 @@ function qCardHtml(num,total,q){
   return `<div class="q-card qanim"><div class="q-num">שאלה ${num} מתוך ${total}</div>
     <div class="q-topic">${topicIcon(q.topic)} ${esc(q.topic||'')}</div>
     ${q.type==='poll' ? '<div style="text-align:center;"><span class="qtag poll">🗳️ סקר — מי שבוחר כמו הרוב זוכה</span></div>' : ''}
-    ${q.img ? `<div class="q-flag"><img src="${esc(q.img)}" alt="דגל" draggable="false"></div>` : ''}
+    ${q.img ? (q.img.indexOf('flagcdn')>=0 ? `<div class="q-flag"><img src="${esc(q.img)}" alt="דגל" draggable="false"></div>` : `<div class="q-photo"><img src="${esc(q.img)}" alt="תמונה" draggable="false" onerror="this.parentNode.classList.add('err')"><span class="q-credit">📷 ויקישיתוף</span></div>`) : ''}
     <div class="question-text">${esc(q.q)}</div></div>`;
 }
 function clockHtml(prefix){ return `<div class="timer-bar qanim" id="${prefix}-clock-wrap"><div class="tb-head"><span class="tb-icon">⏱️</span><span class="tb-label">הזמן לענות אוזל...</span><span class="tb-num" id="${prefix}-timer-num">${QUESTION_MS/1000}</span></div><div class="tb-track"><div class="tb-fill" id="${prefix}-timer-ring"></div><div class="tb-ticks"></div></div></div>`; }
@@ -3539,7 +3587,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-07w';
+const APP_VERSION = '2026-10-07x';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
