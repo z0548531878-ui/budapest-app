@@ -57,6 +57,8 @@ h1 span{color:var(--line-yellow);}
 .btn-ghost{background:transparent;color:var(--ink-dim);border:2px solid #3A404C;margin-top:12px;}
 input[type=text]{width:100%;background:var(--asphalt-2);border:2px solid #3A404C;border-radius:12px;padding:14px;color:var(--ink);font-family:inherit;font-size:16px;margin-bottom:14px;}
 input[type=text]:focus{outline:none;border-color:var(--line-yellow);}
+/* מסגרת פוקוס למקלדת בלבד (נגיעה במסך לא מציגה אותה) */
+button:focus-visible,[tabindex]:focus-visible{outline:3px solid #FFF3C4 !important;outline-offset:3px;}
 .card{background:var(--asphalt-2);border-radius:18px;padding:20px;margin-bottom:16px;}
 .room-code{text-align:center;font-size:38px;font-weight:900;letter-spacing:.08em;color:var(--line-yellow);margin-bottom:4px;}
 .room-code-label{text-align:center;color:var(--ink-dim);font-size:13px;margin-bottom:18px;}
@@ -3762,9 +3764,10 @@ function dlobShowInvite(iv){
   dlob.shownInvite = iv.at;
   const old=$('dl-invite-modal'); if(old) old.remove();
   const m=document.createElement('div'); m.id='dl-invite-modal'; m.className='rules-modal';
+  m.setAttribute('role','alertdialog'); m.setAttribute('aria-modal','true'); m.setAttribute('aria-labelledby','dl-inv-head');
   m.innerHTML = `<div class="rules-pop"><div class="rules-sheet dl-inv-sheet">
       <div class="dl-inv-icon">⚔️</div>
-      <div class="rules-head">הזמנה לדו-קרב!</div>
+      <div class="rules-head" id="dl-inv-head">הזמנה לדו-קרב!</div>
       <div class="dl-inv-from">הזמנה מ<b>${esc(iv.fromName)}</b> למשחק ראש בראש</div>
       <button class="btn btn-primary btn-xl" id="dl-accept">✓ מאשרים — מתחילים!</button>
       <button class="btn btn-ghost" id="dl-decline">לא עכשיו</button>
@@ -3773,6 +3776,7 @@ function dlobShowInvite(iv){
   beep(880,120); setTimeout(()=>beep(1319,200),160);
   try{ if(navigator.vibrate) navigator.vibrate([120,60,120]); }catch(e){}
   $('dl-accept').addEventListener('click', ()=>dlobAccept(iv));
+  $('dl-accept').focus({preventScroll:true});
   $('dl-decline').addEventListener('click', ()=>{ const u={}; u['inv.'+dlob.me.id+'.st']='declined'; dlobRef().update(u).catch(()=>{}); m.remove(); });
 }
 async function dlobAccept(iv){
@@ -3923,7 +3927,7 @@ function duelRender(){
       ${qCardHtml(i+1, v.qs.length, q)}
       ${clockHtml('d')}
       <div class="answers" id="d-answers">${q.a.map((t,k)=>`<button class="answer-btn" data-i="${k}"><span class="opt-letter">${letterFor(k)}</span><span class="opt-text">${esc(t)}</span></button>`).join('')}</div>
-      <div class="center-note" id="d-note">⚡ ענו מהר — כל שנייה שווה 2 נקודות!</div>`;
+      <div class="center-note" id="d-note" role="status">⚡ ענו מהר — כל שנייה שווה 2 נקודות!</div>`;
     body.querySelectorAll('.answer-btn').forEach(b=>b.addEventListener('click', ()=>duelAnswer(Number(b.dataset.i), b)));
     mountQTimer(duel.startLocal, 'd-timer-ring', 'd-timer-num', 'd-clock-wrap', ()=>{ duelLockButtons(); duelLater(()=>duelAdvance('question', i), 300); });
     return;
@@ -3936,7 +3940,7 @@ function duelRender(){
     const {op} = duelNames(v);
     const right = mine && mine.c===q.c;
     body.innerHTML = `<div id="d-header">${duelHeadHtml(v)}</div>
-      <div class="result-banner ${right?'correct':'wrong'}">${!mine ? '⏰ לא הספקתם לענות' : right ? `🎉 נכון! +${mine.p} נקודות` : '❌ לא נכון הפעם'}</div>
+      <div class="result-banner ${right?'correct':'wrong'}" role="status">${!mine ? '⏰ לא הספקתם לענות' : right ? `🎉 נכון! +${mine.p} נקודות` : '❌ לא נכון הפעם'}</div>
       ${right ? speedBreakHtml(mine.p) : ''}
       <div class="q-card" style="padding:16px;"><div class="question-text" style="font-size:16px;">${esc(q.q)}</div></div>
       <div class="answers">${q.a.map((t,k)=>{
@@ -4046,8 +4050,9 @@ function modeRulesHtml(mode){ return `<button class="btn rules-btn" data-rules="
 function openRules(mode){
   const r = modeRules(mode); if(!r) return;
   const ov = document.createElement('div'); ov.className='rules-modal';
+  ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true'); ov.setAttribute('aria-labelledby','rules-head');
   ov.innerHTML = `<div class="rules-pop"><div class="rules-sheet">
-      <div class="rules-head">📖 הוראות המשחק</div>
+      <div class="rules-head" id="rules-head">📖 הוראות המשחק</div>
       <div class="rules-sub">${r.title}</div>
       ${r.items.map(([ic,t,d])=>`<div class="rules-row"><span class="ri">${ic}</span><div><b>${t}</b><span>${d}</span></div></div>`).join('')}
       <button class="btn btn-primary rules-close">הבנתי, סגירה</button>
@@ -4056,8 +4061,12 @@ function openRules(mode){
   const sheet = ov.querySelector('.rules-sheet');
   const fit = ()=>{ sheet.style.transform=''; const avail = innerHeight - 24, h = sheet.scrollHeight; if(h > avail) sheet.style.transform = `scale(${(avail/h).toFixed(3)})`; };
   fit(); addEventListener('resize', fit);
-  const close = ()=>{ removeEventListener('resize', fit); ov.classList.add('out'); setTimeout(()=>ov.remove(), 220); };
+  const back = document.activeElement;
+  const esc = e=>{ if(e.key==='Escape') close(); };
+  const close = ()=>{ removeEventListener('resize', fit); removeEventListener('keydown', esc); ov.classList.add('out'); setTimeout(()=>ov.remove(), 220); if(back && back.focus) back.focus(); };
+  addEventListener('keydown', esc);
   ov.querySelector('.rules-close').addEventListener('click', close);
+  ov.querySelector('.rules-close').focus({preventScroll:true});
   ov.addEventListener('click', e=>{ if(e.target===ov) close(); });
 }
 document.addEventListener('click', e=>{ const b = e.target.closest && e.target.closest('[data-rules]'); if(b) openRules(b.dataset.rules); });
@@ -4117,7 +4126,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-08u';
+const APP_VERSION = '2026-10-08v';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -4721,7 +4730,7 @@ function renderPlayer(){
       ${qCardHtml(curState.qIndex+1, QUESTIONS.length, q)}
       ${clockHtml('p')}
       <div class="answers" id="p-answers">${q.a.map((t,i)=>`<button class="answer-btn ${myChoiceForQ===i?'selected':''}" data-i="${i}" ${myChoiceForQ===i?'data-tag="✓ הבחירה שלכם"':''}><span class="opt-letter">${letterFor(i)}</span><span class="opt-text">${esc(t)}</span></button>`).join('')}</div>
-      <div class="center-note" id="p-answer-note">${myChoiceForQ===null ? '⚡ ענו מהר — כל שנייה שווה 2 נקודות!' : 'התשובה נשלחה ✓ — אפשר להחליף כל עוד יש זמן'}</div>`;
+      <div class="center-note" id="p-answer-note" role="status">${myChoiceForQ===null ? '⚡ ענו מהר — כל שנייה שווה 2 נקודות!' : 'התשובה נשלחה ✓ — אפשר להחליף כל עוד יש זמן'}</div>`;
     body.querySelectorAll('.answer-btn').forEach(b=>b.addEventListener('click', ()=>selectAnswer(Number(b.dataset.i), b)));
     mountQTimer(curState.questionStartedAt, 'p-timer-ring', 'p-timer-num', 'p-clock-wrap', ()=>lockPlayerAnswers(q));
     return;
@@ -4744,7 +4753,7 @@ function renderPlayer(){
     body.innerHTML = `${header}
       ${fastAnswer ? '<div class="compliment-badge">⚡ מהירות שיא! עניתם תוך פחות מ-5 שניות!</div>' : ''}
       ${wasRight ? streakHtml(groupStreak) : ''}
-      <div class="result-banner ${wasRight?'correct':'wrong'}">${!gotIt ? '⏰ לא הספקתם לענות' : wasRight ? `🎉 כל הכבוד! +<span id="p-score-count" class="count-num">${firstReveal?0:pts}</span> נקודות` : (q.type==='poll'?'לא בחרתם כמו הרוב':'❌ לא נכון הפעם')}</div>
+      <div class="result-banner ${wasRight?'correct':'wrong'}" role="status">${!gotIt ? '⏰ לא הספקתם לענות' : wasRight ? `🎉 כל הכבוד! +<span id="p-score-count" class="count-num">${firstReveal?0:pts}</span> נקודות` : (q.type==='poll'?'לא בחרתם כמו הרוב':'❌ לא נכון הפעם')}</div>
       ${wasRight && q.type!=='poll' ? speedBreakHtml(pts) : ''}
       <div class="q-card" style="padding:16px;"><div class="question-text" style="font-size:16px;">${esc(q.q)}</div></div>
       <div class="answers">${q.a.map((t,i)=>{
@@ -5198,7 +5207,7 @@ function soloShowQuestion(){
     ${qCardHtml(s.i+1, s.qs.length, q)}
     ${clockHtml('s')}
     <div class="answers" id="s-answers">${q.a.map((t,i)=>`<button class="answer-btn" data-i="${i}"><span class="opt-letter">${letterFor(i)}</span><span class="opt-text">${esc(t)}</span></button>`).join('')}</div>
-    <div class="center-note" id="s-note">⚡ ענו מהר — כל שנייה שווה 2 נקודות!</div>
+    <div class="center-note" id="s-note" role="status">⚡ ענו מהר — כל שנייה שווה 2 נקודות!</div>
     <button class="skip-btn" id="s-quit">🏠 יציאה למסך הבית</button>`;
   body.querySelectorAll('.answer-btn').forEach(b=>b.addEventListener('click', ()=>{ if(soloState && !soloState.locked) pressFeedback(b); soloReveal(Number(b.dataset.i)); }));
   $('s-quit').addEventListener('click', soloQuit);
