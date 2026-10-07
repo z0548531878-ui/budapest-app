@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Rubik:wght@400;500;700;900&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
@@ -59,7 +58,6 @@ h1 span{color:var(--line-yellow);}
 input[type=text]{width:100%;background:var(--asphalt-2);border:2px solid #3A404C;border-radius:12px;padding:14px;color:var(--ink);font-family:inherit;font-size:16px;margin-bottom:14px;}
 input[type=text]:focus{outline:none;border-color:var(--line-yellow);}
 .card{background:var(--asphalt-2);border-radius:18px;padding:20px;margin-bottom:16px;}
-.qr-wrap{background:#fff;border-radius:16px;padding:16px;display:flex;justify-content:center;margin-bottom:14px;}
 .room-code{text-align:center;font-size:38px;font-weight:900;letter-spacing:.08em;color:var(--line-yellow);margin-bottom:4px;}
 .room-code-label{text-align:center;color:var(--ink-dim);font-size:13px;margin-bottom:18px;}
 .player-chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
@@ -738,6 +736,24 @@ button,a,.btn,.answer-btn{touch-action:manipulation;}
   .solo-home .sh-act span{font-size:24px;}
 }
 @media (prefers-reduced-motion:reduce){.solo-home .sh-act::before,.solo-home .sh-act span{animation:none !important;}}
+
+/* מסכי שאלה בטלפונים נמוכים — הכול נכנס בלי גלילה, כולל כפתור היציאה */
+@media (max-height:820px){
+  .q-card{padding:20px 16px 14px;margin-bottom:12px;}
+  .answers{gap:8px;}
+  .answer-btn{min-height:54px;padding:11px 16px;}
+  .center-note{margin-top:8px;}
+}
+@media (max-height:700px){
+  .answer-btn{min-height:48px;padding:9px 14px;font-size:16.5px;}
+  .q-card{padding:16px 14px 12px;}
+}
+
+/* טבלת שיאים ריקה — במרכז הכרטיס, עם גביע מונפש */
+.solo-home .sh-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-size:17px;font-weight:700;background:transparent;}
+.solo-home .sh-empty::before{content:"🏆";font-size:54px;animation:waitBob 2.6s ease-in-out infinite;filter:drop-shadow(0 6px 14px rgba(212,175,55,.45));}
+
+.duel-result.lose small{display:block;font-size:.5em;opacity:.85;margin-bottom:2px;}
 </style>
 </head>
 <body>
@@ -2803,7 +2819,7 @@ function answersRef(){return roomRef().collection('answers');}
 // ---------- Shared markup helpers ----------
 function progressHtml(idx,total){ return `<div class="q-progress"><div style="width:${Math.round(((idx+1)/total)*100)}%"></div></div>`; }
 function qCardHtml(num,total,q){
-  return `<div class="q-card qanim"><div class="q-num">שאלה ${num} / ${total}</div>
+  return `<div class="q-card qanim"><div class="q-num">שאלה ${num} מתוך ${total}</div>
     <div class="q-topic">${topicIcon(q.topic)} ${esc(q.topic||'')}</div>
     ${q.type==='poll' ? '<div style="text-align:center;"><span class="qtag poll">🗳️ סקר — מי שבוחר כמו הרוב זוכה</span></div>' : ''}
     <div class="question-text">${esc(q.q)}</div></div>`;
@@ -3023,7 +3039,7 @@ function lobbyCrowdHtml(list, meId){
           <circle class="trk" cx="75" cy="75" r="${R}"/><circle class="prg" cx="75" cy="75" r="${R}" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C*(1-frac)).toFixed(1)}"/></svg>
         <div class="crowd-num"><b class="${bump?'bump':''}">${n}</b><span>${ready ? 'מתוך ' + MAX_PLAYERS + '<br>מקומות' : 'מינימום ' + MIN_PLAYERS + '<br>להתחלה'}</span></div>
       </div>
-      <div class="crowd-ticker">${latest ? `<span class="t" key="${esc(latest.id)}">✨ ${esc(latest.name||'')} ${latest.id===meId?'(את/ה) ':''}הצטרף/ה!</span>` : ''}</div>
+      <div class="crowd-ticker">${latest ? `<span class="t" key="${esc(latest.id)}">✨ ${esc(latest.name||'')} ${latest.id===meId?'(אתם) ':''}נכנס לחדר!</span>` : ''}</div>
       <div class="crowd-wall">${wall}</div>
     </div>`;
 }
@@ -3062,7 +3078,7 @@ function duelEntry(){
   ensureAudio();
   role='duel'; showScreen('s-duel');
   const nm = duelSavedName();
-  $('duel-body').innerHTML = entryFormHtml({mode:'duel', icon:'⚔️', eyebrow:'אחד על אחד', title:'משחק <span>ראש בראש</span>', sub:'נכנסים לחדר ההמתנה ובוחרים יריב', inputId:'duel-name', goId:'duel-go', goText:'⚔️ כניסה לחדר ההמתנה', backId:'duel-back', value:nm});
+  $('duel-body').innerHTML = entryFormHtml({mode:'duel', icon:'⚔️', eyebrow:'דו-קרב', title:'משחק <span>ראש בראש</span>', sub:'נכנסים לחדר ההמתנה ובוחרים יריב', inputId:'duel-name', goId:'duel-go', goText:'⚔️ כניסה לחדר ההמתנה', backId:'duel-back', value:nm});
   entryWire('duel-name','duel-go');
   $('duel-go').addEventListener('click', ()=>{ const n=readFullName('duel-name'); if(!n) return; duelStart(n); });
   $('duel-back').addEventListener('click', duelLeave);
@@ -3124,7 +3140,7 @@ function dlobRender(){
       const who = (players[dlob.inviting]||{}).name || 'השחקן';
       const declined = iv && iv.st==='declined';
       dlobCancelInvite(true);
-      dlobToast(declined ? `${who} לא אישר/ה הפעם` : `${who} לא ענה/תה להזמנה`);
+      dlobToast(declined ? `ההזמנה ל${who} לא אושרה הפעם` : `אין תשובה מ${who} — אפשר להזמין שוב או לבחור מישהו אחר`);
     }
   }
   // 2) הזמנה שקיבלתי
@@ -3142,12 +3158,12 @@ function dlobRender(){
     return `<div class="dl-row ${isNew?'new':''}"><div class="av" style="background:${avColor(p.id)}">${esc((p.name||'?').charAt(0))}</div><div class="dl-name">${esc(p.name)}</div>
       ${invitedByMe ? '<span class="dl-wait">⏳ ממתין לאישור</span>' : taken ? '<span class="dl-busy">בהזמנה אחרת</span>' : `<button class="dl-inv" data-inv="${esc(p.id)}" ${dlob.inviting?'disabled':''}>⚔️ הזמנה</button>`}</div>`;
   }).join('');
-  body.innerHTML = `<div class="eyebrow">חדר ההמתנה — אחד על אחד</div>
+  body.innerHTML = `<div class="eyebrow">חדר ההמתנה — ראש בראש</div>
     <h1>בחרו <span>יריב ⚔️</span></h1>
     <div class="dl-me">אתם בחדר בתור <b>${esc(me.name)}</b> — אחרים יכולים להזמין אתכם</div>
-    ${dlob.inviting ? `<div class="dl-pending">⏳ שלחת הזמנה ל<b>${esc((players[dlob.inviting]||{}).name||'')}</b> — מחכים שיאשר/תאשר...<button class="skip-btn" id="dl-cancel-inv">ביטול ההזמנה</button></div>` : ''}
+    ${dlob.inviting ? `<div class="dl-pending">⏳ שלחת הזמנה ל<b>${esc((players[dlob.inviting]||{}).name||'')}</b> — מחכים לאישור...<button class="skip-btn" id="dl-cancel-inv">ביטול ההזמנה</button></div>` : ''}
     <div class="dl-count">👥 ${others.length ? others.length + ' שחקנים ממתינים בחדר' : 'עוד אין שחקנים אחרים בחדר'}</div>
-    ${others.length ? `<div class="dl-list">${rows}</div>` : `<div class="radar small"><div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div><div class="sweep"></div><div class="me-dot">${esc((me.name||'?').charAt(0))}</div></div><p class="sub" style="text-align:center;">ברגע שמישהו ייכנס ל"משחק אחד על אחד" — הוא יופיע כאן ותוכלו להזמין אותו.</p>`}
+    ${others.length ? `<div class="dl-list">${rows}</div>` : `<div class="radar small"><div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div><div class="sweep"></div><div class="me-dot">${esc((me.name||'?').charAt(0))}</div></div><p class="sub" style="text-align:center;">ברגע שמישהו ייכנס ל"משחק ראש בראש" — הוא יופיע כאן ותוכלו להזמין אותו.</p>`}
     ${modeRulesHtml('duel')}
     <button class="btn btn-ghost" id="duel-cancel">יציאה מחדר ההמתנה</button>
     <div id="dl-toast"></div>`;
@@ -3186,8 +3202,8 @@ function dlobShowInvite(iv){
   m.innerHTML = `<div class="rules-pop"><div class="rules-sheet dl-inv-sheet">
       <div class="dl-inv-icon">⚔️</div>
       <div class="rules-head">הזמנה לדו-קרב!</div>
-      <div class="dl-inv-from"><b>${esc(iv.fromName)}</b> מזמין/ה אותך למשחק אחד על אחד</div>
-      <button class="btn btn-primary btn-xl" id="dl-accept">✓ מאשר/ת — מתחילים!</button>
+      <div class="dl-inv-from">הזמנה מ<b>${esc(iv.fromName)}</b> למשחק ראש בראש</div>
+      <button class="btn btn-primary btn-xl" id="dl-accept">✓ מאשרים — מתחילים!</button>
       <button class="btn btn-ghost" id="dl-decline">לא עכשיו</button>
     </div></div>`;
   document.body.appendChild(m);
@@ -3251,9 +3267,9 @@ function duelHeadHtml(v){
   const {me, op} = duelNames(v); const ms = v['s'+duel.slot]||0, os = v['s'+(3-duel.slot)]||0;
   const opAns = v.status==='question' && v['a'+(3-duel.slot)+'_'+v.i];
   return `<div class="duel-head">
-      <div class="dp me ${ms>os?'lead':''}"><span class="dn">${esc(me?me.name:'')} (את/ה)</span><span class="ds">${ms}</span></div>
+      <div class="dp me ${ms>os?'lead':''}"><span class="dn">${esc(me?me.name:'')} (אתם)</span><span class="ds">${ms}</span></div>
       <div class="vs">⚔️</div>
-      <div class="dp ${os>ms?'lead':''}">${opAns?'<span class="ans">✓ ענה/תה</span>':''}<span class="dn">${esc(op?op.name:'...')}</span><span class="ds">${os}</span></div>
+      <div class="dp ${os>ms?'lead':''}">${opAns?'<span class="ans">✓ כבר ענו</span>':''}<span class="dn">${esc(op?op.name:'...')}</span><span class="ds">${os}</span></div>
     </div>`;
 }
 function duelRender(){
@@ -3264,10 +3280,10 @@ function duelRender(){
     if(body.querySelector('.duel-search')) return;
     clearQTimer();
     body.innerHTML = `<div class="duel-search">
-        <div class="eyebrow">חדר ההמתנה — אחד על אחד</div>
+        <div class="eyebrow">חדר ההמתנה — ראש בראש</div>
         <h1>מחפשים <span>יריב<span class="duel-dots"></span></span></h1>
         <div class="radar"><div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div><div class="sweep"></div><div class="me-dot">${esc((duel.me.name||'?').charAt(0))}</div></div>
-        <p class="sub" style="text-align:center;">שלום <b>${esc(duel.me.name)}</b>! ברגע שעוד שחקן ייכנס ל"אחד על אחד" — הדו-קרב יתחיל אוטומטית.</p>
+        <p class="sub" style="text-align:center;">שלום <b>${esc(duel.me.name)}</b>! ברגע שעוד שחקן ייכנס ל"משחק ראש בראש" — הדו-קרב יתחיל אוטומטית.</p>
         ${modeRulesHtml('duel')}
         <button class="btn btn-ghost" id="duel-cancel">ביטול וחזרה</button>
       </div>`;
@@ -3319,7 +3335,7 @@ function duelRender(){
         const opp = theirs && theirs.c===k ? ` data-opp="${esc(op.name)} ${theirs.c===q.c?'✓':'✗'}"` : '';
         return `<div class="answer-btn ${cls}" ${tag?`data-tag="${tag}"`:''}${opp}><span class="opt-letter">${letterFor(k)}</span><span class="opt-text">${esc(t)}</span></div>`;
       }).join('')}</div>
-      <div class="center-note">${!theirs ? esc(op.name)+' לא הספיק/ה לענות' : (theirs.c===q.c ? esc(op.name)+' ענה/תה נכון' : esc(op.name)+' טעה/תה')}</div>`;
+      <div class="center-note">${esc(op.name)} — ${!theirs ? 'לא נשאר זמן לענות ⏰' : (theirs.c===q.c ? 'תשובה נכונה ✓' : 'תשובה לא נכונה ✗')}</div>`;
     if(right){ playHappyChime(); const c=fxCenter(body.querySelector('.answer-btn.correct')); fxConfetti(c.x,c.y,70); fxFloatText(c.x,c.y-40,'+'+mine.p); } else playSadTone();
     duelLater(()=>duelAdvance('reveal', i), DUEL_REVEAL_MS);
     return;
@@ -3331,10 +3347,10 @@ function duelRender(){
     const cnt = slot=>v.qs.reduce((n,_,k)=>{ const a=v['a'+slot+'_'+k]; return n + (a && a.c===duelQuestion(v,k).c ? 1 : 0); },0);
     const res = ms>os ? 'win' : ms<os ? 'lose' : 'tie';
     body.innerHTML = `<div class="eyebrow" style="text-align:center;">הדו-קרב הסתיים</div>
-      <div class="duel-result ${res}">${res==='win' ? '🏆 ניצחת!' : res==='lose' ? `${esc(op.name)} ניצח/ה` : '🤝 תיקו!'}</div>
+      <div class="duel-result ${res}">${res==='win' ? '🏆 ניצחת!' : res==='lose' ? `<small>🏆 הניצחון הפעם:</small>${esc(op.name)}` : '🤝 תיקו!'}</div>
       <div class="duel-final">
-        <div class="dp ${ms>=os?'win':''}"><div class="dn">${esc(me.name)} (את/ה)</div><div class="ds">${ms}</div><div class="dc">${cnt(duel.slot)} / ${v.qs.length} נכונות</div></div>
-        <div class="dp ${os>=ms?'win':''}"><div class="dn">${esc(op.name)}</div><div class="ds">${os}</div><div class="dc">${cnt(3-duel.slot)} / ${v.qs.length} נכונות</div></div>
+        <div class="dp ${ms>=os?'win':''}"><div class="dn">${esc(me.name)} (אתם)</div><div class="ds">${ms}</div><div class="dc">${cnt(duel.slot)} נכונות מתוך ${v.qs.length}</div></div>
+        <div class="dp ${os>=ms?'win':''}"><div class="dn">${esc(op.name)}</div><div class="ds">${os}</div><div class="dc">${cnt(3-duel.slot)} נכונות מתוך ${v.qs.length}</div></div>
       </div>
       <button class="btn btn-primary btn-xl" id="duel-again">⚔️ חזרה לחדר ההמתנה לדו-קרב נוסף</button>
       <button class="btn btn-ghost" id="duel-home">חזרה למסך הבית</button>`;
@@ -3377,17 +3393,17 @@ function modeRules(mode){
   const sec = QUESTION_MS/1000, pts = `נכונה = ${BASE_POINTS} נק' + נקודה לכל שנייה שנשארה`;
   return {
     group: {title:'משחק קבוצתי 👥', items:[
-      ['📲','נכנסים',`שם ושם משפחה ← חדר ההמתנה, בלי קוד. עד ${MAX_PLAYERS} משתתפים.`],
+      ['📲','נכנסים',`רושמים שם ושם משפחה ונכנסים לחדר ההמתנה. עד ${MAX_PLAYERS} משתתפים.`],
       ['🎤','המנחה מתחיל',`צריך מינימום ${MIN_PLAYERS} שחקנים. כשמגיעים אליו המנחה מקבל התראה ולוחץ "התחל משחק".`],
       ['❓',`${QUESTIONS.length} שאלות בנושאים`,'בסוף כל נושא מוצגת טבלת הניקוד.'],
-      ['⚡',`${sec} שניות לשאלה`,'אפשר להחליף תשובה עד סוף הזמן. כשכולם ענו — נחשף מיד.'],
+      ['⚡',`${sec} שניות לשאלה`,'אפשר להחליף תשובה עד סוף הזמן. כשכולם ענו — התשובה נחשפת מיד.'],
       ['🏆','ניקוד', pts + '.'],
       ['🗳️','שאלות סקר','אין תשובה נכונה — מי שבחר כמו הרוב מקבל נקודות.'],
       ['⏸','עצירה','המנחה יכול לעצור, והטיימר ממשיך מאותו מקום.'],
       ['🎁','הפרס','למי שמסיים במקום הראשון!']
     ]},
     duel: {title:'משחק ראש בראש ⚔️', items:[
-      ['🚪','נכנסים','שם ושם משפחה ← חדר ההמתנה. שם רואים מי ממתין.'],
+      ['🚪','נכנסים','רושמים שם ושם משפחה ונכנסים לחדר ההמתנה. שם רואים מי ממתין.'],
       ['📨','בוחרים יריב','לוחצים "הזמנה" ליד השם. כשהשני מאשר — הדו-קרב מתחיל מיד, בלי מנחה.'],
       ['❓',`${DUEL_Q_COUNT} שאלות`,'אותן שאלות בדיוק לשניכם, באותו סדר.'],
       ['⚡',`${sec} שניות לשאלה`,'עונים פעם אחת. כששניכם עניתם — עוברים מיד הלאה.'],
@@ -3482,7 +3498,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-07u';
+const APP_VERSION = '2026-10-07v';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -3520,7 +3536,7 @@ document.addEventListener('visibilitychange', ()=>{
   subscribeRoomPlayer(); subscribeMyPlayer();
 });
 function renderPjoin(){
-  $('pjoin-body').innerHTML = entryFormHtml({mode:'group', icon:'👥', eyebrow:'הצטרפות למשחק', title:'משחק <span>קבוצתי</span>', sub:'נרשמים ונכנסים לחדר ההמתנה — בלי קוד', inputId:'pjoin-name', goId:'btn-pjoin-go', goText:'👥 כניסה לחדר ההמתנה', backId:'btn-pjoin-back', value:savedFullName()});
+  $('pjoin-body').innerHTML = entryFormHtml({mode:'group', icon:'👥', eyebrow:'הצטרפות למשחק', title:'משחק <span>קבוצתי</span>', sub:'נרשמים ונכנסים לחדר ההמתנה', inputId:'pjoin-name', goId:'btn-pjoin-go', goText:'👥 כניסה לחדר ההמתנה', backId:'btn-pjoin-back', value:savedFullName()});
   $('btn-pjoin-go').addEventListener('click', joinGame);
   $('btn-pjoin-back').addEventListener('click', ()=>{ role=null; showScreen('s-landing'); });
   entryWire('pjoin-name','btn-pjoin-go');
@@ -3603,7 +3619,7 @@ function subscribeRoomHost(){
 }
 function updateHostCount(){
   const el = $('h-answer-count');
-  if(el) el.textContent = answersForQ.length + ' / ' + playersOrder.length;
+  if(el) el.textContent = answersForQ.length + ' מתוך ' + playersOrder.length;
 }
 function subscribePlayersHost(){
   hostPlayersUnsub = playersRef().orderBy('joinedAt','asc').onSnapshot(snap=>{
@@ -3700,8 +3716,7 @@ function renderHost(){
       <button class="btn btn-ghost" id="h-back" style="margin-bottom:14px;">→ חזרה</button>
       <div class="eyebrow">חדר המתנה</div>
       <h1>השחקנים <span>נכנסים לחדר ההמתנה</span></h1>
-      <div class="sub" style="text-align:center;">השחקנים לוחצים על "משחק קבוצתי" באפליקציה (או סורקים) — בלי קוד</div>
-      <div class="qr-wrap"><div id="qr"></div></div>
+      <div class="sub" style="text-align:center;">השחקנים נכנסים דרך הכפתור "משחק קבוצתי" באפליקציה</div>
       ${total>=MIN_PLAYERS ? `<div class="ready-alert">🔔 יש כבר ${total} שחקנים בחדר ההמתנה — אפשר ללחוץ על "התחל משחק"!</div>` : ''}
       ${lobbyCrowdHtml(lobbyActiveIds().map(id=>({id, name:playersMap[id].name, joinedAt:playersMap[id].joinedAt})), null)}
       <div class="card"><b>${total}</b> שחקנים ממתינים:
@@ -3715,7 +3730,6 @@ function renderHost(){
     if(total>=MIN_PLAYERS) notifyHostReady(total);
     fxCrowdCheck(total);
     try{ if('Notification' in window && Notification.permission==='default') Notification.requestPermission(); }catch(e){}
-    if(!$('qr').hasChildNodes()) new QRCode($('qr'), {text: joinUrl(), width:200, height:200});
     $('h-start').addEventListener('click', ()=>{ const code=roomCode; goToQuestion(0).then(()=>openNextLobby(code)); });
     $('h-back').addEventListener('click', hostBack);
     return;
@@ -3741,8 +3755,8 @@ function renderHost(){
       ${qCardHtml(curState.qIndex+1, QUESTIONS.length, q)}
       ${clockHtml('h')}
       <div class="answers">${q.a.map((t,i)=>`<div class="answer-btn host-opt"><span class="opt-letter">${letterFor(i)}</span><span class="opt-text">${esc(t)}</span></div>`).join('')}</div>
-      <div class="big-stat" id="h-answer-count">${answersForQ.length} / ${total}</div>
-      <div class="center-note">ענו עד כה — התשובה נחשפת אוטומטית כשהזמן נגמר</div>
+      <div class="big-stat" id="h-answer-count">${answersForQ.length} מתוך ${total}</div>
+      <div class="center-note">ענו עד עכשיו — התשובה נחשפת אוטומטית כשהזמן נגמר</div>
       <div class="footer-fixed">
         <button class="pause-btn" id="h-pause">⏸ עצרו לרגע</button>
         ${endBtnHtml()}
@@ -4002,7 +4016,7 @@ function renderPlayer(){
     if(playerId && !playersMap[playerId]) waiting.push({id:playerId, name:playerName});
     body.innerHTML = `<div class="wait-hero">
         <div class="wait-title">חדר ההמתנה</div>
-        <div class="wait-sub">שלום <b>${esc(me.name||playerName)}</b>, אתם בפנים ✓<br>המשחק מתחיל כשיש מינימום ${MIN_PLAYERS} שחקנים — ומנחה המשחק לוחץ "התחל".</div>
+        <div class="wait-sub">שלום <b>${esc(me.name||playerName)}</b>, אתם בפנים ✓<br>המשחק מתחיל כשיש מינימום ${MIN_PLAYERS} שחקנים — ומנחה המשחק לוחץ "התחל משחק".</div>
       </div>
       ${lobbyCrowdHtml(waiting, playerId)}
       ${modeRulesHtml('group')}
@@ -4089,7 +4103,7 @@ function renderPlayer(){
     stopWatchdog();
     const sorted = sortedPlayers();
     const myRank = sorted.findIndex(p=>p.id===playerId)+1;
-    body.innerHTML = `${header}<div class="eyebrow">סוף המשחק</div><h1>איזו <span>נסיעה!</span></h1>
+    body.innerHTML = `${header}<div class="eyebrow">סוף המשחק</div><h1>${myRank===1 ? '🏆 <span>מקום ראשון!</span>' : myRank<=3 ? 'עליתם <span>לפודיום!</span>' : 'תודה <span>ששיחקתם!</span>'}</h1>
       <p class="sub">המקום שלך: #${myRank} עם ${me.score||0} נקודות</p>
       <div class="final-prize">🎁 הפרס המפנק מחכה למקום הראשון!</div>
       ${fullBoardHtml(playerId, 10)}
@@ -4184,7 +4198,7 @@ function soloRegister(){
   role='solo'; soloState=null;
   showScreen('s-solo');
   const body = $('solo-body');
-  body.innerHTML = entryFormHtml({mode:'solo', icon:'🎯', eyebrow:'משחק עצמאי', title:'משחק <span>עצמאי</span>', sub:'נרשמים פעם אחת — ומהפעם הבאה נכנסים ישר', inputId:'sr-name', goId:'sr-go', goText:'🎯 הרשמה והמשך', backId:'sr-back', value:savedFullName()});
+  body.innerHTML = entryFormHtml({mode:'solo', icon:'🎯', eyebrow:'שוברים שיאים', title:'משחק <span>עצמאי</span>', sub:'נרשמים פעם אחת — ומהפעם הבאה נכנסים ישר', inputId:'sr-name', goId:'sr-go', goText:'🎯 הרשמה והמשך', backId:'sr-back', value:savedFullName()});
   entryWire('sr-name','sr-go');
   $('sr-back').addEventListener('click', soloQuit);
   $('sr-go').addEventListener('click', soloDoRegister);
@@ -4221,7 +4235,7 @@ function soloSwitchUser(){
 }
 function soloHomeBoardHtml(){
   const p = soloProfile(), mine = soloBest();
-  if(!soloTop.length) return `<div class="sh-empty">${soloTopLoaded ? '🏆 עדיין אין שיאים — היו הראשונים!' : 'טוען את טבלת השיאים...'}</div>`;
+  if(!soloTop.length) return `<div class="sh-empty">${soloTopLoaded ? 'עדיין אין שיאים — היו הראשונים!' : 'טוען את טבלת השיאים...'}</div>`;
   const row = (rank, name, best, isMe, i)=>`<div class="board-row ${rank===1?'first':''} ${isMe?'mine':''}" style="--i:${i}"><div class="rank">${rank<=3?['🥇','🥈','🥉'][rank-1]:rank}</div><div class="board-name">${esc(name||'')}${isMe?' <small>(אתם)</small>':''}</div><div class="board-score">${best||0}</div></div>`;
   let html = soloTop.map((r,i)=>row(i+1, r.name, r.best, p && r.id===p.id, i)).join('');
   const inTop = p && soloTop.some(r=>r.id===p.id);
@@ -4415,7 +4429,7 @@ function soloEnd(){
   body.innerHTML = `<div class="eyebrow" style="text-align:center;">המשחק העצמאי הסתיים</div>
     <h1 style="text-align:center;">סיימתם <span>סבב!</span></h1>
     <div class="big-score" id="s-final">0</div>
-    <div class="center-note" style="margin-top:0;">${s.correct} / ${s.qs.length} תשובות נכונות</div>
+    <div class="center-note" style="margin-top:0;">${s.correct} תשובות נכונות מתוך ${s.qs.length}</div>
     ${isGlobal ? '<div class="compliment-badge">👑 שברתם את שיא המשחק! אתם במקום הראשון!</div>' : (isNew ? '<div class="compliment-badge">🏆 שיא אישי חדש! כל הכבוד!</div>' : `<div class="final-prize">השיא שלכם: ${prevBest} — עוד ${Math.max(1, prevBest - s.score + 1)} נקודות ושברתם אותו!</div>`)}
     ${!isGlobal && g ? `<div class="record-strip" style="margin:0 0 14px;">👑 שיא המשחק: <b>${g.best}</b> — ${esc(g.name)}</div>` : ''}
     <div id="s-end-lb"></div>
