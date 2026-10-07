@@ -4126,7 +4126,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-08v';
+const APP_VERSION = '2026-10-08w';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -4370,7 +4370,7 @@ function renderHost(){
       <div class="sub" style="text-align:center;">השחקנים נכנסים דרך הכפתור "משחק קבוצתי" באפליקציה</div>
       ${total>=MIN_PLAYERS ? `<div class="ready-alert">🔔 יש כבר ${total} שחקנים בחדר ההמתנה — אפשר ללחוץ על "התחל משחק"!</div>` : ''}
       ${lobbyCrowdHtml(lobbyActiveIds().map(id=>({id, name:playersMap[id].name, joinedAt:playersMap[id].joinedAt})), null)}
-      <div class="card"><b>${total}</b> שחקנים ממתינים:
+      <div class="card">${total===1 ? '<b>שחקן אחד</b> ממתין:' : `<b>${total}</b> שחקנים ממתינים:`}
         <div class="goal-track"><div style="width:${Math.min(100, Math.round(total/MIN_PLAYERS*100))}%"></div></div>
         <div class="goal-note">${total>=MIN_PLAYERS ? 'הגעתם ליעד של ' + MIN_PLAYERS + ' שחקנים ✓' : 'מינימום <b>' + MIN_PLAYERS + '</b> שחקנים להתחלה — כשתגיעו אליו תקבלו התראה (חסרים עוד ' + (MIN_PLAYERS-total) + ')'}</div>
         <div class="player-chip-row host-names" style="margin-top:10px;">
@@ -4695,7 +4695,7 @@ function renderPlayer(){
       </div>
       ${lobbyCrowdHtml(waiting, playerId)}
       <div class="wait-card">
-        <div class="wait-card-head">👥 <b>${waiting.length}</b> ממתינים בחדר ההמתנה (כולל אתכם)</div>
+        <div class="wait-card-head">👥 ${waiting.length===1 ? 'רק אתם בחדר ההמתנה כרגע' : `<b>${waiting.length}</b> ממתינים בחדר ההמתנה (כולל אתכם)`}</div>
         <div class="goal-track"><div style="width:${Math.min(100, Math.round(waiting.length/MIN_PLAYERS*100))}%"></div></div>
         <div class="goal-note">${waiting.length>=MIN_PLAYERS ? 'עברנו את המינימום (' + waiting.length + ' שחקנים) — המנחה יתחיל את המשחק בכל רגע! 🎉' : 'חסרים עוד <b>' + (MIN_PLAYERS-waiting.length) + '</b> שחקנים למינימום של ' + MIN_PLAYERS}</div>
       </div>
@@ -5210,7 +5210,7 @@ function soloShowQuestion(){
     <div class="center-note" id="s-note" role="status">⚡ ענו מהר — כל שנייה שווה 2 נקודות!</div>
     <button class="skip-btn" id="s-quit">🏠 יציאה למסך הבית</button>`;
   body.querySelectorAll('.answer-btn').forEach(b=>b.addEventListener('click', ()=>{ if(soloState && !soloState.locked) pressFeedback(b); soloReveal(Number(b.dataset.i)); }));
-  $('s-quit').addEventListener('click', soloQuit);
+  $('s-quit').addEventListener('click', ()=>{ const st=soloState; if(st && (st.i>0 || st.locked) && !confirm('לצאת מהסבב? הניקוד של הסבב הזה לא יישמר.')) return; soloQuit(); });
   mountQTimer(s.startedAt, 's-timer-ring', 's-timer-num', 's-clock-wrap', ()=>soloReveal(null));
 }
 function soloReveal(choice){

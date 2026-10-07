@@ -81,13 +81,16 @@ test.describe('F01 solo game', () => {
     await expect(page.getByText('שאלה 2 מתוך 30')).toBeVisible();
   });
 
-  test('F01-E5 quit mid-round returns home and saves nothing', async ({ browser, db }) => {
-    const { page } = await openPlayer(browser, db);
+  test('F01-E5 quit mid-round asks first, returns home and saves nothing', async ({ browser, db }) => {
+    const { page, dialogs } = await openPlayer(browser, db);
     await page.getByRole('button', { name: /משחק עצמאי/ }).click();
     await enterName(page, 'יוסי מזרחי');
     await page.getByRole('button', { name: /התחילו סבב חדש/ }).click();
     await expect(page.getByText('שאלה 1 מתוך 30')).toBeVisible();
+    await page.locator('#s-answers').getByRole('button').first().click();
     await page.getByRole('button', { name: /יציאה למסך הבית/ }).click();
+    // quitting after answering asks first, so a stray tap can't throw the round away
+    await expect.poll(() => dialogs.find(d => d.includes('לצאת מהסבב'))).toBeTruthy();
     await expect(page.getByRole('button', { name: /משחק עצמאי/ })).toBeVisible();
     await page.waitForTimeout(1500);
     expect(await db.get(`${SOLO}/יוסי מזרחי`)).toMatchObject({ games: 0 });
