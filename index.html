@@ -211,12 +211,15 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
 .tb-fill{height:100%;width:100%;border-radius:12px;background:linear-gradient(90deg,var(--gold-light),var(--line-yellow));box-shadow:0 0 14px rgba(212,175,55,.6);transition:width .1s linear;}
 .tb-ticks{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(90deg, transparent 0, transparent calc(100% / 11 - 2px), rgba(0,0,0,.5) calc(100% / 11 - 2px), rgba(0,0,0,.5) calc(100% / 11));}
 .timer-bar.warn .tb-fill{background:linear-gradient(90deg,#FFC46B,#F29A2E);box-shadow:0 0 14px rgba(242,154,46,.65);}
-.timer-bar.warn .tb-num{color:#F6A94A;}
+.timer-bar.warn .tb-num,.timer-bar.warn .tb-worth b{color:#F6A94A;}
 .timer-bar.danger .tb-fill{background:linear-gradient(90deg,#FF7B5C,#E4572E);box-shadow:0 0 18px rgba(228,87,46,.85);}
 .timer-bar.danger .tb-num,.timer-bar.danger .tb-icon{color:var(--stop-red);animation:dangerPulse .5s ease-in-out infinite;}
 .timer-bar.done .tb-num{color:var(--ink-dim);}
-.tb-worth{flex:1;display:flex;align-items:center;gap:6px;color:var(--gold-light);font-size:14px;font-weight:800;white-space:nowrap;}
-.tb-worth b{font-family:'Frank Ruhl Libre',serif;font-size:24px;font-weight:900;color:var(--line-yellow);min-width:30px;text-align:center;display:inline-block;line-height:1;text-shadow:0 0 12px rgba(212,175,55,.5);}
+.tb-num{display:none;}
+.tb-worth{flex:1;display:flex;align-items:center;gap:6px;color:var(--gold-light);font-size:15px;font-weight:800;white-space:nowrap;}
+.tb-worth b{margin-inline-start:auto;}
+.tb-worth i{font-style:normal;font-size:13px;color:var(--ink-dim);font-weight:700;}
+.tb-worth b{font-family:'Frank Ruhl Libre',serif;font-size:32px;font-weight:900;color:var(--line-yellow);min-width:30px;text-align:center;display:inline-block;line-height:1;text-shadow:0 0 12px rgba(212,175,55,.5);}
 .tb-worth.drop b{animation:worthDrop .45s ease-out;}
 .timer-bar.danger .tb-worth b{color:var(--stop-red);}
 .tb-worth.locked{color:#8FE3A6;}
@@ -2766,7 +2769,7 @@ function qCardHtml(num,total,q){
     ${q.img && q.img.indexOf('sign:')===0 ? `<div class="q-sign">${SIGN_SVG[q.img.slice(5)]||''}</div>` : q.img ? (q.img.indexOf('flagcdn')>=0 ? `<div class="q-flag"><img src="${esc(q.img)}" alt="דגל" draggable="false"></div>` : (q.crop ? `<div class="q-photo crop"><div class="crop-in" style="transform:scale(${parseFloat(q.crop.split('|')[1])||1})"><img src="${esc(q.img)}" alt="תמונה" draggable="false" style="object-fit:cover;object-position:${esc(q.crop.split('|')[0])}" onerror="this.closest('.q-photo').classList.add('err')"></div><span class="q-credit">📷 ויקישיתוף</span></div>` : `<div class="q-photo"><img src="${esc(q.img)}" alt="תמונה" draggable="false" onerror="this.parentNode.classList.add('err')"><span class="q-credit">📷 ויקישיתוף</span></div>`)) : ''}
     <div class="question-text">${esc(q.q)}</div></div>`;
 }
-function clockHtml(prefix){ return `<div class="timer-bar qanim" id="${prefix}-clock-wrap"><div class="tb-head"><span class="tb-icon">⏱️</span><span class="tb-worth" id="${prefix}-worth">💰 תשובה נכונה שווה עכשיו <b>${BASE_POINTS+SPEED_POINTS*QUESTION_MS/1000}</b></span><span class="tb-num" id="${prefix}-timer-num">${QUESTION_MS/1000}</span></div><div class="tb-track"><div class="tb-fill" id="${prefix}-timer-ring"></div><div class="tb-ticks"></div></div></div>`; }
+function clockHtml(prefix){ return `<div class="timer-bar qanim" id="${prefix}-clock-wrap"><div class="tb-head"><span class="tb-icon">⏱️</span><span class="tb-worth" id="${prefix}-worth">💰 תשובה נכונה שווה עכשיו <b>${BASE_POINTS+SPEED_POINTS*QUESTION_MS/1000}</b><i>נק'</i></span><span class="tb-num" id="${prefix}-timer-num">${QUESTION_MS/1000}</span></div><div class="tb-track"><div class="tb-fill" id="${prefix}-timer-ring"></div><div class="tb-ticks"></div></div></div>`; }
 function answerTag(q){ return q.type==='poll' ? '✓ בחירת הרוב' : '✓ התשובה הנכונה'; }
 function rankLabel(i){ return i<3 ? ['🥇','🥈','🥉'][i] : String(i+1); }
 function sortedPlayers(){ return playersOrder.map(id=>({id,...playersMap[id]})).sort((a,b)=>(b.score||0)-(a.score||0)); }
@@ -3456,7 +3459,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-08g';
+const APP_VERSION = '2026-10-08h';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -3518,7 +3521,7 @@ function paintWorth(prefix, startedAt, elapsed){
   el.dataset.k = key;
   el.classList.toggle('locked', !!lk && lk.cls!=='lost');
   el.classList.toggle('lost', !!lk && lk.cls==='lost');
-  el.innerHTML = lk ? (lk.html || `🔒 נעלת <b>${v}</b> נק' אם צדקת`) : `💰 תשובה נכונה שווה עכשיו <b>${v}</b>`;
+  el.innerHTML = lk ? (lk.html || `🔒 ננעל — אם צדקתם תקבלו <b>${v}</b><i>נק'</i>`) : `💰 תשובה נכונה שווה עכשיו <b>${v}</b><i>נק'</i>`;
   if(dropped){ el.classList.remove('drop'); void el.offsetWidth; el.classList.add('drop'); }
 }
 function speedBreakHtml(pts){
@@ -4147,7 +4150,7 @@ function playerLeave(){
 // ---------- SOLO MODE ----------
 const SOLO_PROFILE_KEY = 'trivia_solo_profile';
 // Competition season: bump this number to start a new competition (fresh records for everyone)
-const SOLO_SEASON = 4; // עונה 4 — איפוס השיאים אחרי מעבר לניקוד החדש (10 + 2 לשנייה)
+const SOLO_SEASON = 5; // עונה 5 — איפוס השיאים (עם נתוני נכונות וזמן)
 (function(){
   try{
     if(localStorage.getItem('trivia_solo_season') !== String(SOLO_SEASON)){
@@ -4446,7 +4449,7 @@ function soloReveal(choice){
     else if(i===choice){ b.classList.add('wrong'); b.dataset.tag = '✗ הבחירה שלך'; }
     else b.classList.add('dim');
   });
-  if(choice!==null) lockWorth('s', s.startedAt, elapsed, right ? `✅ הרווחת <b>${pts}</b> נק'` : `❌ <b>0</b> נק' הפעם`, right?'':'lost');
+  if(choice!==null) lockWorth('s', s.startedAt, elapsed, right ? `✅ הרווחתם <b>${pts}</b><i>נק'</i>` : `❌ לא נכון הפעם <b>0</b><i>נק'</i>`, right?'':'lost');
   const note = $('s-note');
   if(note) note.textContent = choice===null ? '⏰ נגמר הזמן!' : right ? ((elapsed<=FAST_ANSWER_MS ? '⚡ מהירות שיא! ' : '🎉 נכון! ') + '+' + pts + ' נקודות') : '❌ לא נכון הפעם';
   const h = $('s-header'); if(h) h.innerHTML = soloHeaderInner();
