@@ -514,6 +514,60 @@ input.full-name{font-size:19px;padding:16px;text-align:center;margin-top:6px;}
 .dl-inv-icon{font-size:64px;animation:iconDrop .7s cubic-bezier(.2,1.6,.4,1) both;}
 .dl-inv-from{font-size:20px;margin:8px 0 16px;line-height:1.5;}
 .dl-inv-from b{color:var(--gold-light);}
+
+/* בלי גלילה הצידה (הקישוט ברקע רחב מהמסך) */
+html,body{overflow-x:hidden;overflow-x:clip;max-width:100%;}
+/* ===== טופס ההרשמה ===== */
+.entry{display:flex;flex-direction:column;min-height:calc(100vh - 60px);justify-content:center;}
+.entry-hero{text-align:center;animation:qFadeUp .5s cubic-bezier(.22,.8,.25,1) both;}
+.entry-hero h1{font-size:40px;margin:2px 0;}
+.entry-sub{color:var(--ink-dim);font-size:16px;margin:4px 0 16px;}
+.entry-badge{position:relative;width:96px;height:96px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;animation:iconDrop .8s cubic-bezier(.2,1.6,.4,1) both;}
+.entry-badge .eb-ring{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,transparent,#FFF3C4,var(--line-yellow),transparent 60%,transparent);animation:ringSpin 3s linear infinite;-webkit-mask:radial-gradient(circle,transparent 62%,#000 64%);mask:radial-gradient(circle,transparent 62%,#000 64%);}
+.entry-badge::before{content:"";position:absolute;inset:8px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#3A3220,#1A1712);box-shadow:0 0 30px rgba(212,175,55,.35),inset 0 0 0 1px rgba(212,175,55,.4);}
+.entry-badge .eb-icon{position:relative;font-size:44px;animation:waitBob 2.4s ease-in-out infinite;}
+.entry-card{position:relative;border-radius:24px;padding:20px 16px 18px;background:linear-gradient(160deg,rgba(52,44,28,.95),rgba(20,18,15,.96));box-shadow:0 18px 50px rgba(0,0,0,.55);animation:cardFlip .7s cubic-bezier(.2,1.2,.35,1) .15s both;}
+.entry-card::before{content:"";position:absolute;inset:-2px;border-radius:26px;padding:2px;background:conic-gradient(from var(--ang,0deg),rgba(212,175,55,.2),#FFF3C4,rgba(212,175,55,.2) 30%,rgba(212,175,55,.2) 70%,#E9CE7C,rgba(212,175,55,.2));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:borderSpin 4s linear infinite;pointer-events:none;}
+@property --ang{syntax:'<angle>';inherits:false;initial-value:0deg;}
+@keyframes borderSpin{to{--ang:360deg;}}
+.entry-label{display:flex;align-items:center;gap:8px;font-weight:800;font-size:18px;color:var(--gold-light);margin:0 2px 8px;}
+.entry-label.second{margin-top:14px;font-size:16px;color:var(--ink-dim);}
+.el-step{width:26px;height:26px;border-radius:50%;background:linear-gradient(180deg,var(--gold-light),var(--line-yellow));color:#1B1706;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;flex-shrink:0;}
+.entry-field{position:relative;display:flex;align-items:center;background:#0F0E0C;border:2px solid rgba(212,175,55,.55);border-radius:16px;transition:border-color .25s, box-shadow .25s, transform .2s;}
+.entry-field:focus-within{border-color:#FFF3C4;box-shadow:0 0 0 4px rgba(212,175,55,.22),0 0 26px rgba(212,175,55,.45);transform:scale(1.015);}
+.entry-field.filled{border-color:var(--go-green);}
+.entry-field.filled::after{content:"✓";position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--go-green);font-weight:900;font-size:22px;animation:chipPop .4s cubic-bezier(.2,1.7,.4,1) both;}
+.entry-field .ef-icon{font-size:22px;padding:0 14px 0 6px;}
+.entry-field input.full-name{flex:1;background:transparent;border:none;margin:0;padding:18px 4px 18px 44px;font-size:21px;font-weight:700;text-align:right;color:var(--ink);}
+.entry-field input.full-name:focus{outline:none;}
+.entry-field input.full-name::placeholder{color:#7F7660;font-weight:500;}
+.entry-field.shake{animation:wrongShake .45s ease-in-out;border-color:var(--stop-red);}
+.entry-hint{font-size:14px;color:var(--ink-dim);margin:8px 4px 0;}
+.entry-go{margin-top:2px;}
+.entry-row{display:flex;gap:10px;margin-top:16px;animation:qFadeUp .5s cubic-bezier(.22,.8,.25,1) .35s both;}
+.entry-row > .btn{flex:1;margin-top:0 !important;min-height:56px;font-size:16px;}
+/* ===== מסך הבית של המשחק העצמאי — הכול במסך אחד ===== */
+.solo-home{display:flex;flex-direction:column;min-height:calc(100vh - 50px);}
+.solo-home .solo-hi{font-size:28px;margin:4px 0 12px;animation:qFadeUp .5s ease-out both;}
+.solo-home .wave{display:inline-block;animation:waveHand 1.6s ease-in-out .4s 2;transform-origin:70% 70%;}
+@keyframes waveHand{0%,100%{transform:rotate(0);}20%{transform:rotate(18deg);}40%{transform:rotate(-10deg);}60%{transform:rotate(14deg);}80%{transform:rotate(-6deg);}}
+.solo-home .rec-grid{margin-bottom:12px;gap:10px;}
+.solo-home .rec-card{padding:10px 8px;animation:chipPop .55s cubic-bezier(.2,1.6,.4,1) .1s both;}
+.solo-home .rec-card.top{animation-delay:.2s;}
+.solo-home .rec-num{font-size:32px;}
+.solo-home #sh-start{padding:20px;animation:landIn .6s cubic-bezier(.2,1.3,.4,1) .3s both;}
+.solo-home .solo-lb{margin:12px 0 4px;flex:1;}
+.solo-home .lb-title{margin:0 0 6px;font-size:15px;}
+.solo-home .board-row{padding:8px 14px;margin-bottom:6px;border-radius:12px;animation-delay:calc(.35s + var(--i,0) * 70ms);}
+.solo-home .board-row small{color:var(--gold-light);font-weight:700;}
+.sh-gap{text-align:center;color:var(--ink-dim);line-height:1;margin:-2px 0 4px;font-size:20px;}
+.sh-noscore{font-size:13px;color:var(--ink-dim);}
+.sh-empty{text-align:center;color:var(--ink-dim);padding:18px;background:var(--asphalt-2);border-radius:14px;}
+.sh-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;animation:qFadeUp .5s ease-out .6s both;}
+.sh-act{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:62px;background:var(--asphalt-2);border:2px solid #3A404C;border-radius:14px;color:var(--ink);font-family:inherit;font-weight:700;font-size:14px;cursor:pointer;}
+.sh-act span{font-size:22px;line-height:1;}
+.sh-act[data-rules]{border-color:var(--line-yellow);color:var(--gold-light);}
+.sh-act:active{transform:translateY(2px);}
 </style>
 </head>
 <body>
@@ -607,13 +661,7 @@ input.full-name{font-size:19px;padding:16px;text-align:center;margin-top:6px;}
 
 
 <section class="screen" id="s-pjoin">
-  <div class="eyebrow">הצטרפות למשחק</div>
-  <h1>משחק <span>קבוצתי 👥</span></h1>
-  <p class="sub">כתבו שם ושם משפחה ונכנסים לחדר ההמתנה</p>
-  <input type="text" id="pjoin-name" class="full-name" placeholder="שם ושם משפחה" maxlength="36" autocomplete="name">
-  <button class="btn btn-primary" id="btn-pjoin-go">כניסה לחדר ההמתנה</button>
-  <button class="btn btn-ghost" id="btn-pjoin-back" style="margin-top:10px;">חזרה</button>
-  <div id="pjoin-rules"></div>
+  <div id="pjoin-body"></div>
 </section>
 
 <section class="screen" id="s-host"><div id="host-body"></div></section>
@@ -2358,13 +2406,8 @@ function duelEntry(){
   ensureAudio();
   role='duel'; showScreen('s-duel');
   const nm = duelSavedName();
-  $('duel-body').innerHTML = `<div class="eyebrow">אחד על אחד</div>
-    <h1>משחק <span>אחד על אחד ⚔️</span></h1>
-    <p class="sub">כתבו שם ושם משפחה ונכנסים לחדר ההמתנה</p>
-    <input type="text" id="duel-name" class="full-name" placeholder="שם ושם משפחה" maxlength="36" autocomplete="name" value="${esc(nm)}">
-    <button class="btn btn-primary btn-xl" id="duel-go">⚔️ כניסה לחדר ההמתנה</button>
-    <button class="btn btn-ghost" id="duel-back">חזרה</button>
-    ${modeRulesHtml('duel')}`;
+  $('duel-body').innerHTML = entryFormHtml({mode:'duel', icon:'⚔️', eyebrow:'אחד על אחד', title:'משחק <span>אחד על אחד</span>', sub:'נכנסים לחדר ההמתנה ובוחרים יריב', inputId:'duel-name', goId:'duel-go', goText:'⚔️ כניסה לחדר ההמתנה', backId:'duel-back', value:nm});
+  entryWire('duel-name','duel-go');
   $('duel-go').addEventListener('click', ()=>{ const n=readFullName('duel-name'); if(!n) return; duelStart(n); });
   $('duel-back').addEventListener('click', duelLeave);
 }
@@ -2654,7 +2697,7 @@ function duelAnswer(k, btn){
 function savedFullName(){ try{ return localStorage.getItem('trivia_full_name') || (soloProfile() && soloProfile().name) || ''; }catch(e){ return ''; } }
 function readFullName(id){
   const el=$(id); const v=(el.value||'').trim().replace(/\s+/g,' ');
-  if(v.split(' ').length<2){ alert('נא לכתוב שם ושם משפחה (למשל: משה כהן)'); el.focus(); return null; }
+  if(v.split(' ').length<2){ const f=el.closest('.entry-field'); if(f){ f.classList.remove('shake'); void f.offsetWidth; f.classList.add('shake'); } alert('נא לכתוב שם ושם משפחה (למשל: משה כהן)'); el.focus(); return null; }
   try{ localStorage.setItem('trivia_full_name', v); }catch(e){}
   return v;
 }
@@ -2710,6 +2753,35 @@ function openRules(mode){
   ov.addEventListener('click', e=>{ if(e.target===ov) close(); });
 }
 document.addEventListener('click', e=>{ const b = e.target.closest && e.target.closest('[data-rules]'); if(b) openRules(b.dataset.rules); });
+
+// ---------- טופס הרשמה אחיד לשלושת המשחקים: כרטיס עם תווית צמודה לשדה, אנימציות וניצוצות בהקלדה ----------
+function entryFormHtml(o){
+  return `<div class="entry">
+    <div class="entry-hero">
+      <div class="entry-badge"><span class="eb-ring"></span><span class="eb-icon">${o.icon}</span></div>
+      <div class="eyebrow">${o.eyebrow}</div>
+      <h1>${o.title}</h1>
+      <p class="entry-sub">${o.sub}</p>
+    </div>
+    <div class="entry-card">
+      <label class="entry-label" for="${o.inputId}"><span class="el-step">1</span> כתבו כאן שם ושם משפחה</label>
+      <div class="entry-field"><span class="ef-icon">✍️</span><input type="text" id="${o.inputId}" class="full-name" placeholder="לדוגמה: משה כהן" maxlength="36" autocomplete="name" value="${esc(o.value||'')}"></div>
+      <div class="entry-hint">כך יופיע השם שלכם בטבלאות הניקוד</div>
+      <div class="entry-label second"><span class="el-step">2</span> ולוחצים:</div>
+      <button class="btn btn-primary btn-xl entry-go" id="${o.goId}">${o.goText}</button>
+    </div>
+    <div class="entry-row">
+      <button class="btn btn-ghost" id="${o.backId}">→ חזרה</button>
+      ${modeRulesHtml(o.mode)}
+    </div>
+  </div>`;
+}
+function entryWire(inputId, goId){
+  const el=$(inputId); if(!el) return;
+  el.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); const b=$(goId); if(b) b.click(); } });
+  el.addEventListener('input', ()=>{ const r=el.getBoundingClientRect(); fxBurst(r.left + 30 + Math.random()*(r.width-60), r.top + r.height/2, 6, FX_GOLD, 2); el.closest('.entry-field').classList.toggle('filled', el.value.trim().split(/\s+/).length>=2); });
+  el.closest('.entry-field').classList.toggle('filled', el.value.trim().split(/\s+/).length>=2);
+}
 // ---------- Solo best ----------
 function soloBest(){ return Number(localStorage.getItem('trivia_solo_best')||0); }
 function renderLandingBest(){
@@ -2719,7 +2791,7 @@ function renderLandingBest(){
   el.textContent = p ? ('🏅 ' + p.name + ' — השיא שלך: ' + b + ' נקודות') : '';
 }
 
-const APP_VERSION = '2026-10-07l';
+const APP_VERSION = '2026-10-07m';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -2734,8 +2806,7 @@ function checkForNewVersion(){
 }
 function init(){
   checkForNewVersion();
-  $('pjoin-rules').innerHTML = modeRulesHtml('group');
-  $('pjoin-name').value = savedFullName();
+  renderPjoin();
   fxSetupLanding();
   showScreen('s-landing');
     renderLandingBest();
@@ -2751,14 +2822,18 @@ $('btn-host').addEventListener('click', ()=>{
   if(entered.trim()!==HOST_PIN){ alert('קוד שגוי — רק המנחה המורשה יכול לפתוח חדר.'); return; }
   hostStart();
 });
-$('btn-join-manual').addEventListener('click', ()=>{ roomCode = null; showScreen('s-pjoin'); });
-$('btn-pjoin-go').addEventListener('click', joinGame);
+$('btn-join-manual').addEventListener('click', ()=>{ roomCode = null; renderPjoin(); showScreen('s-pjoin'); });
 document.addEventListener('visibilitychange', ()=>{
   if(document.visibilityState!=='visible' || role!=='player' || !roomCode || !playerId) return;
   lobbyBeat();
   subscribeRoomPlayer(); subscribeMyPlayer();
 });
-$('btn-pjoin-back').addEventListener('click', ()=>{ role=null; showScreen('s-landing'); });
+function renderPjoin(){
+  $('pjoin-body').innerHTML = entryFormHtml({mode:'group', icon:'👥', eyebrow:'הצטרפות למשחק', title:'משחק <span>קבוצתי</span>', sub:'נרשמים ונכנסים לחדר ההמתנה — בלי קוד', inputId:'pjoin-name', goId:'btn-pjoin-go', goText:'👥 כניסה לחדר ההמתנה', backId:'btn-pjoin-back', value:savedFullName()});
+  $('btn-pjoin-go').addEventListener('click', joinGame);
+  $('btn-pjoin-back').addEventListener('click', ()=>{ role=null; showScreen('s-landing'); });
+  entryWire('pjoin-name','btn-pjoin-go');
+}
 $('btn-solo').addEventListener('click', soloEntry);
 $('btn-duel').addEventListener('click', duelEntry);
 
@@ -3380,7 +3455,7 @@ const SOLO_SEASON = 2;
     }
   }catch(e){}
 })();
-let soloTop = [], soloTopLoaded = false;
+let soloTop = [], soloTopLoaded = false, soloMyRank = null;
 function soloProfile(){ try{ return JSON.parse(localStorage.getItem(SOLO_PROFILE_KEY)||'null'); }catch(e){ return null; } }
 function soloNameKey(n){ return n.replace(/\s+/g,' ').trim().toLowerCase().replace(/[\/.#$\[\]]/g,'_'); }
 function soloPlayersRef(){ return db.collection(SOLO_SEASON === 1 ? 'solo_players' : 'solo_players_s' + SOLO_SEASON); }
@@ -3389,6 +3464,14 @@ async function soloFetchTop(){
     const snap = await soloPlayersRef().orderBy('best','desc').limit(5).get();
     soloTop = snap.docs.map(d=>({id:d.id, ...d.data()})).filter(p=>(p.best||0)>0);
     soloTopLoaded = true;
+    // המקום שלי בטבלה הכללית = כמה שחקנים יש עם שיא גבוה משלי + 1
+    const mine = soloBest(), me = soloProfile();
+    soloMyRank = null;
+    if(me && mine>0){
+      const inTop = soloTop.findIndex(r=>r.id===me.id);
+      if(inTop>=0) soloMyRank = inTop+1;
+      else { const higher = await soloPlayersRef().where('best','>',mine).get(); soloMyRank = higher.docs.length + 1; }
+    }
   }catch(e){}
   return soloTop;
 }
@@ -3408,13 +3491,8 @@ function soloRegister(){
   role='solo'; soloState=null;
   showScreen('s-solo');
   const body = $('solo-body');
-  body.innerHTML = `<button class="btn btn-ghost" id="sr-back" style="margin:0 0 14px;">→ חזרה</button>
-    <div class="eyebrow">משחק עצמאי</div>
-    <h1>משחק <span>עצמאי 🎯</span></h1>
-    <p class="sub">נרשמים פעם אחת עם שם ושם משפחה. מהפעם הבאה תיכנסו ישר למשחק, והשיא שלכם יישמר ויתמודד מול שיא המשחק של כל המשתתפים.</p>
-    <input type="text" id="sr-name" class="full-name" placeholder="שם ושם משפחה" maxlength="36" autocomplete="name" value="${esc(savedFullName())}">
-    <button class="btn btn-primary" id="sr-go">הרשמה והמשך</button>
-    ${modeRulesHtml('solo')}`;
+  body.innerHTML = entryFormHtml({mode:'solo', icon:'🎯', eyebrow:'משחק עצמאי', title:'משחק <span>עצמאי</span>', sub:'נרשמים פעם אחת — ומהפעם הבאה נכנסים ישר', inputId:'sr-name', goId:'sr-go', goText:'🎯 הרשמה והמשך', backId:'sr-back', value:savedFullName()});
+  entryWire('sr-name','sr-go');
   $('sr-back').addEventListener('click', soloQuit);
   $('sr-go').addEventListener('click', soloDoRegister);
 }
@@ -3448,6 +3526,17 @@ function soloSwitchUser(){
   renderLandingBest();
   soloRegister();
 }
+function soloHomeBoardHtml(){
+  const p = soloProfile(), mine = soloBest();
+  if(!soloTop.length) return `<div class="sh-empty">${soloTopLoaded ? '🏆 עדיין אין שיאים — היו הראשונים!' : 'טוען את טבלת השיאים...'}</div>`;
+  const row = (rank, name, best, isMe, i)=>`<div class="board-row ${rank===1?'first':''} ${isMe?'mine':''}" style="--i:${i}"><div class="rank">${rank<=3?['🥇','🥈','🥉'][rank-1]:rank}</div><div class="board-name">${esc(name||'')}${isMe?' <small>(אתם)</small>':''}</div><div class="board-score">${best||0}</div></div>`;
+  let html = soloTop.map((r,i)=>row(i+1, r.name, r.best, p && r.id===p.id, i)).join('');
+  const inTop = p && soloTop.some(r=>r.id===p.id);
+  if(p && !inTop){
+    html += `<div class="sh-gap">⋯</div>` + (mine>0 && soloMyRank ? row(soloMyRank, p.name, mine, true, 6) : `<div class="board-row mine" style="--i:6"><div class="rank">—</div><div class="board-name">${esc(p.name)} <small>(אתם)</small></div><div class="board-score sh-noscore">עוד לא שיחקתם</div></div>`);
+  }
+  return `<div class="lb-title">🏆 טבלת השיאים</div>` + html;
+}
 function soloLeaderboardHtml(){
   const p = soloProfile();
   if(!soloTop.length) return '';
@@ -3458,17 +3547,20 @@ function renderSoloHome(){
   const g = globalBest(), mine = soloBest();
   const iHold = g && p.id===g.id;
   const body = $('solo-body');
-  body.innerHTML = `<div class="eyebrow" style="text-align:center;">משחק עצמאי</div>
-    <div class="solo-hi">שלום, <span>${esc(p.name)}</span> 👋</div>
+  body.innerHTML = `<div class="solo-home">
+    <div class="solo-hi">שלום, <span>${esc(p.name)}</span> <span class="wave">👋</span></div>
     <div class="rec-grid">
-      <div class="rec-card"><div class="rec-label">🏅 השיא האישי שלך</div><div class="rec-num">${mine}</div></div>
+      <div class="rec-card"><div class="rec-label">🏅 השיא שלך</div><div class="rec-num">${mine}</div>${soloMyRank ? `<div class="rec-name">מקום ${soloMyRank} בטבלה</div>` : ''}</div>
       <div class="rec-card top"><div class="rec-label">👑 שיא המשחק</div><div class="rec-num">${g ? g.best : (soloTopLoaded ? '—' : '...')}</div><div class="rec-name">${g ? (iHold ? 'זה אתם! 🎉' : esc(g.name)) : (soloTopLoaded ? 'עדיין לא נקבע' : 'טוען...')}</div></div>
     </div>
-    <button class="btn btn-primary btn-xl" id="sh-start" style="margin-top:10px;">▶ התחילו סבב חדש</button>
-    <div class="solo-lb">${soloLeaderboardHtml()}</div>
-    ${modeRulesHtml('solo')}
-    <button class="btn btn-ghost" id="sh-home">חזרה למסך הבית</button>
-    <button class="skip-btn" id="sh-switch">לא ${esc(p.name)}? החלפת משתתף</button>`;
+    <button class="btn btn-primary btn-xl" id="sh-start">▶ התחילו סבב חדש</button>
+    <div class="solo-lb">${soloHomeBoardHtml()}</div>
+    <div class="sh-actions">
+      <button class="sh-act" data-rules="solo"><span>📖</span>הוראות</button>
+      <button class="sh-act" id="sh-home"><span>🏠</span>מסך הבית</button>
+      <button class="sh-act" id="sh-switch"><span>🔄</span>החלפת משתתף</button>
+    </div>
+  </div>`;
   $('sh-start').addEventListener('click', soloStart);
   $('sh-home').addEventListener('click', soloQuit);
   $('sh-switch').addEventListener('click', soloSwitchUser);
