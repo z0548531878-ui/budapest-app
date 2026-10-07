@@ -81,6 +81,8 @@ input[type=text]:focus{outline:none;border-color:var(--line-yellow);}
 .rank{font-weight:900;font-size:17px;color:var(--ink-dim);width:20px;}
 .board-row.first .rank{color:var(--line-yellow);}
 .board-name{flex:1;font-weight:700;font-size:15px;}
+.board-sub{display:block;font-size:12px;font-weight:600;color:var(--ink-dim);margin-top:2px;letter-spacing:.2px;}
+.board-sub b{color:var(--gold-light);font-weight:800;}
 .board-score{font-weight:900;font-size:17px;color:var(--line-yellow);}
 .big-stat{font-size:44px;font-weight:900;color:var(--line-yellow);text-align:center;margin:10px 0;}
 .center-note{text-align:center;color:var(--ink-dim);font-size:14px;margin:18px 0;}
@@ -2768,7 +2770,10 @@ function clockHtml(prefix){ return `<div class="timer-bar qanim" id="${prefix}-c
 function answerTag(q){ return q.type==='poll' ? '✓ בחירת הרוב' : '✓ התשובה הנכונה'; }
 function rankLabel(i){ return i<3 ? ['🥇','🥈','🥉'][i] : String(i+1); }
 function sortedPlayers(){ return playersOrder.map(id=>({id,...playersMap[id]})).sort((a,b)=>(b.score||0)-(a.score||0)); }
-function boardRow(p,i,highlightId){ return `<div class="board-row ${i===0?'first':''} ${p.id===highlightId?'mine':''}" style="--i:${i}"><div class="rank">${rankLabel(i)}</div><div class="board-name">${esc(p.name||'')}</div><div class="board-score">${p.score||0}</div></div>`; }
+// זמן תשובה כולל: "48 שנ'" או "2:41 דק'"
+function fmtDur(ms){ const s=Math.round((ms||0)/1000); return s<60 ? `${s} שנ'` : `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')} דק'`; }
+function statSub(correct, total, ms){ return `<span class="board-sub">✅ <b>${correct||0}</b>${total?'/'+total:''} נכונות · ⏱️ <b>${fmtDur(ms)}</b></span>`; }
+function boardRow(p,i,highlightId){ return `<div class="board-row ${i===0?'first':''} ${p.id===highlightId?'mine':''}" style="--i:${i}"><div class="rank">${rankLabel(i)}</div><div class="board-name">${esc(p.name||'')}${p.answered!=null ? statSub(p.correct, 0, p.ms) : ''}</div><div class="board-score">${p.score||0}</div></div>`; }
 function fullBoardHtml(highlightId, limit){
   const sorted = sortedPlayers();
   const lim = limit || sorted.length;
@@ -3296,12 +3301,13 @@ function duelRender(){
     clearQTimer();
     const {me, op} = duelNames(v); const ms=v['s'+duel.slot]||0, os=v['s'+(3-duel.slot)]||0;
     const cnt = slot=>v.qs.reduce((n,_,k)=>{ const a=v['a'+slot+'_'+k]; return n + (a && a.c===duelQuestion(v,k).c ? 1 : 0); },0);
+    const tm = slot=>v.qs.reduce((n,_,k)=>{ const a=v['a'+slot+'_'+k]; return n + (a ? Math.min(QUESTION_MS, a.ms||0) : QUESTION_MS); },0);
     const res = ms>os ? 'win' : ms<os ? 'lose' : 'tie';
     body.innerHTML = `<div class="eyebrow" style="text-align:center;">הדו-קרב הסתיים</div>
       <div class="duel-result ${res}">${res==='win' ? '🏆 ניצחת!' : res==='lose' ? `<small>🏆 הניצחון הפעם:</small>${esc(op.name)}` : '🤝 תיקו!'}</div>
       <div class="duel-final">
-        <div class="dp ${ms>=os?'win':''}"><div class="dn">${esc(me.name)} (אתם)</div><div class="ds">${ms}</div><div class="dc">${cnt(duel.slot)} נכונות מתוך ${v.qs.length}</div></div>
-        <div class="dp ${os>=ms?'win':''}"><div class="dn">${esc(op.name)}</div><div class="ds">${os}</div><div class="dc">${cnt(3-duel.slot)} נכונות מתוך ${v.qs.length}</div></div>
+        <div class="dp ${ms>=os?'win':''}"><div class="dn">${esc(me.name)} (אתם)</div><div class="ds">${ms}</div><div class="dc">✅ ${cnt(duel.slot)} נכונות מתוך ${v.qs.length}</div><div class="dc">⏱️ זמן כולל ${fmtDur(tm(duel.slot))}</div></div>
+        <div class="dp ${os>=ms?'win':''}"><div class="dn">${esc(op.name)}</div><div class="ds">${os}</div><div class="dc">✅ ${cnt(3-duel.slot)} נכונות מתוך ${v.qs.length}</div><div class="dc">⏱️ זמן כולל ${fmtDur(tm(3-duel.slot))}</div></div>
       </div>
       <button class="btn btn-primary btn-xl" id="duel-again">⚔️ חזרה לחדר ההמתנה לדו-קרב נוסף</button>
       <button class="btn btn-ghost" id="duel-home">חזרה למסך הבית</button>`;
@@ -3450,7 +3456,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-08f';
+const APP_VERSION = '2026-10-08g';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -3861,9 +3867,14 @@ async function hostEndQuestion(){
     // one atomic batch: all score updates + the move to 'reveal' succeed or fail together (safe to retry)
     const batch = db.batch();
     answers.forEach(a=>{
-      if(!winners.includes(a.choice)) return;
-      const remainingSec = Math.max(0, Math.floor((QUESTION_MS-(a.answeredAt-startedAt))/1000));
-      batch.update(playersRef().doc(a.playerId), {score: FV.increment(BASE_POINTS + SPEED_POINTS*remainingSec)});
+      const ms = Math.min(QUESTION_MS, Math.max(0, a.answeredAt-startedAt));
+      const upd = {answered: FV.increment(1), ms: FV.increment(ms)};
+      if(winners.includes(a.choice)){
+        const remainingSec = Math.max(0, Math.floor((QUESTION_MS-ms)/1000));
+        upd.score = FV.increment(BASE_POINTS + SPEED_POINTS*remainingSec);
+        if(q.type!=='poll') upd.correct = FV.increment(1);
+      }
+      batch.update(playersRef().doc(a.playerId), upd);
     });
     batch.update(roomRef(), {phase:'reveal', revealWinners:winners, phaseAt:Date.now()});
     await batch.commit();
@@ -4148,11 +4159,14 @@ const SOLO_SEASON = 4; // עונה 4 — איפוס השיאים אחרי מעב
 let soloTop = [], soloTopLoaded = false, soloMyRank = null;
 function soloProfile(){ try{ return JSON.parse(localStorage.getItem(SOLO_PROFILE_KEY)||'null'); }catch(e){ return null; } }
 function soloNameKey(n){ return n.replace(/\s+/g,' ').trim().toLowerCase().replace(/[\/.#$\[\]]/g,'_'); }
+const SOLO_TOP_N = 10;
+function soloRowSub(r){ return r && r.bestCorrect!=null ? statSub(r.bestCorrect, r.bestQ, r.bestMs) : ''; }
 function soloPlayersRef(){ return db.collection(SOLO_SEASON === 1 ? 'solo_players' : 'solo_players_s' + SOLO_SEASON); }
 async function soloFetchTop(){
   try{
-    const snap = await soloPlayersRef().orderBy('best','desc').limit(5).get();
-    soloTop = snap.docs.map(d=>({id:d.id, ...d.data()})).filter(p=>(p.best||0)>0);
+    const snap = await soloPlayersRef().orderBy('best','desc').limit(SOLO_TOP_N).get();
+    soloTop = snap.docs.map(d=>({id:d.id, ...d.data()})).filter(p=>(p.best||0)>0)
+      .sort((a,b)=>(b.best||0)-(a.best||0) || (a.bestMs??1e12)-(b.bestMs??1e12));
     soloTopLoaded = true;
     // המקום שלי בטבלה הכללית = כמה שחקנים יש עם שיא גבוה משלי + 1
     const mine = soloBest(), me = soloProfile();
@@ -4219,8 +4233,8 @@ function soloSwitchUser(){
 function soloHomeBoardHtml(){
   const p = soloProfile(), mine = soloBest();
   if(!soloTop.length) return `<div class="sh-empty">${soloTopLoaded ? 'עדיין אין שיאים — היו הראשונים!' : 'טוען את טבלת השיאים...'}</div>`;
-  const row = (rank, name, best, isMe, i)=>`<div class="board-row ${rank===1?'first':''} ${isMe?'mine':''}" style="--i:${i}"><div class="rank">${rank<=3?['🥇','🥈','🥉'][rank-1]:rank}</div><div class="board-name">${esc(name||'')}${isMe?' <small>(אתם)</small>':''}</div><div class="board-score">${best||0}</div></div>`;
-  let html = soloTop.map((r,i)=>row(i+1, r.name, r.best, p && r.id===p.id, i)).join('');
+  const row = (rank, name, best, isMe, i, r)=>`<div class="board-row ${rank===1?'first':''} ${isMe?'mine':''}" style="--i:${i}"><div class="rank">${rank<=3?['🥇','🥈','🥉'][rank-1]:rank}</div><div class="board-name">${esc(name||'')}${isMe?' <small>(אתם)</small>':''}${soloRowSub(r)}</div><div class="board-score">${best||0}</div></div>`;
+  let html = soloTop.map((r,i)=>row(i+1, r.name, r.best, p && r.id===p.id, i, r)).join('');
   const inTop = p && soloTop.some(r=>r.id===p.id);
   if(p && !inTop){
     html += `<div class="sh-gap">⋯</div>` + (mine>0 && soloMyRank ? row(soloMyRank, p.name, mine, true, 6) : `<div class="board-row mine" style="--i:6"><div class="rank">—</div><div class="board-name">${esc(p.name)} <small>(אתם)</small></div><div class="board-score sh-noscore">עוד לא שיחקתם</div></div>`);
@@ -4230,7 +4244,7 @@ function soloHomeBoardHtml(){
 function soloLeaderboardHtml(){
   const p = soloProfile();
   if(!soloTop.length) return '';
-  return `<div class="lb-title">🏆 טבלת השיאים</div>` + soloTop.map((r,i)=>`<div class="board-row ${i===0?'first':''} ${p&&r.id===p.id?'mine':''}"><div class="rank">${rankLabel(i)}</div><div class="board-name">${esc(r.name||'')}</div><div class="board-score">${r.best||0}</div></div>`).join('');
+  return `<div class="lb-title">🏆 טבלת השיאים</div>` + soloTop.map((r,i)=>`<div class="board-row ${i===0?'first':''} ${p&&r.id===p.id?'mine':''}"><div class="rank">${rankLabel(i)}</div><div class="board-name">${esc(r.name||'')}${soloRowSub(r)}</div><div class="board-score">${r.best||0}</div></div>`).join('');
 }
 function renderSoloHome(){
   const p = soloProfile(); if(!p) return;
@@ -4271,19 +4285,21 @@ async function soloHome(){
   soloTopLoaded = true;
   if(role==='solo' && !soloState){ renderSoloHome(); renderLandingBest(); }
 }
-async function soloSaveResult(score){
+async function soloSaveResult(score, st){
   const p = soloProfile(); if(!p) return;
   try{
     const ref = soloPlayersRef().doc(p.id);
     await db.runTransaction(async tx=>{
       const d = await tx.get(ref);
-      const cur = d.exists ? (d.data().best||0) : 0;
+      const cur = d.exists ? (d.data().best||0) : 0, curMs = d.exists ? d.data().bestMs : null;
+      // שיא חדש — או אותו ניקוד אבל מהר יותר — שומרים גם כמה נכונות ובכמה זמן
+      const better = score>cur || (score>0 && score===cur && (curMs==null || (st && st.bestMs<curMs)));
       if(d.exists){
         const upd = {name:p.name, games:FV.increment(1), lastPlayedAt:Date.now()};
-        if(score>cur){ upd.best=score; upd.bestAt=Date.now(); }
+        if(better){ upd.best=score; upd.bestAt=Date.now(); Object.assign(upd, st||{}); }
         tx.update(ref, upd);
       } else {
-        tx.set(ref, {name:p.name, best:score, games:1, createdAt:Date.now(), lastPlayedAt:Date.now()});
+        tx.set(ref, {name:p.name, best:score, ...(st||{}), games:1, createdAt:Date.now(), lastPlayedAt:Date.now()});
       }
     });
   }catch(e){}
@@ -4319,7 +4335,7 @@ function soloStart(){
     return {topic:q.topic, type:'trivia', q:q.q, img:q.img, crop:q.crop, a:order.map(i=>q.a[i]), c:order.indexOf(q.c)};
   });
   preloadImgs(pool);
-  soloState = {qs:pool, i:0, score:0, correct:0, locked:false, startedAt:0};
+  soloState = {qs:pool, i:0, score:0, correct:0, totalMs:0, locked:false, startedAt:0};
   showScreen('s-solo');
   $('solo-body').innerHTML = '';
   soloCountdown(soloState, soloShowQuestion);
@@ -4419,6 +4435,7 @@ function soloReveal(choice){
   const q = s.qs[s.i];
   const elapsed = Date.now()-s.startedAt;
   const right = choice===q.c;
+  s.totalMs = (s.totalMs||0) + Math.min(QUESTION_MS, elapsed);
   let pts = 0;
   if(right){ pts = BASE_POINTS + SPEED_POINTS*Math.max(0, Math.floor((QUESTION_MS-elapsed)/1000)); s.score += pts; s.correct++; s.streak=(s.streak||0)+1; playHappyChime(); }
   else { s.streak=0; playSadTone(); }
@@ -4459,7 +4476,7 @@ function soloEnd(){
   body.innerHTML = `<div class="eyebrow" style="text-align:center;">המשחק העצמאי הסתיים</div>
     <h1 style="text-align:center;">סיימתם <span>סבב!</span></h1>
     <div class="big-score" id="s-final">0</div>
-    <div class="center-note" style="margin-top:0;">${s.correct} תשובות נכונות מתוך ${s.qs.length}</div>
+    <div class="center-note" style="margin-top:0;">✅ ${s.correct} תשובות נכונות מתוך ${s.qs.length} · ⏱️ זמן כולל ${fmtDur(s.totalMs)}</div>
     ${isGlobal ? '<div class="compliment-badge">👑 שברתם את שיא המשחק! אתם במקום הראשון!</div>' : (isNew ? '<div class="compliment-badge">🏆 שיא אישי חדש! כל הכבוד!</div>' : `<div class="final-prize">השיא שלכם: ${prevBest} — עוד ${Math.max(1, prevBest - s.score + 1)} נקודות ושברתם אותו!</div>`)}
     ${!isGlobal && g ? `<div class="record-strip" style="margin:0 0 14px;">👑 שיא המשחק: <b>${g.best}</b> — ${esc(g.name)}</div>` : ''}
     <div id="s-end-lb"></div>
@@ -4471,7 +4488,7 @@ function soloEnd(){
   else { const c=fxCenter($('s-final')); fxConfetti(c.x, c.y, 60); }
   $('s-again').addEventListener('click', soloStart);
   $('s-home').addEventListener('click', soloQuit);
-  soloSaveResult(s.score).then(soloFetchTop).then(()=>{ const box=$('s-end-lb'); if(box && soloState===s) box.innerHTML = soloLeaderboardHtml(); });
+  soloSaveResult(s.score, {bestCorrect:s.correct, bestQ:s.qs.length, bestMs:s.totalMs}).then(soloFetchTop).then(()=>{ const box=$('s-end-lb'); if(box && soloState===s) box.innerHTML = soloLeaderboardHtml(); });
 }
 function soloQuit(){
   clearQTimer();
