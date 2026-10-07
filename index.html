@@ -452,6 +452,15 @@ body.tick-danger::after{animation:dangerVignette 1s ease-in-out infinite;}
 .duel-final .dn{font-weight:700;font-size:16px;color:var(--ink-dim);}
 .duel-final .ds{font-family:'Frank Ruhl Libre',serif;font-weight:900;font-size:48px;color:var(--gold-light);}
 .duel-final .dc{font-size:14px;color:var(--ink-dim);}
+
+/* הוראות בתוך כל סוג משחק — גדולות וברורות */
+input.full-name{font-size:19px;padding:16px;text-align:center;margin-top:6px;}
+.mode-rules{margin-top:26px;}
+.mode-rules-title{font-family:'Frank Ruhl Libre',serif;font-weight:900;font-size:30px;color:var(--line-yellow);text-align:center;margin-bottom:14px;}
+.mode-rules .rule-card{padding:18px;gap:14px;border-radius:18px;}
+.mode-rules .rule-card .ricon{font-size:38px;line-height:1;}
+.mode-rules .rule-card .rtext{font-size:20px;line-height:1.6;}
+.mode-rules .rule-card .rtext b{font-size:22px;}
 </style>
 </head>
 <body>
@@ -531,7 +540,6 @@ body.tick-danger::after{animation:dangerVignette 1s ease-in-out infinite;}
   <button class="btn btn-primary btn-xl" id="btn-duel">⚔️ משחק אחד על אחד</button>
   <button class="btn btn-primary btn-xl" id="btn-solo">🎯 משחק עצמאי</button>
   <div class="solo-best-note" id="solo-best-note"></div>
-  <button class="btn-howto-link" id="btn-howto">📖 איך משחקים?</button>
   <div class="journey-strip"><div class="track"></div><div class="bus">🚌</div></div>
   <div class="danube" aria-hidden="true">
     <svg viewBox="0 0 800 64" preserveAspectRatio="none"><path d="M0 30 Q50 18 100 30 T200 30 T300 30 T400 30 T500 30 T600 30 T700 30 T800 30 V64 H0Z" fill="rgba(94,200,216,.16)"/><path d="M0 30 Q50 18 100 30 T200 30 T300 30 T400 30 T500 30 T600 30 T700 30 T800 30" fill="none" stroke="rgba(233,206,124,.45)" stroke-width="1.5"/></svg>
@@ -544,34 +552,15 @@ body.tick-danger::after{animation:dangerVignette 1s ease-in-out infinite;}
   </div>
 </section>
 
-<section class="screen" id="s-howto">
-  <div class="eyebrow">לפני שמתחילים</div>
-  <h1>איך <span>משחקים</span></h1>
-  <div class="rule-card"><span class="ricon">📲</span><div class="rtext"><b>נכנסים</b><br>"משחק קבוצתי" ← כותבים שם ← חדר ההמתנה. בלי קוד.</div></div>
-  <div class="rule-card"><span class="ricon">⚡</span><div class="rtext"><b>עונים מהר</b><br>11 שניות לכל שאלה. אפשר להחליף תשובה עד שהזמן נגמר.</div></div>
-  <div class="rule-card"><span class="ricon">🏆</span><div class="rtext"><b>צוברים נקודות</b><br>תשובה נכונה = 10 נקודות, ועוד נקודה על כל שנייה שנשארה.</div></div>
-  <div class="rule-card"><span class="ricon">⚔️</span><div class="rtext"><b>משחק אחד על אחד</b><br>נכנסים לחדר ההמתנה, וברגע שעוד שחקן מצטרף — מתחיל דו-קרב של 20 שאלות.</div></div>
-  <div class="rule-card"><span class="ricon">🗳️</span><div class="rtext"><b>שאלות סקר</b><br>אין תשובה נכונה — מי שבחר כמו הרוב מקבל את הנקודות.</div></div>
-  <details class="rule-more">
-    <summary>עוד פרטים</summary>
-    <div class="rule-card"><span class="ricon">⏸</span><div class="rtext"><b>עצירה</b><br>המנחה יכול לעצור באמצע שאלה, והטיימר ימשיך מאותו מקום.</div></div>
-    <div class="rule-card"><span class="ricon">📊</span><div class="rtext"><b>מצב ביניים</b><br>בסוף כל נושא מוצגת לכמה שניות טבלת הניקוד.</div></div>
-    <div class="rule-card"><span class="ricon">🎯</span><div class="rtext"><b>משחק עצמאי</b><br>30 שאלות אקראיות מתוך מאגר של 1,217. השיא האישי נשמר ומוצג מול שיא המשחק.</div></div>
-  </details>
-  <div class="rule-card"><span class="ricon">🎁</span><div class="rtext"><b>הפרס הגדול</b><br>מי שמסיים עם הכי הרבה נקודות — זוכה בפרס מפנק!</div></div>
-  <div class="footer-fixed"><button class="btn btn-ghost" id="howto-back">חזרה</button></div>
-</section>
 
 <section class="screen" id="s-pjoin">
   <div class="eyebrow">הצטרפות למשחק</div>
-  <h1>איך <span>קוראים לך?</span></h1>
-  <p class="sub">כותבים שם ונכנסים לחדר ההמתנה של המשחק הקבוצתי</p>
-  <div class="name-row">
-    <input type="text" id="pjoin-fname" placeholder="שם פרטי" maxlength="18">
-    <input type="text" id="pjoin-lname" placeholder="שם משפחה" maxlength="18">
-  </div>
+  <h1>משחק <span>קבוצתי 👥</span></h1>
+  <p class="sub">כתבו שם ושם משפחה ונכנסים לחדר ההמתנה</p>
+  <input type="text" id="pjoin-name" class="full-name" placeholder="שם ושם משפחה" maxlength="36" autocomplete="name">
   <button class="btn btn-primary" id="btn-pjoin-go">כניסה לחדר ההמתנה</button>
   <button class="btn btn-ghost" id="btn-pjoin-back" style="margin-top:10px;">חזרה</button>
+  <div id="pjoin-rules"></div>
 </section>
 
 <section class="screen" id="s-host"><div id="host-body"></div></section>
@@ -2238,6 +2227,7 @@ function fxSetupLanding(){
 function fxOnScreen(id){
   fxInit(); if(!fx.cv) return;
   fx.ambient = (id==='s-landing');
+  if(!fx.ambient) fx.parts = fx.parts.filter(p=>p.kind!=='dust');
   // במסך הפתיחה הנצנוצים מאחורי הכפתורים והלוגו; בשאר המסכים (קונפטי, זיקוקים) — מעל
   fx.cv.style.zIndex = fx.ambient ? '0' : '60';
   if(fx.ambient) fxStart();
@@ -2298,18 +2288,19 @@ function duelMe(){
   if(!id){ id=genId(); try{ sessionStorage.setItem('trivia_duel_pid', id); }catch(e){} }
   return id;
 }
-function duelSavedName(){ try{ return localStorage.getItem('trivia_duel_name') || (soloProfile() && soloProfile().name) || ''; }catch(e){ return ''; } }
+function duelSavedName(){ return savedFullName(); }
 function duelEntry(){
   ensureAudio();
   role='duel'; showScreen('s-duel');
   const nm = duelSavedName();
   $('duel-body').innerHTML = `<div class="eyebrow">אחד על אחד</div>
-    <h1>דו-קרב <span>⚔️ ראש בראש</span></h1>
-    <p class="sub">נכנסים לחדר ההמתנה, וברגע שעוד שחקן מצטרף — הדו-קרב מתחיל. 20 שאלות, מי שצובר יותר נקודות מנצח!</p>
-    <input type="text" id="duel-name" placeholder="השם שלך" maxlength="24" value="${esc(nm)}">
-    <button class="btn btn-duel btn-xl" id="duel-go">⚔️ חפשו לי יריב</button>
-    <button class="btn btn-ghost" id="duel-back">חזרה</button>`;
-  $('duel-go').addEventListener('click', ()=>{ const n=$('duel-name').value.trim(); if(!n){ alert('נא לכתוב שם'); return; } try{ localStorage.setItem('trivia_duel_name', n); }catch(e){} duelStart(n); });
+    <h1>משחק <span>אחד על אחד ⚔️</span></h1>
+    <p class="sub">כתבו שם ושם משפחה ונכנסים לחדר ההמתנה</p>
+    <input type="text" id="duel-name" class="full-name" placeholder="שם ושם משפחה" maxlength="36" autocomplete="name" value="${esc(nm)}">
+    <button class="btn btn-primary btn-xl" id="duel-go">⚔️ חפשו לי יריב</button>
+    <button class="btn btn-ghost" id="duel-back">חזרה</button>
+    ${modeRulesHtml('duel')}`;
+  $('duel-go').addEventListener('click', ()=>{ const n=readFullName('duel-name'); if(!n) return; duelStart(n); });
   $('duel-back').addEventListener('click', duelLeave);
 }
 async function duelStart(name){
@@ -2489,6 +2480,47 @@ function duelAnswer(k, btn){
   const oppDone = !!duel.v['a'+(3-duel.slot)+'_'+i];
   duelRef().update(upd).then(()=>{ if(oppDone) duelAdvance('question', i); }).catch(()=>{});
 }
+
+// ---------- שם מלא אחד לכל המשחקים ----------
+function savedFullName(){ try{ return localStorage.getItem('trivia_full_name') || (soloProfile() && soloProfile().name) || ''; }catch(e){ return ''; } }
+function readFullName(id){
+  const el=$(id); const v=(el.value||'').trim().replace(/\s+/g,' ');
+  if(v.split(' ').length<2){ alert('נא לכתוב שם ושם משפחה (למשל: משה כהן)'); el.focus(); return null; }
+  try{ localStorage.setItem('trivia_full_name', v); }catch(e){}
+  return v;
+}
+// ---------- הוראות לכל סוג משחק — המספרים נלקחים מההגדרות של המשחק עצמו ----------
+function modeRulesHtml(mode){
+  const sec = QUESTION_MS/1000;
+  const score = `<b>ניקוד</b><br>תשובה נכונה = ${BASE_POINTS} נקודות, ועוד נקודה על כל שנייה שנשארה בטיימר. ככל שעונים מהר יותר — מקבלים יותר.`;
+  const R = {
+    group: [
+      ['📲', `<b>נכנסים</b><br>כותבים שם ושם משפחה ונכנסים לחדר ההמתנה — בלי קוד. אפשר עד ${MAX_PLAYERS} משתתפים יחד.`],
+      ['🎤', `<b>המנחה מתחיל</b><br>המשחק מתחיל כשמנחה המשחק לוחץ "התחל משחק". כשמצטרפים ${MIN_PLAYERS} שחקנים הוא מקבל התראה.`],
+      ['❓', `<b>${QUESTIONS.length} שאלות לפי נושאים</b><br>בודפשט, ידע כללי, הלכה ומנהג, תנ"ך, ארצות העולם, חשבון ושאלות סקר. בסוף כל נושא מוצגת טבלת הניקוד.`],
+      ['⚡', `<b>${sec} שניות לכל שאלה</b><br>אפשר להחליף תשובה כל עוד הזמן לא נגמר. כשכולם ענו — התשובה נחשפת מיד.`],
+      ['🏆', score],
+      ['🗳️', `<b>שאלות סקר</b><br>אין תשובה נכונה — מי שבחר כמו רוב המשתתפים מקבל את הנקודות.`],
+      ['⏸', `<b>עצירה</b><br>המנחה יכול לעצור באמצע שאלה, והטיימר ימשיך בדיוק מאותו מקום.`],
+      ['🎁', `<b>הפרס</b><br>מי שמסיים במקום הראשון זוכה בפרס מפנק!`]
+    ],
+    duel: [
+      ['⚔️', `<b>נכנסים</b><br>כותבים שם ושם משפחה ונכנסים לחדר ההמתנה. ברגע ששחקן נוסף נכנס ל"משחק אחד על אחד" — הדו-קרב מתחיל מיד, בלי מנחה.`],
+      ['❓', `<b>${DUEL_Q_COUNT} שאלות</b><br>אותן שאלות בדיוק לשניכם, באותו סדר.`],
+      ['⚡', `<b>${sec} שניות לכל שאלה</b><br>עונים פעם אחת — אי אפשר להחליף. כששניכם עניתם, עוברים מיד לחשיפה ולשאלה הבאה.`],
+      ['🏆', score + ` הניקוד של שניכם מוצג כל הזמן בראש המסך.`],
+      ['👑', `<b>מי מנצח?</b><br>מי שצבר יותר נקודות אחרי ${DUEL_Q_COUNT} השאלות. בסוף אפשר ללחוץ "דו-קרב נוסף".`]
+    ],
+    solo: [
+      ['📝', `<b>נרשמים פעם אחת</b><br>עם שם ושם משפחה — ומהפעם הבאה נכנסים ישר למשחק.`],
+      ['❓', `<b>${SOLO_COUNT} שאלות בכל סבב</b><br>שאלות אקראיות מתוך מאגר של ${SOLO_QUESTIONS.length.toLocaleString('en-US')}, ובכל סבב שאלות אחרות.`],
+      ['⚡', `<b>${sec} שניות לכל שאלה</b><br>עונים פעם אחת — אי אפשר להחליף.`],
+      ['🏆', score + ` כמה תשובות נכונות ברצף? 🔥 מקבלים תג רצף.`],
+      ['👑', `<b>שיאים</b><br>השיא האישי שלכם נשמר ומוצג מול שיא המשחק וטבלת השיאים של כל המשתתפים.`]
+    ]
+  };
+  return `<div class="mode-rules"><div class="mode-rules-title">📖 הוראות המשחק</div>${R[mode].map(([ic,t])=>`<div class="rule-card"><span class="ricon">${ic}</span><div class="rtext">${t}</div></div>`).join('')}</div>`;
+}
 // ---------- Solo best ----------
 function soloBest(){ return Number(localStorage.getItem('trivia_solo_best')||0); }
 function renderLandingBest(){
@@ -2498,7 +2530,7 @@ function renderLandingBest(){
   el.textContent = p ? ('🏅 ' + p.name + ' — השיא שלך: ' + b + ' נקודות') : '';
 }
 
-const APP_VERSION = '2026-10-07g';
+const APP_VERSION = '2026-10-07h';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -2513,6 +2545,8 @@ function checkForNewVersion(){
 }
 function init(){
   checkForNewVersion();
+  $('pjoin-rules').innerHTML = modeRulesHtml('group');
+  $('pjoin-name').value = savedFullName();
   fxSetupLanding();
   showScreen('s-landing');
     renderLandingBest();
@@ -2535,8 +2569,6 @@ document.addEventListener('visibilitychange', ()=>{
   subscribeRoomPlayer(); subscribeMyPlayer();
 });
 $('btn-pjoin-back').addEventListener('click', ()=>{ role=null; showScreen('s-landing'); });
-$('btn-howto').addEventListener('click', ()=>showScreen('s-howto'));
-$('howto-back').addEventListener('click', ()=>showScreen('s-landing'));
 $('btn-solo').addEventListener('click', soloEntry);
 $('btn-duel').addEventListener('click', duelEntry);
 
@@ -2910,11 +2942,9 @@ async function advanceFromStandings(){
 
 // ---------- PLAYER ----------
 async function joinGame(){
-  const fname = $('pjoin-fname').value.trim();
-  const lname = $('pjoin-lname').value.trim();
-  if(!fname){ alert('נא למלא שם פרטי'); return; }
+  const full = readFullName('pjoin-name'); if(!full) return;
   ensureAudio(); requestWakeLock();
-  playerName = (fname+' '+lname).trim();
+  playerName = full;
   role='player';
   const btn = $('btn-pjoin-go'); btn.disabled = true;
   try{
@@ -3148,20 +3178,16 @@ function soloRegister(){
   const body = $('solo-body');
   body.innerHTML = `<button class="btn btn-ghost" id="sr-back" style="margin:0 0 14px;">→ חזרה</button>
     <div class="eyebrow">משחק עצמאי</div>
-    <h1>נרשמים <span>פעם אחת</span></h1>
-    <p class="sub">כתבו את השם שלכם. מהפעם הבאה תיכנסו ישר למשחק, והשיא שלכם יישמר ויתמודד מול שיא המשחק של כל המשתתפים.</p>
-    <div class="name-row">
-      <input type="text" id="sr-fname" placeholder="שם פרטי" maxlength="18">
-      <input type="text" id="sr-lname" placeholder="שם משפחה" maxlength="18">
-    </div>
-    <button class="btn btn-primary" id="sr-go">הרשמה והמשך</button>`;
+    <h1>משחק <span>עצמאי 🎯</span></h1>
+    <p class="sub">נרשמים פעם אחת עם שם ושם משפחה. מהפעם הבאה תיכנסו ישר למשחק, והשיא שלכם יישמר ויתמודד מול שיא המשחק של כל המשתתפים.</p>
+    <input type="text" id="sr-name" class="full-name" placeholder="שם ושם משפחה" maxlength="36" autocomplete="name" value="${esc(savedFullName())}">
+    <button class="btn btn-primary" id="sr-go">הרשמה והמשך</button>
+    ${modeRulesHtml('solo')}`;
   $('sr-back').addEventListener('click', soloQuit);
   $('sr-go').addEventListener('click', soloDoRegister);
 }
 async function soloDoRegister(){
-  const fname = $('sr-fname').value.trim(), lname = $('sr-lname').value.trim();
-  if(!fname){ alert('נא למלא שם פרטי'); return; }
-  const name = (fname+' '+lname).trim().replace(/\s+/g,' ');
+  const name = readFullName('sr-name'); if(!name) return;
   const id = soloNameKey(name);
   const btn = $('sr-go'); btn.disabled = true; btn.textContent = 'רושמים...';
   const hadProfile = !!soloProfile();
@@ -3209,7 +3235,8 @@ function renderSoloHome(){
     ${soloLeaderboardHtml()}
     <button class="btn btn-primary btn-xl" id="sh-start" style="margin-top:10px;">▶ התחילו סבב חדש</button>
     <button class="btn btn-ghost" id="sh-home">חזרה למסך הבית</button>
-    <button class="skip-btn" id="sh-switch">לא ${esc(p.name)}? החלפת משתתף</button>`;
+    <button class="skip-btn" id="sh-switch">לא ${esc(p.name)}? החלפת משתתף</button>
+    ${modeRulesHtml('solo')}`;
   $('sh-start').addEventListener('click', soloStart);
   $('sh-home').addEventListener('click', soloQuit);
   $('sh-switch').addEventListener('click', soloSwitchUser);
