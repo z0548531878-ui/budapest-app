@@ -502,6 +502,15 @@ input.full-name{font-size:19px;padding:16px;text-align:center;margin-top:6px;}
 .rules-pop{width:min(520px,100%);display:flex;justify-content:center;animation:cardFlip .45s cubic-bezier(.2,1.2,.35,1) both;}
 .rules-head{font-family:'Frank Ruhl Libre',serif;font-weight:900;font-size:28px;color:var(--line-yellow);text-align:center;line-height:1.1;}
 .rules-sub{text-align:center;font-weight:700;color:var(--ink-dim);font-size:16px;margin:2px 0 10px;}
+.review-list{max-height:min(62vh,560px);overflow-y:auto;margin:8px 0 12px;padding-inline-end:2px;}
+.rv-row{background:rgba(255,255,255,.04);border-radius:14px;padding:10px 12px;margin-bottom:8px;border-inline-start:4px solid #3DBE72;}
+.rv-row.miss{border-inline-start-color:#E0694B;}
+.rv-q{font-weight:700;line-height:1.35;color:var(--cream,#F3ECDC);}
+.rv-a{font-size:14px;margin-top:4px;color:#cfc6b0;}
+.rv-a b{color:#7BE0A3;}
+.rv-a .mine{color:#FF9B80;}
+.rv-flag{margin-top:6px;background:none;border:1px solid rgba(212,175,55,.45);color:var(--line-yellow);border-radius:10px;padding:6px 10px;min-height:36px;font:inherit;font-size:13px;cursor:pointer;}
+.rv-flag[disabled]{opacity:.7;cursor:default;border-color:transparent;}
 .rules-row{display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,.04);border-radius:14px;padding:8px 12px;margin-bottom:7px;}
 .rules-row .ri{font-size:26px;line-height:1.2;flex-shrink:0;}
 .rules-row b{display:block;color:var(--line-yellow);font-size:18px;line-height:1.25;}
@@ -4126,7 +4135,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-08w';
+const APP_VERSION = '2026-10-08x';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -5219,6 +5228,7 @@ function soloReveal(choice){
   const q = s.qs[s.i];
   const elapsed = Date.now()-s.startedAt;
   const right = choice===q.c;
+  (s.picks = s.picks || [])[s.i] = choice;
   s.totalMs = (s.totalMs||0) + Math.min(QUESTION_MS, elapsed);
   let pts = 0;
   if(right){ pts = BASE_POINTS + SPEED_POINTS*Math.max(0, Math.floor((QUESTION_MS-elapsed)/1000)); s.score += pts; s.correct++; s.streak=(s.streak||0)+1; playHappyChime(); }
@@ -5265,6 +5275,7 @@ function soloEnd(){
     ${!isGlobal && g ? missHtml(p && g.id===p.id ? `🎯 חסרו <b>${Math.max(1, g.best - s.score + 1)}</b> נק' לשיפור שיא המשחק שלכם (${g.best})` : `🎯 חסרו <b>${Math.max(1, g.best - s.score + 1)}</b> נק' לשבירת שיא המשחק (${g.best})`) : ''}
     <div id="s-end-lb" class="se-lb lb-box"><div class="lb-title">🏆 טבלת השיאים</div><div class="lb-scroll"><div class="sh-empty">טוען את טבלת השיאים...</div></div></div>
     <button class="btn btn-primary btn-xl" id="s-again">🔁 שחקו שוב</button>
+    <button class="btn btn-ghost" id="s-review">📋 התשובות של הסבב · דיווח על טעות</button>
     ${navTilesHtml('solo','s-home')}
   </div>`;
   animateCount($('s-final'), s.score, 900);
@@ -5273,12 +5284,41 @@ function soloEnd(){
   else { const c=fxCenter($('s-final')); fxConfetti(c.x, c.y, 60); }
   $('s-again').addEventListener('click', soloStart);
   $('s-home').addEventListener('click', soloQuit);
+  $('s-review').addEventListener('click', ()=>openRoundReview(s));
   soloSaveResult(s.score, {bestCorrect:s.correct, bestQ:s.qs.length, bestMs:s.totalMs}).then(()=>{ soloFetchTop(); return soloPlayersRef().orderBy('best','desc').limit(300).get(); }).then(snap=>{
     const box=$('s-end-lb'); if(!box || soloState!==s) return;
     const all = snap.docs.map(d=>({id:d.id, ...d.data()})).filter(r=>(r.best||0)>0).sort((a,b)=>(b.best||0)-(a.best||0) || (a.bestMs??1e12)-(b.bestMs??1e12));
     box.innerHTML = lbBoxHtml('🏆 טבלת השיאים', all.map((r,i)=>({rank:i+1, name:r.name, score:r.best, sub:soloRowSub(r), me: p && r.id===p.id})));
     lbScrollToMe(box);
   }).catch(()=>{ const box=$('s-end-lb'); if(box && soloState===s){ box.innerHTML = soloEndBoardHtml(); } });
+}
+// ---------- סיכום הסבב: כל השאלות עם התשובה הנכונה, ודיווח על שאלה שגויה ----------
+// הדיווחים נשמרים במסמך rooms/reports, כדי שאפשר יהיה לתקן את מאגר השאלות
+function reportQuestion(q, btn){
+  btn.disabled = true; btn.textContent = '✓ תודה! הדיווח נשלח';
+  try{ db.collection('rooms').doc('reports').set({list: FV.arrayUnion({k:qKey(q), q:q.q, a:q.a[q.c], at:Date.now()})}, {merge:true}).catch(()=>{}); }catch(e){}
+}
+function openRoundReview(s){
+  const ov = document.createElement('div'); ov.className='rules-modal';
+  ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true'); ov.setAttribute('aria-labelledby','rv-head');
+  const picks = s.picks || [];
+  ov.innerHTML = `<div class="rules-pop"><div class="rules-sheet">
+      <div class="rules-head" id="rv-head">📋 התשובות של הסבב</div>
+      <div class="rules-sub">✅ ${s.correct} נכונות מתוך ${s.qs.length} · מצאתם טעות? דווחו לנו</div>
+      <div class="review-list">${s.qs.map((q,i)=>{ const p = picks[i], ok = p===q.c;
+        return `<div class="rv-row ${ok?'':'miss'}"><div class="rv-q">${i+1}. ${esc(q.q)}</div>
+          <div class="rv-a">התשובה: <b>${esc(q.a[q.c])}</b>${ok ? ' ✓' : p==null ? ' · <span class="mine">לא עניתם</span>' : ` · <span class="mine">עניתם: ${esc(q.a[p])}</span>`}</div>
+          <button class="rv-flag" data-rv="${i}">🚩 יש כאן טעות</button></div>`; }).join('')}</div>
+      <button class="btn btn-primary rules-close">סגירה</button>
+    </div></div>`;
+  document.body.appendChild(ov);
+  const close = ()=>{ removeEventListener('keydown', escKey); ov.classList.add('out'); setTimeout(()=>ov.remove(), 220); };
+  const escKey = e=>{ if(e.key==='Escape') close(); };
+  addEventListener('keydown', escKey);
+  ov.querySelectorAll('[data-rv]').forEach(b=>b.addEventListener('click', ()=>reportQuestion(s.qs[Number(b.dataset.rv)], b)));
+  ov.querySelector('.rules-close').addEventListener('click', close);
+  ov.addEventListener('click', e=>{ if(e.target===ov) close(); });
+  ov.querySelector('.rules-close').focus({preventScroll:true});
 }
 function soloQuit(){
   clearQTimer();

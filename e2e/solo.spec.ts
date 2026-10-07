@@ -30,6 +30,16 @@ test.describe('F01 solo game', () => {
     await expect.poll(async () => (await db.get(`${SOLO}/משה כהן`))?.games).toBe(1);
     expect(await db.get(`${SOLO}/משה כהן`)).toMatchObject({ best: score, bestQ: 30 });
     if (score > 0) await expect(page.locator('#s-end-lb .board-row.mine')).toContainText('משה כהן');
+    // the round review lists all 30 questions with the right answer, and a wrong question can be reported
+    await page.getByRole('button', { name: /התשובות של הסבב/ }).click();
+    const review = page.getByRole('dialog', { name: /התשובות של הסבב/ });
+    await expect(review.locator('.rv-row')).toHaveCount(30);
+    await review.getByRole('button', { name: /יש כאן טעות/ }).first().click();
+    await expect(review.getByText('תודה! הדיווח נשלח')).toBeVisible();
+    await expect.poll(async () => (await db.get('rooms/reports'))?.list?.length).toBe(1);
+    await page.screenshot({ path: test.info().outputPath('review.png') });
+    await review.getByRole('button', { name: 'סגירה' }).click();
+    await expect(review).toBeHidden();
     expect(errors).toEqual([]);
   });
 
