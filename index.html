@@ -785,6 +785,19 @@ button,a,.btn,.answer-btn{touch-action:manipulation;}
 @media (max-height:780px){ .q-photo img{height:132px;} .q-photo{margin:2px 0 8px;} }
 @media (max-height:700px){ .q-photo img{height:104px;} .q-card:has(.q-photo) ~ .answers .answer-btn{min-height:56px;} }
 @media (prefers-reduced-motion:reduce){ .q-photo img{animation:none;} }
+
+/* שאלות תמרורים */
+.q-sign{display:flex;justify-content:center;margin:4px 0 12px;}
+.q-sign svg{width:124px;height:124px;filter:drop-shadow(0 8px 16px rgba(0,0,0,.6));animation:signIn .6s cubic-bezier(.2,1.5,.4,1) both, signSway 3.4s ease-in-out .6s infinite;transform-origin:50% 100%;}
+@keyframes signIn{0%{opacity:0;transform:scale(.3) rotate(-25deg);}100%{opacity:1;transform:none;}}
+@keyframes signSway{0%,100%{transform:rotate(0);}50%{transform:rotate(3deg);}}
+.q-card:has(.q-sign) ~ .answers{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.q-card:has(.q-sign) ~ .answers .answer-btn{min-height:66px;padding:8px 8px;font-size:15px;line-height:1.25;gap:8px;}
+.q-card:has(.q-sign) ~ .answers .opt-letter{width:28px;height:28px;font-size:14px;flex-shrink:0;}
+.q-card:has(.q-sign) .question-text{font-size:19px;}
+@media (max-height:780px){ .q-sign svg{width:100px;height:100px;} }
+@media (max-height:700px){ .q-sign svg{width:80px;height:80px;} .q-card:has(.q-sign) ~ .answers .answer-btn{min-height:56px;} }
+@media (prefers-reduced-motion:reduce){ .q-sign svg{animation:none;} }
 </style>
 </head>
 <body>
@@ -916,7 +929,7 @@ const CURRENT_ROOM_DOC = 'current';
 const LOBBY_MAX_AGE_MS = 12*60*60*1000; // חדר המתנה ישן מ-12 שעות לא ממוחזר — נפתח חדש // מסמך שמצביע על החדר הפתוח כרגע — כך השחקנים נכנסים בלי קוד
 const SOLO_REVEAL_MS = 1100;
 
-const T1='בודפשט והונגריה', T2='עולם תורני, הלכה ומנהג', T3='היסטוריה יהודית וגדולי ישראל', T4='ידע כללי, מדע וטבע', T5='מקרא, מסורת ופולקלור', T6='תחבורה, תעופה וחלל', T7='פוליטיקה ומדינה', T8='ערים בישראל', T9='ארצות העולם', T10='טיולים ונופים', T11='חשבון ומספרים', T12='מוזיקה ושירה יהודית', T13='אדמו"רים ורבנים', T14='סקרים מהמסע', T15='ספורט ומשחקים', T16='חידות והיגיון', T17='דגלים של מדינות', T18='מקומות מפורסמים';
+const T1='בודפשט והונגריה', T2='עולם תורני, הלכה ומנהג', T3='היסטוריה יהודית וגדולי ישראל', T4='ידע כללי, מדע וטבע', T5='מקרא, מסורת ופולקלור', T6='תחבורה, תעופה וחלל', T7='פוליטיקה ומדינה', T8='ערים בישראל', T9='ארצות העולם', T10='טיולים ונופים', T11='חשבון ומספרים', T12='מוזיקה ושירה יהודית', T13='אדמו"רים ורבנים', T14='סקרים מהמסע', T15='ספורט ומשחקים', T16='חידות והיגיון', T17='דגלים של מדינות', T18='מקומות מפורסמים', T19='תמרורים', T20='זיהוי בתמונה';
 
 const QUESTIONS = [
  {topic:T1, type:'trivia', q:'באיזו שנה אוחדו בודה, פשט ואובודה לעיר אחת?', a:['1848','1900','1873','1920'], c:2},
@@ -973,6 +986,12 @@ const QUESTIONS = [
  {topic:T9, type:'trivia', q:'באיזו מדינה נמצאת העיר אנטוורפן?', a:['בלגיה','הולנד','גרמניה','שווייץ'], c:0},
  {topic:T9, type:'poll', q:'לאן הייתם רוצים לטוס במסע הבא?', a:['שווייץ','פולין — מסע קברי צדיקים','אנגליה','איטליה']},
  {topic:T9, type:'poll', q:'מה הכי חשוב לכם בבית מלון?', a:['מיטה נוחה','ארוחת בוקר עשירה','נוף מהחלון','מיקום מרכזי']},
+ {topic:T20, type:'trivia', q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/hu.png', a:['איטליה','הונגריה','בולגריה','מקסיקו'], c:1},
+ {topic:T20, type:'trivia', q:'לאיזו מדינה שייך הדגל הזה?', img:'https://flagcdn.com/w320/at.png', a:['לטביה','פולין','אוסטריה','פרו'], c:2},
+ {topic:T20, type:'trivia', q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Sz%C3%A9chenyi_Chain_Bridge_in_Budapest_at_night.jpg?width=640', a:['גשר השלשלאות בבודפשט','גשר טאואר בלונדון','גשר קארל בפראג','גשר שער הזהב'], c:0},
+ {topic:T20, type:'trivia', q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Al_Khazneh_Petra_edit.jpg?width=640', a:['מצדה','קומראן','ממשית','פטרה בירדן'], c:3},
+ {topic:T20, type:'trivia', q:'מה פירוש התמרור הזה?', img:'sign:no_stopping', a:['החניה אסורה','העצירה והחניה אסורות','אין כניסה','צומת לפניך'], c:1},
+ {topic:T20, type:'trivia', q:'מה פירוש התמרור הזה?', img:'sign:give_way', a:['עצור','סכנה — זהירות מיוחדת','תן זכות קדימה','אין כניסה'], c:2},
  {topic:T10, type:'trivia', q:'מהו ההר הגבוה ביותר בתחומי הקו הירוק?', a:['הר תבור','הר מירון','הר הכרמל','הר גלבוע'], c:1},
  {topic:T10, type:'trivia', q:'איזה מפל נחשב לגבוה ביותר בישראל?', a:['מפל התנור','מפל סער','מפל דוד','מפל גמלא'], c:3},
  {topic:T10, type:'trivia', q:'איזה אגם בצפון יובש בשנות ה-50 וחלקו הוצף מחדש?', a:['הכנרת','בריכת רם','אגם מונפורט','אגם החולה'], c:3},
@@ -981,7 +1000,7 @@ const QUESTIONS = [
  {topic:T10, type:'poll', q:'מה הכי כיף בטיול?', a:['הנופים','החברה','האוכל','התמונות למזכרת']}
 ];
 
-// ===== מאגר 1,754 שאלות למשחק העצמאי (התשובה הנכונה נכתבת ראשונה — המשחק מערבב את הסדר בכל פעם) =====
+// ===== מאגר 1,784 שאלות למשחק העצמאי (התשובה הנכונה נכתבת ראשונה — המשחק מערבב את הסדר בכל פעם) =====
 const SOLO_QUESTIONS = [
  {topic:T2, q:'באיזה חודש עברי חל חג השבועות?', a:['סיוון','אייר','ניסן','תמוז']},
  {topic:T2, q:'מה נוהגים לאכול בליל ראש השנה כסימן לשנה מתוקה?', a:['תפוח בדבש','מצה בחרוסת','ביצה במלח','אגוזים בסוכר']},
@@ -2736,7 +2755,37 @@ const SOLO_QUESTIONS = [
  {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Hebron_Cave_of_the_Patriarchs.jpg?width=640', a:['מערת המכפלה בחברון','קבר רחל','קבר שמואל הנביא','קבר יוסף בשכם']},
  {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Jaffa_Clock_Tower_(9869602164).jpg?width=640', a:['מגדל השעון ביפו','מגדל השעון בצפת','מגדל השעון בחיפה','ביג בן בלונדון']},
  {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Jerusalem_Chords_Bridge.JPG?width=640', a:['גשר המיתרים בירושלים','גשר ברוקלין','גשר שער הזהב','גשר מעריב בתל אביב']},
- {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Azrieli_Towers,_Tel_Aviv.jpg?width=640', a:['מגדלי עזריאלי','מגדל שלום','מגדלי פטרונס','מגדל משה אביב']}
+ {topic:T18, q:'איזה מקום מפורסם מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Azrieli_Towers,_Tel_Aviv.jpg?width=640', a:['מגדלי עזריאלי','מגדל שלום','מגדלי פטרונס','מגדל משה אביב']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:crossing_warn', a:['מעבר חציה להולכי רגל לפניך','ילדים בדרך','אסור מעבר להולכי רגל','שביל להולכי רגל בלבד']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:curve_right', a:['עקומה ימינה לפניך','פנייה ימינה בלבד','אסורה הפנייה ימינה','עבור מימין לתמרור']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:curve_left', a:['עקומה שמאלה לפניך','פנייה שמאלה בלבד','אסורה הפנייה שמאלה','עקומה ימינה לפניך']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:t_junction', a:['צומת T לפניך','הכביש מצטמצם לפניך','רחוב ללא מוצא','תנועה דו-סטרית לפניך']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:roundabout_warn', a:['מעגל תנועה לפניך','סע סביב הכיכר','אסורה פניית פרסה','תנועה דו-סטרית לפניך']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:traffic_light', a:['רמזור לפניך','רמזור מהבהב צהוב','מפגש מסילת ברזל','תן זכות קדימה']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:steep_down', a:['ירידה תלולה לפניך','עלייה תלולה לפניך','כביש חלקלק','סוף הכביש לפניך']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:danger', a:['סכנה — זהירות מיוחדת','עצור','אסורה העקיפה','תחנת עזרה ראשונה']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:two_way', a:['תנועה דו-סטרית לפניך','נסיעה ישר בלבד','רחוב חד-סטרי','הכביש מצטמצם לפניך']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:narrowing', a:['הכביש מצטמצם לפניך','תנועה דו-סטרית לפניך','גשר צר לפניך','צומת T לפניך']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:stop', a:['עצור','האטה','תן זכות קדימה','אין כניסה']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:give_way', a:['תן זכות קדימה','עצור','סכנה — זהירות מיוחדת','אין כניסה']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:no_entry', a:['אין כניסה','הכניסה אסורה לכל רכב','החניה אסורה','עצור']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:closed_all', a:['הכניסה אסורה לכל רכב','אין כניסה','סוף כל ההגבלות','מהירות מרבית 50 קמ"ש']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:no_right', a:['אסורה הפנייה ימינה','פנייה ימינה בלבד','עקומה ימינה לפניך','אסורה הפנייה שמאלה']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:no_left', a:['אסורה הפנייה שמאלה','פנייה שמאלה בלבד','עקומה שמאלה לפניך','אסורה הפנייה ימינה']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:no_uturn', a:['אסורה פניית פרסה','סע סביב הכיכר','אסורה הפנייה שמאלה','רחוב ללא מוצא']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:speed50', a:['מהירות מרבית 50 קמ"ש','מהירות מזערית 50 קמ"ש','מרחק 50 מטר','משקל מרבי 50 טון']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:no_parking', a:['החניה אסורה','העצירה והחניה אסורות','מקום חניה','אין כניסה']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:no_stopping', a:['העצירה והחניה אסורות','החניה אסורה','צומת לפניך','אין כניסה']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:no_pedestrians', a:['אסור מעבר להולכי רגל','מעבר חציה להולכי רגל','שביל להולכי רגל בלבד','ילדים בדרך']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:no_bicycles', a:['אסורה הכניסה לאופניים','שביל לאופניים בלבד','רכיבה על אופניים מותרת','אסורה הכניסה לאופנועים']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:straight_only', a:['נסיעה ישר בלבד','רחוב חד-סטרי','אסורה הנסיעה ישר','תנועה דו-סטרית לפניך']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:right_only', a:['פנייה ימינה בלבד','עקומה ימינה לפניך','אסורה הפנייה ימינה','עבור מימין לתמרור']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:roundabout_mand', a:['סע סביב הכיכר','מעגל תנועה לפניך','אסורה פניית פרסה','רמזור לפניך']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:keep_right', a:['עבור מימין לתמרור','פנייה ימינה בלבד','ירידה תלולה לפניך','נסיעה ישר בלבד']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:bike_path', a:['שביל לאופניים בלבד','אסורה הכניסה לאופניים','חניה לאופניים','מסלול לאופנועים']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:parking', a:['מקום חניה','החניה אסורה','תחנת משטרה','מגרש משחקים']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:crossing_info', a:['מעבר חציה להולכי רגל','מעבר חציה להולכי רגל לפניך','אסור מעבר להולכי רגל','גשר להולכי רגל']},
+ {topic:T19, q:'מה פירוש התמרור הזה?', img:'sign:dead_end', a:['רחוב ללא מוצא','צומת T לפניך','אין כניסה','סוף הכביש המהיר']}
 ].map(q=>({topic:q.topic, type:'trivia', q:q.q, img:q.img, a:q.a, c:0}));
 
 if(firebaseConfig.apiKey === 'YOUR_API_KEY'){ return; }
@@ -2782,6 +2831,8 @@ function topicIcon(topic){
   if(topic===T16) return '🧩';
   if(topic===T17) return '🚩';
   if(topic===T18) return '📸';
+  if(topic===T19) return '🚦';
+  if(topic===T20) return '🖼️';
   return '';
 }
 function animateCount(el, target, ms){
@@ -2910,7 +2961,7 @@ function qCardHtml(num,total,q){
   return `<div class="q-card qanim"><div class="q-num">שאלה ${num} מתוך ${total}</div>
     <div class="q-topic">${topicIcon(q.topic)} ${esc(q.topic||'')}</div>
     ${q.type==='poll' ? '<div style="text-align:center;"><span class="qtag poll">🗳️ סקר — מי שבוחר כמו הרוב זוכה</span></div>' : ''}
-    ${q.img ? (q.img.indexOf('flagcdn')>=0 ? `<div class="q-flag"><img src="${esc(q.img)}" alt="דגל" draggable="false"></div>` : `<div class="q-photo"><img src="${esc(q.img)}" alt="תמונה" draggable="false" onerror="this.parentNode.classList.add('err')"><span class="q-credit">📷 ויקישיתוף</span></div>`) : ''}
+    ${q.img && q.img.indexOf('sign:')===0 ? `<div class="q-sign">${SIGN_SVG[q.img.slice(5)]||''}</div>` : q.img ? (q.img.indexOf('flagcdn')>=0 ? `<div class="q-flag"><img src="${esc(q.img)}" alt="דגל" draggable="false"></div>` : `<div class="q-photo"><img src="${esc(q.img)}" alt="תמונה" draggable="false" onerror="this.parentNode.classList.add('err')"><span class="q-credit">📷 ויקישיתוף</span></div>`) : ''}
     <div class="question-text">${esc(q.q)}</div></div>`;
 }
 function clockHtml(prefix){ return `<div class="timer-bar qanim" id="${prefix}-clock-wrap"><div class="tb-head"><span class="tb-icon">⏱️</span><span class="tb-label">הזמן לענות אוזל...</span><span class="tb-num" id="${prefix}-timer-num">${QUESTION_MS/1000}</span></div><div class="tb-track"><div class="tb-fill" id="${prefix}-timer-ring"></div><div class="tb-ticks"></div></div></div>`; }
@@ -3156,7 +3207,7 @@ function duelQuestion(v, i){
   for(let k=order.length-1;k>0;k--){ const j=Math.floor(r()*(k+1)); const t=order[k]; order[k]=order[j]; order[j]=t; }
   return {topic:q.topic, type:'trivia', q:q.q, img:q.img, a:order.map(k=>q.a[k]), c:order.indexOf(q.c)};
 }
-function duelPickQs(){ const all=SOLO_QUESTIONS.map((_,i)=>i); return shuffleArr(all).slice(0, DUEL_Q_COUNT); }
+function duelPickQs(){ const all=SOLO_QUESTIONS.map((_,i)=>i); return withMinImages(shuffleArr(all).slice(0, DUEL_Q_COUNT)); }
 function duelMe(){
   let id=null; try{ id=sessionStorage.getItem('trivia_duel_pid'); }catch(e){}
   if(!id){ id=genId(); try{ sessionStorage.setItem('trivia_duel_pid', id); }catch(e){} }
@@ -3587,7 +3638,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-07x';
+const APP_VERSION = '2026-10-07y';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -4434,7 +4485,24 @@ function soloStart(){
 // בחירת שאלות לסבב: לא חוזרים על שאלה שהשחקן ראה בעשרת הסבבים האחרונים (ובפועל — עד שכל המאגר נגמר).
 // השאלות נשמרות לפי 'טביעת אצבע' של הטקסט, כך שהוספה או מחיקה של שאלות במאגר לא מבלבלת את המעקב.
 const SOLO_NO_REPEAT_ROUNDS = 10;
-function preloadImgs(qs){ qs.forEach(q=>{ if(q && q.img){ const im=new Image(); im.src=q.img; } }); }
+// בכל סבב (עצמאי וראש בראש) יש לפחות 5 שאלות עם תמונה — דגלים, מקומות ותמרורים.
+// אם הבחירה האקראית יצאה עם פחות, מחליפים שאלות טקסט בשאלות תמונה (קודם כאלה שעוד לא נראו) ומערבבים.
+const MIN_IMG_Q = 5;
+function withMinImages(picked, unseen){
+  const isImg = i => !!SOLO_QUESTIONS[i].img;
+  let have = picked.filter(isImg).length;
+  if(have >= MIN_IMG_Q) return picked;
+  const inPick = new Set(picked);
+  const pool = shuffleArr(SOLO_QUESTIONS.map((_,i)=>i).filter(i=>isImg(i) && !inPick.has(i)));
+  if(unseen) pool.sort((a,b)=>(unseen.has(b)?1:0)-(unseen.has(a)?1:0));
+  const out = picked.slice();
+  for(let k=out.length-1; k>=0 && have<MIN_IMG_Q && pool.length; k--){ if(!isImg(out[k])){ out[k]=pool.shift(); have++; } }
+  return shuffleArr(out);
+}
+// ציורי התמרורים (וקטוריים, בתוך האפליקציה — נטענים מיד גם בלי רשת)
+const SIGN_SVG = {"crossing_warn": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 7 L94 87 H6 Z\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"7\" stroke-linejoin=\"round\"/><g transform=\"translate(50 66) scale(1.05)\" stroke=\"#111\" stroke-width=\"4\" stroke-linecap=\"round\" fill=\"none\"><circle cx=\"0\" cy=\"-16\" r=\"4.5\" fill=\"#111\" stroke=\"none\"/><line x1=\"0\" y1=\"-10\" x2=\"-2\" y2=\"6\"/><line x1=\"-2\" y1=\"6\" x2=\"-9\" y2=\"18\"/><line x1=\"-2\" y1=\"6\" x2=\"6\" y2=\"17\"/><line x1=\"0\" y1=\"-6\" x2=\"-8\" y2=\"2\"/><line x1=\"0\" y1=\"-6\" x2=\"8\" y2=\"0\"/></g><rect x=\"28\" y=\"80\" width=\"5\" height=\"3\" fill=\"#111\"/><rect x=\"37\" y=\"80\" width=\"5\" height=\"3\" fill=\"#111\"/><rect x=\"46\" y=\"80\" width=\"5\" height=\"3\" fill=\"#111\"/><rect x=\"55\" y=\"80\" width=\"5\" height=\"3\" fill=\"#111\"/><rect x=\"64\" y=\"80\" width=\"5\" height=\"3\" fill=\"#111\"/></svg>", "curve_right": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 7 L94 87 H6 Z\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"7\" stroke-linejoin=\"round\"/><path d=\"M44 80 V62 Q44 50 56 47\" stroke=\"#111\" stroke-width=\"7\" fill=\"none\"/><path d=\"M0 -8 L8 3.2 L-8 3.2 Z\" fill=\"#111\" transform=\"translate(60 46) rotate(75)\"/></svg>", "curve_left": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 7 L94 87 H6 Z\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"7\" stroke-linejoin=\"round\"/><path d=\"M56 80 V62 Q56 50 44 47\" stroke=\"#111\" stroke-width=\"7\" fill=\"none\"/><path d=\"M0 -8 L8 3.2 L-8 3.2 Z\" fill=\"#111\" transform=\"translate(40 46) rotate(-75)\"/></svg>", "t_junction": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 7 L94 87 H6 Z\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"7\" stroke-linejoin=\"round\"/><rect x=\"46.5\" y=\"50\" width=\"7\" height=\"32\" fill=\"#111\"/><rect x=\"28\" y=\"44\" width=\"44\" height=\"7\" fill=\"#111\"/></svg>", "roundabout_warn": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 7 L94 87 H6 Z\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"7\" stroke-linejoin=\"round\"/><g transform=\"rotate(0 50 63)\"><path d=\"M50 51 A12 12 0 0 1 61 58\" stroke=\"#111\" stroke-width=\"5\" fill=\"none\"/><path d=\"M0 -5 L5 2.0 L-5 2.0 Z\" fill=\"#111\" transform=\"translate(62 60) rotate(150)\"/></g><g transform=\"rotate(120 50 63)\"><path d=\"M50 51 A12 12 0 0 1 61 58\" stroke=\"#111\" stroke-width=\"5\" fill=\"none\"/><path d=\"M0 -5 L5 2.0 L-5 2.0 Z\" fill=\"#111\" transform=\"translate(62 60) rotate(150)\"/></g><g transform=\"rotate(240 50 63)\"><path d=\"M50 51 A12 12 0 0 1 61 58\" stroke=\"#111\" stroke-width=\"5\" fill=\"none\"/><path d=\"M0 -5 L5 2.0 L-5 2.0 Z\" fill=\"#111\" transform=\"translate(62 60) rotate(150)\"/></g></svg>", "traffic_light": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 7 L94 87 H6 Z\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"7\" stroke-linejoin=\"round\"/><rect x=\"41\" y=\"38\" width=\"18\" height=\"42\" rx=\"4\" fill=\"#111\"/><circle cx=\"50\" cy=\"46\" r=\"5\" fill=\"#e53935\"/><circle cx=\"50\" cy=\"59\" r=\"5\" fill=\"#fbc02d\"/><circle cx=\"50\" cy=\"72\" r=\"5\" fill=\"#43a047\"/></svg>", "steep_down": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 7 L94 87 H6 Z\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"7\" stroke-linejoin=\"round\"/><path d=\"M24 80 L76 80 L24 54 Z\" fill=\"#111\"/><text x=\"60\" y=\"66\" font-family=\"Arial\" font-weight=\"bold\" font-size=\"13\" fill=\"#111\" text-anchor=\"middle\">10%</text></svg>", "danger": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 7 L94 87 H6 Z\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"7\" stroke-linejoin=\"round\"/><rect x=\"45.5\" y=\"36\" width=\"9\" height=\"30\" rx=\"3\" fill=\"#111\"/><circle cx=\"50\" cy=\"75\" r=\"5\" fill=\"#111\"/></svg>", "two_way": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 7 L94 87 H6 Z\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"7\" stroke-linejoin=\"round\"/><line x1=\"42\" y1=\"80\" x2=\"42\" y2=\"48\" stroke=\"#111\" stroke-width=\"6\"/><path d=\"M0 -7 L7 2.8000000000000003 L-7 2.8000000000000003 Z\" fill=\"#111\" transform=\"translate(42 42) rotate(0)\"/><line x1=\"58\" y1=\"40\" x2=\"58\" y2=\"72\" stroke=\"#111\" stroke-width=\"6\"/><path d=\"M0 -7 L7 2.8000000000000003 L-7 2.8000000000000003 Z\" fill=\"#111\" transform=\"translate(58 78) rotate(180)\"/></svg>", "narrowing": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M50 7 L94 87 H6 Z\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"7\" stroke-linejoin=\"round\"/><path d=\"M34 82 V66 L42 52 V38 M66 82 V66 L58 52 V38\" stroke=\"#111\" stroke-width=\"6\" fill=\"none\"/></svg>", "stop": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M30 4 H70 L96 30 V70 L70 96 H30 L4 70 V30 Z\" fill=\"#d0021b\" stroke=\"#fff\" stroke-width=\"4\"/><g fill=\"#fff\"><rect x=\"35\" y=\"44\" width=\"30\" height=\"30\" rx=\"10\"/><rect x=\"35\" y=\"27\" width=\"6.5\" height=\"26\" rx=\"3.2\"/><rect x=\"43\" y=\"22\" width=\"6.5\" height=\"30\" rx=\"3.2\"/><rect x=\"51\" y=\"24\" width=\"6.5\" height=\"28\" rx=\"3.2\"/><rect x=\"58.5\" y=\"30\" width=\"6.5\" height=\"24\" rx=\"3.2\"/><rect x=\"24\" y=\"48\" width=\"18\" height=\"7\" rx=\"3.5\" transform=\"rotate(35 33 52)\"/></g></svg>", "give_way": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M6 12 H94 L50 92 Z\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"8\" stroke-linejoin=\"round\"/></svg>", "no_entry": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"46\" fill=\"#d0021b\"/><rect x=\"18\" y=\"42\" width=\"64\" height=\"16\" fill=\"#fff\"/></svg>", "closed_all": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"44\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"9\"/></svg>", "no_right": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"44\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"9\"/><path d=\"M42 80 V54 Q42 42 54 42 H58\" stroke=\"#111\" stroke-width=\"7\" fill=\"none\"/><path d=\"M0 -8 L8 3.2 L-8 3.2 Z\" fill=\"#111\" transform=\"translate(64 42) rotate(90)\"/><line x1=\"22\" y1=\"22\" x2=\"78\" y2=\"78\" stroke=\"#d0021b\" stroke-width=\"8\"/></svg>", "no_left": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"44\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"9\"/><path d=\"M58 80 V54 Q58 42 46 42 H42\" stroke=\"#111\" stroke-width=\"7\" fill=\"none\"/><path d=\"M0 -8 L8 3.2 L-8 3.2 Z\" fill=\"#111\" transform=\"translate(36 42) rotate(-90)\"/><line x1=\"22\" y1=\"22\" x2=\"78\" y2=\"78\" stroke=\"#d0021b\" stroke-width=\"8\"/></svg>", "no_uturn": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"44\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"9\"/><path d=\"M60 78 V46 Q60 32 48 32 Q36 32 36 46 V58\" stroke=\"#111\" stroke-width=\"7\" fill=\"none\"/><path d=\"M0 -8 L8 3.2 L-8 3.2 Z\" fill=\"#111\" transform=\"translate(36 64) rotate(180)\"/><line x1=\"22\" y1=\"22\" x2=\"78\" y2=\"78\" stroke=\"#d0021b\" stroke-width=\"8\"/></svg>", "speed50": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"44\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"9\"/><text x=\"50\" y=\"63\" font-family=\"Arial\" font-weight=\"bold\" font-size=\"38\" fill=\"#111\" text-anchor=\"middle\">50</text></svg>", "no_parking": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"44\" fill=\"#1d5fbf\" stroke=\"#d0021b\" stroke-width=\"9\"/><line x1=\"22\" y1=\"22\" x2=\"78\" y2=\"78\" stroke=\"#d0021b\" stroke-width=\"9\"/></svg>", "no_stopping": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"44\" fill=\"#1d5fbf\" stroke=\"#d0021b\" stroke-width=\"9\"/><line x1=\"22\" y1=\"22\" x2=\"78\" y2=\"78\" stroke=\"#d0021b\" stroke-width=\"9\"/><line x1=\"78\" y1=\"22\" x2=\"22\" y2=\"78\" stroke=\"#d0021b\" stroke-width=\"9\"/></svg>", "no_pedestrians": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"44\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"9\"/><g transform=\"translate(50 56) scale(1.25)\" stroke=\"#111\" stroke-width=\"4\" stroke-linecap=\"round\" fill=\"none\"><circle cx=\"0\" cy=\"-16\" r=\"4.5\" fill=\"#111\" stroke=\"none\"/><line x1=\"0\" y1=\"-10\" x2=\"-2\" y2=\"6\"/><line x1=\"-2\" y1=\"6\" x2=\"-9\" y2=\"18\"/><line x1=\"-2\" y1=\"6\" x2=\"6\" y2=\"17\"/><line x1=\"0\" y1=\"-6\" x2=\"-8\" y2=\"2\"/><line x1=\"0\" y1=\"-6\" x2=\"8\" y2=\"0\"/></g><line x1=\"22\" y1=\"22\" x2=\"78\" y2=\"78\" stroke=\"#d0021b\" stroke-width=\"8\"/></svg>", "no_bicycles": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"44\" fill=\"#fff\" stroke=\"#d0021b\" stroke-width=\"9\"/><g transform=\"translate(50 50) scale(1.25)\" stroke=\"#111\" stroke-width=\"3.2\" fill=\"none\" stroke-linejoin=\"round\"><circle cx=\"-13\" cy=\"6\" r=\"8\"/><circle cx=\"13\" cy=\"6\" r=\"8\"/><path d=\"M-13 6 L-4 -6 L8 -6 L13 6 M-4 -6 L0 6 L8 -6 M-6 -10 L-1 -10 M8 -6 L6 -12 L10 -12\"/></g><line x1=\"22\" y1=\"22\" x2=\"78\" y2=\"78\" stroke=\"#d0021b\" stroke-width=\"8\"/></svg>", "straight_only": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"46\" fill=\"#1d5fbf\" stroke=\"#fff\" stroke-width=\"2\"/><rect x=\"45\" y=\"40\" width=\"10\" height=\"38\" fill=\"#fff\"/><path d=\"M0 -15 L15 6.0 L-15 6.0 Z\" fill=\"#fff\" transform=\"translate(50 32) rotate(0)\"/></svg>", "right_only": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"46\" fill=\"#1d5fbf\" stroke=\"#fff\" stroke-width=\"2\"/><path d=\"M42 80 V56 Q42 44 54 44 H60\" stroke=\"#fff\" stroke-width=\"10\" fill=\"none\"/><path d=\"M0 -13 L13 5.2 L-13 5.2 Z\" fill=\"#fff\" transform=\"translate(68 44) rotate(90)\"/></svg>", "roundabout_mand": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"46\" fill=\"#1d5fbf\" stroke=\"#fff\" stroke-width=\"2\"/><g transform=\"rotate(0 50 50)\"><path d=\"M50 26 A24 24 0 0 1 70.8 38\" stroke=\"#fff\" stroke-width=\"8\" fill=\"none\"/><path d=\"M0 -9 L9 3.6 L-9 3.6 Z\" fill=\"#fff\" transform=\"translate(73 42) rotate(150)\"/></g><g transform=\"rotate(120 50 50)\"><path d=\"M50 26 A24 24 0 0 1 70.8 38\" stroke=\"#fff\" stroke-width=\"8\" fill=\"none\"/><path d=\"M0 -9 L9 3.6 L-9 3.6 Z\" fill=\"#fff\" transform=\"translate(73 42) rotate(150)\"/></g><g transform=\"rotate(240 50 50)\"><path d=\"M50 26 A24 24 0 0 1 70.8 38\" stroke=\"#fff\" stroke-width=\"8\" fill=\"none\"/><path d=\"M0 -9 L9 3.6 L-9 3.6 Z\" fill=\"#fff\" transform=\"translate(73 42) rotate(150)\"/></g></svg>", "keep_right": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"46\" fill=\"#1d5fbf\" stroke=\"#fff\" stroke-width=\"2\"/><line x1=\"34\" y1=\"34\" x2=\"60\" y2=\"60\" stroke=\"#fff\" stroke-width=\"10\"/><path d=\"M70 70 L48 66 L66 48 Z\" fill=\"#fff\"/></svg>", "bike_path": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"46\" fill=\"#1d5fbf\" stroke=\"#fff\" stroke-width=\"2\"/><g transform=\"translate(50 52) scale(1.3)\" stroke=\"#fff\" stroke-width=\"3.2\" fill=\"none\" stroke-linejoin=\"round\"><circle cx=\"-13\" cy=\"6\" r=\"8\"/><circle cx=\"13\" cy=\"6\" r=\"8\"/><path d=\"M-13 6 L-4 -6 L8 -6 L13 6 M-4 -6 L0 6 L8 -6 M-6 -10 L-1 -10 M8 -6 L6 -12 L10 -12\"/></g></svg>", "parking": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><rect x=\"5\" y=\"5\" width=\"90\" height=\"90\" rx=\"9\" fill=\"#1d5fbf\" stroke=\"#fff\" stroke-width=\"3\"/><text x=\"50\" y=\"74\" font-family=\"Arial\" font-weight=\"bold\" font-size=\"66\" fill=\"#fff\" text-anchor=\"middle\">P</text></svg>", "crossing_info": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><rect x=\"5\" y=\"5\" width=\"90\" height=\"90\" rx=\"9\" fill=\"#1d5fbf\" stroke=\"#fff\" stroke-width=\"3\"/><path d=\"M50 14 L88 84 H12 Z\" fill=\"#fff\"/><g transform=\"translate(50 62) scale(1.1)\" stroke=\"#111\" stroke-width=\"4\" stroke-linecap=\"round\" fill=\"none\"><circle cx=\"0\" cy=\"-16\" r=\"4.5\" fill=\"#111\" stroke=\"none\"/><line x1=\"0\" y1=\"-10\" x2=\"-2\" y2=\"6\"/><line x1=\"-2\" y1=\"6\" x2=\"-9\" y2=\"18\"/><line x1=\"-2\" y1=\"6\" x2=\"6\" y2=\"17\"/><line x1=\"0\" y1=\"-6\" x2=\"-8\" y2=\"2\"/><line x1=\"0\" y1=\"-6\" x2=\"8\" y2=\"0\"/></g><rect x=\"30\" y=\"76\" width=\"5\" height=\"3\" fill=\"#111\"/><rect x=\"39\" y=\"76\" width=\"5\" height=\"3\" fill=\"#111\"/><rect x=\"48\" y=\"76\" width=\"5\" height=\"3\" fill=\"#111\"/><rect x=\"57\" y=\"76\" width=\"5\" height=\"3\" fill=\"#111\"/><rect x=\"66\" y=\"76\" width=\"5\" height=\"3\" fill=\"#111\"/></svg>", "dead_end": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><rect x=\"5\" y=\"5\" width=\"90\" height=\"90\" rx=\"9\" fill=\"#1d5fbf\" stroke=\"#fff\" stroke-width=\"3\"/><rect x=\"43\" y=\"40\" width=\"14\" height=\"44\" fill=\"#fff\"/><rect x=\"22\" y=\"22\" width=\"56\" height=\"16\" fill=\"#d0021b\"/></svg>"};
+setTimeout(()=>{ try{ preloadImgs(QUESTIONS); }catch(e){} }, 3000); // שאלות התמונה של המשחק הקבוצתי
+function preloadImgs(qs){ qs.forEach(q=>{ if(q && q.img && q.img.indexOf('sign:')!==0){ const im=new Image(); im.src=q.img; } }); }
 function qKey(q){ let h=5381; const t=q.q+(q.img||''); for(let i=0;i<t.length;i++) h=((h<<5)+h+t.charCodeAt(i))>>>0; return h.toString(36); }
 function soloPickQuestions(){
   const p = soloProfile(), key = 'trivia_solo_seen_v2_' + (p ? p.id : 'guest');
@@ -4448,7 +4516,7 @@ function soloPickQuestions(){
     seen = seen.slice(-SOLO_COUNT*SOLO_NO_REPEAT_ROUNDS); seenSet = new Set(seen);
     avail = keys.map((k,i)=>seenSet.has(k)?-1:i).filter(i=>i>=0);
   }
-  const picked = shuffleArr(avail).slice(0, SOLO_COUNT);
+  const picked = withMinImages(shuffleArr(avail).slice(0, SOLO_COUNT), new Set(avail));
   seen = seen.concat(picked.map(i=>keys[i]));
   try{ localStorage.setItem(key, JSON.stringify(seen.slice(-SOLO_QUESTIONS.length))); }catch(e){}
   return picked;
