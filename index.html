@@ -348,7 +348,7 @@ input[type=text]::placeholder{color:#A69C84;opacity:1;}
 .crowd-num b{font-family:'Frank Ruhl Libre',serif;font-size:56px;line-height:1;color:var(--line-yellow);text-shadow:0 0 20px rgba(212,175,55,.5);}
 .crowd-num b.bump{animation:numBump .5s cubic-bezier(.2,1.8,.4,1);}
 @keyframes numBump{0%{transform:scale(1.6);color:#fff;}100%{transform:scale(1);}}
-.crowd-num span{font-size:14px;font-weight:700;color:var(--ink-dim);margin-top:4px;}
+.crowd-num span{font-size:13px;font-weight:700;color:var(--ink-dim);margin-top:4px;max-width:92px;text-align:center;line-height:1.25;}
 .crowd-ticker{min-height:30px;margin:10px 0 4px;font-weight:800;font-size:16px;color:var(--gold-light);}
 .crowd-ticker .t{display:inline-block;animation:tickerIn .6s cubic-bezier(.2,1.5,.4,1) both;}
 @keyframes tickerIn{0%{opacity:0;transform:translateY(14px) scale(.8);}100%{opacity:1;transform:none;}}
@@ -645,7 +645,8 @@ const STANDINGS_MS = 3000;
 const FAST_ANSWER_MS = 5000;
 const SOLO_COUNT = 30;
 const MIN_PLAYERS = 5;
-const MAX_PLAYERS = 100; // מספר השחקנים המרבי בחדר המתנה אחד // כשמגיעים למספר הזה המנחה מקבל התראה להתחיל
+const MAX_PLAYERS = 100;
+const LOBBY_HB_MS = 30000, LOBBY_STALE_MS = 90000; // נוכחות בחדר ההמתנה: מי שלא שלח 'דופק' 90 שניות — נחשב כמי שיצא // מספר השחקנים המרבי בחדר המתנה אחד // כשמגיעים למספר הזה המנחה מקבל התראה להתחיל
 const CURRENT_ROOM_DOC = 'current';
 const LOBBY_MAX_AGE_MS = 12*60*60*1000; // חדר המתנה ישן מ-12 שעות לא ממוחזר — נפתח חדש // מסמך שמצביע על החדר הפתוח כרגע — כך השחקנים נכנסים בלי קוד
 const SOLO_REVEAL_MS = 1100;
@@ -2316,7 +2317,7 @@ function lobbyCrowdHtml(list, meId){
       <div class="crowd-ring">
         <svg viewBox="0 0 150 150"><defs><linearGradient id="crowdGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF3C4"/><stop offset="1" stop-color="#D4AF37"/></linearGradient></defs>
           <circle class="trk" cx="75" cy="75" r="${R}"/><circle class="prg" cx="75" cy="75" r="${R}" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C*(1-frac)).toFixed(1)}"/></svg>
-        <div class="crowd-num"><b class="${bump?'bump':''}">${n}</b><span>${ready ? 'מתוך ' + MAX_PLAYERS + ' מקומות' : 'מינימום ' + MIN_PLAYERS + ' להתחלה'}</span></div>
+        <div class="crowd-num"><b class="${bump?'bump':''}">${n}</b><span>${ready ? 'מתוך ' + MAX_PLAYERS + '<br>מקומות' : 'מינימום ' + MIN_PLAYERS + '<br>להתחלה'}</span></div>
       </div>
       <div class="crowd-ticker">${latest ? `<span class="t" key="${esc(latest.id)}">✨ ${esc(latest.name||'')} ${latest.id===meId?'(את/ה) ':''}הצטרף/ה!</span>` : ''}</div>
       <div class="crowd-wall">${wall}</div>
@@ -2718,7 +2719,7 @@ function renderLandingBest(){
   el.textContent = p ? ('🏅 ' + p.name + ' — השיא שלך: ' + b + ' נקודות') : '';
 }
 
-const APP_VERSION = '2026-10-07k';
+const APP_VERSION = '2026-10-07l';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -2754,6 +2755,7 @@ $('btn-join-manual').addEventListener('click', ()=>{ roomCode = null; showScreen
 $('btn-pjoin-go').addEventListener('click', joinGame);
 document.addEventListener('visibilitychange', ()=>{
   if(document.visibilityState!=='visible' || role!=='player' || !roomCode || !playerId) return;
+  lobbyBeat();
   subscribeRoomPlayer(); subscribeMyPlayer();
 });
 $('btn-pjoin-back').addEventListener('click', ()=>{ role=null; showScreen('s-landing'); });
@@ -2925,8 +2927,9 @@ function renderHost(){
   if(role!=='host') return;
   clearQTimer();
   const body = $('host-body');
-  const total = playersOrder.length;
+  const total = curState.phase==='lobby' ? lobbyActiveIds().length : playersOrder.length;
   if(curState.phase==='lobby'){
+    hostPruneStale();
     body.innerHTML = `
       <button class="btn btn-ghost" id="h-back" style="margin-bottom:14px;">→ חזרה</button>
       <div class="eyebrow">חדר המתנה</div>
@@ -2934,12 +2937,12 @@ function renderHost(){
       <div class="sub" style="text-align:center;">השחקנים לוחצים על "משחק קבוצתי" באפליקציה (או סורקים) — בלי קוד</div>
       <div class="qr-wrap"><div id="qr"></div></div>
       ${total>=MIN_PLAYERS ? `<div class="ready-alert">🔔 יש כבר ${total} שחקנים בחדר ההמתנה — אפשר ללחוץ על "התחל משחק"!</div>` : ''}
-      ${lobbyCrowdHtml(playersOrder.map(id=>({id, name:playersMap[id].name, joinedAt:playersMap[id].joinedAt})), null)}
+      ${lobbyCrowdHtml(lobbyActiveIds().map(id=>({id, name:playersMap[id].name, joinedAt:playersMap[id].joinedAt})), null)}
       <div class="card"><b>${total}</b> שחקנים ממתינים:
         <div class="goal-track"><div style="width:${Math.min(100, Math.round(total/MIN_PLAYERS*100))}%"></div></div>
         <div class="goal-note">${total>=MIN_PLAYERS ? 'הגעתם ליעד של ' + MIN_PLAYERS + ' שחקנים ✓' : 'מינימום <b>' + MIN_PLAYERS + '</b> שחקנים להתחלה — כשתגיעו אליו תקבלו התראה (חסרים עוד ' + (MIN_PLAYERS-total) + ')'}</div>
         <div class="player-chip-row host-names" style="margin-top:10px;">
-          ${playersOrder.map(id=>`<span class="pchip ${chipPopClass(id)}">${esc(playersMap[id].name||'')}</span>`).join('') || '<span class="center-note">עדיין אין מצטרפים</span>'}
+          ${lobbyActiveIds().map(id=>`<span class="pchip ${chipPopClass(id)}">${esc(playersMap[id].name||'')}</span>`).join('') || '<span class="center-note">עדיין אין מצטרפים</span>'}
         </div>
       </div>
       <button class="btn btn-primary btn-xl" id="h-start" ${total<1?'disabled':''}>▶ התחל משחק</button>`;
@@ -3152,9 +3155,17 @@ async function enterRoom(){
   const existing = await playersRef().doc(playerId).get();
   if(!existing.exists){
     const all = await playersRef().get();
-    if(all.docs.length >= MAX_PLAYERS){ const err = new Error('full'); err.userMsg = 'חדר ההמתנה מלא (' + MAX_PLAYERS + ' שחקנים). נסו שוב במשחק הבא.'; throw err; }
-    await playersRef().doc(playerId).set({name:playerName, score:0, joinedAt:Date.now()});
+    const norm = n=>String(n||'').replace(/\s+/g,' ').trim();
+    // אותו שם שכבר רשום בחדר (למשל מכניסה קודמת) — מוחקים את הרישום הישן כדי שלא יופיע פעמיים
+    const dupes = all.docs.filter(d=>norm(d.data().name)===norm(playerName));
+    dupes.forEach(d=>d.ref ? d.ref.delete().catch(()=>{}) : playersRef().doc(d.id).delete().catch(()=>{}));
+    const active = all.docs.filter(d=>!dupes.includes(d) && lobbyActive(d.data())).length;
+    if(active >= MAX_PLAYERS){ const err = new Error('full'); err.userMsg = 'חדר ההמתנה מלא (' + MAX_PLAYERS + ' שחקנים). נסו שוב במשחק הבא.'; throw err; }
+    await playersRef().doc(playerId).set({name:playerName, score:0, joinedAt:Date.now(), hb:Date.now()});
+  } else {
+    playersRef().doc(playerId).update({hb:Date.now()}).catch(()=>{});
   }
+  startLobbyHeartbeat();
   showScreen('s-player');
   subscribeRoomPlayer();
   subscribeMyPlayer();
@@ -3219,7 +3230,7 @@ function renderPlayer(){
   const me = playersMap[playerId] || {name:playerName, score:0};
   const header = `<div id="p-header">${scoreHeaderInner()}</div>`;
   if(curState.phase==='lobby'){
-    const waiting = sortedPlayers().sort((a,b)=>(a.joinedAt||0)-(b.joinedAt||0));
+    const waiting = sortedPlayers().filter(p=>p.id===playerId || lobbyActive(p)).sort((a,b)=>(a.joinedAt||0)-(b.joinedAt||0));
     if(playerId && !playersMap[playerId]) waiting.push({id:playerId, name:playerName});
     body.innerHTML = `<div class="wait-hero">
         <div class="wait-title">חדר ההמתנה</div>
@@ -3320,12 +3331,36 @@ function renderPlayer(){
   }
 }
 // יציאה מחדר ההמתנה של המשחק הקבוצתי: מוחקים את השחקן מהחדר וחוזרים למסך הבית
+// שחקן נחשב נוכח בחדר ההמתנה רק אם האפליקציה שלו שלחה 'דופק' לאחרונה
+function lobbyActive(p){ return !!p && Date.now()-(p.hb||p.joinedAt||0) < LOBBY_STALE_MS; }
+function lobbyActiveIds(){ return playersOrder.filter(id=>lobbyActive(playersMap[id])); }
+let lobbyHbTimer=null, prunedIds=new Set();
+function startLobbyHeartbeat(){
+  stopLobbyHeartbeat();
+  lobbyHbTimer = setInterval(lobbyBeat, LOBBY_HB_MS);
+}
+// 'דופק' לחדר ההמתנה. אם הרישום נמחק בינתיים (למשל המסך היה כבוי זמן רב) — נרשמים מחדש אוטומטית
+function lobbyBeat(){
+  if(role!=='player' || !playerId || !roomCode || curState.phase!=='lobby') return;
+  const ref = playersRef().doc(playerId), name = playerName;
+  ref.update({hb:Date.now()}).catch(()=>ref.set({name, score:0, joinedAt:Date.now(), hb:Date.now()}).catch(()=>{}));
+}
+function stopLobbyHeartbeat(){ if(lobbyHbTimer){ clearInterval(lobbyHbTimer); lobbyHbTimer=null; } }
+// המנחה מנקה מהחדר שחקנים שיצאו בלי ללחוץ "יציאה" (סגרו את האפליקציה / חזרו אחורה)
+function hostPruneStale(){
+  if(role!=='host' || curState.phase!=='lobby') return;
+  playersOrder.forEach(id=>{ if(!lobbyActive(playersMap[id]) && !prunedIds.has(id)){ prunedIds.add(id); playersRef().doc(id).delete().catch(()=>{}); } });
+}
+// סגירת הדף / חזרה אחורה בחדר ההמתנה — מוחקים את השחקן מיד
+window.addEventListener('pagehide', ()=>{ if(role==='player' && playerId && roomCode && curState.phase==='lobby'){ try{ playersRef().doc(playerId).delete(); }catch(e){} } });
 function playerExitLobby(){
   if(playerId && roomCode) playersRef().doc(playerId).delete().catch(()=>{});
   try{ sessionStorage.removeItem('trivia_pid_'+roomCode); }catch(e){}
+  stopLobbyHeartbeat();
   playerLeave();
 }
 function playerLeave(){
+  stopLobbyHeartbeat();
   if(playerRoomUnsub){ playerRoomUnsub(); playerRoomUnsub=null; }
   if(playerListUnsub){ playerListUnsub(); playerListUnsub=null; }
   stopWatchdog(); clearQTimer();
