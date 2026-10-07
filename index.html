@@ -213,6 +213,18 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
 .timer-bar.danger .tb-fill{background:linear-gradient(90deg,#FF7B5C,#E4572E);box-shadow:0 0 18px rgba(228,87,46,.85);}
 .timer-bar.danger .tb-num,.timer-bar.danger .tb-icon{color:var(--stop-red);animation:dangerPulse .5s ease-in-out infinite;}
 .timer-bar.done .tb-num{color:var(--ink-dim);}
+.tb-worth{flex:1;display:flex;align-items:center;gap:6px;color:var(--gold-light);font-size:14px;font-weight:800;white-space:nowrap;}
+.tb-worth b{font-family:'Frank Ruhl Libre',serif;font-size:24px;font-weight:900;color:var(--line-yellow);min-width:30px;text-align:center;display:inline-block;line-height:1;text-shadow:0 0 12px rgba(212,175,55,.5);}
+.tb-worth.drop b{animation:worthDrop .45s ease-out;}
+.timer-bar.danger .tb-worth b{color:var(--stop-red);}
+.tb-worth.locked{color:#8FE3A6;}
+.tb-worth.locked b{color:#5BD07A;text-shadow:0 0 12px rgba(91,208,122,.55);animation:worthLock .5s ease-out;}
+.tb-worth.lost{color:var(--ink-dim);}
+.tb-worth.lost b{color:var(--ink-dim);text-shadow:none;}
+@keyframes worthDrop{0%{transform:scale(1.35);color:#FF8A6B;}100%{transform:scale(1);}}
+@keyframes worthLock{0%{transform:scale(1.6);}60%{transform:scale(.9);}100%{transform:scale(1);}}
+.speed-break{text-align:center;font-size:14px;font-weight:700;color:var(--gold-light);margin:-4px 0 10px;}
+.speed-break b{color:var(--line-yellow);}
 @keyframes pressPop{0%{transform:scale(1);}35%{transform:scale(.92) translateY(4px);}70%{transform:scale(1.03);}100%{transform:scale(1) translateY(3px);}}
 .answer-btn.pressed{animation:pressPop .3s ease-out both !important;}
 .answer-btn.selected{background:linear-gradient(135deg,rgba(233,206,124,.5),rgba(212,175,55,.2)) !important;border-color:var(--gold-light) !important;transform:translateY(3px);box-shadow:0 2px 0 #8a6e1e, 0 0 20px rgba(212,175,55,.45) !important;outline:none;}
@@ -2752,7 +2764,7 @@ function qCardHtml(num,total,q){
     ${q.img && q.img.indexOf('sign:')===0 ? `<div class="q-sign">${SIGN_SVG[q.img.slice(5)]||''}</div>` : q.img ? (q.img.indexOf('flagcdn')>=0 ? `<div class="q-flag"><img src="${esc(q.img)}" alt="דגל" draggable="false"></div>` : (q.crop ? `<div class="q-photo crop"><div class="crop-in" style="transform:scale(${parseFloat(q.crop.split('|')[1])||1})"><img src="${esc(q.img)}" alt="תמונה" draggable="false" style="object-fit:cover;object-position:${esc(q.crop.split('|')[0])}" onerror="this.closest('.q-photo').classList.add('err')"></div><span class="q-credit">📷 ויקישיתוף</span></div>` : `<div class="q-photo"><img src="${esc(q.img)}" alt="תמונה" draggable="false" onerror="this.parentNode.classList.add('err')"><span class="q-credit">📷 ויקישיתוף</span></div>`)) : ''}
     <div class="question-text">${esc(q.q)}</div></div>`;
 }
-function clockHtml(prefix){ return `<div class="timer-bar qanim" id="${prefix}-clock-wrap"><div class="tb-head"><span class="tb-icon">⏱️</span><span class="tb-label">הזמן לענות אוזל...</span><span class="tb-num" id="${prefix}-timer-num">${QUESTION_MS/1000}</span></div><div class="tb-track"><div class="tb-fill" id="${prefix}-timer-ring"></div><div class="tb-ticks"></div></div></div>`; }
+function clockHtml(prefix){ return `<div class="timer-bar qanim" id="${prefix}-clock-wrap"><div class="tb-head"><span class="tb-icon">⏱️</span><span class="tb-worth" id="${prefix}-worth">💰 תשובה נכונה שווה עכשיו <b>${BASE_POINTS+SPEED_POINTS*QUESTION_MS/1000}</b></span><span class="tb-num" id="${prefix}-timer-num">${QUESTION_MS/1000}</span></div><div class="tb-track"><div class="tb-fill" id="${prefix}-timer-ring"></div><div class="tb-ticks"></div></div></div>`; }
 function answerTag(q){ return q.type==='poll' ? '✓ בחירת הרוב' : '✓ התשובה הנכונה'; }
 function rankLabel(i){ return i<3 ? ['🥇','🥈','🥉'][i] : String(i+1); }
 function sortedPlayers(){ return playersOrder.map(id=>({id,...playersMap[id]})).sort((a,b)=>(b.score||0)-(a.score||0)); }
@@ -3252,7 +3264,7 @@ function duelRender(){
       ${qCardHtml(i+1, v.qs.length, q)}
       ${clockHtml('d')}
       <div class="answers" id="d-answers">${q.a.map((t,k)=>`<button class="answer-btn" data-i="${k}"><span class="opt-letter">${letterFor(k)}</span><span class="opt-text">${esc(t)}</span></button>`).join('')}</div>
-      <div class="center-note" id="d-note">מי שעונה נכון ומהר יותר — לוקח יותר נקודות!</div>`;
+      <div class="center-note" id="d-note">⚡ כל שנייה שעוברת = 2 נקודות פחות — מהר!</div>`;
     body.querySelectorAll('.answer-btn').forEach(b=>b.addEventListener('click', ()=>duelAnswer(Number(b.dataset.i), b)));
     mountQTimer(duel.startLocal, 'd-timer-ring', 'd-timer-num', 'd-clock-wrap', ()=>{ duelLockButtons(); duelLater(()=>duelAdvance('question', i), 300); });
     return;
@@ -3266,6 +3278,7 @@ function duelRender(){
     const right = mine && mine.c===q.c;
     body.innerHTML = `<div id="d-header">${duelHeadHtml(v)}</div>
       <div class="result-banner ${right?'correct':'wrong'}">${!mine ? '⏰ לא הספקת לענות' : right ? `🎉 נכון! +${mine.p} נקודות` : '❌ לא נכון הפעם'}</div>
+      ${right ? speedBreakHtml(mine.p) : ''}
       <div class="q-card" style="padding:16px;"><div class="question-text" style="font-size:16px;">${esc(q.q)}</div></div>
       <div class="answers">${q.a.map((t,k)=>{
         let cls='dim', tag='';
@@ -3308,6 +3321,7 @@ function duelAnswer(k, btn){
   duel.locked = true; duel.myChoice = k;
   const q = duelQuestion(duel.v, i);
   const pts = k===q.c ? BASE_POINTS + SPEED_POINTS*Math.max(0, Math.floor((QUESTION_MS-ms)/1000)) : 0;
+  lockWorth('d', duel.startLocal, ms);
   const box=$('d-answers');
   if(box) box.querySelectorAll('.answer-btn').forEach(b=>{ b.disabled=true; if(b===btn){ b.classList.add('selected'); b.dataset.tag='✓ הבחירה שלך'; pressFeedback(b); } });
   const note=$('d-note'); if(note) note.textContent='התשובה נשלחה ✓ — ממתינים ליריב...';
@@ -3328,7 +3342,7 @@ function readFullName(id){
 // ---------- הוראות לכל סוג משחק — המספרים נלקחים מההגדרות של המשחק עצמו ----------
 // הוראות קצרות לכל סוג משחק — המספרים נלקחים מההגדרות של המשחק עצמו, כך שתמיד יתאימו
 function modeRules(mode){
-  const sec = QUESTION_MS/1000, pts = `נכונה = ${BASE_POINTS} נק' + ${SPEED_POINTS} נק' לכל שנייה שנשארה`;
+  const sec = QUESTION_MS/1000, pts = `נכונה = ${BASE_POINTS} נק' + ${SPEED_POINTS} נק' לכל שנייה שנשארה — מי שעונה מיד מקבל ${BASE_POINTS+SPEED_POINTS*QUESTION_MS/1000}! המהירות קובעת`;
   return {
     group: {title:'משחק קבוצתי 👥', items:[
       ['📲','נכנסים',`רושמים שם ושם משפחה ונכנסים לחדר ההמתנה. עד ${MAX_PLAYERS} משתתפים.`],
@@ -3436,7 +3450,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-08e';
+const APP_VERSION = '2026-10-08f';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -3484,6 +3498,28 @@ $('btn-duel').addEventListener('click', duelEntry);
 
 // ---------- Timer (circular clock) ----------
 function clearQTimer(){ if(timerHandle){clearInterval(timerHandle); timerHandle=null;} stopMusic(); document.body.classList.remove('tick-danger'); }
+// מונה "כמה שווה התשובה עכשיו" — מדגיש שמהירות = נקודות
+const worthLocks = {};
+function worthAt(ms){ return BASE_POINTS + SPEED_POINTS*Math.max(0, Math.floor((QUESTION_MS-ms)/1000)); }
+function lockWorth(prefix, startedAt, ms, html, cls){ worthLocks[prefix] = {at:startedAt, v:worthAt(ms), html, cls}; paintWorth(prefix, startedAt, ms); }
+function paintWorth(prefix, startedAt, elapsed){
+  const el=$(prefix+'-worth'); if(!el) return;
+  const lk = worthLocks[prefix] && worthLocks[prefix].at===startedAt ? worthLocks[prefix] : null;
+  const v = lk ? lk.v : worthAt(elapsed);
+  const key = lk ? 'L'+v+(lk.html||'') : String(v);
+  if(el.dataset.k===key) return;
+  const dropped = !lk && el.dataset.k && el.dataset.k!==key;
+  el.dataset.k = key;
+  el.classList.toggle('locked', !!lk && lk.cls!=='lost');
+  el.classList.toggle('lost', !!lk && lk.cls==='lost');
+  el.innerHTML = lk ? (lk.html || `🔒 נעלת <b>${v}</b> נק' אם צדקת`) : `💰 תשובה נכונה שווה עכשיו <b>${v}</b>`;
+  if(dropped){ el.classList.remove('drop'); void el.offsetWidth; el.classList.add('drop'); }
+}
+function speedBreakHtml(pts){
+  if(!pts) return '';
+  const sp = pts-BASE_POINTS;
+  return `<div class="speed-break">${BASE_POINTS} על תשובה נכונה + <b>${sp}</b> בונוס מהירות ⚡${sp>=SPEED_POINTS*8?' — מהיר כברק!':sp<=SPEED_POINTS*2?' — בפעם הבאה מהר יותר!':''}</div>`;
+}
 function mountQTimer(startedAt, ringId, numId, wrapId, onExpire){
   clearQTimer();
   if(startedAt!==lastBeepStartedAt){ lastBeepStartedAt=startedAt; lastBeepSec=null; }
@@ -3496,6 +3532,7 @@ function mountQTimer(startedAt, ringId, numId, wrapId, onExpire){
     if(fillEl) fillEl.style.width = pct+'%';
     const secs = Math.ceil(remain/1000);
     if(numEl) numEl.textContent = secs;
+    paintWorth(numId.replace('-timer-num',''), startedAt, elapsed);
     if(wrapEl){ wrapEl.classList.toggle('warn', secs<=6 && secs>3); wrapEl.classList.toggle('danger', secs<=3 && remain>0); }
     document.body.classList.toggle('tick-danger', secs<=3 && remain>0);
     musicFast = secs<=3;
@@ -3939,6 +3976,7 @@ function selectAnswer(choice, btnEl){
   if(Date.now()-curState.questionStartedAt >= QUESTION_MS) return;
   const now = Date.now();
   myChoiceForQ = choice; myAnswerTime = now;
+  lockWorth('p', curState.questionStartedAt, now-curState.questionStartedAt);
   const box = $('p-answers');
   if(box){
     box.querySelectorAll('.answer-btn').forEach(b=>{ b.classList.remove('selected'); delete b.dataset.tag; });
@@ -3998,7 +4036,7 @@ function renderPlayer(){
       ${qCardHtml(curState.qIndex+1, QUESTIONS.length, q)}
       ${clockHtml('p')}
       <div class="answers" id="p-answers">${q.a.map((t,i)=>`<button class="answer-btn ${myChoiceForQ===i?'selected':''}" data-i="${i}" ${myChoiceForQ===i?'data-tag="✓ הבחירה שלך"':''}><span class="opt-letter">${letterFor(i)}</span><span class="opt-text">${esc(t)}</span></button>`).join('')}</div>
-      <div class="center-note" id="p-answer-note">${myChoiceForQ===null ? 'בחרו תשובה — אפשר להחליף כל עוד הזמן לא נגמר' : 'התשובה נשלחה ✓ — אפשר להחליף כל עוד יש זמן'}</div>`;
+      <div class="center-note" id="p-answer-note">${myChoiceForQ===null ? '⚡ ענו מהר — כל שנייה שווה 2 נקודות! (אפשר להחליף עד סוף הזמן)' : 'התשובה נשלחה ✓ — אפשר להחליף כל עוד יש זמן'}</div>`;
     body.querySelectorAll('.answer-btn').forEach(b=>b.addEventListener('click', ()=>selectAnswer(Number(b.dataset.i), b)));
     mountQTimer(curState.questionStartedAt, 'p-timer-ring', 'p-timer-num', 'p-clock-wrap', ()=>lockPlayerAnswers(q));
     return;
@@ -4022,6 +4060,7 @@ function renderPlayer(){
       ${fastAnswer ? '<div class="compliment-badge">⚡ מהירות שיא! עניתם תוך פחות מ-5 שניות!</div>' : ''}
       ${wasRight ? streakHtml(groupStreak) : ''}
       <div class="result-banner ${wasRight?'correct':'wrong'}">${!gotIt ? '⏰ לא הספקת לענות' : wasRight ? `🎉 כל הכבוד! +<span id="p-score-count" class="count-num">${firstReveal?0:pts}</span> נקודות` : (q.type==='poll'?'לא בחרת כמו הרוב':'❌ לא נכון הפעם')}</div>
+      ${wasRight && q.type!=='poll' ? speedBreakHtml(pts) : ''}
       <div class="q-card" style="padding:16px;"><div class="question-text" style="font-size:16px;">${esc(q.q)}</div></div>
       <div class="answers">${q.a.map((t,i)=>{
         let cls='dim', tag='';
@@ -4368,7 +4407,7 @@ function soloShowQuestion(){
     ${qCardHtml(s.i+1, s.qs.length, q)}
     ${clockHtml('s')}
     <div class="answers" id="s-answers">${q.a.map((t,i)=>`<button class="answer-btn" data-i="${i}"><span class="opt-letter">${letterFor(i)}</span><span class="opt-text">${esc(t)}</span></button>`).join('')}</div>
-    <div class="center-note" id="s-note">בחרו תשובה — ככל שמהר יותר, יותר נקודות</div>
+    <div class="center-note" id="s-note">⚡ ענו מהר — כל שנייה שווה 2 נקודות!</div>
     <button class="skip-btn" id="s-quit">יציאה למסך הבית</button>`;
   body.querySelectorAll('.answer-btn').forEach(b=>b.addEventListener('click', ()=>{ if(soloState && !soloState.locked) pressFeedback(b); soloReveal(Number(b.dataset.i)); }));
   $('s-quit').addEventListener('click', soloQuit);
@@ -4390,6 +4429,7 @@ function soloReveal(choice){
     else if(i===choice){ b.classList.add('wrong'); b.dataset.tag = '✗ הבחירה שלך'; }
     else b.classList.add('dim');
   });
+  if(choice!==null) lockWorth('s', s.startedAt, elapsed, right ? `✅ הרווחת <b>${pts}</b> נק'` : `❌ <b>0</b> נק' הפעם`, right?'':'lost');
   const note = $('s-note');
   if(note) note.textContent = choice===null ? '⏰ נגמר הזמן!' : right ? ((elapsed<=FAST_ANSWER_MS ? '⚡ מהירות שיא! ' : '🎉 נכון! ') + '+' + pts + ' נקודות') : '❌ לא נכון הפעם';
   const h = $('s-header'); if(h) h.innerHTML = soloHeaderInner();
@@ -4397,6 +4437,7 @@ function soloReveal(choice){
     const c = fxCenter(box && box.querySelectorAll('.answer-btn')[q.c]);
     fxConfetti(c.x, c.y, s.streak>=3 ? 120 : 70); fxFloatText(c.x, c.y-40, '+'+pts);
     if(elapsed<=FAST_ANSWER_MS) fxFlash();
+    if(note) note.insertAdjacentHTML('afterend', speedBreakHtml(pts));
     if(s.streak>=2 && note) note.insertAdjacentHTML('beforebegin', streakHtml(s.streak));
     if(s.streak>0 && s.streak%5===0) fxFireworks(1600);
   }
