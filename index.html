@@ -808,6 +808,11 @@ button,a,.btn,.answer-btn{touch-action:manipulation;}
 @media (max-height:780px){ .q-flag img{height:100px;} }
 .q-sign svg{width:136px;height:136px;shape-rendering:geometricPrecision;}
 @media (max-height:780px){ .q-sign svg{width:108px;height:108px;} }
+
+/* תמונה חתוכה — מתמקדים בפנים בלבד (למשל בפוסטר שכתוב עליו השם) */
+.q-photo.crop{overflow:hidden;}
+.q-photo.crop .crop-in{width:100%;transform-origin:50% 50%;}
+.q-photo.crop img{display:block;}
 </style>
 </head>
 <body>
@@ -1018,7 +1023,7 @@ const GROUP_BLOCK = 6, GROUP_TEXT_BLOCKS = 6, GROUP_POLLS = 5;
 const GROUP_TOTAL = GROUP_BLOCK*(GROUP_TEXT_BLOCKS+2) + GROUP_POLLS;
 function asGroupQ(q, topic){
   const order = shuffleArr(q.a.map((_,i)=>i));
-  return {topic: topic||q.topic, type:'trivia', q:q.q, img:q.img||null, a:order.map(i=>q.a[i]), c:order.indexOf(q.c||0)};
+  return {topic: topic||q.topic, type:'trivia', q:q.q, img:q.img||null, crop:q.crop||null, a:order.map(i=>q.a[i]), c:order.indexOf(q.c||0)};
 }
 async function buildGroupSet(){
   const seenArr = await seenLoad('group'), seen = new Set(seenArr), used = [];
@@ -2408,7 +2413,7 @@ const SOLO_QUESTIONS = [
  {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Rabbi_shah.jpg?width=800', a:['הרב שך','הרב שטיינמן','הרב אלישיב','החזון איש']},
  {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Rabbi_Yosef_Shalom_Elyashiv.jpg?width=800', a:['הרב יוסף שלום אלישיב','הרב שלמה זלמן אויערבך','הרב שך','הרב חיים קניבסקי']},
  {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Rav_Chaim_Kanievsky_zt%27l.jpg?width=800', a:['הרב חיים קניבסקי','הסטייפלר','הרב אלישיב','הרב שטיינמן']},
- {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Rabbi_Israel_Abouhaseira,_dit_Baba_sal%C3%A9.JPG?width=800', a:['הבבא סאלי','הרב עובדיה יוסף','הבבא ברוך','רבי יעקב אבוחצירא']},
+ {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Rabbi_Israel_Abouhaseira,_dit_Baba_sal%C3%A9.JPG?width=800', crop:'50% 17%|1.2', a:['הבבא סאלי','הרב עובדיה יוסף','הבבא ברוך','רבי יעקב אבוחצירא']},
  {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Aharon_Leib_Shteinman.jpg?width=800', a:['הרב אהרן לייב שטיינמן','הרב שך','הרב חיים קניבסקי','הרב אלישיב']},
  {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/JTeitelbaum.jpg?width=800', a:['הרבי מסאטמר','הרבי מליובאוויטש','האדמו"ר מבעלזא','האדמו"ר מויז\'ניץ']},
  {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Reb_Moshe_Feinstein.jpg?width=800', a:['הרב משה פיינשטיין','הרב אהרן קוטלר','הרב יעקב קמנצקי','הרב יוסף דוב סולובייצ\'יק']},
@@ -2568,7 +2573,7 @@ const SOLO_QUESTIONS = [
  {topic:T16, q:'איזה חודש עברי הוא הקצר ביותר בשם?', a:['אב','אדר','ניסן','תמוז']},
  {topic:T16, q:'כמה פעמים אפשר להחסיר 5 מ-25?', a:['פעם אחת','חמש פעמים','ארבע פעמים','עשרים וחמש']},
  {topic:T16, q:'לאבא של דוד יש שלושה בנים: חזקיה, ישעיה ו...?', a:['דוד','ירמיה','יונה','עמוס']}
-].map(q=>({topic:q.topic, type:'trivia', q:q.q, img:q.img, a:q.a, c:0}));
+].map(q=>({topic:q.topic, type:'trivia', q:q.q, img:q.img, crop:q.crop, a:q.a, c:0}));
 
 if(firebaseConfig.apiKey === 'YOUR_API_KEY'){ return; }
 document.getElementById('s-setup-missing').classList.remove('active');
@@ -2744,7 +2749,7 @@ function qCardHtml(num,total,q){
   return `<div class="q-card qanim"><div class="q-num">שאלה ${num} מתוך ${total}</div>
     <div class="q-topic">${topicIcon(q.topic)} ${esc(q.topic||'')}</div>
     ${q.type==='poll' ? '<div style="text-align:center;"><span class="qtag poll">🗳️ סקר — מי שבוחר כמו הרוב זוכה</span></div>' : ''}
-    ${q.img && q.img.indexOf('sign:')===0 ? `<div class="q-sign">${SIGN_SVG[q.img.slice(5)]||''}</div>` : q.img ? (q.img.indexOf('flagcdn')>=0 ? `<div class="q-flag"><img src="${esc(q.img)}" alt="דגל" draggable="false"></div>` : `<div class="q-photo"><img src="${esc(q.img)}" alt="תמונה" draggable="false" onerror="this.parentNode.classList.add('err')"><span class="q-credit">📷 ויקישיתוף</span></div>`) : ''}
+    ${q.img && q.img.indexOf('sign:')===0 ? `<div class="q-sign">${SIGN_SVG[q.img.slice(5)]||''}</div>` : q.img ? (q.img.indexOf('flagcdn')>=0 ? `<div class="q-flag"><img src="${esc(q.img)}" alt="דגל" draggable="false"></div>` : (q.crop ? `<div class="q-photo crop"><div class="crop-in" style="transform:scale(${parseFloat(q.crop.split('|')[1])||1})"><img src="${esc(q.img)}" alt="תמונה" draggable="false" style="object-fit:cover;object-position:${esc(q.crop.split('|')[0])}" onerror="this.closest('.q-photo').classList.add('err')"></div><span class="q-credit">📷 ויקישיתוף</span></div>` : `<div class="q-photo"><img src="${esc(q.img)}" alt="תמונה" draggable="false" onerror="this.parentNode.classList.add('err')"><span class="q-credit">📷 ויקישיתוף</span></div>`)) : ''}
     <div class="question-text">${esc(q.q)}</div></div>`;
 }
 function clockHtml(prefix){ return `<div class="timer-bar qanim" id="${prefix}-clock-wrap"><div class="tb-head"><span class="tb-icon">⏱️</span><span class="tb-label">הזמן לענות אוזל...</span><span class="tb-num" id="${prefix}-timer-num">${QUESTION_MS/1000}</span></div><div class="tb-track"><div class="tb-fill" id="${prefix}-timer-ring"></div><div class="tb-ticks"></div></div></div>`; }
@@ -2988,7 +2993,7 @@ function duelQuestion(v, i){
   const q = SOLO_QUESTIONS[v.qs[i]]; const r = seededRand(v.seed + i*7919);
   const order = [0,1,2,3].slice(0,q.a.length);
   for(let k=order.length-1;k>0;k--){ const j=Math.floor(r()*(k+1)); const t=order[k]; order[k]=order[j]; order[j]=t; }
-  return {topic:q.topic, type:'trivia', q:q.q, img:q.img, a:order.map(k=>q.a[k]), c:order.indexOf(q.c)};
+  return {topic:q.topic, type:'trivia', q:q.q, img:q.img, crop:q.crop, a:order.map(k=>q.a[k]), c:order.indexOf(q.c)};
 }
 function duelPickQs(exclude){
   const keys = SOLO_QUESTIONS.map(qKey), ex = exclude || new Set();
@@ -3431,7 +3436,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-08d';
+const APP_VERSION = '2026-10-08e';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -4272,7 +4277,7 @@ function soloStart(){
   role='solo';
   const pool = soloPickQuestions().map(i=>SOLO_QUESTIONS[i]).map(q=>{
     const order = shuffleArr(q.a.map((_,i)=>i));
-    return {topic:q.topic, type:'trivia', q:q.q, img:q.img, a:order.map(i=>q.a[i]), c:order.indexOf(q.c)};
+    return {topic:q.topic, type:'trivia', q:q.q, img:q.img, crop:q.crop, a:order.map(i=>q.a[i]), c:order.indexOf(q.c)};
   });
   preloadImgs(pool);
   soloState = {qs:pool, i:0, score:0, correct:0, locked:false, startedAt:0};
