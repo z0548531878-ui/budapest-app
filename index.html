@@ -550,7 +550,7 @@ body.tick-danger::after{animation:dangerVignette 1s ease-in-out infinite;}
   <div class="rule-card"><span class="ricon">📲</span><div class="rtext"><b>נכנסים</b><br>"משחק קבוצתי" ← כותבים שם ← חדר ההמתנה. בלי קוד.</div></div>
   <div class="rule-card"><span class="ricon">⚡</span><div class="rtext"><b>עונים מהר</b><br>11 שניות לכל שאלה. אפשר להחליף תשובה עד שהזמן נגמר.</div></div>
   <div class="rule-card"><span class="ricon">🏆</span><div class="rtext"><b>צוברים נקודות</b><br>תשובה נכונה = 10 נקודות, ועוד נקודה על כל שנייה שנשארה.</div></div>
-  <div class="rule-card"><span class="ricon">⚔️</span><div class="rtext"><b>משחק אחד על אחד</b><br>נכנסים לחדר ההמתנה, וברגע שעוד שחקן מצטרף — מתחיל דו-קרב של 30 שאלות.</div></div>
+  <div class="rule-card"><span class="ricon">⚔️</span><div class="rtext"><b>משחק אחד על אחד</b><br>נכנסים לחדר ההמתנה, וברגע שעוד שחקן מצטרף — מתחיל דו-קרב של 20 שאלות.</div></div>
   <div class="rule-card"><span class="ricon">🗳️</span><div class="rtext"><b>שאלות סקר</b><br>אין תשובה נכונה — מי שבחר כמו הרוב מקבל את הנקודות.</div></div>
   <details class="rule-more">
     <summary>עוד פרטים</summary>
@@ -597,16 +597,16 @@ const firebaseConfig = {
 const QUESTION_MS = 11000;
 const BASE_POINTS = 10;
 const HOST_PIN = '2026'; // <-- שנו כאן לקוד סודי משלכם! רק מי שיודע אותו יוכל לפתוח חדר כמנחה
-const REVEAL_MS = 3000;
-const INTRO_MS = 4000;
-const STANDINGS_MS = 4000;
+const REVEAL_MS = 2200;
+const INTRO_MS = 2500;
+const STANDINGS_MS = 3000;
 const FAST_ANSWER_MS = 5000;
 const SOLO_COUNT = 30;
 const MIN_PLAYERS = 5;
 const MAX_PLAYERS = 100; // מספר השחקנים המרבי בחדר המתנה אחד // כשמגיעים למספר הזה המנחה מקבל התראה להתחיל
 const CURRENT_ROOM_DOC = 'current';
 const LOBBY_MAX_AGE_MS = 12*60*60*1000; // חדר המתנה ישן מ-12 שעות לא ממוחזר — נפתח חדש // מסמך שמצביע על החדר הפתוח כרגע — כך השחקנים נכנסים בלי קוד
-const SOLO_REVEAL_MS = 1800;
+const SOLO_REVEAL_MS = 1100;
 
 const T1='בודפשט והונגריה', T2='עולם תורני, הלכה ומנהג', T3='היסטוריה יהודית וגדולי ישראל', T4='ידע כללי, מדע וטבע', T5='מקרא, מסורת ופולקלור', T6='תחבורה, תעופה וחלל', T7='פוליטיקה ומדינה', T8='ערים בישראל', T9='ארצות העולם', T10='טיולים ונופים', T11='חשבון ומספרים', T12='מוזיקה ושירה יהודית', T13='אדמו"רים ורבנים', T14='סקרים מהמסע';
 
@@ -2279,9 +2279,9 @@ let groupStreak=0, groupStreakQ=-1, endedFxFor=null, hostRevealFxFor=-1;
 
 
 // ---------- אחד על אחד (דו-קרב) ----------
-// שני שחקנים בלי מנחה: הראשון ממתין בחדר ההמתנה, השני שמצטרף מתחיל מיד דו-קרב של 30 שאלות זהות לשניהם.
+// שני שחקנים בלי מנחה: הראשון ממתין בחדר ההמתנה, השני שמצטרף מתחיל מיד דו-קרב של 20 שאלות זהות לשניהם.
 // הכול נשמר במסמך אחד באוסף rooms (מזהה שמתחיל ב-D), והמצביע לחדר ההמתנה של הדו-קרב הוא rooms/duel_open.
-const DUEL_Q_COUNT = 30, DUEL_REVEAL_MS = 3200, DUEL_HB_MS = 4000, DUEL_HB_STALE = 15000;
+const DUEL_Q_COUNT = 20, DUEL_REVEAL_MS = 1600, DUEL_HB_MS = 4000, DUEL_HB_STALE = 15000;
 let duel = null;
 function duelPtrRef(){ return db.collection('rooms').doc('duel_open'); }
 function duelRef(){ return db.collection('rooms').doc(duel.code); }
@@ -2305,7 +2305,7 @@ function duelEntry(){
   const nm = duelSavedName();
   $('duel-body').innerHTML = `<div class="eyebrow">אחד על אחד</div>
     <h1>דו-קרב <span>⚔️ ראש בראש</span></h1>
-    <p class="sub">נכנסים לחדר ההמתנה, וברגע שעוד שחקן מצטרף — הדו-קרב מתחיל. 30 שאלות, מי שצובר יותר נקודות מנצח!</p>
+    <p class="sub">נכנסים לחדר ההמתנה, וברגע שעוד שחקן מצטרף — הדו-קרב מתחיל. 20 שאלות, מי שצובר יותר נקודות מנצח!</p>
     <input type="text" id="duel-name" placeholder="השם שלך" maxlength="24" value="${esc(nm)}">
     <button class="btn btn-duel btn-xl" id="duel-go">⚔️ חפשו לי יריב</button>
     <button class="btn btn-ghost" id="duel-back">חזרה</button>`;
@@ -2427,7 +2427,7 @@ function duelRender(){
       <div class="answers" id="d-answers">${q.a.map((t,k)=>`<button class="answer-btn" data-i="${k}"><span class="opt-letter">${letterFor(k)}</span><span class="opt-text">${esc(t)}</span></button>`).join('')}</div>
       <div class="center-note" id="d-note">מי שעונה נכון ומהר יותר — לוקח יותר נקודות!</div>`;
     body.querySelectorAll('.answer-btn').forEach(b=>b.addEventListener('click', ()=>duelAnswer(Number(b.dataset.i), b)));
-    mountQTimer(duel.startLocal, 'd-timer-ring', 'd-timer-num', 'd-clock-wrap', ()=>{ duelLockButtons(); duelLater(()=>duelAdvance('question', i), 1200); });
+    mountQTimer(duel.startLocal, 'd-timer-ring', 'd-timer-num', 'd-clock-wrap', ()=>{ duelLockButtons(); duelLater(()=>duelAdvance('question', i), 300); });
     return;
   }
   if(v.status==='reveal'){
@@ -2485,7 +2485,9 @@ function duelAnswer(k, btn){
   if(box) box.querySelectorAll('.answer-btn').forEach(b=>{ b.disabled=true; if(b===btn){ b.classList.add('selected'); b.dataset.tag='✓ הבחירה שלך'; pressFeedback(b); } });
   const note=$('d-note'); if(note) note.textContent='התשובה נשלחה ✓ — ממתינים ליריב...';
   const upd = {}; upd['a'+duel.slot+'_'+i] = {c:k, ms, p:pts}; if(pts) upd['s'+duel.slot] = FV.increment(pts);
-  duelRef().update(upd).catch(()=>{});
+  // אם היריב כבר ענה — עוברים מיד לחשיפה, בלי לחכות לסבב נוסף מול השרת
+  const oppDone = !!duel.v['a'+(3-duel.slot)+'_'+i];
+  duelRef().update(upd).then(()=>{ if(oppDone) duelAdvance('question', i); }).catch(()=>{});
 }
 // ---------- Solo best ----------
 function soloBest(){ return Number(localStorage.getItem('trivia_solo_best')||0); }
@@ -2496,7 +2498,7 @@ function renderLandingBest(){
   el.textContent = p ? ('🏅 ' + p.name + ' — השיא שלך: ' + b + ' נקודות') : '';
 }
 
-const APP_VERSION = '2026-10-07f';
+const APP_VERSION = '2026-10-07g';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -2632,7 +2634,12 @@ function watchAnswersIfNeeded(){
   unsubAnswers = answersRef().where('qIndex','==',curState.qIndex).onSnapshot(snap=>{
     answersForQ = snap.docs.map(d=>d.data());
     if(role!=='host') return;
-    if(curState.phase==='question') updateHostCount();
+    if(curState.phase==='question'){
+      updateHostCount();
+      // כולם ענו — חושפים מיד בלי לחכות שהטיימר ייגמר
+      const ids = new Set(answersForQ.map(a=>a.playerId));
+      if(playersOrder.length && playersOrder.every(id=>ids.has(id))) setTimeout(()=>{ if(curState.phase==='question' && curState.qIndex===answersQIndex) hostEndQuestion(); }, 700);
+    }
     else if(curState.phase==='reveal') renderHost();
   });
 }
