@@ -666,6 +666,60 @@ button,a,.btn,.answer-btn{touch-action:manipulation;}
   .solo-home .board-row{padding:6px 12px;margin-bottom:4px;}
   .solo-home .sh-act{min-height:52px;}
 }
+
+/* ===== מסך המשחק העצמאי — הכול במסך אחד, בגובה האמיתי של הטלפון ===== */
+.solo-home{min-height:0;height:calc(100vh - 46px - env(safe-area-inset-bottom,0px));height:calc(100dvh - 46px - env(safe-area-inset-bottom,0px));}
+#s-solo.screen:has(.solo-home){min-height:100dvh;padding-top:16px;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));}
+.solo-home > *{flex-shrink:0;}
+.solo-home .solo-lb{flex:1 1 auto;min-height:0;overflow-y:auto;scrollbar-width:none;margin:10px 0 0;display:flex;flex-direction:column;}
+.solo-home .solo-lb::-webkit-scrollbar{display:none;}
+.solo-home .board-row{flex-shrink:0;}
+/* כותרת עליונה גדולה יותר */
+.solo-home .sh-hero{gap:16px;margin:0 0 12px;}
+.solo-home .sh-badge{width:84px;height:84px;}
+.solo-home .sh-target{font-size:42px;}
+.solo-home .sh-hi1{font-size:21px;color:#E9CE7C;letter-spacing:.3px;animation:qFadeUp .5s ease-out .1s both;}
+.solo-home .sh-name{font-size:36px;line-height:1.1;animation:goldText 3s linear infinite, nameIn .7s cubic-bezier(.2,1.4,.4,1) .15s both;}
+.solo-home .sh-tag{display:block;font-size:16px;margin-top:4px;animation:qFadeUp .5s ease-out .35s both, tagGlow 2.6s ease-in-out 1.2s infinite;}
+@keyframes nameIn{0%{opacity:0;transform:translateX(-30px) scale(.9);filter:blur(4px);}100%{opacity:1;transform:none;filter:none;}}
+@keyframes tagGlow{0%,100%{text-shadow:0 0 0 transparent;}50%{text-shadow:0 0 12px rgba(143,220,232,.8);}}
+.solo-home .rec-label{font-size:15px;}
+.solo-home .rec-name{font-size:15px;}
+.solo-home .rec-num{font-size:36px;}
+/* קוביות הפעולות למטה — גדולות ומונפשות */
+.solo-home .sh-actions{gap:10px;margin-top:12px;animation:none;}
+.solo-home .sh-act{position:relative;overflow:hidden;min-height:78px;font-size:15.5px;gap:5px;border-radius:18px;
+  background:linear-gradient(160deg,rgba(52,58,70,.95),rgba(26,29,36,.98));border:2px solid #4A5160;
+  box-shadow:0 5px 0 #14161B,0 8px 18px rgba(0,0,0,.35);transition:transform .15s, box-shadow .15s;
+  animation:actPop .6s cubic-bezier(.2,1.6,.4,1) both;animation-delay:calc(.55s + var(--k,0) * 120ms);}
+.sh-act:nth-child(1){--k:0;} .sh-act:nth-child(2){--k:1;} .sh-act:nth-child(3){--k:2;}
+.solo-home .sh-act span{font-size:30px;display:inline-block;animation:actIcon 3.2s ease-in-out infinite;animation-delay:calc(1.4s + var(--k,0) * .5s);}
+.sh-act::after{content:"";position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(110deg,transparent,rgba(255,255,255,.14),transparent);animation:logoShine 5s ease-in-out infinite;animation-delay:calc(2s + var(--k,0) * .7s);}
+.solo-home .sh-act{white-space:nowrap;padding:6px 4px;}
+.sh-act[data-rules]{background:linear-gradient(160deg,rgba(70,58,26,.95),rgba(30,26,16,.98));border-color:var(--line-yellow);}
+.sh-act:active{transform:translateY(4px);box-shadow:0 1px 0 #14161B,0 3px 8px rgba(0,0,0,.35);}
+@keyframes actPop{0%{opacity:0;transform:translateY(40px) scale(.6) rotate(-6deg);}70%{opacity:1;transform:translateY(-4px) scale(1.04);}100%{opacity:1;transform:none;}}
+@keyframes actIcon{0%,82%,100%{transform:none;}86%{transform:rotate(-14deg) scale(1.18);}90%{transform:rotate(12deg) scale(1.18);}94%{transform:rotate(-6deg) scale(1.08);}}
+.solo-home.no-anim .sh-act,.solo-home.no-anim .sh-name,.solo-home.no-anim .sh-hi1{animation-delay:0s !important;}
+.solo-home.no-anim .sh-act{animation:none !important;}
+@media (max-height:780px){
+  .sh-badge,.solo-home .sh-badge{width:66px;height:66px;}
+  .sh-target,.solo-home .sh-target{font-size:32px;}
+  .sh-hi1{font-size:18px;}
+  .sh-name,.solo-home .sh-name{font-size:30px;}
+  .solo-home .sh-tag{display:block;font-size:14px;}
+  .solo-home .rec-num{font-size:30px;}
+  .solo-home .rec-label,.solo-home .rec-name{font-size:14px;}
+  .sh-act,.solo-home .sh-act{min-height:68px;}
+  .sh-act span{font-size:26px;}
+  .solo-home .board-row{padding:7px 12px;margin-bottom:5px;}
+}
+@media (max-height:680px){
+  .solo-home .sh-tag{display:none;}
+  .solo-home .rec-ic{display:none;}
+  .sh-act,.solo-home .sh-act{min-height:58px;}
+}
+@media (prefers-reduced-motion:reduce){.sh-act,.sh-act span,.sh-act::after,.sh-name,.sh-tag{animation:none !important;}}
 </style>
 </head>
 <body>
@@ -3410,7 +3464,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-07s';
+const APP_VERSION = '2026-10-07t';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -4186,7 +4240,7 @@ function renderSoloHome(){
     <div class="sh-actions">
       <button class="sh-act" data-rules="solo"><span>📖</span>הוראות</button>
       <button class="sh-act" id="sh-home"><span>🏠</span>מסך הבית</button>
-      <button class="sh-act" id="sh-switch"><span>🔄</span>החלפת משתתף</button>
+      <button class="sh-act" id="sh-switch"><span>🔄</span>החלפת שחקן</button>
     </div>
   </div>`;
   if(!again){ animateCount($('sh-mine'), mine, 900); if(g) animateCount($('sh-top'), gb, 1100); }
