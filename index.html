@@ -461,6 +461,33 @@ input.full-name{font-size:19px;padding:16px;text-align:center;margin-top:6px;}
 .mode-rules .rule-card .ricon{font-size:38px;line-height:1;}
 .mode-rules .rule-card .rtext{font-size:20px;line-height:1.6;}
 .mode-rules .rule-card .rtext b{font-size:22px;}
+
+/* לוגו שמתהפך סביב עצמו בכל נגיעה */
+.logo-flip{position:absolute;inset:0;z-index:1;transform-style:preserve-3d;transition:transform 1s cubic-bezier(.3,1.35,.5,1);cursor:pointer;}
+.logo-flip .logo-clip{backface-visibility:hidden;-webkit-backface-visibility:hidden;}
+.logo-flip .logo-clip.back{transform:rotateY(180deg);}
+/* כפתורי מסך הפתיחה נכנסים מהצד, אחד אחרי השני, מהר */
+#s-landing .btn,#s-landing .landing-foot{animation:slideInSide .55s cubic-bezier(.2,1.25,.4,1) both !important;}
+#btn-join-manual{animation-delay:.15s !important;}#btn-duel{animation-delay:.27s !important;}#btn-solo{animation-delay:.39s !important;}#s-landing .landing-foot{animation-delay:.5s !important;}
+@keyframes slideInSide{0%{opacity:0;transform:translateX(115%);}100%{opacity:1;transform:none;}}
+#btn-duel{--from:-115%;}
+.fx-ready #btn-join-manual,.fx-ready #btn-duel,.fx-ready #btn-solo{animation:ctaPulse 2.4s ease-out infinite !important;opacity:1;}
+.fx-letter{animation-delay:calc(.1s + var(--i) * 40ms) !important;}
+/* כפתור ההוראות ומסך ההוראות */
+.rules-btn{background:transparent;border:2px solid var(--line-yellow);color:var(--gold-light);font-size:18px;min-height:52px;margin-top:12px;}
+.rules-btn:active{transform:translateY(2px);}
+.rules-modal{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:12px;background:rgba(8,7,6,.86);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:fxFlash .2s reverse both;}
+.rules-modal.out{opacity:0;transition:opacity .2s;}
+.rules-sheet{width:min(520px,100%);background:linear-gradient(160deg,#2A2418,#141210);border:2px solid rgba(212,175,55,.6);border-radius:22px;padding:16px 16px 14px;box-shadow:0 20px 60px rgba(0,0,0,.6);transform-origin:50% 50%;}
+.rules-pop{width:min(520px,100%);display:flex;justify-content:center;animation:cardFlip .45s cubic-bezier(.2,1.2,.35,1) both;}
+.rules-head{font-family:'Frank Ruhl Libre',serif;font-weight:900;font-size:28px;color:var(--line-yellow);text-align:center;line-height:1.1;}
+.rules-sub{text-align:center;font-weight:700;color:var(--ink-dim);font-size:16px;margin:2px 0 10px;}
+.rules-row{display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,.04);border-radius:14px;padding:8px 12px;margin-bottom:7px;}
+.rules-row .ri{font-size:26px;line-height:1.2;flex-shrink:0;}
+.rules-row b{display:block;color:var(--line-yellow);font-size:18px;line-height:1.25;}
+.rules-row span{display:block;font-size:16px;line-height:1.4;color:var(--ink);}
+.rules-close{margin-top:6px;min-height:52px;font-size:18px;}
+.solo-lb{margin:14px 0 2px;}
 </style>
 </head>
 <body>
@@ -2222,7 +2249,19 @@ function fxSetupLanding(){
   });
   setTimeout(()=>land.classList.add('fx-ready'), 2500);
   const logo=land.querySelector('.logo-orb');
-  if(logo) logo.addEventListener('click', ()=>{ const c=fxCenter(logo); fxBurst(c.x,c.y,90,FX_GOLD,7); fxFlash(); });
+  if(logo){
+    // שני צדדים לאותו לוגו: מעטפת מסתובבת עם הלוגו מקדימה ועותק שלו מאחור
+    const clip = logo.querySelector('.logo-clip');
+    const flip = document.createElement('div'); flip.className='logo-flip';
+    clip.parentNode.insertBefore(flip, clip); flip.appendChild(clip);
+    const back = clip.cloneNode(true); back.classList.add('back'); const bi = back.querySelector('img'); if(bi) bi.removeAttribute('id');
+    flip.appendChild(back);
+    let turns = 0;
+    logo.addEventListener('click', ()=>{
+      turns++; flip.style.transform = `rotateY(${turns*360}deg)`;
+      const c=fxCenter(logo); fxBurst(c.x,c.y,90,FX_GOLD,7); beep(880,70); setTimeout(()=>beep(1320,90),160);
+    });
+  }
 }
 function fxOnScreen(id){
   fxInit(); if(!fx.cv) return;
@@ -2387,6 +2426,7 @@ function duelRender(){
         <h1>מחפשים <span>יריב<span class="duel-dots"></span></span></h1>
         <div class="radar"><div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div><div class="sweep"></div><div class="me-dot">${esc((duel.me.name||'?').charAt(0))}</div></div>
         <p class="sub" style="text-align:center;">שלום <b>${esc(duel.me.name)}</b>! ברגע שעוד שחקן ייכנס ל"אחד על אחד" — הדו-קרב יתחיל אוטומטית.</p>
+        ${modeRulesHtml('duel')}
         <button class="btn btn-ghost" id="duel-cancel">ביטול וחזרה</button>
       </div>`;
     $('duel-cancel').addEventListener('click', duelLeave);
@@ -2490,37 +2530,56 @@ function readFullName(id){
   return v;
 }
 // ---------- הוראות לכל סוג משחק — המספרים נלקחים מההגדרות של המשחק עצמו ----------
-function modeRulesHtml(mode){
-  const sec = QUESTION_MS/1000;
-  const score = `<b>ניקוד</b><br>תשובה נכונה = ${BASE_POINTS} נקודות, ועוד נקודה על כל שנייה שנשארה בטיימר. ככל שעונים מהר יותר — מקבלים יותר.`;
-  const R = {
-    group: [
-      ['📲', `<b>נכנסים</b><br>כותבים שם ושם משפחה ונכנסים לחדר ההמתנה — בלי קוד. אפשר עד ${MAX_PLAYERS} משתתפים יחד.`],
-      ['🎤', `<b>המנחה מתחיל</b><br>המשחק מתחיל כשמנחה המשחק לוחץ "התחל משחק". כשמצטרפים ${MIN_PLAYERS} שחקנים הוא מקבל התראה.`],
-      ['❓', `<b>${QUESTIONS.length} שאלות לפי נושאים</b><br>בודפשט, ידע כללי, הלכה ומנהג, תנ"ך, ארצות העולם, חשבון ושאלות סקר. בסוף כל נושא מוצגת טבלת הניקוד.`],
-      ['⚡', `<b>${sec} שניות לכל שאלה</b><br>אפשר להחליף תשובה כל עוד הזמן לא נגמר. כשכולם ענו — התשובה נחשפת מיד.`],
-      ['🏆', score],
-      ['🗳️', `<b>שאלות סקר</b><br>אין תשובה נכונה — מי שבחר כמו רוב המשתתפים מקבל את הנקודות.`],
-      ['⏸', `<b>עצירה</b><br>המנחה יכול לעצור באמצע שאלה, והטיימר ימשיך בדיוק מאותו מקום.`],
-      ['🎁', `<b>הפרס</b><br>מי שמסיים במקום הראשון זוכה בפרס מפנק!`]
-    ],
-    duel: [
-      ['⚔️', `<b>נכנסים</b><br>כותבים שם ושם משפחה ונכנסים לחדר ההמתנה. ברגע ששחקן נוסף נכנס ל"משחק אחד על אחד" — הדו-קרב מתחיל מיד, בלי מנחה.`],
-      ['❓', `<b>${DUEL_Q_COUNT} שאלות</b><br>אותן שאלות בדיוק לשניכם, באותו סדר.`],
-      ['⚡', `<b>${sec} שניות לכל שאלה</b><br>עונים פעם אחת — אי אפשר להחליף. כששניכם עניתם, עוברים מיד לחשיפה ולשאלה הבאה.`],
-      ['🏆', score + ` הניקוד של שניכם מוצג כל הזמן בראש המסך.`],
-      ['👑', `<b>מי מנצח?</b><br>מי שצבר יותר נקודות אחרי ${DUEL_Q_COUNT} השאלות. בסוף אפשר ללחוץ "דו-קרב נוסף".`]
-    ],
-    solo: [
-      ['📝', `<b>נרשמים פעם אחת</b><br>עם שם ושם משפחה — ומהפעם הבאה נכנסים ישר למשחק.`],
-      ['❓', `<b>${SOLO_COUNT} שאלות בכל סבב</b><br>שאלות אקראיות מתוך מאגר של ${SOLO_QUESTIONS.length.toLocaleString('en-US')}, ובכל סבב שאלות אחרות.`],
-      ['⚡', `<b>${sec} שניות לכל שאלה</b><br>עונים פעם אחת — אי אפשר להחליף.`],
-      ['🏆', score + ` כמה תשובות נכונות ברצף? 🔥 מקבלים תג רצף.`],
-      ['👑', `<b>שיאים</b><br>השיא האישי שלכם נשמר ומוצג מול שיא המשחק וטבלת השיאים של כל המשתתפים.`]
-    ]
-  };
-  return `<div class="mode-rules"><div class="mode-rules-title">📖 הוראות המשחק</div>${R[mode].map(([ic,t])=>`<div class="rule-card"><span class="ricon">${ic}</span><div class="rtext">${t}</div></div>`).join('')}</div>`;
+// הוראות קצרות לכל סוג משחק — המספרים נלקחים מההגדרות של המשחק עצמו, כך שתמיד יתאימו
+function modeRules(mode){
+  const sec = QUESTION_MS/1000, pts = `נכונה = ${BASE_POINTS} נק' + נקודה לכל שנייה שנשארה`;
+  return {
+    group: {title:'משחק קבוצתי 👥', items:[
+      ['📲','נכנסים',`שם ושם משפחה ← חדר ההמתנה, בלי קוד. עד ${MAX_PLAYERS} משתתפים.`],
+      ['🎤','המנחה מתחיל',`לוחץ "התחל משחק" — ומקבל התראה כשיש ${MIN_PLAYERS} שחקנים.`],
+      ['❓',`${QUESTIONS.length} שאלות בנושאים`,'בסוף כל נושא מוצגת טבלת הניקוד.'],
+      ['⚡',`${sec} שניות לשאלה`,'אפשר להחליף תשובה עד סוף הזמן. כשכולם ענו — נחשף מיד.'],
+      ['🏆','ניקוד', pts + '.'],
+      ['🗳️','שאלות סקר','אין תשובה נכונה — מי שבחר כמו הרוב מקבל נקודות.'],
+      ['⏸','עצירה','המנחה יכול לעצור, והטיימר ממשיך מאותו מקום.'],
+      ['🎁','הפרס','למי שמסיים במקום הראשון!']
+    ]},
+    duel: {title:'משחק אחד על אחד ⚔️', items:[
+      ['🚪','נכנסים','שם ושם משפחה ← חדר ההמתנה. כשעוד שחקן נכנס — הדו-קרב מתחיל מיד, בלי מנחה.'],
+      ['❓',`${DUEL_Q_COUNT} שאלות`,'אותן שאלות בדיוק לשניכם, באותו סדר.'],
+      ['⚡',`${sec} שניות לשאלה`,'עונים פעם אחת. כששניכם עניתם — עוברים מיד הלאה.'],
+      ['🏆','ניקוד', pts + '. הניקוד של שניכם מוצג כל הזמן.'],
+      ['👑','מי מנצח?',`מי שצבר יותר נקודות אחרי ${DUEL_Q_COUNT} שאלות. אפשר "דו-קרב נוסף".`]
+    ]},
+    solo: {title:'משחק עצמאי 🎯', items:[
+      ['📝','נרשמים פעם אחת','עם שם ושם משפחה — ומהפעם הבאה נכנסים ישר.'],
+      ['❓',`${SOLO_COUNT} שאלות בסבב`,`אקראיות מתוך ${SOLO_QUESTIONS.length.toLocaleString('en-US')}, ובכל סבב שאלות אחרות.`],
+      ['⚡',`${sec} שניות לשאלה`,'עונים פעם אחת — אי אפשר להחליף.'],
+      ['🏆','ניקוד', pts + '. תשובות נכונות ברצף? 🔥 תג רצף.'],
+      ['👑','שיאים','השיא האישי שלכם מול שיא המשחק וטבלת השיאים של כולם.']
+    ]}
+  }[mode];
 }
+function modeRulesHtml(mode){ return `<button class="btn rules-btn" data-rules="${mode}">📖 הוראות המשחק</button>`; }
+// הוראות נפתחות כמסך אחד, בלי גלילה — אם המסך קטן, התוכן מוקטן כדי שייכנס כולו
+function openRules(mode){
+  const r = modeRules(mode); if(!r) return;
+  const ov = document.createElement('div'); ov.className='rules-modal';
+  ov.innerHTML = `<div class="rules-pop"><div class="rules-sheet">
+      <div class="rules-head">📖 הוראות המשחק</div>
+      <div class="rules-sub">${r.title}</div>
+      ${r.items.map(([ic,t,d])=>`<div class="rules-row"><span class="ri">${ic}</span><div><b>${t}</b><span>${d}</span></div></div>`).join('')}
+      <button class="btn btn-primary rules-close">הבנתי, סגירה</button>
+    </div></div>`;
+  document.body.appendChild(ov);
+  const sheet = ov.querySelector('.rules-sheet');
+  const fit = ()=>{ sheet.style.transform=''; const avail = innerHeight - 24, h = sheet.scrollHeight; if(h > avail) sheet.style.transform = `scale(${(avail/h).toFixed(3)})`; };
+  fit(); addEventListener('resize', fit);
+  const close = ()=>{ removeEventListener('resize', fit); ov.classList.add('out'); setTimeout(()=>ov.remove(), 220); };
+  ov.querySelector('.rules-close').addEventListener('click', close);
+  ov.addEventListener('click', e=>{ if(e.target===ov) close(); });
+}
+document.addEventListener('click', e=>{ const b = e.target.closest && e.target.closest('[data-rules]'); if(b) openRules(b.dataset.rules); });
 // ---------- Solo best ----------
 function soloBest(){ return Number(localStorage.getItem('trivia_solo_best')||0); }
 function renderLandingBest(){
@@ -2530,7 +2589,7 @@ function renderLandingBest(){
   el.textContent = p ? ('🏅 ' + p.name + ' — השיא שלך: ' + b + ' נקודות') : '';
 }
 
-const APP_VERSION = '2026-10-07h';
+const APP_VERSION = '2026-10-07i';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -3038,6 +3097,7 @@ function renderPlayer(){
         <div class="wait-sub">שלום <b>${esc(me.name||playerName)}</b>, אתם בפנים ✓<br>כשיצטרפו ${MIN_PLAYERS} שחקנים, מנחה המשחק יתחיל את המשחק.</div>
       </div>
       ${lobbyCrowdHtml(waiting, playerId)}
+      ${modeRulesHtml('group')}
       <div class="wait-card">
         <div class="wait-card-head">👥 <b>${waiting.length}</b> ממתינים בחדר ההמתנה (כולל אותך)</div>
         <div class="goal-track"><div style="width:${Math.min(100, Math.round(waiting.length/MIN_PLAYERS*100))}%"></div></div>
@@ -3232,11 +3292,11 @@ function renderSoloHome(){
       <div class="rec-card"><div class="rec-label">🏅 השיא האישי שלך</div><div class="rec-num">${mine}</div></div>
       <div class="rec-card top"><div class="rec-label">👑 שיא המשחק</div><div class="rec-num">${g ? g.best : (soloTopLoaded ? '—' : '...')}</div><div class="rec-name">${g ? (iHold ? 'זה אתם! 🎉' : esc(g.name)) : (soloTopLoaded ? 'עדיין לא נקבע' : 'טוען...')}</div></div>
     </div>
-    ${soloLeaderboardHtml()}
     <button class="btn btn-primary btn-xl" id="sh-start" style="margin-top:10px;">▶ התחילו סבב חדש</button>
+    <div class="solo-lb">${soloLeaderboardHtml()}</div>
+    ${modeRulesHtml('solo')}
     <button class="btn btn-ghost" id="sh-home">חזרה למסך הבית</button>
-    <button class="skip-btn" id="sh-switch">לא ${esc(p.name)}? החלפת משתתף</button>
-    ${modeRulesHtml('solo')}`;
+    <button class="skip-btn" id="sh-switch">לא ${esc(p.name)}? החלפת משתתף</button>`;
   $('sh-start').addEventListener('click', soloStart);
   $('sh-home').addEventListener('click', soloQuit);
   $('sh-switch').addEventListener('click', soloSwitchUser);
