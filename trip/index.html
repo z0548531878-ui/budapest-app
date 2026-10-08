@@ -848,6 +848,29 @@ a.pill{text-decoration:none!important}
 .fx-pax{display:block;width:100%;text-align:right;margin-top:8px;padding:10px 4px 4px;border:0;border-top:1px solid rgba(214,178,98,.15);background:none;color:#e9c46f;font-weight:800;font-size:14px}
 
 a.cube{text-decoration:none;color:inherit}
+
+/* ===== home v2: compact boarding pass, bigger checkerboard cubes ===== */
+.hello{margin:10px 2px 0!important}.hello .greet b{font-size:22px!important}
+.pass{margin-top:10px!important}
+.pass-main{padding:11px 13px!important}
+.pass-top{font-size:12.5px!important}
+.pass-route{margin-top:4px!important}.pass-route b{font-size:27px!important}.pass-route span{font-size:12.5px!important}
+.pass .days{margin-top:8px!important;gap:4px!important}
+.pass .days>div{padding:4px 2px!important;font-size:10.5px!important;line-height:1.2!important;border-radius:10px!important}
+.pass .days b{font-size:12.5px!important}
+.pass-stub{flex-basis:118px!important}.pass-stub .big{font-size:46px!important}
+.cdg{margin-top:4px!important}.cdg b{font-size:20px!important}
+.cubes{gap:9px!important}
+.cubes>.cube{min-height:116px!important;padding:13px 11px!important;border-radius:20px!important}
+.cubes>.cube b{font-size:16px!important}.cubes>.cube small{font-size:12px!important}
+.cubes>.cube .ci{width:38px!important;height:38px!important;border-radius:12px!important}.cubes>.cube .ci svg{width:21px!important;height:21px!important}
+.cubes>.cube:nth-child(odd){background:var(--goldbtn)!important;color:#15110a!important}
+.cubes>.cube:nth-child(odd) small{color:#3d2f12!important;opacity:1!important}
+.cubes>.cube:nth-child(odd) .ci{background:#15110a!important;color:#f0d28c!important}
+.cubes>.cube:nth-child(even){background:linear-gradient(160deg,#1d1912,#0e0c09)!important;color:var(--ink)!important}
+.cubes>.cube:nth-child(even) small{color:var(--muted)!important}
+.cubes>.cube:nth-child(even) .ci{background:var(--goldbtn)!important;color:#15110a!important}
+.home-cubes .sec-h{margin-top:4px}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -1730,7 +1753,7 @@ const TILE_DEFS=()=>{const pk=S.packing,pd=pk.filter(x=>x.done).length,rk=S.room
  ['people','people','משתתפים',`${S.participants.length} נוסעים`,'c1'],
  ['passports','people','דרכונים',`${S.participants.filter(p=>p.passport).length}/${S.participants.length}`,'c2'],
  ['claude','spark','מ-Claude',`${S.claude.filter(x=>x.status==='פתוח').length} פתוחים`,'c3'],
- ['packing','box','רשימת קניות',`${pd}/${pk.length}`,'c4'],
+ ['packing','box','קניות',`${pd}/${pk.length}`,'c4'],
  ['rooms','bed','חדרים',`${S.rooms.length} · ${rk} עם סט`,'c5'],
  ['flights','plane','טיסות',`${S.flights.length} טיסות`,'c6'],
  ['messages','chat','הודעות',`${S.messages.filter(m=>m.sent).length}/${S.messages.length} נשלחו`,'c7'],
@@ -1739,7 +1762,8 @@ const TILE_DEFS=()=>{const pk=S.packing,pd=pk.filter(x=>x.done).length,rk=S.room
  ['trivia','spark','טריוויה','משחק לאוטובוס','c10'],
  ['roles','people','תפקידים',`${Object.keys(rolesMap()).length} עם תפקיד`,'c11'],
  ]};
-const homeTiles=()=>`<section class="sec"><div class="sec-h"><h3>הכל במקום אחד</h3></div><div class="cubes">${TILE_DEFS().map(([k,ic,l,s,c],i)=>(k==='trivia'?`<a class="cube ${c}" href="../" target="_blank" rel="noopener" style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></a>`:`<button class="cube ${c}" data-go="more" data-opts='{"sub":"${k}"}' style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></button>`)).join('')}</div></section>`;
+const TORD=['program','people','roles','flights','packing','rooms','passports','messages','claude','files','contacts','trivia'];
+const homeTiles=()=>`<section class="sec"><div class="sec-h"><h3>הכל במקום אחד</h3></div><div class="cubes">${TILE_DEFS().sort((a,b)=>TORD.indexOf(a[0])-TORD.indexOf(b[0])).map(([k,ic,l,s,c],i)=>(k==='trivia'?`<a class="cube ${c}" href="../" target="_blank" rel="noopener" style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></a>`:`<button class="cube ${c}" data-go="more" data-opts='{"sub":"${k}"}' style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></button>`)).join('')}</div></section>`;
 
 
 const PROG=[
