@@ -900,13 +900,13 @@ body.guest.prevmode{}
 .prevbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px;padding:9px 12px;border-radius:14px;background:rgba(214,178,98,.12);border:1px dashed rgba(214,178,98,.5);color:#e9c46f;font-weight:800;font-size:13.5px}
 .prevbar button{border:0;border-radius:10px;padding:7px 12px;font-weight:900;color:#15110a;background:linear-gradient(180deg,#f6dc93,#c99a3d)}
 body.guest .nav-in .ind{display:none}
-body.guest .nav-in{display:grid;grid-template-columns:repeat(5,1fr)}
+body.guest .nav-in{display:grid;grid-template-columns:repeat(4,1fr)}
 .hello{display:flex;align-items:center;justify-content:space-between}
 .gstat{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
 .gs{border-radius:18px;padding:12px 14px;border:1px solid rgba(214,178,98,.25);background:linear-gradient(160deg,#17140f,#0d0c09);display:grid;gap:2px}
 .gs small{color:#a69a7d;font-size:12.5px;font-weight:700}.gs b{font-size:18px}.gs.ok b{color:#7fd1a5}.gs.bad b{color:#ffb46a}.gs .num{font-size:13px;color:#cfc3a6}
 .gcubes{grid-template-columns:1fr 1fr!important}
-.gcubes .gtriv{grid-column:1/-1;min-height:96px!important}
+
 .cube.locked{opacity:.6;filter:grayscale(.5)}
 body.guest .fx{margin:12px 0}
 </style>
@@ -2202,7 +2202,7 @@ function showGate(step){
   document.getElementById('gg').onclick=()=>showGate('guest');document.getElementById('go').onclick=()=>showGate('org');
 }
 /* guest screens: read-only, no phones / payments / passports */
-const GNAV=[['gh','בית','home'],['gl','לוח המסע','file'],['gp','משתתפים','people'],['gr','חדרים','bed'],['gs','לוז','sched']];
+const GNAV=[['gh','בית','home'],['gl','לוח המסע','file'],['gp','משתתפים','people'],['gr','חדרים','bed']];
 let GTAB='gh';
 const meG=()=>{if(PREV&&ROLE==='org'){const n=(typeof TEAM_FULL!=='undefined'&&TEAM_FULL[ME])||ME;return S.participants.find(p=>p.name===n)||null}return S.participants.find(p=>p._id===ROLE.slice(6))||null};
 const landingMs=()=>{const f=S.flights.find(f=>f._id==='f1')||S.flights.find(f=>f.dir==='הלוך');if(!f)return 0;const a=(f.arr||'12:00').replace(/[^\d:]/g,'').padStart(5,'0');return new Date(`${f.date||'2026-11-19'}T${a}:00+01:00`).getTime()};
@@ -2234,8 +2234,8 @@ function guestHTML(){
       <div class="gs ${paid?'ok':'bad'}"><small>תשלום</small><b>${!me?'—':me.status==='פטור'?'פטור':paid?'שולם ✓':'טרם שולם'}</b>${me&&!paid&&+me.amount?`<span class="num">${ils(me.amount)}</span>`:''}</div>
       <div class="gs ${me&&me.passport?'ok':'bad'}"><small>דרכון</small><b>${me&&me.passport?'התקבל ✓':'טרם התקבל'}</b></div></div>
      <section class="sec"><div class="sec-h"><h3>הכל במקום אחד</h3></div><div class="cubes gcubes">
-      ${cube('gl','file','לוח המסע','תוכנית מלאה',0)}${cube('gp','people','משתתפים','שמות וטלפונים',1)}${cube('gr','bed','חדרי מלון','מי איפה',2)}${cube('gs','sched','לוז המסע','יום אחר יום',3)}
-      ${open?`<a class="cube gtriv" href="../" target="_blank" rel="noopener" style="--i:4"><span class="ci">${I.spark}</span><b>טריוויה</b><small>משחק לאוטובוס · פתוח!</small></a>`:`<button class="cube gtriv locked" data-glock style="--i:4"><span class="ci">🔒</span><b>טריוויה</b><small>ייפתח עם הנחיתה בבודפשט</small></button>`}
+      ${cube('gl','file','לוח המסע','תוכנית מלאה',0)}${cube('gp','people','משתתפים','שמות וטלפונים',1)}${cube('gr','bed','חדרי מלון','מי איפה',2)}
+      ${open?`<a class="cube gtriv" href="../" target="_blank" rel="noopener" style="--i:3"><span class="ci">${I.spark}</span><b>טריוויה</b><small>משחק לאוטובוס · פתוח!</small></a>`:`<button class="cube gtriv locked" data-glock style="--i:3"><span class="ci">🔒</span><b>טריוויה</b><small>ייפתח עם הנחיתה בבודפשט</small></button>`}
      </div></section>
      ${myFlightCard(me,'חזור')}`}
   if(GTAB==='gl'){const h=SUB.program().replace(/<div class="page-title">[\s\S]*?<\/div>/,'');return head('לוח המסע')+h}
@@ -2279,7 +2279,7 @@ render(true);
 </script>
 
 <script>
-(function(){var B='d9fa46c2bc';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B='c9595a0d8c';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
