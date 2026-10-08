@@ -935,9 +935,9 @@ function moneySum(head){
   const m=money(), payers=S.participants.filter(x=>x.status!=='פטור'), pct=(a,b)=>b?Math.round(a/b*100):0;
   const g={};S.expenses.forEach(e=>{const k=e.category||'אחר';g[k]=g[k]||{est:0,paid:0,n:0};g[k].est+=+e.estimate||0;g[k].paid+=+e.paid||0;g[k].n++});
   const cats=Object.entries(g).sort((a,b)=>b[1].est-a[1].est);
-  const pp=payers.length?Math.round(m.est/payers.length):0, avg=payers.length?Math.round(m.pExp/payers.length):0;
+  const pp=payers.length?Math.round(m.est/payers.length):0, avg=payers.length?Math.round(payers.reduce((a,x)=>a+(+x.amount||0),0)/payers.length):0, cov=S.participants.filter(x=>x.status==='פטור').reduce((a,x)=>a+(+x.amount||0),0);
   const bar=(a,b,cls)=>`<div class="mbar ${cls||''}"><i data-w="${pct(a,b)}%" style="width:0"></i></div>`;
-  const inc=[['משתתפים',m.pExp,m.pIn,`${payers.length} משלמים · ממוצע ${ils(avg)}`,'participants'],['תרומות',m.dAll,m.dIn,`${S.donations.length} תורמים`,'donations']];
+  const inc=[['משתתפים',m.pExp,m.pIn,`${payers.length} משלמים · ממוצע ${ils(avg)}${cov?` · כולל ${ils(cov)} של הרב והרבנית, מכוסה מהקופה`:''}`,'participants'],['תרומות',m.dAll,m.dIn,`${S.donations.length} תורמים`,'donations']];
   return head+`<div class="msum"><div class="mh"><span>הכנסות</span><b class="num pos">${ils(m.income)}</b><small>נכנס כבר <span class="num">${ils(m.pIn+m.dIn)}</span> · <span class="num">${pct(m.pIn+m.dIn,m.income)}%</span></small></div>
    ${bar(m.pIn+m.dIn,m.income,'ok')}
    ${inc.map(([l,tot,got,sub,seg])=>`<button class="mline" data-seg="${seg}"><span class="main"><b>${l}</b><small>${sub}</small></span><span class="v"><b class="num">${ils(tot)}</b><small class="num">${pct(tot,m.income)}% מההכנסות · התקבל ${ils(got)}</small></span></button>${bar(got,tot,'ok thin')}`).join('')}</div>
@@ -1001,7 +1001,7 @@ function money(){
   const sum=(a,f)=>a.reduce((s,x)=>s+(+f(x)||0),0);
   const est=sum(S.expenses,x=>x.estimate), fin=sum(S.expenses.filter(isFinal),x=>x.estimate), out=sum(S.expenses,x=>x.paid);
   const payers=S.participants.filter(x=>x.status!=='פטור');
-  const pExp=sum(payers,x=>x.amount), pIn=sum(payers.filter(x=>x.status==='שולם'),x=>x.amount);
+  const pExp=sum(S.participants,x=>x.amount), pIn=sum(payers.filter(x=>x.status==='שולם'),x=>x.amount);
   const unpaid=payers.filter(x=>x.status!=='שולם');
   const dAll=sum(S.donations,x=>x.amount), dIn=sum(S.donations.filter(x=>x.status==='התקבל'),x=>x.amount);
   return {est,fin,out,pExp,pIn,unpaid,dAll,dIn,income:pExp+dAll,gap:pExp+dAll-est};
