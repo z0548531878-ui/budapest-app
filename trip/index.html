@@ -1045,6 +1045,22 @@ body.guest .greet small{font-size:16px}body.guest .greet b{font-size:30px}
 .place .pl-t b{font-size:21px}.pl-a .btn{min-height:50px}
 .gtodo b{font-size:16px}.gtodo button{font-size:15.5px;padding:10px 16px}
 
+/* ---- centred buttons ---- */
+body.guest .btn,body.guest button.btn,body.guest a.btn{display:inline-flex;align-items:center;justify-content:center;text-align:center;gap:8px}
+.gta .btn,.gta.wrap .btn{justify-content:center;text-align:center}
+.gback,.gback.bot{justify-content:center;text-align:center;gap:10px;font-size:19px}.gback b{font-weight:900}
+.gback span{display:inline-block;transform:translateY(-1px);font-size:30px}
+.hbtn{justify-content:center;gap:14px}.hbtn .gtx{flex:0 1 auto;text-align:center}.hbtn .gch{display:none}
+.hbtn .gic{flex:none}
+.gbtn,.gbtn.alt,.glink{text-align:center}
+.gtodo button,.pill,.chip,.seg button{text-align:center}
+.gc{align-items:center;text-align:center}.gc-i{inset-inline-start:50%;margin-inline-start:-30px;top:16px}
+.gcb>.gc.gtrv,.gcb>.gc:nth-child(9){align-items:center;padding-inline-start:14px;justify-content:flex-end}
+.gcb>.gc.gtrv .gc-i,.gcb>.gc:nth-child(9) .gc-i{position:absolute}
+.gc-t,.gc-s{text-align:center;width:100%}
+
+.gcb>.gc.gtrv,.gcb>.gc:nth-child(9){min-height:176px!important}
+
 /* ===== per-screen entrances + per-button motion ===== */
 @media (prefers-reduced-motion:no-preference){
 @keyframes kRise{from{opacity:0;transform:translate3d(0,26px,0) scale(.97)}}
@@ -2518,18 +2534,18 @@ function taskCard(t,mode,ppl){
   const pending=t.claimStatus==='ממתין לאישור', done=t.status==='בוצע';
   return `<div class="gtask ${done?'done':''}"><div class="gth"><b>${esc(t.title)}</b>${t.due?`<span class="pill p-mute num">עד ${fmtDate(t.due)}</span>`:''}</div>
    ${t.notes?`<p>${esc(t.notes)}</p>`:''}
-   <div class="gta">${mode==='open'?(pending?`<span class="pill p-warn">ממתין לאישור${t.claimBy?' · '+esc(firstN(t.claimBy)):''}</span>`:`<button class="btn primary" data-g-claim="${t._id}">אני לוקח את זה</button>`)
-    :pending?`<span class="pill p-warn">ממתין לאישור</span>`:done?`<span class="pill p-ok">בוצעה ✓</span><button class="btn ghost" data-g-undo="${t._id}">החזרה</button>`:`<button class="btn primary" data-g-done="${t._id}">סיימתי ✓</button>`}</div></div>`}
+   <div class="gta">${mode==='open'?(pending?`<span class="pill p-warn">ממתין לאישור${t.claimBy?' · '+esc(firstN(t.claimBy)):''}</span>`:`<button class="btn primary" data-g-claim="${t._id}">✋ אני לוקח את זה</button>`)
+    :pending?`<span class="pill p-warn">ממתין לאישור</span>`:done?`<span class="pill p-ok">בוצעה ✓</span><button class="btn ghost" data-g-undo="${t._id}">↩ ביטול</button>`:`<button class="btn primary" data-g-done="${t._id}">✅ סיימתי</button>`}</div></div>`}
 
 const hotelCard=()=>`<div class="hotel"><div class="ht-h"><span class="ht-ic">${IX.pin}</span><div><small>המלון שלנו</small><b>${HOTEL.name}</b><span class="en ltr">${HOTEL.en}</span></div></div>
      <a class="btn primary navbtn" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener">${IX.nav}<span>ניווט למלון בגוגל מפס</span></a>
-     <a class="btn ghost" href="${mapsFind(HOTEL.q)}" target="_blank" rel="noopener" style="width:100%;justify-content:center;margin-top:8px">הצגת המלון במפה</a>
+     <a class="btn ghost" href="${mapsFind(HOTEL.q)}" target="_blank" rel="noopener" style="width:100%;justify-content:center;margin-top:8px">📍 הצגת המלון במפה</a>
      <p class="note">יצאתם ולא בטוחים איך חוזרים? לחצו על הכפתור, ובחרו הליכה.</p></div>`;
-function guestHTML(){const h=guestHTML0();return GTAB==='gh'?h:h+`<button class="gback bot" data-gnav="gh"><span>›</span> חזרה לבית</button>`}
+function guestHTML(){const h=guestHTML0();return GTAB==='gh'?h:h+`<button class="gback bot" data-gnav="gh"><span>›</span><b>חזרה למסך הבית</b></button>`}
 function guestHTML0(){
   const me=meG(), ppl=coupleOf(me);
   const pv=isPrevOrg()?`<div class="prevbar">👁 כך זה נראה למשתתפים<button id="prevx">חזרה למארגן</button></div>`:'';
-  const head=(t,extra='')=>pv+`<button class="gback" data-gnav="gh"><span>›</span> חזרה לבית</button><div class="page-title"><h2>${t}</h2>${extra}</div>`;
+  const head=(t,extra='')=>pv+`<button class="gback" data-gnav="gh"><span>›</span><b>חזרה למסך הבית</b></button><div class="page-title"><h2>${t}</h2>${extra}</div>`;
   if(GTAB==='gh'){
     const open=triviaOpen(), og=flightGroups(ppl,'הלוך'), openT=S.tasks.filter(t=>t.open==='כן'&&t.status!=='בוצע'&&!t.owner&&!t.claimBy).length, mineT=myTasks(ppl).filter(t=>t.status!=='בוצע').length, un=annUnread();
     const first=og[0]&&og[0].f, passBlock=first?passHTML(first):(og[0]&&og[0].solo?'<div class="fx"><div class="fx-h"><b>✈ הטיסה שלכם · הלוך</b></div><div class="fx-note">מזמינים טיסה בעצמם</div></div>':'');
@@ -2576,7 +2592,7 @@ function guestHTML0(){
     const cnt={all:rows.length,m:rows.filter(p=>p.gender==='גבר').length,f:rows.filter(p=>p.gender==='אישה').length};
     if(GGEN==='m')rows=rows.filter(p=>p.gender==='גבר');if(GGEN==='f')rows=rows.filter(p=>p.gender==='אישה');
     if(GQ)rows=rows.filter(p=>p.name.includes(GQ));
-    const prow=p=>`<div class="row">${avatarHTML(p)}<div class="main"><div class="t">${esc(p.name)}</div>${p.phone?`<div class="m"><span class="num ltr">${esc(p.phone)}</span></div>`:''}</div>${p.phone?`<a class="pill p-ok" href="${waLink(p.phone)}" target="_blank" rel="noopener">וואטסאפ</a>`:''}</div>`;
+    const prow=p=>`<div class="row">${avatarHTML(p)}<div class="main"><div class="t">${esc(p.name)}</div>${p.phone?`<div class="m"><span class="num ltr">${esc(p.phone)}</span></div>`:''}</div>${p.phone?`<a class="pill p-ok" href="${waLink(p.phone)}" target="_blank" rel="noopener">💬 וואטסאפ</a>`:''}</div>`;
     const grouped=[];for(let i=0;i<rows.length;i++){const p=rows[i],q=rows[i+1];if(q&&p.spouse===q._id){grouped.push(`<div class="cpl">${prow(p)}${prow(q)}</div>`);i++}else grouped.push(prow(p))}
     const chip=(k,l)=>`<button class="chip" data-ggen="${k}" aria-pressed="${GGEN===k}">${l} <span class="num">${cnt[k]}</span></button>`;
     return head('משתתפי המסע',`<span class="cnt num">${cnt.all}</span>`)+`<div class="chips">${chip('all','כולם')}${chip('m','גברים')}${chip('f','נשים')}</div>
@@ -2606,14 +2622,14 @@ function guestHTML0(){
     return head('בקשה אישית')+`<p class="note">צריכים משהו מיוחד? מנה מיוחדת, שינוי בחדר, עזרה בהליכה? כתבו כאן והמארגנים יענו. תראו כאן אם זה בטיפול, בוצע, או שלא הצלחנו.</p>
      <div class="opts reqcats">${cats.map(c=>`<button type="button" class="opt" data-gcat="${c}" aria-pressed="${DRAFT.reqCat===c}">${c}</button>`).join('')}</div>
      <textarea class="note-in" id="reqText" data-draft="reqText" placeholder="מה צריך?" style="min-height:110px">${esc(DRAFT.reqText)}</textarea>
-     <button class="btn primary" data-g-req style="width:100%;margin-top:10px">שליחה למארגנים</button>
+     <button class="btn primary" data-g-req style="width:100%;margin-top:10px">📨 שליחה למארגנים</button>
      ${mineR.length?`<div class="ghead"><span>הבקשות שלכם</span><span class="num">${mineR.length}</span></div><div class="annlist">${mineR.map(r=>{const s=st[r.status]||st['חדש'];return `<div class="ann"><div class="ah"><b>${esc(r.cat||'אחר')}</b><span class="pill ${s[0]}">${s[1]}</span></div><p>${esc(r.text||'').replace(/\n/g,'<br>')}</p>${r.note?`<div class="rnote">מהמארגנים: ${esc(r.note)}</div>`:''}<small>${tsStr(r.ts)}</small></div>`}).join('')}</div>`:''}`}
   if(GTAB==='gf'){
     const wa=(p)=>waLink(orgPhone(),`שלום, מצורף צילום הדרכון של ${p.name} למסע לבודפשט`);
     return head('הפרופיל שלי')+ppl.map(p=>`<div class="profcard">${avatarHTML(p,'big')}<div class="pmain"><b>${esc(p.name)}</b>
        <button class="btn" data-g-photo="${p._id}">${p.photo?'📷 החלפת תמונה':'📷 העלאת תמונה'}</button></div></div>
       <div class="passbox ${p.passport?'ok':''}"><div class="pb-h"><b>דרכון · ${esc(firstN(p.name))}</b><span class="pill ${p.passport?'p-ok':'p-warn'}">${p.passport?'התקבל ✓':'טרם התקבל'}</span></div>
-       ${p.passport?'<p>הדרכון התקבל אצל המארגנים. תודה!</p>':`<p>צלמו את עמוד הפרטים בדרכון ושלחו לשלומי בוואטסאפ. אחרי שנקבל, יופיע כאן ✓</p><a class="btn primary" href="${wa(p)}" target="_blank" rel="noopener" style="width:100%;justify-content:center">שליחת הדרכון בוואטסאפ</a>`}</div>`).join('')+
+       ${p.passport?'<p>הדרכון התקבל אצל המארגנים. תודה!</p>':`<p>צלמו את עמוד הפרטים בדרכון ושלחו לשלומי בוואטסאפ. אחרי שנקבל, יופיע כאן ✓</p><a class="btn primary" href="${wa(p)}" target="_blank" rel="noopener" style="width:100%;justify-content:center">📤 שליחת הדרכון בוואטסאפ</a>`}</div>`).join('')+
       `<p class="note">התמונה תופיע ליד השם שלכם אצל כולם. עד שתעלו, יופיע סמל נעילה.</p>`}
   if(GTAB==='gk'){
     const rate=(()=>{try{return +localStorage.getItem('huf')||100}catch(e){return 100}})();
@@ -2873,7 +2889,7 @@ render(true);
 </script>
 
 <script>
-(function(){var B='9ebf94bdf4';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B='293cf944fd';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
