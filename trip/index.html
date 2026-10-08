@@ -734,6 +734,35 @@ body{background:radial-gradient(120% 60% at 50% -10%,#221c11 0%,#0b0a08 60%) no-
 .cdg i{font-style:normal;font-weight:900;color:#d9b25f;font-size:17px;line-height:1.2}
 @media (prefers-reduced-motion:no-preference){.cdg b.tk{animation:cdflip .45s cubic-bezier(.2,.8,.2,1)}@keyframes cdflip{0%{transform:translateY(-55%) scale(.9);opacity:0}100%{transform:none;opacity:1}}
  .cdg i{animation:blink 1s steps(2) infinite}@keyframes blink{50%{opacity:.35}}}
+
+/* ===== sharpness: no layer-rasterizing transforms on content, solid gold text, crisp fonts ===== */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+.gt,.page-title h2,.greet b,.sheet h3,.sec-h h3,.top h1,.pass-stub .big,.splash span{background:none!important;-webkit-background-clip:border-box!important;background-clip:border-box!important;color:#e9c46f!important;-webkit-text-fill-color:#e9c46f!important;text-shadow:0 1px 0 rgba(0,0,0,.35)}
+.pass-stub .big{color:#f0d28c!important;-webkit-text-fill-color:#f0d28c!important}
+@media (prefers-reduced-motion:no-preference){
+  .enter>*{animation:fadeOnly .35s ease-out both!important}
+  .card .row,.tiles .tile,.cashcard,.parch .pi{animation:fadeOnly .35s ease-out both!important}
+  .cube{animation:fadeOnly .4s ease-out both!important;animation-delay:calc(var(--i)*35ms)!important}
+  @keyframes fadeOnly{from{opacity:0}to{opacity:1}}
+  .hub .big .ic,.shortcuts .ico,.cube .ci,.pass-stub .big{animation:none!important}
+}
+/* ===== bigger, clearer header ===== */
+.top{padding:16px 16px 18px!important;gap:12px;min-height:96px}
+.top .logo{width:66px!important;height:66px!important}
+.top h1{font-size:23px!important;line-height:1.2}
+.top .sub{font-size:13px!important;margin-top:4px}
+.top .ideabtn,.top .me{width:44px;height:44px}
+@media(max-width:430px){.top h1{font-size:20px!important}.top .logo{width:58px!important;height:58px!important}}
+/* countdown: hours on the left */
+.top .logo{animation:none!important;transform:none!important}
+.top h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top>h1{min-width:0}
+@media(max-width:430px){.top h1{font-size:19px!important}.top .ideabtn,.top .me{width:40px!important;height:40px!important}.top{gap:8px!important}}
+.quick input{border:0!important;background:transparent!important}
+.qcard.done{opacity:.55}
+.cdg{direction:ltr!important}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -1108,11 +1137,12 @@ const SUB={
    ${!rows.length?card('','<b>עוד אין פתקים</b>לחצו על הנורה למעלה בכל מסך'):''}`;
  },
  claude(){
-  const seg=V.seg||'שאלה';
-  const rows=S.claude.filter(x=>x.kind===seg).sort((a,b)=>(a.status!=='פתוח')-(b.status!=='פתוח')||byOrder(a,b));
+  const seg=V.seg||(S.claude.some(x=>x.kind==='שאלה'&&x.status==='פתוח')?'שאלה':'הצעה');
+  const cl=V.filter.cl||'open';
+  const rows=S.claude.filter(x=>x.kind===seg&&(cl==='open'?x.status==='פתוח':x.status!=='פתוח')).sort(byOrder);
   const open=k=>S.claude.filter(x=>x.kind===k&&x.status==='פתוח').length;
   return subHead('מ-Claude בשבילך')+`<p class="note">שאלות שאני צריך שתענו, והצעות שיכולות לחסוך כסף, זמן או בלגן. עונים כאן, ואני קורא את זה בפעם הבאה שתכתבו לי.</p>
-   <div class="seg"><button data-seg="שאלה" aria-pressed="${seg==='שאלה'}">שאלות<span class="c num">${open('שאלה')}</span></button><button data-seg="הצעה" aria-pressed="${seg==='הצעה'}">הצעות<span class="c num">${open('הצעה')}</span></button></div>
+   <div class="seg"><button data-seg="שאלה" aria-pressed="${seg==='שאלה'}">שאלות<span class="c num">${open('שאלה')}</span></button><button data-seg="הצעה" aria-pressed="${seg==='הצעה'}">הצעות<span class="c num">${open('הצעה')}</span></button></div><div class="chips"><button class="chip" data-filter="cl" data-val="open" aria-pressed="${cl==='open'}">מחכות לך</button><button class="chip" data-filter="cl" data-val="done" aria-pressed="${cl==='done'}">טופלו</button></div>
    ${rows.map(x=>{const done=x.status!=='פתוח';
     return `<div class="qcard ${done?'done':''}"><h4>${esc(x.title)}</h4>${x.text?`<p>${esc(x.text)}</p>`:''}
      ${seg==='שאלה'?`${x.pick?`<div class="opts" style="margin-bottom:8px">${['שלומי','איציק','יעל','צריך למנות מישהו','לא רלוונטי'].map(n=>`<button class="opt" data-pick="${x._id}" data-v="${esc(n)}" aria-pressed="${x.answer===n}">${esc(n)}</button>`).join('')}</div>`:''}<textarea id="ans_${x._id}" placeholder="${x.pick?'או לכתוב שם אחר / פירוט':'התשובה שלך'}">${esc(x.answer||'')}</textarea><div class="acts"><button class="btn primary" data-answer="${x._id}">שמירת תשובה</button>${done?'<span class="pill p-ok">נענה</span>':''}</div>`
@@ -1452,7 +1482,7 @@ function bulkSheet(){
 
 
 const TILE_DEFS=()=>{const pk=S.packing,pd=pk.filter(x=>x.done).length,rk=S.rooms.filter(r=>r.kitReady).length;return [
- ['program','sched','לוח המסע','חמישי · שישי · שבת','c2'],
+ ['program','sched','לוח המסע','חמישי–שבת','c2'],
  ['people','people','משתתפים',`${S.participants.length} נוסעים`,'c1'],
  ['passports','people','דרכונים',`${S.participants.filter(p=>p.passport).length}/${S.participants.length}`,'c2'],
  ['claude','spark','מ-Claude',`${S.claude.filter(x=>x.status==='פתוח').length} פתוחים`,'c3'],
@@ -1464,7 +1494,7 @@ const TILE_DEFS=()=>{const pk=S.packing,pd=pk.filter(x=>x.done).length,rk=S.room
  ['contacts','phone','אנשי קשר',`${S.contacts.length} ספקים`,'c9'],
  ['notes','bulb','רעיונות',`${S.notes.filter(n=>n.status!=='סודר').length} חדשים`,'c10'],
  ['guide','spark','איך זה עובד','מדריך קצר','c11'],
- ['settings','gear','הגדרות','מי אני, צוות','c12']]};
+ ]};
 const homeTiles=()=>`<section class="sec"><div class="sec-h"><h3>הכל במקום אחד</h3></div><div class="cubes">${TILE_DEFS().map(([k,ic,l,s,c],i)=>`<button class="cube ${c}" data-go="more" data-opts='{"sub":"${k}"}' style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></button>`).join('')}</div></section>`;
 
 
