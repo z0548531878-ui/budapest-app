@@ -952,6 +952,52 @@ body.guest .fx{margin:12px 0}
 .chklist{display:grid;gap:6px}.chk{display:flex;align-items:center;gap:10px;padding:8px 4px;border-top:1px solid rgba(214,178,98,.1);color:#e8dfc7;font-size:15px}.chk input{width:22px;height:22px;accent-color:#c99a3d}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(212,74,58,.5)}50%{box-shadow:0 0 0 7px rgba(212,74,58,0)}}
 
+/* ---- guest home rows, hotel, places, couples, nav ---- */
+body.guest .nav-in button{gap:2px}
+body.guest .nav-in button svg{width:24px;height:24px}
+body.guest .nav-in button[data-gnav="gh"]{overflow:visible}
+body.guest .nav-in button[data-gnav="gh"] svg{width:46px;height:46px;padding:11px;margin-top:-22px;border-radius:50%;background:var(--goldbtn,linear-gradient(180deg,#f6dc93,#c99a3d));color:#15110a;box-shadow:0 8px 20px -6px rgba(201,154,61,.75),0 0 0 4px #0b0a08;transition:transform .25s}
+body.guest .nav-in button[data-gnav="gh"][aria-current="page"] svg{transform:scale(1.08);animation:none}
+body.guest .nav-in button[data-gnav="gh"] .badge{inset-inline-end:calc(50% - 30px);top:-18px}
+.grow,.hbtn,.gnews{display:flex;align-items:center;gap:12px;width:100%;text-align:right;border:1px solid rgba(214,178,98,.28);border-radius:20px;padding:12px 14px;margin:8px 0;min-height:68px;background:linear-gradient(160deg,#1b1710,#0d0c09);color:var(--ink,#f3ead3);text-decoration:none;position:relative;transition:transform .15s,border-color .2s,background .2s}
+.grow:active,.hbtn:active,.gnews:active{transform:scale(.97);border-color:rgba(240,210,140,.8)}
+.gi{flex:none;width:46px;height:46px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(180deg,#f6dc93,#c99a3d);color:#15110a;box-shadow:0 6px 14px -6px rgba(201,154,61,.7)}
+.gi svg{width:23px;height:23px}
+.gt{flex:1;min-width:0;display:grid;gap:2px}.gt b{font-size:17px;line-height:1.25}.gt small{color:#a69a7d;font-size:13px;line-height:1.3}
+.gch{flex:none;color:#e9c46f;font-size:30px;line-height:1;font-weight:300;transition:transform .2s}.grow:active .gch{transform:translateX(-5px)}
+.gbd{flex:none;min-width:24px;height:24px;border-radius:99px;padding:0 7px;display:grid;place-items:center;background:#d44a3a;color:#fff;font-size:13px;font-weight:900}
+.grow.locked{opacity:.65}.grow.locked .gi{background:#2a251a;color:#e9c46f;font-size:22px}
+.gsec{display:flex;align-items:center;gap:10px;margin:18px 4px 4px;color:#e9c46f;font-weight:900;font-size:14px;letter-spacing:.3px}
+.gsec::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(214,178,98,.5),transparent)}
+.hbtn{background:linear-gradient(180deg,#f6dc93,#c99a3d);color:#15110a;border-color:transparent;overflow:hidden;box-shadow:0 14px 28px -14px rgba(201,154,61,.8)}
+.hbtn .gt b{color:#15110a!important}.hbtn .gt small{color:#3d2f12!important;font-weight:800}.hbtn .gi{background:#15110a;color:#f0d28c;box-shadow:none}.hbtn .gt small{color:#3d2f12}.hbtn .gch{color:#15110a}
+.hbtn::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.5) 50%,transparent 65%);transform:translateX(-130%);pointer-events:none}
+.gnews{border-color:rgba(240,210,140,.75);background:linear-gradient(160deg,#2a2112,#14110b)}
+.gnews .gt b{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gnews .gt small{color:#f0d28c;font-weight:800}
+.gtodo{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 2px;padding:10px 12px;border-radius:16px;border:1px dashed rgba(214,178,98,.45);color:#e9c46f}
+.gtodo b{font-size:14px}.gtodo button{border:0;border-radius:99px;padding:8px 14px;background:rgba(214,178,98,.16);color:#f0d28c;font-weight:800;font-size:14px}
+.cpl{border-inline-start:3px solid rgba(214,178,98,.75);background:linear-gradient(90deg,rgba(214,178,98,.07),transparent)}
+.cpl .row{border-top:0!important}.cpl .row+.row{border-top:1px dashed rgba(214,178,98,.2)!important}
+.hotel{border:1px solid rgba(240,210,140,.5);border-radius:22px;padding:14px;margin:14px 0;background:linear-gradient(160deg,#241c0e,#0e0c08);display:grid;gap:4px}
+.ht-h{display:flex;gap:12px;align-items:center;margin-bottom:8px}.ht-ic{width:50px;height:50px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(180deg,#f6dc93,#c99a3d);color:#15110a}.ht-ic svg{width:26px;height:26px}
+.ht-h small{display:block;color:#a69a7d;font-weight:700}.ht-h b{font-size:21px;color:#f6dc93;display:block}.ht-h .en{display:block;color:#cfc3a6;font-size:13px}
+.navbtn{width:100%;justify-content:center;gap:10px;min-height:54px;font-size:18px}.navbtn svg{width:22px;height:22px}
+.hotelbar{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;border-radius:18px;font-weight:900;font-size:18px;text-decoration:none;color:#15110a;background:linear-gradient(180deg,#f6dc93,#c99a3d);margin:6px 0}.hotelbar svg{width:22px;height:22px}
+.pgrp{margin:6px 0}.place{border:1px solid rgba(214,178,98,.25);border-radius:18px;padding:12px 14px;margin:8px 0;background:linear-gradient(160deg,#17140f,#0d0c09);display:grid;gap:6px;justify-items:start}
+.pl-t{display:grid;gap:1px}.pl-t b{font-size:18px}.pl-t .en{color:#a69a7d;font-size:13px;text-align:right}
+.place small{color:#cfc3a6;font-size:13.5px}
+.pl-a{display:flex;gap:8px;width:100%;margin-top:4px}.pl-a .btn{flex:1;justify-content:center;gap:6px;min-height:46px;text-decoration:none}.pl-a svg{width:18px;height:18px}
+@media (prefers-reduced-motion:no-preference){
+@keyframes gRowIn{from{opacity:0;transform:translate3d(36px,0,0) scale(.96)}to{opacity:1;transform:none}}
+@keyframes gShine{0%,60%{transform:translateX(-130%)}100%{transform:translateX(130%)}}
+@keyframes gBorder{50%{border-color:rgba(255,236,170,1);box-shadow:0 0 22px -4px rgba(240,210,140,.55)}}
+.grow,.gsec,.place,.hotel,.hotelbar{animation:gRowIn .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*55ms)}
+#view.enter[data-scr="gh"]>.grow,#view.enter[data-scr="gh"]>.gsec,#view.enter[data-scr="gx"]>.pgrp,#view.enter[data-scr="gx"]>.hotelbar{animation-name:gRowIn;animation-delay:calc(var(--i,0)*55ms)}
+.hbtn::after{animation:gShine 4.5s ease-in-out infinite}
+.gnews{animation:gBorder 2.8s ease-in-out infinite}
+.grow:not(:active) .gi{transition:transform .25s}.grow:active .gi{transform:rotate(-8deg) scale(1.08)}
+}
+
 /* ===== per-screen entrances + per-button motion ===== */
 @media (prefers-reduced-motion:no-preference){
 @keyframes kRise{from{opacity:0;transform:translate3d(0,26px,0) scale(.97)}}
@@ -2313,7 +2359,40 @@ function showGate(step){
 }
 
 /* ===== participant (guest) app ===== */
-const GNAV=[['gh','בית','home'],['gt','משימות','tasks'],['gp','משתתפים','people'],['gr','חדרים','bed'],['gm','הודעות','chat']];
+const IX={food:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 9H9V2H7v7H5V2H3v7c0 2.1 1.7 3.8 3.8 4v9h2.4v-9c2.1-.2 3.8-1.9 3.8-4V2h-2v7zm5-3v8h2.5v8H21V2c-2.8 0-5 2.2-5 4z"/></svg>',pin:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.500a2.5 2.5 0 0 1 0 5z"/></svg>',nav:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4.500 20.300l.7.7L12 18l6.800 3 .7-.7z"/></svg>'};
+const GNAV=[['gl','לוח המסע','sched'],['gr','החדר שלי','bed'],['gh','בית','home'],['gx','מסעדות','food'],['gp','משתתפים','people']];
+const gIco=k=>IX[k]||I[k]||'';
+const HOTEL={name:'מלון סילבר קראון',en:'Silver Crown Hotel & Residence, Palace Quarter',q:'Silver Crown Hotel & Residence Palace Quarter Budapest'};
+const mapsFind=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
+const mapsGo=(q,mode='walking')=>'https://www.google.com/maps/dir/?api=1&travelmode='+mode+'&destination='+encodeURIComponent(q);
+const PLACES=[
+ {h:'🍖 בשרי ואוכל רחוב',l:[
+  ['מסעדת חנה','Hanna Glatt Kosher Restaurant','Kazinczy utca 29, Budapest','7 דק׳ הליכה · 500 מ׳','ארוחות שבת'],
+  ['מסעדת כרמל','Carmel Restaurant','Kazinczy utca 31, Budapest','7 דק׳ הליכה · 500 מ׳',''],
+  ['ניתהוולו','Nitavalo Restaurant','Dob utca 32, Budapest','8 דק׳ הליכה · 600 מ׳','השף אהרון פייגן'],
+  ['חומוס בר הסניף הכשר','Hummus Bar Kosher','Wesselényi utca 14, Budapest','6 דק׳ הליכה · 450 מ׳',''],
+  ['אשיז','Ashiz Israeli Street Food','Dob utca 5, Budapest','8 דק׳ הליכה · 650 מ׳','פתוח בלילות ובמוצאי שבת']]},
+ {h:'🥐 חלבי, מאפים וסופר',l:[
+  ['קונדיטוריית פרויליך','Frőhlich Cukrászda','Dob utca 22, Budapest','8 דק׳ הליכה · 600 מ׳','מאז 1953'],
+  ['קפה תל אביב','Café Tel Aviv','Kazinczy utca 28, Budapest','7 דק׳ הליכה · 500 מ׳',''],
+  ['קפה תמר','Café Tamar','Nagy Diófa utca 3, Budapest','6–7 דק׳ הליכה · 500 מ׳',''],
+  ['סופר כשר','Kosher Market Budapest','Dohány utca 36, Budapest','4 דק׳ הליכה · 290 מ׳',''],
+  ['מאפיית אפטאון','UpTown Kosher Bakery','Dob utca 16, Budapest','7–8 דק׳ הליכה · 550 מ׳','חלות ועוגות'],
+  ['ברוקלין בייגל','Brooklyn Bagel','Újpesti rakpart 1, Budapest','10 דק׳ במונית · 3.2 ק״מ','']]},
+ {h:'🎡 אטרקציות וחוויות',l:[
+  ['שייט על הדנובה','Vigadó Pier Danube cruise Budapest','Vigadó tér, Budapest','בערך 15 דק׳ הליכה · 1.2 ק״מ','הכי יפה במוצאי שבת, מתחנות 7–11'],
+  ['קורקינט חשמלי','Andrássy út Budapest','Andrássy út, Budapest','','Lime או Tier. חונים רק בנקודות Mobi'],
+  ['הפרלמנט','Hungarian Parliament Building','Kossuth Lajos tér 1-3, Budapest','','יום שישי 11:00–15:00, חוזרים למלון לפני 15:00'],
+  ['גשר השלשלאות','Széchenyi Chain Bridge','Széchenyi Chain Bridge, Budapest','',''],
+  ['מצודת הדייגים','Fisherman\'s Bastion','Szentháromság tér, Budapest','',''],
+  ['אי מרגיט','Margaret Island','Margit-sziget, Budapest','',''],
+  ['הר גלרט','Gellért Hill','Gellért-hegy, Budapest','',''],
+  ['השוק המרכזי הגדול','Great Market Hall','Vámház körút 1-3, Budapest','16 דק׳ הליכה · 1.2 ק״מ','נבנה ב־1897. אוכל רק עם תעודת כשרות']]},
+ {h:'🛍 קניות',l:[
+  ['קניון ווסטנד','Westend City Center','Váci út 1-3, Budapest','10 דק׳ במונית',''],
+  ['מדרחוב ואצי','Váci utca','Váci utca, Budapest','15 דק׳ הליכה · 1.1 ק״מ','']]}
+];
+
 let GTAB='gh', GSEG='open', GGEN='all', GQ='';
 const DRAFT={annTitle:'',annText:'',reqText:'',reqCat:'אחר'};
 const meG=()=>{if(PREV&&ROLE==='org'){const n=(typeof TEAM_FULL!=='undefined'&&TEAM_FULL[ME])||ME;return S.participants.find(p=>p.name===n)||S.participants.find(p=>p.name==='שלומי זינגר')||null}return S.participants.find(p=>p._id===ROLE.slice(6))||null};
@@ -2328,6 +2407,7 @@ const orgPhone=()=>{const p=S.participants.find(x=>x.name==='שלומי זינג
 const reqList=()=>S.settings.filter(x=>x.kind==='req').sort((a,b)=>(b.ts||0)-(a.ts||0));
 const annList=()=>S.settings.filter(x=>x.kind==='ann'&&!x.hidden).sort((a,b)=>(b.ts||0)-(a.ts||0));
 const claims=()=>S.tasks.filter(t=>t.claimStatus==='ממתין לאישור');
+const pendOpen=()=>{const me=meG(),ppl=coupleOf(me);return myTasks(ppl).filter(t=>t.status!=='בוצע'&&t.claimStatus!=='ממתין לאישור').length};
 const pendN=()=>claims().length+reqList().filter(r=>r.status==='חדש').length;
 const tsStr=ts=>{try{return new Date(ts).toLocaleString('he-IL',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'})}catch(e){return ''}};
 const annSeen=()=>{try{return +localStorage.getItem('annSeen')||0}catch(e){return 0}};
@@ -2386,41 +2466,65 @@ function taskCard(t,mode,ppl){
    <div class="gta">${mode==='open'?(pending?`<span class="pill p-warn">ממתין לאישור${t.claimBy?' · '+esc(firstN(t.claimBy)):''}</span>`:`<button class="btn primary" data-g-claim="${t._id}">✋ אני לוקח/ת את זה</button>`)
     :pending?`<span class="pill p-warn">⏳ ממתין לאישור המארגנים</span>`:done?`<span class="pill p-ok">בוצעה ✓</span><button class="btn ghost" data-g-undo="${t._id}">ביטול סימון</button>`:`<button class="btn primary" data-g-done="${t._id}">✓ סימון כבוצעה</button>`}</div></div>`}
 
+const hotelCard=()=>`<div class="hotel"><div class="ht-h"><span class="ht-ic">${IX.pin}</span><div><small>המלון שלנו</small><b>${HOTEL.name}</b><span class="en ltr">${HOTEL.en}</span></div></div>
+     <a class="btn primary navbtn" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener">${IX.nav}<span>ניווט למלון בגוגל מפס</span></a>
+     <a class="btn ghost" href="${mapsFind(HOTEL.q)}" target="_blank" rel="noopener" style="width:100%;justify-content:center;margin-top:8px">הצגת המלון במפה</a>
+     <p class="note">אם יצאתם מהמלון ולא בטוחים איך חוזרים: לחצו על הכפתור, ובחרו הליכה. גוגל מפס יוביל אתכם ישר לכניסה.</p></div>`;
 function guestHTML(){
   const me=meG(), ppl=coupleOf(me);
   const pv=isPrevOrg()?`<div class="prevbar">👁 כך זה נראה למשתתפים<button id="prevx">חזרה למארגן</button></div>`:'';
   const head=(t,extra='')=>pv+`<div class="page-title"><button class="back" data-gnav="gh" aria-label="חזרה למסך הראשי">›</button><h2>${t}</h2>${extra}</div>`;
   if(GTAB==='gh'){
-    const cube=(k,ic,l,s,i,badge)=>`<button class="cube" data-gnav="${k}" style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small>${badge?`<span class="cbadge num">${badge}</span>`:''}</button>`;
-    const open=triviaOpen(), og=flightGroups(ppl,'הלוך'), openT=S.tasks.filter(t=>t.open==='כן'&&t.status!=='בוצע'&&!t.owner&&!t.claimBy).length, mineT=myTasks(ppl).filter(t=>t.status!=='בוצע').length;
+    const open=triviaOpen(), og=flightGroups(ppl,'הלוך'), openT=S.tasks.filter(t=>t.open==='כן'&&t.status!=='בוצע'&&!t.owner&&!t.claimBy).length, mineT=myTasks(ppl).filter(t=>t.status!=='בוצע').length, un=annUnread();
     const first=og[0]&&og[0].f, passBlock=first?passHTML(first):(og[0]&&og[0].solo?'<div class="fx"><div class="fx-h"><b>✈ הטיסה שלכם · הלוך</b></div><div class="fx-note">מזמינים טיסה בעצמם</div></div>':'');
     const extraOut=og.slice(1).map(g=>guestFlightCard(g,ppl,'הלוך')).join('');
+    let n=0;
+    const row=(k,ic,l,sub,badge,cls='')=>`<button class="grow ${cls}" data-gnav="${k}" style="--i:${n++}"><span class="gi">${gIco(ic)}</span><span class="gt"><b>${l}</b><small>${sub}</small></span>${badge?`<span class="gbd num">${badge}</span>`:''}<span class="gch">‹</span></button>`;
+    const grp=(t,inner)=>`<div class="gsec" style="--i:${n}"><span>${t}</span></div>${inner}`;
+    const L=annList()[0];
+    const banner=un&&L?`<button class="gnews" data-gnav="gm"><span class="gi">${I.chat}</span><span class="gt"><small>הודעה חדשה מהמארגנים${un>1?' · '+un+' חדשות':''}</small><b>${esc(L.title||L.text||'')}</b></span><span class="gch">‹</span></button>`:'';
+    const needs=[];
+    const need=ppl.filter(x=>x.status!=='פטור'&&+x.amount>0&&x.status!=='שולם').length; 
+    if(ppl.some(x=>!x.passport))needs.push(['gf','דרכון','שלחו צילום דרכון']);
+    if(ppl.some(x=>!x.photo))needs.push(['gf','תמונה','העלו תמונה']);
+    const todo=needs.length?`<div class="gtodo"><b>כדאי להשלים</b>${needs.map(x=>`<button data-gnav="${x[0]}">${x[2]} ›</button>`).join('')}</div>`:'';
     return pv+`<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(ppl.map(x=>x.name).join(' ו')||'')}</b></div>${isPrevOrg()?'':'<button class="glink gout" id="gout">יציאה</button>'}</div>
-     ${passBlock}${extraOut}
-     <div class="gstat">${payCard(ppl)}${passCard(ppl)}</div>
-     <section class="sec"><div class="sec-h"><h3>הכל במקום אחד</h3></div><div class="cubes gcubes">
-      ${cube('gl','file','לוח המסע','תוכנית מלאה',0)}${cube('gp','people','משתתפים','שמות, תמונות וטלפונים',1)}${cube('gr','bed','החדר שלי','כניסה, קומה וחדר',2)}
-      ${cube('gt','tasks','משימות',openT?`${openT} פתוחות לקחת`:'המשימות שלי',3,mineT)}${cube('gm','chat','הודעות','מהמארגנים',4,annUnread())}${cube('gq','mic','בקשה אישית','לצוות המארגן',5)}
-      ${cube('gf','people','הפרופיל שלי','תמונה ודרכון',6)}${cube('gk','box','כלי נוסע','שעון, מטבע ורשימה',7)}
-      ${open?`<a class="cube gtriv" href="../" target="_blank" rel="noopener" style="--i:8"><span class="ci">${I.spark}</span><b>טריוויה</b><small>משחק לאוטובוס · פתוח!</small></a>`:`<button class="cube gtriv locked" data-glock style="--i:8"><span class="ci">🔒</span><b>טריוויה</b><small>ייפתח עם הנחיתה בבודפשט</small></button>`}
-     </div></section>
+     ${banner}${passBlock}${extraOut}
+     <a class="hbtn" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener"><span class="gi">${IX.nav}</span><span class="gt"><small>אבדתם את הדרך?</small><b>ניווט חזרה למלון</b></span><span class="gch">‹</span></a>
+     <div class="gstat">${payCard(ppl)}${passCard(ppl)}</div>${todo}
+     ${grp('במסע',row('gl','sched','לוח המסע','כל התוכנית, יום אחרי יום','')+row('gx','food','מסעדות ואטרקציות','כשר, קפה ומה לראות','')+row('gr','bed','החדר שלי והמלון','כניסה, קומה, חדר וניווט',''))}
+     ${grp('אנשים ומשימות',row('gp','people','משתתפים','שמות, תמונות וטלפונים לפי זוגות','')+row('gt','tasks','משימות',openT?`${openT} פתוחות לקחת`:'המשימות שלי',mineT||'')+row('gm','chat','הודעות','מהמארגנים',un||'')+row('gq','mic','בקשה אישית','לצוות המארגן',''))}
+     ${grp('אני',row('gf','people','הפרופיל שלי','תמונה ודרכון','')+row('gk','box','כלי נוסע','שעון, מטבע ורשימה',''))}
+     ${open?`<a class="grow gtriv" href="../" target="_blank" rel="noopener" style="--i:${n++}"><span class="gi">${I.spark}</span><span class="gt"><b>טריוויה</b><small>משחק לאוטובוס · פתוח!</small></span><span class="gch">‹</span></a>`:`<button class="grow gtriv locked" data-glock style="--i:${n++}"><span class="gi">🔒</span><span class="gt"><b>טריוויה</b><small>ייפתח עם הנחיתה בבודפשט</small></span></button>`}
      ${flightGroups(ppl,'חזור').map(g=>guestFlightCard(g,ppl,'חזור')).join('')}`}
+  if(GTAB==='gx'){
+    const hn=`<a class="hotelbar" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener">${IX.nav}<span>חזרה למלון · ניווט</span></a>`;
+    return head('מסעדות ואטרקציות')+hn+`<p class="note">כל מקום נפתח בגוגל מפס. "ניווט" מתחיל הליכה מהמיקום שלכם. מרחקים משוערים מהמלון. כשרות: מומלץ לוודא תעודה בכניסה.</p>`+
+     PLACES.map((g,gi)=>`<section class="pgrp" style="--g:${gi}"><div class="ghead"><span>${g.h}</span><span class="num">${g.l.length}</span></div>${g.l.map((p,i)=>`<div class="place" style="--i:${i}"><div class="pl-t"><b>${esc(p[0])}</b><span class="ltr en">${esc(p[1])}</span></div>${p[3]?`<span class="pill p-mute">${esc(p[3])}</span>`:''}${p[4]?`<small>${esc(p[4])}</small>`:''}
+       <div class="pl-a"><a class="btn" href="${mapsFind(p[1]+' '+p[2])}" target="_blank" rel="noopener">${IX.pin}<span>במפה</span></a><a class="btn primary" href="${mapsGo(p[1]+' '+p[2])}" target="_blank" rel="noopener">${IX.nav}<span>ניווט</span></a></div></div>`).join('')}</section>`).join('')+
+     `<p class="note">טיפ: אפשר להזמין מונית ב־Bolt או דרך הקבלה. כרטיסי אשראי בינלאומיים מתקבלים כמעט בכל מקום.</p>`}
   if(GTAB==='gl'){const h=SUB.program().replace(/<div class="page-title">[\s\S]*?<\/div>/,'');return head('לוח המסע')+h}
   if(GTAB==='gp'){
-    let rows=S.participants.slice().sort((a,b)=>a.name.localeCompare(b.name,'he'));
+    const nm=p=>p.name.replace(/^הרב(נית)?\s+/,''), ord=[], seen={};
+    const base=S.participants.slice().sort((a,b)=>nm(a).localeCompare(nm(b),'he'));
+    base.forEach(p=>{if(seen[p._id])return;seen[p._id]=1;const sp=p.spouse&&S.participants.find(x=>x._id===p.spouse);
+      if(sp&&!seen[sp._id]){seen[sp._id]=1;const pr=[p,sp].sort((x,y)=>(x.gender==='גבר'?0:1)-(y.gender==='גבר'?0:1));ord.push(...pr)}else ord.push(p)});
+    let rows=ord;
     const cnt={all:rows.length,m:rows.filter(p=>p.gender==='גבר').length,f:rows.filter(p=>p.gender==='אישה').length};
     if(GGEN==='m')rows=rows.filter(p=>p.gender==='גבר');if(GGEN==='f')rows=rows.filter(p=>p.gender==='אישה');
     if(GQ)rows=rows.filter(p=>p.name.includes(GQ));
+    const prow=p=>`<div class="row">${avatarHTML(p)}<div class="main"><div class="t">${esc(p.name)}</div>${p.phone?`<div class="m"><span class="num ltr">${esc(p.phone)}</span></div>`:''}</div>${p.phone?`<a class="pill p-ok" href="${waLink(p.phone)}" target="_blank" rel="noopener">וואטסאפ</a>`:''}</div>`;
+    const grouped=[];for(let i=0;i<rows.length;i++){const p=rows[i],q=rows[i+1];if(q&&p.spouse===q._id){grouped.push(`<div class="cpl">${prow(p)}${prow(q)}</div>`);i++}else grouped.push(prow(p))}
     const chip=(k,l)=>`<button class="chip" data-ggen="${k}" aria-pressed="${GGEN===k}">${l} <span class="num">${cnt[k]}</span></button>`;
     return head('משתתפי המסע',`<span class="cnt num">${cnt.all}</span>`)+`<div class="chips">${chip('all','כולם')}${chip('m','גברים')}${chip('f','נשים')}</div>
      <input class="search" id="gq" type="search" placeholder="חיפוש לפי שם" value="${esc(GQ)}">
-     ${card(rows.map(p=>`<div class="row">${avatarHTML(p)}<div class="main"><div class="t">${esc(p.name)}</div>${p.phone?`<div class="m"><span class="num ltr">${esc(p.phone)}</span></div>`:''}</div>${p.phone?`<a class="pill p-ok" href="${waLink(p.phone)}" target="_blank" rel="noopener">וואטסאפ</a>`:''}</div>`).join(''),'לא נמצא שם כזה')}
-     <p class="note">מי שלא העלה תמונה מופיע עם תמונה חסויה. אפשר להעלות תמונה במסך "הפרופיל שלי".</p>`}
+     ${card(grouped.join(''),'לא נמצא שם כזה')}
+     <p class="note">הרשימה מסודרת לפי זוגות. מי שלא העלה תמונה מופיע עם תמונה חסויה. אפשר להעלות תמונה במסך "הפרופיל שלי".</p>`}
   if(GTAB==='gr'){
     const rid=(ppl.find(p=>p.roomId)||{}).roomId, r=rid&&S.rooms.find(x=>x._id===rid);
     const line=(l,v)=>`<div class="rline"><small>${l}</small><b>${v?esc(v):'טרם עודכן'}</b></div>`;
     return head('החדר שלי')+(r&&(r.roomNumber||r.floor||r.entrance)?`<div class="roomcard"><div class="rc-h">🛏 ${esc(r.occupants||'')}</div>${line('כניסה',r.entrance)}${line('קומה',r.floor)}${line('מספר חדר',r.roomNumber)}${r.notes?`<p class="note">${esc(r.notes)}</p>`:''}</div>`
-      :`<div class="roomcard unassigned"><div class="rc-h">🛏 טרם שובץ</div><p>החדר שלכם עדיין לא שובץ. ברגע שנעדכן, הפרטים יופיעו כאן: כניסה, קומה ומספר חדר.</p></div>`)}
+      :`<div class="roomcard unassigned"><div class="rc-h">🛏 טרם שובץ</div><p>החדר שלכם עדיין לא שובץ. ברגע שנעדכן, הפרטים יופיעו כאן: כניסה, קומה ומספר חדר.</p></div>`)+hotelCard()}
   if(GTAB==='gt'){
     const mine=myTasks(ppl), openL=S.tasks.filter(t=>t.open==='כן'&&t.status!=='בוצע'&&!t.owner&&(!t.claimBy||t.claimStatus==='ממתין לאישור')&&!(t.claimStatus==='ממתין לאישור'&&!ppl.some(p=>p.name===t.claimBy)));
     const showL=GSEG==='open'?openL:mine;
@@ -2468,7 +2572,7 @@ render=function(anim){
   const p=ROLE.startsWith('guest:')?S.participants.find(p=>p._id===ROLE.slice(6)):1;
   if(!PREV&&loaded.has('participants')&&S.participants.length&&!p){logoutRole();return}
   const un=annUnread();
-  document.getElementById('nav').innerHTML=GNAV.map(([k,l,ic])=>`<button data-gnav="${k}" ${GTAB===k?'aria-current="page"':''}>${I[ic]}${l}${k==='gm'&&un?`<span class="badge num">${un}</span>`:''}</button>`).join('');
+  document.getElementById('nav').innerHTML=GNAV.map(([k,l,ic])=>`<button data-gnav="${k}" ${GTAB===k?'aria-current="page"':''}>${gIco(ic)}<span>${l}</span>${k==='gh'&&(un||pendOpen())?`<span class="badge num">${un+pendOpen()}</span>`:''}</button>`).join('');
   const v=document.getElementById('view'), a=document.activeElement, keep=a&&a.id&&v.contains(a)?{id:a.id,val:a.value,pos:a.selectionStart}:null;
   v.innerHTML=guestHTML();v.dataset.scr='g'+GTAB;
   if(anim||_lastScr!==GTAB){v.classList.remove('enter');if(!reduce){void v.offsetWidth;v.classList.add('enter')}}
@@ -2550,6 +2654,56 @@ function orgClick(e){
   const hd=T.closest('[data-ann-hide]');if(hd){e.stopPropagation();ms('settings/'+hd.dataset.annHide,{hidden:true}).then(r=>r&&toast('ההודעה הוסתרה'));return}
 }
 
+/* ===== flicker fix: update the DOM in place instead of replacing it ===== */
+const MORPH={full:false,key:''};
+function morphPatch(a,b){
+  if(a.nodeType===3||a.nodeType===8){if(a.nodeValue!==b.nodeValue)a.nodeValue=b.nodeValue;return}
+  const tag=a.nodeName;
+  /* attributes */
+  for(const at of [...a.attributes]){
+    if(!b.hasAttribute(at.name)){
+      if(at.name==='open'&&tag==='DETAILS')continue;
+      if(at.name==='class'){continue}
+      a.removeAttribute(at.name)}}
+  for(const at of [...b.attributes]){
+    if(at.name==='open'&&tag==='DETAILS')continue;
+    if(at.name==='class'){let c=at.value;if(a.classList.contains('ovf')&&!/\bovf\b/.test(c))c+=' ovf';if(a.getAttribute('class')!==c)a.setAttribute('class',c);continue}
+    if(a.getAttribute(at.name)!==at.value)a.setAttribute(at.name,at.value)}
+  if(a.hasAttribute('class')&&!b.hasAttribute('class')){if(a.classList.contains('ovf'))a.setAttribute('class','ovf');else a.removeAttribute('class')}
+  if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'){
+    if(document.activeElement===a)return;
+    if(tag==='INPUT'&&(a.type==='checkbox'||a.type==='radio')){a.checked=b.checked;return}
+    if(a.value!==b.value)a.value=b.value;
+    if(tag==='SELECT')return;
+    if(tag==='TEXTAREA')return}
+  if(tag==='SVG'||tag==='svg'||tag==='IMG')return morphKids(a,b);
+  morphKids(a,b)}
+function morphKids(o,n){
+  const oc=[...o.childNodes], nc=[...n.childNodes], len=Math.max(oc.length,nc.length);
+  for(let i=0;i<len;i++){
+    const a=oc[i], b=nc[i];
+    if(!b){a.remove();continue}
+    if(!a){o.appendChild(b);continue}
+    let ra=a;
+    if(a.nodeType===1&&a.classList.contains('hsw')&&!(b.nodeType===1&&b.classList.contains('hsw')))ra=a.firstElementChild||a;
+    if(ra.nodeType===b.nodeType&&ra.nodeName===b.nodeName){
+      if(ra.nodeName==='IMG'){if(ra.getAttribute('src')!==b.getAttribute('src'))ra.setAttribute('src',b.getAttribute('src')||'');morphPatch(ra,b)}
+      else morphPatch(ra,b)}
+    else o.replaceChild(b,a)}}
+function morphInto(el,html){
+  const t=document.createElement('template');t.innerHTML=html;morphKids(el,t.content)}
+(()=>{
+  const d=Object.getOwnPropertyDescriptor(Element.prototype,'innerHTML');
+  const hook=(el,keyFn)=>{if(!el)return;Object.defineProperty(el,'innerHTML',{configurable:true,get(){return d.get.call(el)},set(h){
+    const k=keyFn?keyFn():'';
+    if(!el.firstChild||(keyFn&&(MORPH.full||k!==el.__mk))){el.__mk=k;d.set.call(el,h);return}
+    el.__mk=k;
+    try{morphInto(el,h)}catch(e){d.set.call(el,h)}}})};
+  hook(document.getElementById('view'),()=>(GUEST()?'g'+GTAB:V.tab+'|'+(V.sub||'')));
+  hook(document.getElementById('nav'),null);
+  const _m=render;render=function(a){MORPH.full=!!a;try{_m(a)}finally{MORPH.full=false}};
+})();
+
 const _pickMeBase=pickMe;pickMe=function(){if(GUEST()||!ROLE)return;_pickMeBase();const sh=document.querySelector('#scrim .sheet');if(sh&&ROLE==='org'){const b=document.createElement('button');b.className='btn';b.style.cssText='margin-top:14px;width:100%';b.textContent='👁 תצוגת משתתף (כך זה נראה להם)';b.onclick=()=>{closeSheet();setPrev(true)};sh.appendChild(b)}};
 document.body.classList.toggle('guest',GUEST());if(!ROLE)showGate();
 let SEEN_MARKED=false;const _r2=render;render=function(a){_r2(a);if(!SEEN_MARKED&&ROLE.startsWith('guest:')&&!PREV&&db&&loaded.has('participants')){SEEN_MARKED=true;let done=false;try{done=sessionStorage.getItem('seenMark')==='1'}catch(e){}if(!done){try{sessionStorage.setItem('seenMark','1')}catch(e){}gset('participants/'+ROLE.slice(6),{seenAt:new Date().toISOString()})}}};
@@ -2567,7 +2721,7 @@ render(true);
 </script>
 
 <script>
-(function(){var B='d295a6a916';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B='92d909d6a0';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
