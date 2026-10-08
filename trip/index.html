@@ -809,6 +809,8 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 
 .pprow .m span{color:#7fd1a5}
 a.pill{text-decoration:none!important}
+
+.chips.own{align-items:center}.chips .chl{flex:0 0 auto;font-size:12.5px;font-weight:800;color:#a69a7d;padding-inline-end:2px}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -982,6 +984,7 @@ function hintScroll(){
   document.querySelectorAll('#view .chips, #view .seg').forEach(el=>{
     if(el.scrollWidth<=el.clientWidth+4)return;
     el.classList.add('ovf');
+    const on=el.querySelector('[aria-pressed="true"]');if(on&&on!==el.firstElementChild){const r=on.getBoundingClientRect(),R=el.getBoundingClientRect();if(r.left<R.left+40||r.right>R.right-10)el.scrollLeft+=(r.left+r.width/2)-(R.left+R.width/2)}
     if(!el.parentElement.classList.contains('hsw')){const w=document.createElement('div');w.className='hsw';el.parentNode.insertBefore(w,el);w.appendChild(el);const h=document.createElement('span');h.className='hint';h.textContent='‹';h.setAttribute('aria-hidden','true');w.appendChild(h);
       el.addEventListener('scroll',()=>{const end=Math.abs(el.scrollLeft)+el.clientWidth>=el.scrollWidth-6;w.classList.toggle('end',end)},{passive:true})}
     const k=navKey()+'|'+[...el.parentElement.parentElement.children].indexOf(el.parentElement);
@@ -1090,18 +1093,24 @@ const VIEWS={
 `;
  },
  tasks(){
-  const seg=V.seg||(ME?'mine':'all');
+  const own=V.filter.own||'';
+  const seg=(own&&(V.seg||(ME?'mine':'all'))==='mine')?'all':(V.seg||(ME?'mine':'all'));
   let rows=S.tasks.filter(x=>!V.q||[x.title,x.owner,x.notes].join(' ').includes(V.q));
   const openT=S.tasks.filter(x=>x.status!=='בוצע');
   const act=openT.filter(x=>x.status!=='ממתין');
   const cnt={mine:act.filter(mine).length,all:act.length,wait:openT.length-act.length,noowner:openT.filter(x=>!x.owner).length,done:S.tasks.length-openT.length};
   if(seg==='mine')rows=rows.filter(x=>mine(x)&&x.status!=='בוצע'&&x.status!=='ממתין');else if(seg==='all')rows=rows.filter(x=>x.status!=='בוצע'&&x.status!=='ממתין');else if(seg==='wait')rows=rows.filter(x=>x.status==='ממתין');else if(seg==='noowner')rows=rows.filter(x=>!x.owner&&x.status!=='בוצע');else rows=rows.filter(x=>x.status==='בוצע');
   const cat=V.filter.cat; if(cat)rows=rows.filter(x=>x.category===cat);
+  const ownsOf=t=>String(t.owner||'').split(/,\s*/).map(x=>x.trim()).filter(Boolean);
+  if(own)rows=rows.filter(x=>own==='__none'?!ownsOf(x).length:ownsOf(x).includes(own));
+  const oc={};openT.forEach(t=>{const o=ownsOf(t);if(!o.length)oc.__none=(oc.__none||0)+1;o.forEach(n=>oc[n]=(oc[n]||0)+1)});
+  const tm=team(), owners=Object.keys(oc).filter(k=>k!=='__none').sort((a,b)=>(tm.includes(b)-tm.includes(a))||(oc[b]-oc[a])||a.localeCompare(b,'he'));
   sortTasks(rows);
   const cats=TASK_CATS.filter(c=>S.tasks.some(t=>t.category===c));
   return `<div class="page-title"><button class="back" data-back aria-label="חזרה">›</button><h2>משימות</h2><span class="cnt num">${cnt.done}/${S.tasks.length} בוצעו</span></div>${updBar('tasks')}
    <form class="quick" id="qadd"><input id="qaddIn" placeholder="${ME?`הוספת משימה ל${esc(ME)}…`:'הוספת משימה…'}" autocomplete="off"><button>הוסף</button></form>
    <div class="seg">${[['mine','שלי'],['all','לעשות'],['wait','ממתין'],['done','בוצעו']].map(([k,l])=>`<button data-seg="${k}" aria-pressed="${seg===k}">${l}<span class="c num">${cnt[k]}</span></button>`).join('')}</div>
+   <div class="chips own"><span class="chl">אחראי</span>${[['','כולם'],...owners.map(n=>[n,n]),...(oc.__none?[['__none','בלי אחראי']]:[])].map(([v,l])=>`<button class="chip" data-filter="own" data-val="${esc(v)}" aria-pressed="${own===v}">${esc(l)}${v?` <span class="num">${oc[v]||0}</span>`:''}</button>`).join('')}</div>
    <div class="chips">${[['','כל התחומים'],...cats.map(c=>[c,c])].map(([v,l])=>`<button class="chip" data-filter="cat" data-val="${esc(v)}" aria-pressed="${(cat||'')===v}">${esc(l)}</button>`).join('')}</div>
    ${!ready('tasks')?skel(5):!ME&&seg==='mine'?card('<button class="row" data-pickme><div class="main"><div class="t">בחרו מי אתם כדי לראות את המשימות שלכם</div></div><span class="pill p-gold">בחירה</span></button>'):card(rows.map(taskRow).join(''),seg==='mine'?'<b>אין לך משימות פתוחות</b>אפשר להוסיף משימה בשורה למעלה':seg==='wait'?'<b>לא מחכים לאף אחד</b>משימה שתלויה בספק או באדם אחר מסמנים בסטטוס "ממתין"':'<b>אין משימות כאן</b>')}`;
  },
