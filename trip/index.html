@@ -880,6 +880,15 @@ a.cube{text-decoration:none;color:inherit}
 
 .lockbar{margin:0 0 12px;padding:11px 14px;border-radius:14px;border:1px solid rgba(214,178,98,.35);background:rgba(214,178,98,.07);color:#e9c46f;font-weight:800;font-size:13.5px;line-height:1.5}
 .check.lock{display:grid;place-items:center;font-size:15px;opacity:.6;border-style:dashed!important}
+
+/* ===== splash v3: one big logo entrance with a single spin, then straight into the app ===== */
+.splash{background:#050504!important;gap:0!important}
+.splash::after,.splash .rays,.splash .dust,.splash span,.splash small{display:none!important}
+.splash img{width:min(66vw,280px)!important;height:min(66vw,280px)!important;box-shadow:0 0 0 2px rgba(240,210,140,.75),0 0 70px rgba(217,178,95,.4)!important;animation:none!important;opacity:1;transform:scale(.42)}
+.splash.go img{animation:logoSpin 1s cubic-bezier(.2,.75,.25,1) forwards!important}
+@keyframes logoSpin{from{transform:scale(.42) rotate(-360deg)}to{transform:scale(1) rotate(0)}}
+.splash.out{opacity:0!important;transform:none!important;transition:opacity .4s ease!important}
+@media (prefers-reduced-motion:reduce){.splash img{transform:none}}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -2294,7 +2303,7 @@ let rq=0, firstAll=false;
 const later=()=>{if(rq)return;if(V.sub==='notes'&&document.querySelector('#sortBox .prop,#sortBox .thinking'))return;rq=requestAnimationFrame(()=>{rq=0;const all=COLS.every(c=>loaded.has(c));render(all&&!firstAll);if(all&&!firstAll)setTimeout(autoApply,800);if(all)firstAll=true})};
 render(true);
 (()=>{const sp=document.getElementById('splash');let seen=false;try{seen=sessionStorage.getItem('splash')==='1';sessionStorage.setItem('splash','1')}catch(e){}
-  if(seen||reduce){sp.remove();return}setTimeout(()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),520)},1300)})();
+  if(seen||reduce){sp.remove();return}const im=sp.querySelector('img');const start=()=>{sp.classList.add('go');setTimeout(()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),420)},1250)};if(im&&!im.complete){let d=0;const f=()=>{if(!d){d=1;start()}};im.addEventListener('load',f);im.addEventListener('error',f);setTimeout(f,700)}else start()})();
 (async()=>{
   db=await initFire();
   if(!db){document.getElementById('banner').innerHTML='<p class="banner">חסר הקישור המלא של הצוות. פתחו את האפליקציה מהקישור ששלומי שלח (הוא מסתיים ב-#k=…).</p>';return}
@@ -2311,7 +2320,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B='ebab14aa8e';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B='2981714990';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
