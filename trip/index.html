@@ -2336,6 +2336,8 @@ async function sha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncod
 function setRole(r){ROLE=r;PREV=false;try{sessionStorage.setItem('prev','0')}catch(e){}try{localStorage.setItem('role',r)}catch(e){}const g=document.getElementById('gate');if(g)g.remove();document.body.classList.toggle('guest',GUEST());if(typeof pickMe==='function'&&GUEST()){}render(true);window.scrollTo(0,0)}
 function logoutRole(){ROLE='';try{localStorage.removeItem('role');localStorage.removeItem('me')}catch(e){}ME='';document.body.classList.remove('guest');showGate()}
 function showGate(step){
+  if(!step&&typeof isStandalone==='function'&&isStandalone()&&typeof isMobile==='function'&&isMobile()&&!skipG())step='guest';
+  if(step==='choice')step='';
   let g=document.getElementById('gate');if(!g){g=document.createElement('div');g.id='gate';g.setAttribute('dir','rtl');g.setAttribute('lang','he');document.body.appendChild(g)}
   const logo='<img src="logo.webp" alt="" class="glogo">';
   if(step==='guest'){
@@ -2355,7 +2357,7 @@ function showGate(step){
       if(!p){msg.textContent='השם הזה לא רשום במסע, ולכן אי אפשר להיכנס. בדקו את האיות או פנו למארגנים.';return}
       setRole('guest:'+p._id)};
     document.getElementById('ggo').onclick=go;document.getElementById('gname').onkeydown=e=>{if(e.key==='Enter')go()};
-    document.getElementById('gback').onclick=()=>showGate();setTimeout(()=>document.getElementById('gname').focus(),50);return}
+    document.getElementById('gback').onclick=()=>showGate('org');document.getElementById('gback').textContent='אני מארגן';setTimeout(()=>document.getElementById('gname').focus(),50);return}
   if(step==='org'){
     g.innerHTML=`<div class="gbox">${logo}<h1>כניסת מארגנים</h1><p>הקלידו את קוד המארגנים</p>
      <input id="gcode" class="gin ltr" type="password" autocomplete="off" inputmode="text" placeholder="קוד" enterkeyhint="go">
@@ -2364,7 +2366,7 @@ function showGate(step){
     const go=async()=>{const v=document.getElementById('gcode').value.trim().toLowerCase();
       if(await sha('budapest-salt:'+v)===ORG_HASH)setRole('org');else document.getElementById('gmsg').textContent='הקוד שגוי'};
     document.getElementById('ggo').onclick=go;document.getElementById('gcode').onkeydown=e=>{if(e.key==='Enter')go()};
-    document.getElementById('gback').onclick=()=>showGate();setTimeout(()=>document.getElementById('gcode').focus(),50);return}
+    document.getElementById('gback').onclick=()=>showGate('choice');setTimeout(()=>document.getElementById('gcode').focus(),50);return}
   g.innerHTML=`<div class="gbox">${logo}<h1>מבקשי ה׳</h1><p class="gsub">שבת גיבוש בבודפשט · <bdi dir=\"ltr\">19–22.11.2026</bdi></p>
     <button class="gbtn" id="gg">כניסת משתתפי המסע</button><button class="gbtn alt" id="go">כניסת מארגנים</button></div>`;
   document.getElementById('gg').onclick=()=>showGate('guest');document.getElementById('go').onclick=()=>showGate('org');
@@ -2724,8 +2726,10 @@ const nogate=()=>{try{return localStorage.getItem('nogate')==='1'}catch(e){retur
 let DEFER=null;
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();DEFER=e;pgate()});
 addEventListener('appinstalled',()=>{DEFER=null});
+const isMobile=()=>/iphone|ipad|ipod|android/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const skipG=()=>{try{return sessionStorage.getItem('skipInst')==='1'}catch(e){return false}};
 function gateState(){
-  if(PREV||nogate()||!ROLE||ROLE==='org')return '';
+  if(PREV||nogate()||ROLE==='org'||skipG()||!isMobile())return '';
   if(!isStandalone())return 'install';
   if(!('Notification' in window)||!('serviceWorker' in navigator))return 'unsupported';
   if(Notification.permission==='denied')return 'denied';
@@ -2743,13 +2747,13 @@ function pgate(){
     const steps=isIOS()?
       ['לחצו על כפתור השיתוף <b>⬆︎</b> בתחתית הדפדפן (ב־Safari)','גללו ובחרו <b>"הוסף למסך הבית"</b>','לחצו <b>"הוסף"</b> ופתחו את האפליקציה מהאייקון החדש']:
       ['לחצו על שלוש הנקודות <b>⋮</b> בפינת הדפדפן (Chrome)','בחרו <b>"התקנת אפליקציה"</b> או <b>"הוסף למסך הבית"</b>','פתחו את האפליקציה מהאייקון החדש במסך הבית'];
-    h=`${logo}<h1>עוד צעד קטן</h1><p>כדי להמשיך צריך להוסיף את האפליקציה למסך הבית. כך תקבלו התראות על הודעות ומשימות חדשות.</p>
+    h=`${logo}<h1>מוסיפים למסך הבית</h1><p>שני לחיצות ואתם בפנים. כך תקבלו התראות על הודעות ומשימות חדשות.</p>
       ${DEFER?'<button class="gbtn" id="pinst">הוספה למסך הבית</button>':''}
       <ol class="pst">${steps.map(s=>`<li>${s}</li>`).join('')}</ol>
       ${isIOS()?'<p class="gsub">חשוב: באייפון זה עובד רק דרך Safari.</p>':''}
-      <button class="glink" id="pchk">כבר הוספתי, בדיקה מחדש</button>`}
+      <button class="glink" id="pskip">אני מארגן, להמשיך בלי התקנה</button>`}
   else if(st==='ask'){
-    h=`${logo}<h1>הפעלת התראות</h1><p>נשלח לכם התראה בכל הודעה מהמארגנים ובכל משימה חדשה. בלי זה אפשר לפספס שינויים בלוז.</p><button class="gbtn" id="pask">הפעלת התראות</button><p class="gsub">בחלון שייפתח לחצו על "אפשר".</p>`}
+    h=`${logo}<h1>הפעלת התראות</h1><p>נשלח לכם התראה בכל הודעה מהמארגנים ובכל משימה חדשה. בלי זה אפשר לפספס שינויים בלוז.</p><button class="gbtn" id="pask">הפעלת התראות</button><p class="gsub">בחלון שייפתח לחצו על "אפשר".</p><button class="glink" id="pskip">אני מארגן, להמשיך בלי התראות</button>`}
   else if(st==='denied'){
     h=`${logo}<h1>ההתראות חסומות</h1><p>כדי להמשיך צריך לאפשר התראות לאפליקציה.</p><ol class="pst">${(isIOS()?['פתחו <b>הגדרות</b> בטלפון','גללו אל האפליקציה "בודפשט"','בחרו <b>התראות</b> והפעילו "אפשר התראות"']:['לחצו לחיצה ארוכה על אייקון האפליקציה','בחרו <b>מידע על האפליקציה</b>, ואז <b>התראות</b>','הפעילו את ההתראות']).map(s=>`<li>${s}</li>`).join('')}</ol><button class="gbtn" id="pchk">הפעלתי, בדיקה מחדש</button>`}
   else{
@@ -2786,6 +2790,7 @@ document.addEventListener('click',e=>{
   const T=e.target;
   if(T.closest('#pask')){askPush();return}
   if(T.closest('#pchk')){location.reload();return}
+  if(T.closest('#pskip')){try{sessionStorage.setItem('skipInst','1')}catch(x){}pgate();return}
   if(T.closest('#pinst')&&DEFER){DEFER.prompt();DEFER.userChoice.finally(()=>{DEFER=null;pgate()});return}
 },true);
 if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>{const t=e.data&&e.data.tab;if(t&&GUEST()){GTAB=t;render(true)}});
@@ -2819,7 +2824,7 @@ render(true);
 </script>
 
 <script>
-(function(){var B='b4ca387c07';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B='fa8846a240';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
