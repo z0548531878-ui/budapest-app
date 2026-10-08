@@ -833,6 +833,21 @@ a.pill{text-decoration:none!important}
 .rt-role{color:#f0d28c;border-color:rgba(240,210,140,.45)}.rt-task{color:#8fc2e8;border-color:rgba(143,194,232,.4)}.rt-buy{color:#7fd1a5;border-color:rgba(127,209,165,.4)}.rt-sched{color:#e2a3d6;border-color:rgba(226,163,214,.4)}.rt-carry{color:#e8b04f;border-color:rgba(232,176,79,.45)}
 .rolecard summary{list-style:none;cursor:pointer;padding:9px 2px;border-top:1px solid rgba(214,178,98,.1);color:#e9c46f;font-weight:800;font-size:13.5px}.rolecard summary::-webkit-details-marker{display:none}.rolecard details[open] summary{display:none}
 .nonelist{display:flex;flex-wrap:wrap;gap:6px}.nonelist span{font-size:13px;color:#cfc3a6;background:#15130f;border:1px solid rgba(214,178,98,.15);border-radius:999px;padding:5px 10px}
+
+.fxlist{display:grid;gap:12px}
+.fx{border:1px solid rgba(214,178,98,.3);background:linear-gradient(160deg,#17140f,#0d0c09);border-radius:20px;padding:14px 14px 10px}
+.fx-h{display:flex;align-items:center;justify-content:space-between;gap:8px}.fx-h b{font-size:18px;color:#f3ead3}
+.fx-day{margin-top:4px;font-size:14px;font-weight:800;color:#e9c46f}
+.fx-route{display:flex;align-items:center;gap:6px;margin:14px 0 6px;direction:ltr}
+.fx-route .pt{display:flex;flex-direction:column;align-items:center;min-width:86px}
+.fx-route .tm{font-size:27px;font-weight:900;color:#f3ead3;line-height:1}
+.fx-route .ap{font-size:13px;font-weight:900;letter-spacing:.08em;color:#e9c46f;margin-top:4px}
+.fx-route small{font-size:11.5px;color:#a69a7d;direction:rtl}
+.fx-route .ln{flex:1;display:flex;align-items:center;gap:4px;color:#e9c46f}.fx-route .ln i{flex:1;border-top:2px dashed rgba(214,178,98,.45)}.fx-route .ln svg{width:22px;height:22px;flex:0 0 auto}
+.fx-note{font-size:13.5px;color:#cfc3a6;background:#15130f;border-radius:12px;padding:8px 10px;margin-top:6px}
+.fx-pax{display:block;width:100%;text-align:right;margin-top:8px;padding:10px 4px 4px;border:0;border-top:1px solid rgba(214,178,98,.15);background:none;color:#e9c46f;font-weight:800;font-size:14px}
+
+a.cube{text-decoration:none;color:inherit}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -1413,6 +1428,32 @@ SUB.roles=function(){
      ${(L=>it.length>5&&!q?L(it.slice(0,4))+`<details><summary>עוד ${it.length-4} ›</summary>${L(it.slice(4))}</details>`:L(it))(a=>a.map(o=>`<button class="rl" data-edit="${o.e}"><span class="rt ${ROLE_TAG[o.k][1]}">${ROLE_TAG[o.k][0]}</span><span class="tx">${esc(o.t)}</span>${o.due?`<span class="num dd">${fmtDate(o.due)}</span>`:''}</button>`).join(''))}</div>`}).join('')||card('','<b>לא נמצא</b>')}</div>
    ${!q&&none.length?`<div class="ghead"><span>עוד בלי תפקיד</span><span class="num">${none.length}</span></div><div class="nonelist">${none.map(n=>`<span>${esc(n)}</span>`).join('')}</div><p class="note">כדי לתת למישהו תפקיד, פותחים את הכרטיס שלו במסך המשתתפים וכותבים בשדה "תפקידים", או ממנים אותו כאחראי על משימה.</p>`:''}`;
 };
+
+const dayHe=d=>{try{return new Date(d+'T12:00:00').toLocaleDateString('he-IL',{weekday:'long'})}catch(e){return ''}};
+SUB.flights=function(){
+  const dir=V.filter.fd||'הלוך', isOut=dir==='הלוך';
+  const all=S.flights.slice().sort((a,b)=>((a.date||'')+(a.dep||'')).localeCompare((b.date||'')+(b.dep||'')));
+  const fl=all.filter(f=>f.dir===dir);
+  const paxN=d=>S.flights.filter(f=>f.dir===d).reduce((s,f)=>s+paxOf(f).length,0);
+  const solo=S.participants.filter(p=>isOut?p.outbound==='נפרד':p.returnGroup==='עצמאי');
+  const covered=new Set(fl.flatMap(f=>paxOf(f).map(p=>p._id)));solo.forEach(p=>covered.add(p._id));
+  const lost=S.participants.filter(p=>!covered.has(p._id));
+  const from=isOut?'TLV':'BUD', to=isOut?'BUD':'TLV', fromN=isOut?'תל אביב':'בודפשט', toN=isOut?'בודפשט':'תל אביב';
+  const cardF=f=>{const pax=paxOf(f), nextDay=f.arr&&f.dep&&f.arr<f.dep;
+   return `<div class="fx"><div class="fx-h"><b>${esc(f.label||'')}</b><span class="pill p-gold num">${pax.length} נוסעים</span></div>
+    <div class="fx-day">${dayHe(f.date)} · <span class="num">${fmtDate(f.date)}</span> · <span class="ltr num">${esc(f.flightNo||'')}</span></div>
+    <div class="fx-route"><div class="pt"><span class="tm num">${esc(f.dep||'?')}</span><span class="ap">${from}</span><small>${fromN}</small></div>
+     <div class="ln"><i></i><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z" transform="rotate(90 12 12)"/></svg><i></i></div>
+     <div class="pt"><span class="tm num">${esc(f.arr||'?')}</span><span class="ap">${to}</span><small>${toN}${nextDay?' · למחרת':''}</small></div></div>
+    ${f.notes?`<div class="fx-note">${esc(f.notes)}</div>`:''}
+    <button class="fx-pax" data-flight="${f._id}">מי בטיסה הזאת (${pax.length}) ›</button></div>`};
+  return subHead('טיסות')+`
+   <div class="seg">${[['הלוך','✈ הלוך',paxN('הלוך')],['חזור','✈ חזור',paxN('חזור')]].map(([k,l,c])=>`<button data-filter="fd" data-val="${k}" aria-pressed="${dir===k}">${l}<span class="c num">${c}</span></button>`).join('')}</div>
+   <p class="note">${isOut?`כמעט כולם טסים יחד בבוקר יום חמישי. ${fl.length>1?'יש גם טיסה מאוחרת יותר לזוג אחד.':''}`:`החזרה מתחלקת ל-${fl.length} טיסות. כל נוסע שייך לקבוצה אחת, לפי מה שרשום בכרטיס שלו.`}</p>
+   <div class="fxlist">${fl.map(cardF).join('')}</div>
+   ${solo.length?`<div class="ghead"><span>${isOut?'מגיעים לבד':'חוזרים לבד'}</span><span class="num">${solo.length}</span></div>`+card(solo.map(p=>`<div class="row" data-edit="participants/${p._id}" role="button" tabindex="0"><div class="main"><div class="t">${esc(p.name)}</div><div class="m"><span>מזמינים טיסה בעצמם</span></div></div></div>`).join('')):''}
+   ${lost.length?`<div class="ghead"><span style="color:var(--warn)">לא משויכים לאף טיסה</span><span class="num">${lost.length}</span></div>`+card(lost.map(p=>`<div class="row" data-edit="participants/${p._id}" role="button" tabindex="0"><div class="main"><div class="t">${esc(p.name)}</div><div class="m"><span>לבחור ${isOut?'טיסת הלוך':'קבוצת חזור'} בכרטיס</span></div></div><span class="pill p-warn">לשייך</span></div>`).join('')):''}`;
+};
 document.getElementById('fab').onclick=()=>{let col={tasks:'tasks',sched:'schedule'}[V.tab];if(V.tab==='money')col=['participants','expenses','donations'].includes(V.seg)?V.seg:'participants';if(V.tab==='more')col=V.sub;if(col==='notes'){updSheet('home');return}if(col)editor(col,null)};
 document.getElementById('meBtn').onclick=()=>pickMe();
 document.getElementById('ideaBtn').onclick=()=>updSheet(curScope());
@@ -1695,10 +1736,10 @@ const TILE_DEFS=()=>{const pk=S.packing,pd=pk.filter(x=>x.done).length,rk=S.room
  ['messages','chat','הודעות',`${S.messages.filter(m=>m.sent).length}/${S.messages.length} נשלחו`,'c7'],
  ['files','file','מסמכים',`${S.files.length} קבצים`,'c8'],
  ['contacts','phone','אנשי קשר',`${S.contacts.length} ספקים`,'c9'],
- ['notes','bulb','רעיונות',`${S.notes.filter(n=>n.status!=='סודר').length} חדשים`,'c10'],
- ['roles','people','חלוקת תפקידים',`${Object.keys(rolesMap()).length} עם תפקיד`,'c11'],
+ ['trivia','spark','טריוויה','משחק לאוטובוס','c10'],
+ ['roles','people','תפקידים',`${Object.keys(rolesMap()).length} עם תפקיד`,'c11'],
  ]};
-const homeTiles=()=>`<section class="sec"><div class="sec-h"><h3>הכל במקום אחד</h3></div><div class="cubes">${TILE_DEFS().map(([k,ic,l,s,c],i)=>`<button class="cube ${c}" data-go="more" data-opts='{"sub":"${k}"}' style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></button>`).join('')}</div></section>`;
+const homeTiles=()=>`<section class="sec"><div class="sec-h"><h3>הכל במקום אחד</h3></div><div class="cubes">${TILE_DEFS().map(([k,ic,l,s,c],i)=>(k==='trivia'?`<a class="cube ${c}" href="../" target="_blank" rel="noopener" style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></a>`:`<button class="cube ${c}" data-go="more" data-opts='{"sub":"${k}"}' style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></button>`)).join('')}</div></section>`;
 
 
 const PROG=[
