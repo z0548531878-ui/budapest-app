@@ -9,7 +9,7 @@ B backup and export, S links and content safety, O offline. Tasks, schedule, Cla
 
 | case | flow | type | steps | expected | auto | result |
 | --- | --- | --- | --- | --- | --- | --- |
-| M01-H1 | money | happy | open כסף with paid, part-paid, unpaid and exempt participants, 2 expenses, 2 donations | balance +750 ₪; "כבר בקופה" counts the part payment (3,250 ₪); the part-paid row shows 500 / 1,750 | e2e | pass |
+| M01-H1 | money | happy | open כסף with paid, part-paid, unpaid and exempt participants, 2 expenses, 2 donations | balance +2,500 ₪ (the exempt count as income, covered from the fund); "כבר בקופה" counts the part payment (3,250 ₪); the part-paid row shows 500 / 1,750 | e2e | pass |
 | M02-H1 | money | happy: cash boxes | open קופות, then count Shlomi's box at 1,400 | each holder's in/out/balance; Yael's expense listed as owed to her; gap −100 ₪ shown and saved | e2e | pass |
 | M03-H1 | money | happy: partial payment | רישום תשלום → שילם חלק → 800 → then the rest | asks for the amount; 800 saved, cash counts it; full payment sets 1,750 and "שולם" | e2e | pass |
 | M04-H1 | money | edge: reminder after a part payment | open תזכורת בוואטסאפ | asks only for what is still owed (1,250 ₪), total owed 3,000 ₪ | e2e | pass |

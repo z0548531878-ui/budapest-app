@@ -32,7 +32,7 @@ test('A11Y-1 every screen and sheet passes axe (WCAG 2.1 AA)', async ({ browser,
   await expect(page.getByText('להזמין אוטובוס')).toBeVisible();
   const found: string[] = [];
   found.push(...await axe(page, 'home'));
-  for (const tab of ['משימות', 'כסף', 'לו״ז', 'עוד']) {
+  for (const tab of ['משימות', 'כסף', 'לו״ז', 'תובנות']) {
     await page.locator('#nav').getByRole('button', { name: tab }).click();
     found.push(...await axe(page, tab));
   }

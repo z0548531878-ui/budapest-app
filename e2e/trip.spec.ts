@@ -23,7 +23,9 @@ async function seed(db: Db) {
 
 const nav = (page: Page, name: string) => page.locator('#nav').getByRole('button', { name }).click();
 const sheet = (page: Page) => page.getByRole('dialog');
-const settings = async (page: Page) => { await nav(page, 'עוד'); await page.getByRole('button', { name: /הגדרות/ }).click(); };
+const sub = (page: Page, name: string) => page.evaluate(n => (window as any).go('more', { sub: n }), name);
+const settings = (page: Page) => sub(page, 'settings');
+const participants = async (page: Page) => { await nav(page, 'כסף'); await page.locator('.seg').getByRole('button', { name: /^משתתפים/ }).click(); };
 
 test.describe('trip app', () => {
   test.afterEach(async ({ db }) => {
@@ -33,9 +35,10 @@ test.describe('trip app', () => {
   test('M01-H1 the money screen counts partial payments, donations and expenses', async ({ browser, db }) => {
     await seed(db);
     const { page, errors } = await openTrip(browser, db);
-    await nav(page, 'כסף');
-    // expected 3×1750 + 1500 donations − 6000 expenses = +750; in hand: 1750 + 500 (part) + 1000 (donation)
-    await expect(page.locator('.money-top .bal')).toHaveText('+750 ₪');
+    await participants(page);
+    // in hand: 1750 + 500 (part) + 1000 (donation)
+    // exempt participants count as income too (their share is covered from the fund): 4×1750 + 1500 − 6000 = +2,500
+    await expect(page.locator('.money-top .bal')).toHaveText('+2,500 ₪');
     await expect(page.locator('.money-top')).toContainText('כבר בקופה3,250 ₪');
     await expect(page.locator('.row', { hasText: 'בני לוי' })).toContainText('500 ₪ / 1,750 ₪');
     expect(await a11y(page)).toEqual([]);
@@ -65,7 +68,7 @@ test.describe('trip app', () => {
   test('M03-H1 recording a partial payment asks how much, and the cash box counts it', async ({ browser, db }) => {
     await seed(db);
     const { page, errors } = await openTrip(browser, db);
-    await nav(page, 'כסף');
+    await participants(page);
     await page.locator('.row', { hasText: 'גלעד מור' }).getByRole('button', { name: 'רישום תשלום' }).click();
     await sheet(page).getByRole('button', { name: 'שילם חלק' }).click();
     await sheet(page).getByLabel('כמה שולם עד עכשיו (₪)').fill('800');
@@ -84,7 +87,7 @@ test.describe('trip app', () => {
   test('M04-H1 the WhatsApp reminder asks only for what is still owed', async ({ browser, db }) => {
     await seed(db);
     const { page, errors } = await openTrip(browser, db);
-    await nav(page, 'כסף');
+    await participants(page);
     await page.getByRole('button', { name: 'תזכורת בוואטסאפ' }).click();
     await expect(sheet(page)).toContainText('2 לא שילמו · 3,000 ₪');
     const link = sheet(page).getByRole('link', { name: 'וואטסאפ' }).first();
@@ -149,7 +152,7 @@ test.describe('trip app', () => {
     const sum = wb.Sheets['סיכום'];
     expect(sum.B3.f).toBe("SUM('משתתפים'!E:E)");
     expect([sum.B3.v, sum.C3.v]).toEqual([2250, 2250]);
-    expect([sum.B8.v, sum.B9.v]).toEqual([750, 250]);
+    expect([sum.B8.v, sum.B9.v]).toEqual([2500, 250]);
     const ppl = XLSX.utils.sheet_to_json<any>(wb.Sheets['משתתפים']);
     expect(ppl.find(p => p['שם'] === 'בני לוי')).toMatchObject({ 'שולם בפועל (₪)': 500, 'נשאר לשלם (₪)': 1250 });
     expect(wb.Sheets['הוצאות'].E2.f).toBe('MAX(0,C2-D2)');
@@ -196,8 +199,7 @@ test.describe('trip app', () => {
     await db.put(`${T}/files/x1`, { name: 'קובץ חשוד', category: 'אחר', url: 'javascript:alert(document.cookie)', order: 1 });
     await db.put(`${T}/files/x2`, { name: 'העלון', category: 'עלון', url: 'drive.google.com/file/d/abc', order: 2 });
     const { page, errors } = await openTrip(browser, db);
-    await nav(page, 'עוד');
-    await page.getByRole('button', { name: /מסמכים/ }).click();
+    await sub(page, 'files');
     await expect(page.locator('a[href^="javascript"]')).toHaveCount(0);
     await expect(page.locator('.row', { hasText: 'קובץ חשוד' })).toContainText('חסר קישור');
     await expect(page.locator('.row', { hasText: 'העלון' }).getByRole('link', { name: 'פתיחה' })).toHaveAttribute('href', 'https://drive.google.com/file/d/abc');

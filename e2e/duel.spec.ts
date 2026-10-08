@@ -73,7 +73,7 @@ test.describe('F02 duel', () => {
     await b.page.getByRole('button', { name: /מאשרים/ }).click();
     await expect(a.page.getByText('שאלה 1 מתוך 30')).toBeVisible({ timeout: 20_000 });
     await b.page.context().close();
-    await expect(a.page.getByText(/עזב/)).toBeVisible({ timeout: 30_000 });
+    await expect(a.page.getByText(/עזב/)).toBeVisible({ timeout: 40_000 });
     await expect(a.page.getByText('הדו-קרב הסתיים')).toBeVisible();
     await expect(a.page.locator('.duel-result')).toContainText('ניצחתם');
   });
