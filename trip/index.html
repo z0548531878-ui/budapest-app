@@ -2047,7 +2047,7 @@ function pickMe(){
 }
 function paySheet(id){
   const p=find('participants',id);if(!p)return;
-  const opts=[['אשראי','שולם','שילם באשראי'],['העברה לאיציק','שולם','העביר לאיציק'],['מזומן לאיציק','שולם','מזומן לאיציק'],['','שולם חלקית','שילם חלק'],['','לא שולם','עוד לא שילם'],['','פטור','פטור מתשלום']];
+  const opts=[['אשראי','שולם','שילם באשראי'],['העברה לאיציק','שולם','העביר לאיציק'],['מזומן לאיציק','שולם','מזומן לאיציק'],['העברה לשלומי','שולם','העביר לשלומי'],['מזומן לשלומי','שולם','מזומן לשלומי'],['','שולם חלקית','שילם חלק'],['','לא שולם','עוד לא שילם'],['','פטור','פטור מתשלום']];
   sheet(`<h3>${esc(p.name)}</h3><p class="note num">${ils(p.amount)}</p><div class="paybtns">${opts.map(([m,s,l],i)=>`<button data-i="${i}" class="${p.status===s&&(!m||p.method===m)?'on':''}">${l}</button>`).join('')}</div>`);
   document.querySelector('#scrim .sheet').addEventListener('click',async e=>{const b=e.target.closest('[data-i]');if(!b)return;const [m,s]=opts[+b.dataset.i];
     const d={...strip(p),status:s,method:s==='לא שולם'||s==='פטור'?'':(m||p.method||'')};if(await save('participants',id,d)){closeSheet();toast(s==='שולם'?'נרשם תשלום':'עודכן',()=>save('participants',id,strip(p)))}});
@@ -2313,7 +2313,7 @@ render(true);
 </script>
 
 <script>
-(function(){var B='46a16bafb8';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B='2b1f5f45b1';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
