@@ -17,11 +17,14 @@ test.describe('F01 solo game', () => {
       const answers = page.locator('#s-answers').getByRole('button');
       await expect(answers.first()).toBeEnabled();
       await answers.first().click();
-      // read the result in one go: the next question replaces these nodes 1.1s later
-      const got = await page.evaluate(() => {
+      // read the result in one go, as soon as the answer registers: the next question replaces these nodes 1.1s later
+      const got = await page.waitForFunction(() => {
+        const b = document.querySelector('#s-answers .answer-btn') as HTMLButtonElement;
+        return b && b.disabled && b;
+      }).then(() => page.evaluate(() => {
         const b = document.querySelector('#s-answers .answer-btn') as HTMLButtonElement;
         return { disabled: b.disabled, right: b.classList.contains('correct'), note: document.getElementById('s-note')!.textContent! };
-      });
+      }));
       expect(got.disabled).toBe(true);
       if (got.right) score += Number(got.note.match(/\+(\d+)/)![1]);
     }
