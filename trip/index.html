@@ -2711,7 +2711,7 @@ function morphInto(el,html){
 })();
 
 /* ===== install-to-home-screen gate + push notifications (FCM) ===== */
-const VAPID_KEY='__VAPID__';
+const VAPID_KEY='BCFzmpUFcRY80zfS71ZGJh-EqXpEQCXng-AdjJJgACt1IurjUMtwa3evHPgSZBJUsk-ZZpEFVNBobgsEvqoLPkY';
 const isStandalone=()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}};
 const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const nogate=()=>{try{return localStorage.getItem('nogate')==='1'}catch(e){return false}};
@@ -2803,7 +2803,7 @@ render(true);
 </script>
 
 <script>
-(function(){var B='3b0236428c';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B='7301644cc1';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
