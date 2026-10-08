@@ -62,6 +62,7 @@ export async function openTrip(browser: Browser, db: Db, me = 'שלומי'): Pro
     }, [TRIP_KEY, me]);
   } });
   p.page.on('response', r => { if (r.status() >= 500) p.errors.push(`${r.status()} ${r.url()}`); });
-  await expect(p.page.locator('#nav')).toContainText('כסף');
+  // every list has arrived (from the emulator this takes a moment)
+  await expect.poll(() => p.page.evaluate('COLS.every(c => loaded.has(c))')).toBe(true);
   return p;
 }
