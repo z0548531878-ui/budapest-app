@@ -53,9 +53,22 @@ service cloud.firestore {
     // ---- Trip management app (/trip): everything lives under trips/{teamKey}. ----
     // The team key is a long random string that only the organizers' link carries,
     // and trips themselves can't be listed, so only someone holding the link can read or write.
+    // Everyone holding the link is trusted, so these rules guard against mistakes and bad batches, not people:
+    // nothing is deleted without a copy in trash, trash and the activity log are never deleted or edited,
+    // and no record grows past 60 fields. (Field types aren't checked: a record already saved with an odd value
+    // would then refuse every later edit, mid-trip.)
+    function tripCol(col) {
+      return col.matches('tasks|expenses|participants|donations|schedule|flights|packing|rooms|messages|files|notes|claude|contacts|settings|activity|attendance|trash');
+    }
+    function tripDocOk(col, d) {
+      return d.size() <= 60 && (col != 'trash' || (d.col is string && d.rid is string));
+    }
     match /trips/{trip}/{col}/{id} {
-      allow read, write: if trip.size() >= 24
-        && col.matches('tasks|expenses|participants|donations|schedule|flights|packing|rooms|messages|files|notes|claude|contacts|settings|activity|attendance');
+      allow read: if trip.size() >= 24 && tripCol(col);
+      allow create: if trip.size() >= 24 && tripCol(col) && tripDocOk(col, request.resource.data);
+      allow update: if trip.size() >= 24 && tripCol(col) && col != 'activity' && tripDocOk(col, request.resource.data);
+      allow delete: if trip.size() >= 24 && tripCol(col) && !col.matches('activity|trash')
+        && (col == 'attendance' || existsAfter(/databases/$(database)/documents/trips/$(trip)/trash/$(col + '__' + id)));
     }
   }
 }

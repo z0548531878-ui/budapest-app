@@ -142,7 +142,9 @@ const SHIM = String.raw`(() => {
   const docSnap = (ref, r) => ({ id: ref.id, ref, exists: !!r.exists, data: () => r.exists ? JSON.parse(JSON.stringify(r.data)) : undefined });
   const querySnap = (col, rows) => { const docs = rows.map(r => docSnap(col.doc(r.id), { exists: true, data: r.data })); return { docs, size: docs.length, empty: !docs.length, forEach: f => docs.forEach(f) }; };
   const enc = d => JSON.parse(JSON.stringify(d === undefined ? {} : d));
-  function listen(spec, wrap, cb, err) {
+  // onSnapshot(next, error) or onSnapshot(options, next, error), like the SDK
+  function listen(spec, wrap, cb, err, err2) {
+    if (typeof cb === 'object') { cb = err; err = err2; }
     let id = null, dead = false;
     call('listen', spec).then(i => { if (dead) { call('unlisten', { id: i }); return; } id = i; subs[i] = s => cb(wrap(s)); }).catch(e => err && err(e));
     return () => { dead = true; if (id) { delete subs[id]; call('unlisten', { id }); } };
@@ -159,16 +161,17 @@ const SHIM = String.raw`(() => {
     set(d, o) { return commit([{ op: 'set', path: this.path, data: enc(d), merge: !!(o && o.merge) }]).then(() => {}); }
     update(d) { return commit([{ op: 'update', path: this.path, data: enc(d) }]).then(() => {}); }
     delete() { return commit([{ op: 'delete', path: this.path }]).then(() => {}); }
-    onSnapshot(cb, err) { return listen({ kind: 'doc', path: this.path }, s => docSnap(this, s), cb, err); }
+    onSnapshot(...a) { return listen({ kind: 'doc', path: this.path }, s => docSnap(this, s), ...a); }
   }
   class ColRef {
     constructor(path, q) { this.path = path; this.q = q || { col: path, wheres: [], order: null, limit: null }; }
-    doc(id) { return new DocRef(this.path + '/' + id); }
+    doc(id) { return new DocRef(this.path + '/' + (id || Math.random().toString(36).slice(2, 12) + Date.now().toString(36))); }
     where(f, op, v) { return new ColRef(this.path, { ...this.q, wheres: [...this.q.wheres, [f, op, v]] }); }
     orderBy(f, dir) { return new ColRef(this.path, { ...this.q, order: [f, dir || 'asc'] }); }
     limit(n) { return new ColRef(this.path, { ...this.q, limit: n }); }
+    async add(d) { const r = this.doc(); await r.set(d); return r; }
     async get() { return querySnap(this, await call('query', this.q)); }
-    onSnapshot(cb, err) { return listen({ kind: 'query', ...this.q }, s => querySnap(this, s), cb, err); }
+    onSnapshot(...a) { return listen({ kind: 'query', ...this.q }, s => querySnap(this, s), ...a); }
   }
   const db = {
     collection: n => new ColRef(n),

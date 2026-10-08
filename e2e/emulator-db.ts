@@ -80,6 +80,16 @@ export class EmulatorDb {
           .replace('const db = firebase.firestore();', `const db = firebase.firestore(); db.useEmulator('${h}', ${port});`);
         return route.fulfill({ response: res, body });
       }
+      if (url.startsWith('http://localhost:4173/trip/index.html')) {
+        const res = await route.fetch();
+        const src = await res.text();
+        // if the app's text changes and these don't match, fail rather than run the tests against the live project
+        if (!src.includes('projectId:"budapest-983e4"') || !src.includes('const fs=firebase.firestore(),')) throw new Error('trip/index.html: emulator hooks not found');
+        const body = src
+          .replace('projectId:"budapest-983e4"', `projectId:"${this.project}"`)
+          .replace('const fs=firebase.firestore(),', `const fs=firebase.firestore(),__emu=fs.useEmulator('${h}', ${port}),`);
+        return route.fulfill({ response: res, body });
+      }
       if (url.startsWith(`http://${this.host}`) || url.startsWith('http://localhost')) return route.continue();
       if (url.includes('fonts.googleapis')) return route.fulfill({ contentType: 'text/css', body: '' });
       if (route.request().resourceType() === 'image') return route.fulfill({ contentType: 'image/png', body: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64') });
