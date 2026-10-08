@@ -763,12 +763,55 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .quick input{border:0!important;background:transparent!important}
 .qcard.done{opacity:.55}
 .cdg{direction:ltr!important}
+
+/* ===== nav / insights / money summary ===== */
+.page-title{align-items:center}
+.page-title .back{flex:0 0 auto}
+.ins-hero{display:flex;align-items:center;gap:14px;padding:16px;border-radius:20px;border:1px solid rgba(214,178,98,.35);background:linear-gradient(160deg,#17140f,#0b0a08);margin-bottom:8px}
+.ins-hero>b{font-family:var(--display);font-size:46px;line-height:1;color:#f0d28c;min-width:62px;text-align:center}
+.ins-hero span{display:block;font-weight:900;font-size:16px;color:#f3ead3}.ins-hero small{display:block;font-size:13px;color:#a69a7d;margin-top:3px;line-height:1.45}
+.inslist{display:grid;gap:8px}
+.ins{display:flex;align-items:center;gap:12px;width:100%;text-align:right;padding:13px 14px;border-radius:16px;border:1px solid rgba(214,178,98,.18);background:#13110d;color:var(--ink);position:relative;overflow:hidden}
+.ins::before{content:"";position:absolute;inset-block:0;inset-inline-start:0;width:4px;background:#6d6553}
+.ins.bad::before{background:#e5736a}.ins.warn::before{background:#e8b04f}.ins.gold::before,.ins.idea::before{background:linear-gradient(#f6dc93,#c99a3d)}.ins.info::before{background:#6f8fa8}
+.ins .ii{flex:0 0 38px;height:38px;border-radius:12px;display:grid;place-items:center;background:#1d1a14;color:#e9c46f}
+.ins.bad .ii{color:#f08b82}.ins .ii svg{width:20px;height:20px}
+.ins .main{flex:1;min-width:0}.ins b{display:block;font-size:15px;line-height:1.35}.ins small{display:block;font-size:12.5px;color:#a69a7d;margin-top:2px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ins .go{color:#a69a7d;font-size:20px}
+.okline{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 4px}.okline span{font-size:12.5px;font-weight:800;color:#7fd1a5;background:rgba(127,209,165,.08);border:1px solid rgba(127,209,165,.25);border-radius:999px;padding:5px 10px}
+.minilinks{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.minilinks button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 6px;border-radius:14px;border:1px solid rgba(214,178,98,.2);background:#13110d;color:#e8dcc0;font-weight:800;font-size:13px}
+.minilinks span{color:#e9c46f}.minilinks svg{width:22px;height:22px}
+.msum{border:1px solid rgba(214,178,98,.22);background:#13110d;border-radius:18px;padding:14px;margin-bottom:12px}
+.msum .mh{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}.msum .mh span{font-weight:900;font-size:17px;color:#e9c46f}.msum .mh b{font-size:22px;font-weight:900;margin-inline-start:auto}.msum .mh small{flex-basis:100%;font-size:12.5px;color:#a69a7d}
+.mbar{height:8px;border-radius:99px;background:#221e17;overflow:hidden;margin:8px 0 6px}.mbar.thin{height:5px;margin:2px 0 10px}
+.mbar i{display:block;height:100%;border-radius:inherit;transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.mbar.ok i{background:linear-gradient(90deg,#4fa57c,#8fe0b4)}.mbar.bad i{background:linear-gradient(90deg,#b8862f,#f0d28c)}
+.mline{display:flex;align-items:center;gap:10px;width:100%;text-align:right;background:none;border:0;color:var(--ink);padding:8px 0 0}
+.mline .main{flex:1;min-width:0}.mline .main b{font-size:15px}.mline small{display:block;font-size:12px;color:#a69a7d}.mline .v{text-align:left}.mline .v b{font-size:15.5px}
+.msum.mini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}.msum.mini span{display:block;font-size:12px;color:#a69a7d;font-weight:700}.msum.mini b{font-size:16px;font-weight:900}
+.pos{color:#7fd1a5}.neg{color:#f08b82}
+.seg.s5 button{font-size:13px;padding-inline:4px;gap:3px}.seg.s5 .c{font-size:11px}
+/* scroll hints */
+.hsw{position:relative}
+.hsw .chips,.hsw .seg{-webkit-mask-image:linear-gradient(to left,#000 78%,transparent);mask-image:linear-gradient(to left,#000 78%,transparent)}
+.hsw.end .chips,.hsw.end .seg{-webkit-mask-image:none;mask-image:none}
+.hsw .hint{direction:ltr;unicode-bidi:isolate;position:absolute;left:2px;top:50%;margin-top:-20px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(180deg,#f6dc93,#c99a3d);color:#1a1408;font-weight:900;font-size:20px;line-height:1;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.5);transition:opacity .3s}
+.hsw.end .hint{opacity:0}
+@media (prefers-reduced-motion:no-preference){.hsw .hint{animation:hintx 1.4s ease-in-out infinite}@keyframes hintx{50%{transform:translateX(-5px)}}
+ .nav button[data-nav="more"] svg{animation:insglow 3s ease-in-out infinite}@keyframes insglow{50%{filter:drop-shadow(0 0 6px rgba(240,210,140,.8))}}}
+/* bigger countdown */
+.pass-stub{flex:0 0 132px!important}
+.pass-stub .big{font-size:58px!important}
+.cdg b{font-size:23px!important}.cdg small{font-size:10.5px!important}.cdg i{font-size:20px!important}.cdg div{min-width:30px!important}
+@media (max-width:380px){.pass-stub{flex-basis:118px!important}.cdg b{font-size:20px!important}}
+.nav .badge.insb{background:#e5736a}
 </style>
 
 <div id="app" dir="rtl" lang="he">
   <header class="top">
     <img class="logo" src="logo.webp" alt="לוגו המסע – שיעור מבקשי ה׳">
-    <h1>שבת גיבוש בודפשט<span class="sub">מבקשי ה׳ · פרשת ויצא · 19–22.11</span></h1>
+    <h1>שבת גיבוש בודפשט<span class="sub">מבקשי ה׳ · <bdi dir="ltr">19–22.11</bdi></span></h1>
     <button class="ideabtn spk" id="ideaBtn" aria-label="עדכון או רעיון"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.1 6.1 6.4 1.9-6.4 1.9L12 18.5l-2.1-6.1-6.4-1.9 6.4-1.9z"/><path d="M19 15.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" opacity=".7"/></svg></button>
     <button class="ideabtn bellbtn" id="actBtn" aria-label="מה חדש"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="badge num" id="actBadge" hidden></span></button>
     <button class="me" id="meBtn"><i>?</i><span>מי אני?</span></button>
@@ -839,16 +882,119 @@ const mine=t=>!!ME&&String(t.owner||'').split(/,\s*/).includes(ME);
 const isFinal=e=>!!e.final||e.status==='שולם';
 const paxOf=f=>S.participants.filter(p=>f.dir==='הלוך'?(p.outbound||'קבוצתי')===(f.group||'קבוצתי'):p.returnGroup===f.group);
 
-const NAV=[['home','בית'],['tasks','משימות'],['money','כסף'],['sched','לו״ז'],['more','עוד']];
+const NAV=[['home','בית'],['tasks','משימות'],['money','כסף'],['sched','לו״ז'],['more','תובנות']];
+
+I.more=I.bulb;
+/* ---- insights engine: re-computed on every render ---- */
+function insights(){
+  const t=todayISO(), D=Math.round((new Date(TRIP_DAYS[0].d)-new Date(t))/864e5);
+  const open=S.tasks.filter(x=>x.status!=='בוצע'), m=money(), L=[];
+  const add=(lvl,ic,tt,d,to,o)=>L.push({lvl,ic,t:tt,d,to,o:o||{}});
+  const in7=d=>d&&d>=t&&(new Date(d)-new Date(t))/864e5<=7;
+  const late=open.filter(x=>x.due&&x.due<t); if(late.length)add('bad','tasks',`${late.length} משימות עברו את התאריך`,late.slice(0,3).map(x=>x.title).join(' · '),'tasks',{seg:'all'});
+  const urg=open.filter(x=>x.priority==='גבוהה'&&!x.owner); if(urg.length)add('bad','tasks',`${urg.length} משימות דחופות בלי אחראי`,'למנות אחראי לכל אחת','tasks',{seg:'all'});
+  const soon=open.filter(x=>in7(x.due)); if(soon.length)add('warn','tasks',`${soon.length} משימות לשבוע הקרוב`,soon.slice(0,3).map(x=>x.title).join(' · '),'tasks',{seg:'all'});
+  const noOwn=open.filter(x=>!x.owner&&x.priority!=='גבוהה'); if(noOwn.length)add('info','tasks',`${noOwn.length} משימות פתוחות בלי אחראי`,'כדאי לחלק לפני שזה מתגלגל לרגע האחרון','tasks',{seg:'all'});
+  if(m.gap<0)add('bad','money',`חסרים ${ils(-m.gap)} כדי לסגור את התקציב`,`ההוצאות הצפויות ${ils(m.est)}, ההכנסות ${ils(m.income)}. אפשר לגייס תרומה, לקצץ או לעדכן מחיר`,'money',{seg:'sum'});
+  if(m.unpaid.length){const owe=m.unpaid.reduce((s,x)=>s+((+x.amount||0)-(x.status==='שולם חלקית'?(+x.paidSoFar||0):0)),0);add(D<=21?'bad':'warn','money',`${m.unpaid.length} משתתפים עוד לא שילמו`,`בערך ${ils(owe)} בחוץ · אפשר לשלוח תזכורת בוואטסאפ מהמסך`,'money',{seg:'participants',filter:{pay:'open'}})}
+  const noPass=S.participants.filter(p=>!p.passport); if(noPass.length)add(D<=21?'bad':'warn','people',`${noPass.length} צילומי דרכון חסרים`,'צריך לפני הנפקת כרטיסים ורשימת המלון','more',{sub:'passports'});
+  const noPh=S.participants.filter(p=>!p.phone); if(noPh.length)add('info','phone',`${noPh.length} משתתפים בלי טלפון`,noPh.map(p=>p.name).join(' · '),'more',{sub:'people',filter:{pf:'nophone'}});
+  const est=S.expenses.filter(e=>!isFinal(e)); if(est.length)add('warn','money',`${est.length} הוצאות עדיין בהערכה`,'לסגור מחיר סופי עם הספקים כדי שהמאזן יהיה אמיתי','money',{seg:'expenses'});
+  const noRec=S.expenses.filter(e=>+e.paid&&!e.receipt); if(noRec.length)add('info','file',`${noRec.length} תשלומים בלי קבלה`,'לבקש קבלות עכשיו, לפני שזה נשכח','money',{seg:'expenses'});
+  const pl=S.donations.filter(d=>d.status!=='התקבל'); if(pl.length)add('warn','money',`${pl.length} תרומות שהובטחו ועוד לא התקבלו`,`${ils(pl.reduce((s,d)=>s+(+d.amount||0),0))} בסך הכול`,'money',{seg:'donations'});
+  const noRoom=S.rooms.filter(r=>!r.roomNumber); if(noRoom.length&&D<=14)add('warn','bed',`${noRoom.length} חדרים בלי מספר`,'לבקש מהמלון את שיבוץ החדרים','more',{sub:'rooms'});
+  const kit=S.rooms.filter(r=>!r.kitReady); if(kit.length&&D<=1)add('warn','bed',`${kit.length} חדרים בלי סט`,'לסדר את הסטים לפני שהנוסעים עולים לחדרים','more',{sub:'rooms'});
+  const buy=S.packing.filter(x=>!x.done); if(buy.length)add(D<=10?'warn':'info','box',`${buy.length} פריטים עוד לא נקנו או נארזו`,`${buy.filter(x=>(x.where||'בארץ')!=='בבודפשט').length} לקנות בארץ · ${buy.filter(x=>x.where==='בבודפשט').length} בבודפשט`,'more',{sub:'packing'});
+  const nm=S.messages.filter(x=>!x.sent).sort((a,b)=>(a.date||'').localeCompare(b.date||''))[0];
+  if(nm)add(nm.date&&nm.date<=t?'warn':'info','chat',nm.date&&nm.date<=t?`הגיע הזמן לשלוח: ${nm.title}`:`ההודעה הבאה לקבוצה: ${nm.title}`,nm.date?`מתוכננת ל-${fmtDate(nm.date)}`:'','more',{sub:'messages'});
+  const sNo=S.schedule.filter(x=>!x.owner); if(sNo.length)add('info','sched',`${sNo.length} פריטים בלו״ז בלי אחראי`,'מי מוביל כל רגע במסע?','sched');
+  const nn=S.notes.filter(n=>n.status!=='סודר'); if(nn.length)add('info','bulb',`${nn.length} רעיונות שעוד לא סודרו`,'לעבור ולהפוך למשימות','more',{sub:'notes'});
+  const cq=S.claude.filter(x=>x.status==='פתוח'&&x.kind==='שאלה'); if(cq.length)add('gold','spark',`${cq.length} שאלות מ-Claude מחכות לתשובה`,cq.slice(0,2).map(x=>x.title).join(' · '),'more',{sub:'claude',seg:'שאלה'});
+  const ok=[];
+  if(!m.unpaid.length&&S.participants.length)ok.push('כל המשתתפים שילמו');
+  if(!noPass.length&&S.participants.length)ok.push('כל הדרכונים התקבלו');
+  if(!late.length)ok.push('אין משימות באיחור');
+  if(m.gap>=0)ok.push('התקציב מאוזן');
+  const rank={bad:0,gold:1,warn:2,info:3};L.sort((a,b)=>rank[a.lvl]-rank[b.lvl]);
+  return {L,ok,D};
+}
+const insRow=x=>`<button class="ins ${x.lvl}" data-go="${x.to}" data-opts='${esc(JSON.stringify(x.o))}'><span class="ii">${I[x.ic]||I.spark}</span><span class="main"><b>${esc(x.t)}</b>${x.d?`<small>${esc(x.d)}</small>`:''}</span><span class="go" aria-hidden="true">‹</span></button>`;
+function insightsView(){
+  const {L,ok,D}=insights(), sug=S.claude.filter(x=>x.status==='פתוח'&&x.kind==='הצעה').sort(byOrder);
+  const hot=L.filter(x=>x.lvl==='bad'||x.lvl==='gold'||x.lvl==='warn'), rest=L.filter(x=>x.lvl==='info');
+  return `<div class="page-title"><button class="back" data-back aria-label="חזרה">›</button><h2>תובנות</h2><span class="cnt num">${hot.length} לטיפול</span></div>
+  <div class="ins-hero"><b class="num">${D>0?D:0}</b><div><span>${D>0?'ימים עד הטיסה':'המסע כאן'}</span><small>אני בודק כל הזמן מה פתוח, מה חסר ומה כדאי לסגור. כל שורה פותחת את המקום שבו מטפלים בזה.</small></div></div>
+  ${hot.length?`<div class="ghead"><span>לסגור עכשיו</span><span class="num">${hot.length}</span></div><div class="inslist">${hot.map(insRow).join('')}</div>`:''}
+  ${sug.length?`<div class="ghead"><span>רעיונות של מפיק</span><span class="num">${sug.length}</span></div><div class="inslist">${sug.slice(0,6).map(x=>`<button class="ins idea" data-go="more" data-opts='{"sub":"claude","seg":"הצעה"}'><span class="ii">${I.spark}</span><span class="main"><b>${esc(x.title)}</b>${x.text?`<small>${esc(x.text)}</small>`:''}</span><span class="go" aria-hidden="true">‹</span></button>`).join('')}</div>${sug.length>6?`<button class="btn" data-go="more" data-opts='{"sub":"claude","seg":"הצעה"}' style="margin-top:10px;width:100%">עוד ${sug.length-6} רעיונות ›</button>`:''}`:''}
+  ${rest.length?`<div class="ghead"><span>כדאי לזכור</span><span class="num">${rest.length}</span></div><div class="inslist">${rest.map(insRow).join('')}</div>`:''}
+  ${ok.length?`<div class="okline">${ok.map(o=>`<span>✓ ${esc(o)}</span>`).join('')}</div>`:''}
+  <div class="ghead"><span>כלים</span></div><div class="minilinks"><button data-sub="settings"><span>${I.gear}</span>הגדרות</button><button data-sub="guide"><span>${I.spark}</span>איך זה עובד</button><button data-idea><span>${I.mic}</span>עדכון ל-Claude</button></div>`;
+}
+/* ---- money summary: where the money comes from and where it goes ---- */
+function moneySum(head){
+  const m=money(), payers=S.participants.filter(x=>x.status!=='פטור'), pct=(a,b)=>b?Math.round(a/b*100):0;
+  const g={};S.expenses.forEach(e=>{const k=e.category||'אחר';g[k]=g[k]||{est:0,paid:0,n:0};g[k].est+=+e.estimate||0;g[k].paid+=+e.paid||0;g[k].n++});
+  const cats=Object.entries(g).sort((a,b)=>b[1].est-a[1].est);
+  const pp=payers.length?Math.round(m.est/payers.length):0, avg=payers.length?Math.round(m.pExp/payers.length):0;
+  const bar=(a,b,cls)=>`<div class="mbar ${cls||''}"><i data-w="${pct(a,b)}%" style="width:0"></i></div>`;
+  const inc=[['משתתפים',m.pExp,m.pIn,`${payers.length} משלמים · ממוצע ${ils(avg)}`,'participants'],['תרומות',m.dAll,m.dIn,`${S.donations.length} תורמים`,'donations']];
+  return head+`<div class="msum"><div class="mh"><span>הכנסות</span><b class="num pos">${ils(m.income)}</b><small>נכנס כבר <span class="num">${ils(m.pIn+m.dIn)}</span> · <span class="num">${pct(m.pIn+m.dIn,m.income)}%</span></small></div>
+   ${bar(m.pIn+m.dIn,m.income,'ok')}
+   ${inc.map(([l,tot,got,sub,seg])=>`<button class="mline" data-seg="${seg}"><span class="main"><b>${l}</b><small>${sub}</small></span><span class="v"><b class="num">${ils(tot)}</b><small class="num">${pct(tot,m.income)}% מההכנסות · התקבל ${ils(got)}</small></span></button>${bar(got,tot,'ok thin')}`).join('')}</div>
+  <div class="msum"><div class="mh"><span>הוצאות</span><b class="num neg">${ils(m.est)}</b><small>שולם <span class="num">${ils(m.out)}</span> · נשאר לשלם <span class="num">${ils(Math.max(0,m.est-m.out))}</span></small></div>
+   ${bar(m.out,m.est,'bad')}
+   ${cats.map(([c,v])=>`<button class="mline" data-seg="expenses"><span class="main"><b>${esc(c)}</b><small><span class="num">${v.n}</span> סעיפים · שולם <span class="num">${ils(v.paid)}</span></small></span><span class="v"><b class="num">${ils(v.est)}</b><small class="num">${pct(v.est,m.est)}% מההוצאות</small></span></button>${bar(v.est,m.est,'bad thin')}`).join('')}</div>
+  <div class="msum mini"><div><span>עלות לנוסע</span><b class="num">${ils(pp)}</b></div><div><span>מחיר ממוצע ששילמו</span><b class="num">${ils(avg)}</b></div><div><span>${m.gap<0?'חסר':'עודף'}</span><b class="num ${m.gap<0?'neg':'pos'}">${ils(Math.abs(m.gap))}</b></div></div>
+  <p class="note">לחיצה על שורה פותחת את הפירוט. "עלות לנוסע" היא סך ההוצאות חלקי מספר המשלמים.</p>`;
+}
+/* ---- back navigation: in-app history so the phone's back button stays inside the app ---- */
+let NAVKEY=null, SKIPPOP=0, EXITARM=0, DEPTH=0;
+const navKey=()=>V.tab+'|'+(V.tab==='more'?V.sub||'':'');
+const navState=d=>({nav:1,d,tab:V.tab,sub:V.sub,seg:V.seg,filter:V.filter});
+function navSync(){const k=navKey();if(k===NAVKEY)return;
+  try{if(NAVKEY===null){history.replaceState({nav:1,root:1,d:0},'');DEPTH=1;history.pushState(navState(1),'')}
+   else if(k==='home|'&&DEPTH>1){SKIPPOP++;history.go(1-DEPTH);DEPTH=1}
+   else{DEPTH++;history.pushState(navState(DEPTH),'')}}catch(e){}
+  NAVKEY=k}
+const _render=render;
+render=function(a){_render(a);navSync();hintScroll()};
+function navBack(){if(DEPTH>1)history.back();else go('home')}
+window.addEventListener('popstate',e=>{
+  const st=e.state||{};
+  if(SKIPPOP){SKIPPOP--;DEPTH=st.d||0;if(st.root){try{history.pushState(navState(1),'')}catch(x){}DEPTH=1}return}
+  DEPTH=st.d||0;
+  if(document.getElementById('scrim')){_closeSheet();const sk=st.tab+'|'+(st.tab==='more'?st.sub||'':'');if(!st.nav||st.root||sk!==navKey()){DEPTH++;try{history.pushState(navState(DEPTH),'')}catch(x){}}return}
+  if(st.root||!st.nav){
+    if(V.tab==='home'){if(EXITARM){history.back();return}EXITARM=1;setTimeout(()=>EXITARM=0,2500);toast('לחיצה נוספת על "חזור" תצא מהאפליקציה')}
+    else{Object.assign(V,{tab:'home',sub:null,seg:null,filter:{},q:''});_render(true);hintScroll();window.scrollTo({top:0})}
+    try{history.pushState(navState(1),'')}catch(x){}DEPTH=1;NAVKEY=navKey();return}
+  Object.assign(V,{tab:st.tab,sub:st.sub||null,seg:st.seg||null,filter:st.filter||{},q:''});NAVKEY=navKey();_render(true);hintScroll();window.scrollTo({top:0});
+});
+const _sheet=sheet, _closeSheet=closeSheet;
+sheet=function(h){const had=!!document.getElementById('scrim');_sheet(h);if(!had&&!(history.state&&history.state.sheet)){try{DEPTH++;history.pushState(Object.assign({},history.state||{},{sheet:1,d:DEPTH}),'')}catch(e){}}};
+closeSheet=function(){if(!document.getElementById('scrim'))return;_closeSheet();if(history.state&&history.state.sheet){SKIPPOP++;history.back()}};
+/* ---- horizontal rows that scroll: fade edge + bouncing arrow + a one-time nudge ---- */
+const NUDGED={};
+function hintScroll(){
+  document.querySelectorAll('#view .chips, #view .seg').forEach(el=>{
+    if(el.scrollWidth<=el.clientWidth+4)return;
+    el.classList.add('ovf');
+    if(!el.parentElement.classList.contains('hsw')){const w=document.createElement('div');w.className='hsw';el.parentNode.insertBefore(w,el);w.appendChild(el);const h=document.createElement('span');h.className='hint';h.textContent='‹';h.setAttribute('aria-hidden','true');w.appendChild(h);
+      el.addEventListener('scroll',()=>{const end=Math.abs(el.scrollLeft)+el.clientWidth>=el.scrollWidth-6;w.classList.toggle('end',end)},{passive:true})}
+    const k=navKey()+'|'+[...el.parentElement.parentElement.children].indexOf(el.parentElement);
+    if(!NUDGED[k]&&!reduce){NUDGED[k]=1;setTimeout(()=>{el.scrollBy({left:-70,behavior:'smooth'});setTimeout(()=>el.scrollBy({left:70,behavior:'smooth'}),650)},500)}
+  });
+}
+
 function renderNav(){
   const myOpen=S.tasks.filter(t=>t.status!=='בוצע'&&mine(t)).length, idx=NAV.findIndex(n=>n[0]===V.tab);
-  document.getElementById('nav').innerHTML=`<span class="ind" style="inset-inline-start:${idx*20}%"></span>`+NAV.map(([k,l])=>`<button data-nav="${k}" ${V.tab===k?'aria-current="page"':''}>${I[k]}${l}${k==='tasks'&&myOpen?`<span class="badge num">${myOpen}</span>`:''}</button>`).join('');
+  document.getElementById('nav').innerHTML=`<span class="ind" style="inset-inline-start:${idx*20}%"></span>`+NAV.map(([k,l])=>`<button data-nav="${k}" ${V.tab===k?'aria-current="page"':''}>${I[k]}${l}${k==='tasks'&&myOpen?`<span class="badge num">${myOpen}</span>`:''}${k==='more'?(n=>n?`<span class="badge num insb">${n}</span>`:'')(insights().L.filter(x=>x.lvl==='bad').length):''}</button>`).join('');
   document.getElementById('meBtn').innerHTML=`<i>${esc(ME?ME[0]:'?')}</i><span>${esc(ME||'מי אני?')}</span>`;
   const show=['tasks','money','sched'].includes(V.tab)||(V.tab==='more'&&V.sub&&!['settings','guide','flights','claude','passports','program'].includes(V.sub));
   document.getElementById('fab').hidden=!show;
 }
 document.getElementById('nav').addEventListener('click',e=>{const b=e.target.closest('[data-nav]');if(b)go(b.dataset.nav)});
-function go(tab,opts={}){Object.assign(V,{tab,sub:null,seg:null,filter:{},q:''},opts);try{history.replaceState(null,'',`#${tab}`)}catch(e){}render(true);window.scrollTo({top:0,behavior:reduce?'auto':'smooth'})}
+function go(tab,opts={}){Object.assign(V,{tab,sub:null,seg:null,filter:{},q:''},opts);render(true);window.scrollTo({top:0,behavior:reduce?'auto':'smooth'})}
 try{const h=location.hash.slice(1);if(NAV.some(n=>n[0]===h))V.tab=h}catch(e){}
 
 function money(){
@@ -922,14 +1068,14 @@ const VIEWS={
     <div class="pass-route"><div><b>TLV</b><span>${esc(out?out.dep:'')}</span></div><div class="path"><svg viewBox="0 0 150 22" fill="none"><path d="M4 11h142" stroke="currentColor" stroke-width="1.6" stroke-dasharray="3 5"/><g class="plane"><path fill="currentColor" d="M146 11l-13-5.4v3.7l-6.5.1-2.8-3.8h-2l1.6 3.9-4.3.1v2.8l4.3.1-1.6 3.9h2l2.8-3.8 6.5.1v3.7z"/></g></svg></div><div><b>BUD</b><span>${esc(out?out.arr:'')}</span></div></div>
     <div class="days">${TRIP_DAYS.map((d,i)=>`<div class="${d.sh?'sh':''} ${i===idx?'now':''}"><b>${d.s}</b>${d.l}</div>`).join('')}</div></div>
     <div class="pass-stub">${depAt(out)>Date.now()?`<span class="big num" id="cdD">${cdParts(out).d}</span><small>ימים</small><div class="cdg num" id="cdT">${cdParts(out).t}</div>`:`<span class="big num">${big}</span><small>${lbl}</small>`}</div></section>
+  ${homeTiles()}
   <section class="hub">
    <button class="big" data-idea><span class="ic">${I.spark}</span><span class="main"><b>עדכון או רעיון</b><span>${CAN_SEND()?'כותבים או מכתיבים, וזה מגיע ל-Claude':'כותבים או מכתיבים, וזה נשמר לכל הצוות'}</span></span><span class="mic">${I.mic}</span></button>
    ${CAN_SEND()?'':'<!--'}<div class="sync ${pn?'has':''}"><span class="dot"></span><div class="main"><b>${pn?`${pn} חדשים ל-Claude`:'Claude מעודכן'}</b><small>${pn?'שולחים אליו, והוא מעדכן כאן לבד':'אין שינויים שהוא לא ראה'}</small></div>
     <div class="btns"><button class="btn ${pn?'primary':''}" data-send>שליחת עדכון ל-Claude</button></div></div>${CAN_SEND()?'':'-->'}
   </section>
-  ${homeTiles()}
   ${guideCard()}
-  ${fires.length?`<section class="sec"><div class="sec-h"><h3>דורש תשומת לב</h3></div>${card(fires.map(([c,l,to,o])=>`<button class="row" data-go="${to}" data-opts='${esc(JSON.stringify(o))}'><span class="pill ${c}">!</span><div class="main"><div class="t">${esc(l)}</div></div><span aria-hidden="true" style="color:var(--muted)">‹</span></button>`).join(''))}</section>`:''}
+  ${fires.length?`<section class="sec"><div class="sec-h"><h3>דורש תשומת לב</h3><button class="link" data-go="more">כל התובנות ›</button></div>${card(fires.map(([c,l,to,o])=>`<button class="row" data-go="${to}" data-opts='${esc(JSON.stringify(o))}'><span class="pill ${c}">!</span><div class="main"><div class="t">${esc(l)}</div></div><span aria-hidden="true" style="color:var(--muted)">‹</span></button>`).join(''))}</section>`:''}
   <section class="sec"><div class="sec-h"><h3>${ME?'הבא בתור שלך':'המשימות שלי'}</h3>${ME?`<button class="link" data-go="tasks" data-opts='{"seg":"mine"}'>הכל ›</button>`:''}</div>
     ${!ready('tasks')?skel(3):ME?card(my.map(taskRow).join(''),'<b>אין לך משימות פתוחות</b>כל הכבוד'):card('<button class="row" data-pickme><div class="main"><div class="t">בחרו מי אתם</div><div class="m">כדי לראות כאן את המשימות שלכם</div></div><span class="pill p-gold">בחירה</span></button>')}
   </section>
@@ -950,19 +1096,20 @@ const VIEWS={
   const cat=V.filter.cat; if(cat)rows=rows.filter(x=>x.category===cat);
   sortTasks(rows);
   const cats=TASK_CATS.filter(c=>S.tasks.some(t=>t.category===c));
-  return `<div class="page-title"><h2>משימות</h2><span class="cnt num">${cnt.done}/${S.tasks.length} בוצעו</span></div>${updBar('tasks')}
+  return `<div class="page-title"><button class="back" data-back aria-label="חזרה">›</button><h2>משימות</h2><span class="cnt num">${cnt.done}/${S.tasks.length} בוצעו</span></div>${updBar('tasks')}
    <form class="quick" id="qadd"><input id="qaddIn" placeholder="${ME?`הוספת משימה ל${esc(ME)}…`:'הוספת משימה…'}" autocomplete="off"><button>הוסף</button></form>
    <div class="seg">${[['mine','שלי'],['all','לעשות'],['wait','ממתין'],['done','בוצעו']].map(([k,l])=>`<button data-seg="${k}" aria-pressed="${seg===k}">${l}<span class="c num">${cnt[k]}</span></button>`).join('')}</div>
    <div class="chips">${[['','כל התחומים'],...cats.map(c=>[c,c])].map(([v,l])=>`<button class="chip" data-filter="cat" data-val="${esc(v)}" aria-pressed="${(cat||'')===v}">${esc(l)}</button>`).join('')}</div>
    ${!ready('tasks')?skel(5):!ME&&seg==='mine'?card('<button class="row" data-pickme><div class="main"><div class="t">בחרו מי אתם כדי לראות את המשימות שלכם</div></div><span class="pill p-gold">בחירה</span></button>'):card(rows.map(taskRow).join(''),seg==='mine'?'<b>אין לך משימות פתוחות</b>אפשר להוסיף משימה בשורה למעלה':seg==='wait'?'<b>לא מחכים לאף אחד</b>משימה שתלויה בספק או באדם אחר מסמנים בסטטוס "ממתין"':'<b>אין משימות כאן</b>')}`;
  },
  money(){
-  const seg=V.seg||'participants', m=money(), got=m.pIn+m.dIn;
-  const head=`<div class="page-title"><h2>כסף</h2></div>${updBar('money')}
+  const seg=V.seg||'sum', m=money(), got=m.pIn+m.dIn;
+  const head=`<div class="page-title"><button class="back" data-back aria-label="חזרה">›</button><h2>כסף</h2></div>${updBar('money')}
    <div class="money-top"><span class="lbl">מאזן צפוי</span><div class="bal num ${m.gap<0?'neg':'pos'}" data-count="${Math.abs(m.gap)}" data-fmt="ils" data-pre="${m.gap<0?'−':'+'}">${m.gap<0?'−':'+'}${ils(Math.abs(m.gap))}</div><small>${m.gap<0?'חסר כדי לכסות את כל ההוצאות':'יישאר עודף'} · לפי הסכומים הידועים היום</small>
     <div class="mt3"><div><span>ייכנס</span><b class="num pos">${ils(m.income)}</b></div><div><span>ייצא</span><b class="num neg">${ils(m.est)}</b></div><div><span>כבר בקופה</span><b class="num">${ils(got)}</b></div></div></div>
-   <div class="seg" style="margin-top:14px">${[['participants','משתתפים',m.unpaid.length],['expenses','הוצאות',S.expenses.length],['donations','תרומות',S.donations.length],['cash','קופות',cashBook().rows.length]].map(([k,l,c])=>`<button data-seg="${k}" aria-pressed="${seg===k}">${l}<span class="c num">${c}</span></button>`).join('')}</div>`;
+   <div class="seg s5" style="margin-top:14px">${[['sum','סיכום',''],['participants','משתתפים',m.unpaid.length],['expenses','הוצאות',S.expenses.length],['donations','תרומות',S.donations.length],['cash','קופות',cashBook().rows.length]].map(([k,l,c])=>`<button data-seg="${k}" aria-pressed="${seg===k}">${l}${c!==''?`<span class="c num">${c}</span>`:''}</button>`).join('')}</div>`;
   if(!ready('participants','expenses','donations'))return head+skel(6);
+  if(seg==='sum')return moneySum(head);
   if(seg==='cash')return cashSeg(head);
   if(seg==='participants'){
    const f=V.filter.pay||'open';
@@ -996,29 +1143,13 @@ const VIEWS={
   const key=x=>(x.time||'99').replace('~','');
   const rows=S.schedule.filter(x=>x.day===day).sort((a,b)=>key(a).localeCompare(key(b))||byOrder(a,b));
   const fl=S.flights.filter(f=>f.date===dd.d||(dd.k==='יום ראשון'&&f.date>dd.d)).sort((a,b)=>((a.date||'')+(a.dep||'')).localeCompare((b.date||'')+(b.dep||'')));
-  return `<div class="page-title"><h2>לו״ז</h2></div>${updBar('sched')}
+  return `<div class="page-title"><button class="back" data-back aria-label="חזרה">›</button><h2>לו״ז</h2></div>${updBar('sched')}
    <div class="seg">${TRIP_DAYS.map(d=>`<button data-seg="${d.k}" aria-pressed="${d.k===day}">${d.s}</button>`).join('')}</div>
    ${fl.length?`<div class="flights">${fl.map(flightCard).join('')}</div>`:''}
    <div class="tl ${dd.sh?'shabbat':''}">${!ready('schedule')?skel(5):card(rows.map(r=>`<div class="row" data-edit="schedule/${r._id}" role="button" tabindex="0"><span class="time num">${esc(r.time||'—')}</span>
      <div class="main"><div class="t">${esc(r.title)}</div><div class="m">${r.place?`<span>${esc(r.place)}</span>`:''}${r.owner?`<span class="who">${esc(r.owner)}</span>`:''}${r.menu?'<span class="pill p-gold">תפריט</span>':''}${r.notes?`<span>${esc(r.notes)}</span>`:''}</div></div></div>`).join(''),'<b>עוד אין אירועים ביום הזה</b>אפשר להוסיף עם ה-+')}</div>`;
  },
- more(){
-  const pk=S.packing, pd=pk.filter(x=>x.done).length, rk=S.rooms.filter(r=>r.kitReady).length;
-  const T=(k,ic,l,s)=>`<button class="tile" data-sub="${k}"><span class="ic">${I[ic]}</span><b>${l}</b><span>${s}</span></button>`;
-  return `<div class="page-title"><h2>עוד</h2></div><div class="tiles">
-   ${T('packing','box','רשימת קניות',`${pd}/${pk.length} מוכנים`)}
-   ${T('rooms','bed','חדרים',`${S.rooms.length} חדרים · ${rk} עם סט`)}
-   ${T('flights','plane','טיסות',`${S.flights.length} טיסות · מי בכל טיסה`)}
-   ${T('messages','chat','הודעות לקבוצה',`${S.messages.filter(m=>m.sent).length}/${S.messages.length} נשלחו`)}
-   ${T('guide','spark','איך זה עובד','עדכון, רעיונות, ו-Claude')}
-   ${T('people','people','משתתפי המסע',`${S.participants.length} משתתפים · טלפונים ופרטים`)}
-   ${T('passports','people','צילומי דרכונים',`${S.participants.filter(p=>p.passport).length}/${S.participants.length} התקבלו`)}
-   ${T('files','file','מסמכים',`${S.files.length} מסמכים וקישורים`)}
-   ${T('notes','bulb','רעיונות ומחשבות',`${S.notes.filter(n=>n.status!=='סודר').length} חדשים`)}
-   ${T('claude','spark','מ-Claude בשבילך',`${S.claude.filter(x=>x.status==='פתוח').length} פתוחים`)}
-   ${T('contacts','phone','אנשי קשר',`${S.contacts.length} ספקים ואנשים`)}
-   ${T('settings','gear','הגדרות','מי אני, צוות, שיתוף')}</div>`;
- },
+ more(){return insightsView()},
 };
 function flightCard(f){
  return `<button class="flight" data-flight="${f._id}"><span class="fn">${f.dir==='הלוך'?'הלוך':'חזור'} · ${esc(f.label||'')}</span><span class="pill p-gold num">${paxOf(f).length} נוסעים</span>
@@ -1093,7 +1224,7 @@ const SUB={
  rooms(){
   const rows=S.rooms.slice().sort(byOrder), rk=rows.filter(r=>r.kitReady).length;
   return subHead('חדרים',`<span class="cnt num">${rk}/${rows.length} עם סט</span>`)+updBar('rooms')+`<p class="note">לחיצה על העיגול מסמנת שהסט הונח בחדר.</p>`+card(rows.map(r=>`<div class="row" data-edit="rooms/${r._id}" role="button" tabindex="0"><button class="check ${r.kitReady?'on':''}" data-toggle="rooms/${r._id}" aria-label="סט הונח">${r.kitReady?CHECK:''}</button>
-   <div class="main"><div class="t">${esc(r.occupants)}</div><div class="m"><span>${esc(r.type)}</span>${r.notes?`<span>${esc(r.notes)}</span>`:''}</div></div>${r.roomNumber||r.floor?`<span class="pill p-mute num">${r.roomNumber?'חדר '+esc(r.roomNumber):''}${r.roomNumber&&r.floor?' · ':''}${r.floor?'קומה '+esc(r.floor):''}</span>`:'<span class="pill p-warn">אין מספר</span>'}</div>`).join(''));
+   <div class="main"><div class="t">${esc(r.occupants)}</div><div class="m"><span>${esc(r.type)}</span>${r.notes?`<span>${esc(r.notes)}</span>`:''}</div></div>${r.roomNumber||r.floor?`<span class="pill p-mute num">${r.roomNumber?'חדר '+esc(r.roomNumber):''}${r.roomNumber&&r.floor?' · ':''}${r.floor?'קומה '+esc(r.floor):''}</span>`:'<span class="pill p-mute">ממתין למלון</span>'}</div>`).join(''));
  },
  flights(){
   const rows=S.flights.slice().sort((a,b)=>((a.date||'')+(a.dep||'')).localeCompare((b.date||'')+(b.dep||'')));
@@ -1146,7 +1277,7 @@ const SUB={
    ${rows.map(x=>{const done=x.status!=='פתוח';
     return `<div class="qcard ${done?'done':''}"><h4>${esc(x.title)}</h4>${x.text?`<p>${esc(x.text)}</p>`:''}
      ${seg==='שאלה'?`${x.pick?`<div class="opts" style="margin-bottom:8px">${['שלומי','איציק','יעל','צריך למנות מישהו','לא רלוונטי'].map(n=>`<button class="opt" data-pick="${x._id}" data-v="${esc(n)}" aria-pressed="${x.answer===n}">${esc(n)}</button>`).join('')}</div>`:''}<textarea id="ans_${x._id}" placeholder="${x.pick?'או לכתוב שם אחר / פירוט':'התשובה שלך'}">${esc(x.answer||'')}</textarea><div class="acts"><button class="btn primary" data-answer="${x._id}">שמירת תשובה</button>${done?'<span class="pill p-ok">נענה</span>':''}</div>`
-     :`<div class="acts">${done?`<span class="pill ${x.status==='התקבל'?'p-ok':'p-mute'}">${esc(x.status)}</span>`:`<button class="btn primary" data-accept="${x._id}">מעולה, להוסיף כמשימה</button><button class="btn" data-reject="${x._id}">לא רלוונטי</button>`}</div>`}</div>`}).join('')||card('','<b>אין כרגע</b>')}`;
+     :`<div class="acts">${done?`<span class="pill ${x.status==='התקבל'?'p-ok':'p-mute'}">${esc(x.status)}</span>`:`<button class="btn primary" data-accept="${x._id}">מעולה, להוסיף כמשימה</button><button class="btn" data-reject="${x._id}">לא רלוונטי</button>`}</div>`}</div>`}).join('')||card('',cl==='open'?'<b>הכול מטופל ✓</b>כשיהיו שאלות או רעיונות חדשים הם יופיעו כאן, וגם במסך התובנות':'<b>עוד לא טופל כלום</b>')}`;
  },
  guide(){
   return subHead('איך זה עובד')+`<div class="steps">${GUIDE.map(([ic,b,p])=>`<div class="step"><span class="n">${gic(ic)}</span><div><b>${b}</b><p>${p}</p></div></div>`).join('')}</div>
@@ -1182,7 +1313,7 @@ view.addEventListener('click',e=>{
   if(t.closest('[data-remind]')){reminder();return}
   const nw=t.closest('[data-new]');if(nw){editor(nw.dataset.new,null);return}
   const sb=t.closest('[data-sub]');if(sb){if(V.tab!=='more')V.tab='more';V.sub=sb.dataset.sub;V.filter={};render(true);window.scrollTo({top:0});return}
-  if(t.closest('[data-back]')){V.sub=null;render(true);return}
+  if(t.closest('[data-back]')){navBack();return}
   const f=t.closest('[data-flight]');if(f){flightSheet(f.dataset.flight);return}
   if(t.closest('[data-idea]')){updSheet(curScope());return}
   if(t.closest('[data-actfeed]')){actSheet();return}
@@ -1210,7 +1341,7 @@ view.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('[data-
 view.addEventListener('input',e=>{if(e.target.id==='q'){V.q=e.target.value.trim();render()}});
 view.addEventListener('submit',e=>{if(e.target.id==='qadd'){e.preventDefault();const i=document.getElementById('qaddIn');const v=i.value.trim();if(!v)return;
   add('tasks',{title:v,owner:ME||'',status:'לביצוע',priority:'רגילה',category:V.filter.cat||'אחר',due:'',notes:''}).then(ok=>{if(ok){i.value='';toast('המשימה נוספה')}})}});
-document.getElementById('fab').onclick=()=>{let col={tasks:'tasks',sched:'schedule'}[V.tab];if(V.tab==='money')col=V.seg||'participants';if(V.tab==='more')col=V.sub;if(col==='notes'){updSheet('home');return}if(col)editor(col,null)};
+document.getElementById('fab').onclick=()=>{let col={tasks:'tasks',sched:'schedule'}[V.tab];if(V.tab==='money')col=['participants','expenses','donations'].includes(V.seg)?V.seg:'participants';if(V.tab==='more')col=V.sub;if(col==='notes'){updSheet('home');return}if(col)editor(col,null)};
 document.getElementById('meBtn').onclick=()=>pickMe();
 document.getElementById('ideaBtn').onclick=()=>updSheet(curScope());
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -1241,7 +1372,7 @@ const GI={check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
 const gic=k=>GI[k]||I[k]||'';
 let guideDone=false;try{guideDone=localStorage.getItem('guideDone')==='1'}catch(e){}
 const guideCard=()=>guideDone?'':`<div class="guidecard"><h4>${CAN_SEND()?'איך מעדכנים? כותבים, שולחים, וזהו.':'איך מעדכנים? כותבים, שומרים, וזהו.'}</h4><ol><li>לוחצים על הכוכב הזהוב למעלה ומספרים מה קרה או מה עלה לכם.</li>${CAN_SEND()?'<li>"שליחת עדכון ל-Claude" מעתיק הכל ופותח את השיחה. מדביקים ושולחים.</li><li>Claude מעדכן את האפליקציה בעצמו תוך כמה דקות.</li>':'<li>מה שנכתב נשמר לכל הצוות, ושלומי מעביר ל-Claude.</li><li>העדכונים של Claude נכנסים לאפליקציה לבד, ותופיע הודעה.</li>'}</ol><div class="acts"><button class="btn primary" data-idea>לנסות</button><button class="btn" data-sub="guide">מדריך</button><span class="sp" style="flex:1"></span><button class="btn" id="guideOk">הבנתי</button></div></div>`;
-const updBar=k=>{const u=UPD[k];return u?`<button class="updbar slim" data-upd="${k}"><span class="ic">${I.spark}</span><span class="main"><b>עדכון או רעיון לגבי המסך הזה</b><small>${esc(u.ex)}</small></span><span class="ic" style="background:none;color:var(--gold)">${I.mic}</span></button>`:''};
+const updBar=k=>{const u=0&&UPD[k];return u?`<button class="updbar slim" data-upd="${k}"><span class="ic">${I.spark}</span><span class="main"><b>עדכון או רעיון לגבי המסך הזה</b><small>${esc(u.ex)}</small></span><span class="ic" style="background:none;color:var(--gold)">${I.mic}</span></button>`:''};
 const curScope=()=>V.tab==='more'?(UPD[V.sub]?V.sub:'home'):(UPD[V.tab]?V.tab:'home');
 function fieldDesc(c){return F[c].fields.map(f=>{let o=f.o;if(typeof o==='function')o=o();
   const t=f.t==='number'?'מספר':f.t==='toggle'?'true/false':f.t==='date'?'YYYY-MM-DD':f.t==='owner'?'שמות מהצוות מופרדים בפסיק':f.t==='list'?'אחת מ: '+[...new Set(S.packing.map(x=>x.list))].join(' / '):Array.isArray(o)?'אחד מ: '+o.join(' / '):'טקסט';
