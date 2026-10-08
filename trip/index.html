@@ -883,6 +883,21 @@ a.cube{text-decoration:none;color:inherit}
 @keyframes logoSpin{from{transform:scale(.42) rotate(-360deg)}to{transform:scale(1) rotate(0)}}
 .splash.out{opacity:0!important;transform:none!important;transition:opacity .4s ease!important}
 @media (prefers-reduced-motion:reduce){.splash img{transform:none}}
+
+#gate{position:fixed;inset:0;z-index:9999;background:#050504;display:grid;place-items:center;padding:24px;overflow:auto}
+.gbox{width:min(100%,380px);text-align:center;display:grid;gap:14px}
+.glogo{width:120px;height:120px;border-radius:50%;margin:0 auto;box-shadow:0 0 0 2px rgba(240,210,140,.75),0 0 50px rgba(217,178,95,.35)}
+.gbox h1{margin:4px 0 0;font-size:26px;background:linear-gradient(180deg,#f6dc93,#c99a3d);-webkit-background-clip:text;background-clip:text;color:transparent}
+.gbox p{margin:0;color:#cfc3a6;font-size:15px}
+.gbtn{min-height:54px;border:0;border-radius:16px;font-size:17px;font-weight:900;color:#15110a;background:linear-gradient(180deg,#f6dc93,#c99a3d)}
+.gbtn.alt{background:transparent;color:#e9c46f;border:1px solid rgba(214,178,98,.55)}
+.gin{min-height:52px;border-radius:14px;border:1px solid rgba(214,178,98,.45);background:#13110d;color:#f3ead3;font-size:17px;padding:0 14px;text-align:center}
+.gmsg{min-height:20px;color:#ff8f7e;font-size:14px;font-weight:700;line-height:1.4}
+.glink{background:none;border:0;color:#a69a7d;font-size:14px;padding:6px}
+.gout{margin-inline-start:auto}
+body.guest #fab,body.guest #meBtn,body.guest #ideaBtn,body.guest #actBtn,body.guest #banner,body.guest .syncbar{display:none!important}
+body.guest .nav-in .ind{display:none}
+body.guest .nav-in{display:grid;grid-template-columns:repeat(3,1fr)}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -2129,6 +2144,81 @@ document.addEventListener('pointerdown',e=>{if(reduce)return;const t=e.target.cl
 
 let rq=0, firstAll=false;
 const later=()=>{if(rq)return;if(V.sub==='notes'&&document.querySelector('#sortBox .prop,#sortBox .thinking'))return;rq=requestAnimationFrame(()=>{rq=0;const all=COLS.every(c=>loaded.has(c));render(all&&!firstAll);if(all&&!firstAll)setTimeout(autoApply,800);if(all)firstAll=true})};
+
+/* ===== entrance: participants (by name) / organizers (by code) ===== */
+const ORG_HASH='0047665ecdf3312c48d2e474343c581869bab3a587a39910662c3859103e8896';
+let ROLE='';try{ROLE=localStorage.getItem('role')||''}catch(e){}
+if(!ROLE&&ME){ROLE='org';try{localStorage.setItem('role','org')}catch(e){}}
+const GUEST=()=>ROLE.startsWith('guest:');
+const normName=s=>String(s||'').replace(/[֑-ׇ]/g,'').replace(/["'׳״`’]/g,'').replace(/^הרב(נית)?\s+/,'').replace(/\s+/g,' ').trim();
+function matchGuest(inp){
+  const n=normName(inp);if(n.length<2)return null;
+  const hits=S.participants.filter(p=>{const f=normName(p.name);if(f===n)return true;
+    const tk=n.split(' ');return tk.length>=2&&tk.every(t=>f.split(' ').includes(t))});
+  return hits.length===1?hits[0]:(hits.length>1?hits.find(p=>normName(p.name)===n)||null:null);
+}
+async function sha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+function setRole(r){ROLE=r;try{localStorage.setItem('role',r)}catch(e){}const g=document.getElementById('gate');if(g)g.remove();document.body.classList.toggle('guest',GUEST());if(typeof pickMe==='function'&&GUEST()){}render(true);window.scrollTo(0,0)}
+function logoutRole(){ROLE='';try{localStorage.removeItem('role');localStorage.removeItem('me')}catch(e){}ME='';document.body.classList.remove('guest');showGate()}
+function showGate(step){
+  let g=document.getElementById('gate');if(!g){g=document.createElement('div');g.id='gate';g.setAttribute('dir','rtl');g.setAttribute('lang','he');document.body.appendChild(g)}
+  const logo='<img src="logo.webp" alt="" class="glogo">';
+  if(step==='guest'){
+    g.innerHTML=`<div class="gbox">${logo}<h1>כניסת משתתפי המסע</h1><p>כתבו את שמכם המלא כפי שנרשמתם למסע</p>
+     <input id="gname" class="gin" type="text" autocomplete="off" placeholder="שם מלא" enterkeyhint="go">
+     <div id="gmsg" class="gmsg" role="alert"></div>
+     <button class="gbtn" id="ggo">כניסה</button><button class="glink" id="gback">חזרה</button></div>`;
+    const go=async()=>{const msg=document.getElementById('gmsg'),v=document.getElementById('gname').value;
+      if(!db||!loaded.has('participants')){msg.textContent='טוען את הרשימה, נסו שוב בעוד רגע…';return}
+      const p=matchGuest(v);
+      if(!p){msg.textContent='השם הזה לא רשום במסע, ולכן אי אפשר להיכנס. בדקו את האיות או פנו למארגנים.';return}
+      setRole('guest:'+p._id)};
+    document.getElementById('ggo').onclick=go;document.getElementById('gname').onkeydown=e=>{if(e.key==='Enter')go()};
+    document.getElementById('gback').onclick=()=>showGate();setTimeout(()=>document.getElementById('gname').focus(),50);return}
+  if(step==='org'){
+    g.innerHTML=`<div class="gbox">${logo}<h1>כניסת מארגנים</h1><p>הקלידו את קוד המארגנים</p>
+     <input id="gcode" class="gin ltr" type="password" autocomplete="off" inputmode="text" placeholder="קוד" enterkeyhint="go">
+     <div id="gmsg" class="gmsg" role="alert"></div>
+     <button class="gbtn" id="ggo">כניסה</button><button class="glink" id="gback">חזרה</button></div>`;
+    const go=async()=>{const v=document.getElementById('gcode').value.trim().toLowerCase();
+      if(await sha('budapest-salt:'+v)===ORG_HASH)setRole('org');else document.getElementById('gmsg').textContent='הקוד שגוי'};
+    document.getElementById('ggo').onclick=go;document.getElementById('gcode').onkeydown=e=>{if(e.key==='Enter')go()};
+    document.getElementById('gback').onclick=()=>showGate();setTimeout(()=>document.getElementById('gcode').focus(),50);return}
+  g.innerHTML=`<div class="gbox">${logo}<h1>מבקשי ה׳</h1><p>שבת בבודפשט · 19–22.11.2026</p>
+    <button class="gbtn" id="gg">כניסת משתתפי המסע</button><button class="gbtn alt" id="go">כניסת מארגנים</button></div>`;
+  document.getElementById('gg').onclick=()=>showGate('guest');document.getElementById('go').onclick=()=>showGate('org');
+}
+/* guest screens: read-only, no phones / payments / passports */
+const GNAV=[['gp','משתתפים'],['gr','חדרי מלון'],['gs','לוז המסע']];
+let GTAB='gp';
+function guestHTML(){
+  const me=S.participants.find(p=>p._id===ROLE.slice(6));
+  const head=t=>`<div class="page-title"><h2>${t}</h2><button class="glink gout" id="gout">יציאה</button></div>`;
+  if(GTAB==='gp'){const rows=S.participants.slice().sort((a,b)=>a.name.localeCompare(b.name,'he'));
+    return head('משתתפי המסע <span class="cnt num">'+rows.length+'</span>')+`<p class="note">שלום ${esc(me?me.name:'')} 👋</p>`+card(rows.map(p=>`<div class="row"><span class="av">${esc(p.name.replace(/^הרב(נית)? /,'')[0])}</span><div class="main"><div class="t">${esc(p.name)}</div></div></div>`).join(''))}
+  if(GTAB==='gr'){const rows=S.rooms.slice().sort(byOrder);
+    return head('חדרי מלון')+card(rows.map(r=>`<div class="row"><div class="main"><div class="t">${esc(r.occupants)}</div><div class="m"><span>${esc(r.type||'')}</span></div></div>${r.roomNumber?`<span class="pill p-mute num">חדר ${esc(r.roomNumber)}</span>`:''}</div>`).join(''))}
+  const day=V.seg||TRIP_DAYS[Math.max(0,TRIP_DAYS.findIndex(d=>d.d===todayISO()))].k;
+  const key=x=>(x.time||'99').replace('~','');
+  const rows=S.schedule.filter(x=>x.day===day).sort((a,b)=>key(a).localeCompare(key(b))||byOrder(a,b));
+  return head('לוז המסע')+`<div class="seg">${TRIP_DAYS.map(d=>`<button data-gseg="${d.k}" aria-pressed="${d.k===day}">${d.s}</button>`).join('')}</div>`+
+   card(rows.map(r=>`<div class="row"><span class="time num">${esc(r.time||'—')}</span><div class="main"><div class="t">${esc(r.title)}</div><div class="m">${r.place?`<span>${esc(r.place)}</span>`:''}</div></div></div>`).join(''))}
+const _renderBase=render;
+render=function(anim){
+  if(!GUEST()){document.body.classList.remove('guest');return _renderBase(anim)}
+  document.body.classList.add('guest');
+  const p=S.participants.find(p=>p._id===ROLE.slice(6));
+  if(loaded.has('participants')&&S.participants.length&&!p){logoutRole();return}
+  document.getElementById('nav').innerHTML=GNAV.map(([k,l])=>`<button data-gnav="${k}" ${GTAB===k?'aria-current="page"':''}>${l}</button>`).join('');
+  document.getElementById('view').innerHTML=guestHTML();
+};
+document.addEventListener('click',e=>{
+  const n=e.target.closest('[data-gnav]');if(n&&GUEST()){e.stopPropagation();GTAB=n.dataset.gnav;V.seg=null;render();window.scrollTo(0,0);return}
+  const s=e.target.closest('[data-gseg]');if(s&&GUEST()){V.seg=s.dataset.gseg;render();return}
+  if(e.target.closest('#gout')){logoutRole()}
+},true);
+const _pickMeBase=pickMe;pickMe=function(){if(GUEST()||!ROLE)return;return _pickMeBase()};document.body.classList.toggle('guest',GUEST());if(!ROLE)showGate();
+
 render(true);
 (()=>{const sp=document.getElementById('splash');let seen=false;try{seen=sessionStorage.getItem('splash')==='1';sessionStorage.setItem('splash','1')}catch(e){}
   if(seen||reduce){sp.remove();return}const im=sp.querySelector('img');const start=()=>{sp.classList.add('go');setTimeout(()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),420)},1250)};if(im&&!im.complete){let d=0;const f=()=>{if(!d){d=1;start()}};im.addEventListener('load',f);im.addEventListener('error',f);setTimeout(f,700)}else start()})();
@@ -2142,7 +2232,7 @@ render(true);
 </script>
 
 <script>
-(function(){var B='e77b26af1c';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B='e0b32416ed';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
