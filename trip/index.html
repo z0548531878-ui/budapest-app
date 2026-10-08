@@ -444,6 +444,13 @@ body::before{background:
 .cashcard .bal{font-family:var(--display);font-size:24px;font-weight:900;color:var(--ok);text-align:center;line-height:1.05}
 .cashcard .bal.neg{color:var(--bad)}.cashcard .bal small{display:block;font-family:var(--body);font-size:11.5px;color:var(--muted);font-weight:800}
 
+.pass-stub{flex:0 0 112px}
+.pass::before,.pass::after{left:101px}
+.cdt{font-family:var(--body);font-weight:900;font-size:18px;color:#f6efdf;letter-spacing:.02em;margin-top:8px;direction:ltr;font-variant-numeric:tabular-nums}
+.cdt b{display:inline-block;color:#f2cb7c;font-weight:900}
+.pass-stub .cdl{font-size:10.5px;opacity:.7}
+@media (prefers-reduced-motion:no-preference){.cdt b.tk{animation:tick .5s var(--ease)}@keyframes tick{0%{transform:translateY(-6px);opacity:.2}100%{transform:none;opacity:1}}}
+
 /* ===== Cooler stone palette (blue-grey, not white) ===== */
 :root{
   --bg:#dde3ec; --surface:#edf1f6; --sunk:#d5dce7; --ink:#1a2340; --muted:#56607a; --line:#c6cfdc;
@@ -497,6 +504,10 @@ body::before{background:
   @keyframes popin{0%{transform:scale(.92)}100%{transform:none}}
   .cashcard{animation:tileIn .5s var(--ease) both}.cashcard:nth-child(2){animation-delay:.06s}.cashcard:nth-child(3){animation-delay:.12s}
 }
+
+.passfolder{display:flex;align-items:center;gap:12px;text-decoration:none;color:#f6efdf;background:linear-gradient(160deg,#1f3264,#14224a);border-radius:18px;padding:15px;box-shadow:0 14px 30px -14px rgba(16,27,58,.7)}
+.passfolder .ic{background:var(--goldbtn);color:var(--goldbtn-ink)}
+.passfolder .main{flex:1;min-width:0}.passfolder b{display:block;font-size:17px}.passfolder .main span{font-size:13px;opacity:.8}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -551,12 +562,12 @@ const outGroups=()=>{const s=S.settings.find(x=>x._id==='trip');return (s&&s.out
 const F={
  tasks:{one:'משימה',g:1,fields:[{k:'title',l:'מה צריך לעשות',t:'textarea'},{k:'owner',l:'אחראי',t:'owner'},{k:'status',l:'סטטוס',t:'seg',o:['לביצוע','בתהליך','ממתין','בוצע']},{k:'priority',l:'עדיפות',t:'seg',o:['רגילה','גבוהה']},{k:'due',l:'עד מתי',t:'date'},{k:'category',l:'תחום',t:'chips',o:TASK_CATS},{k:'notes',l:'הערות',t:'textarea'}],def:{status:'לביצוע',priority:'רגילה',category:'אחר'}},
  expenses:{one:'הוצאה',g:1,fields:[{k:'name',l:'על מה',t:'text'},{k:'estimate',l:'סכום (₪)',t:'number',half:1},{k:'paid',l:'שולם בפועל (₪)',t:'number',half:1},{k:'final',l:'הסכום סופי',t:'toggle'},{k:'status',l:'מצב',t:'seg',o:['לא שולם','מקדמה','שולם']},{k:'receipt',l:'יש קבלה',t:'toggle'},{k:'paidBy',l:'מי שילם',t:'owner'},{k:'category',l:'תחום',t:'chips',o:EXP_CATS},{k:'notes',l:'הערות',t:'textarea'}],def:{status:'לא שולם',category:'אחר',estimate:0,paid:0,final:false}},
- participants:{one:'משתתף',fields:[{k:'name',l:'שם',t:'text'},{k:'amount',l:'סכום (₪)',t:'number',half:1},{k:'phone',l:'טלפון',t:'tel',half:1},{k:'status',l:'תשלום',t:'seg',o:['לא שולם','שולם חלקית','שולם','פטור']},{k:'method',l:'איך שילם',t:'chips',o:['אשראי','העברה לאיציק','מזומן לאיציק','העברה לשלומי','מזומן לשלומי']},{k:'holder',l:'אצל מי הכסף',t:'seg',o:['שלומי','איציק']},{k:'nusach',l:'נוסח',t:'seg',o:['אשכנז','ספרד','עדות המזרח']},{k:'outbound',l:'טיסת הלוך',t:'chips',o:()=>outGroups()},{k:'returnGroup',l:'טיסת חזור',t:'chips',o:RETURN_GROUPS},{k:'notes',l:'הערות',t:'text'}],def:{amount:1750,status:'לא שולם',outbound:'קבוצתי'}},
+ participants:{one:'משתתף',fields:[{k:'name',l:'שם',t:'text'},{k:'amount',l:'סכום (₪)',t:'number',half:1},{k:'phone',l:'טלפון',t:'tel',half:1},{k:'status',l:'תשלום',t:'seg',o:['לא שולם','שולם חלקית','שולם','פטור']},{k:'method',l:'איך שילם',t:'chips',o:['אשראי','העברה לאיציק','מזומן לאיציק','העברה לשלומי','מזומן לשלומי']},{k:'holder',l:'אצל מי הכסף',t:'seg',o:['שלומי','איציק']},{k:'passport',l:'צילום דרכון התקבל',t:'toggle'},{k:'nusach',l:'נוסח',t:'seg',o:['אשכנז','ספרד','עדות המזרח']},{k:'outbound',l:'טיסת הלוך',t:'chips',o:()=>outGroups()},{k:'returnGroup',l:'טיסת חזור',t:'chips',o:RETURN_GROUPS},{k:'notes',l:'הערות',t:'text'}],def:{amount:1750,status:'לא שולם',outbound:'קבוצתי'}},
  donations:{one:'תרומה',g:1,fields:[{k:'donor',l:'תורם',t:'text'},{k:'amount',l:'סכום (₪)',t:'number'},{k:'purpose',l:'מיועד ל',t:'chips',o:['כללי','סידורים','זמירות','תהילים','הדפסות']},{k:'status',l:'מצב',t:'seg',o:['התחייב','התקבל']},{k:'method',l:'איך התקבל',t:'chips',o:['אשראי','העברה לאיציק','מזומן לאיציק','העברה לשלומי','מזומן לשלומי']},{k:'holder',l:'אצל מי הכסף',t:'seg',o:['שלומי','איציק']},{k:'notes',l:'הערות',t:'textarea'}],def:{status:'התחייב',purpose:'כללי',amount:0}},
  schedule:{one:'אירוע',fields:[{k:'day',l:'יום',t:'seg',o:TRIP_DAYS.map(d=>d.k)},{k:'time',l:'שעה',t:'text',half:1,ph:'18:00'},{k:'place',l:'מקום',t:'text',half:1},{k:'title',l:'מה קורה',t:'text'},{k:'owner',l:'אחראי',t:'owner'},{k:'notes',l:'הערות',t:'textarea'},{k:'menu',l:'תפריט',t:'textarea'}],def:{}},
  flights:{one:'טיסה',g:1,fields:[{k:'label',l:'שם',t:'text'},{k:'dir',l:'כיוון',t:'seg',o:['הלוך','חזור']},{k:'group',l:'קבוצה (כמו בכרטיס המשתתף)',t:'text'},{k:'flightNo',l:'מספר טיסה',t:'text',half:1},{k:'date',l:'תאריך',t:'date',half:1},{k:'dep',l:'המראה',t:'text',half:1},{k:'arr',l:'נחיתה',t:'text',half:1},{k:'notes',l:'הערות',t:'textarea'}],def:{dir:'חזור'}},
  packing:{one:'פריט',fields:[{k:'item',l:'פריט',t:'text'},{k:'list',l:'רשימה',t:'list'},{k:'qty',l:'כמות',t:'number',half:1},{k:'cost',l:'עלות (₪)',t:'number',half:1},{k:'done',l:'נקנה / נארז',t:'toggle'},{k:'notes',l:'הערות',t:'text'}],def:{qty:1,cost:0,done:false}},
- rooms:{one:'חדר',fields:[{k:'occupants',l:'דיירים',t:'text'},{k:'roomNumber',l:'מספר חדר במלון',t:'text'},{k:'type',l:'סוג',t:'seg',o:['חדר לזוג','חדר ליחיד']},{k:'kitReady',l:'הסט הונח בחדר',t:'toggle'},{k:'notes',l:'הערות',t:'text'}],def:{type:'חדר לזוג',kitReady:false}},
+ rooms:{one:'חדר',fields:[{k:'occupants',l:'דיירים',t:'text'},{k:'roomNumber',l:'מספר חדר',t:'text',half:1},{k:'floor',l:'קומה',t:'text',half:1},{k:'type',l:'סוג',t:'seg',o:['חדר לזוג','חדר ליחיד']},{k:'kitReady',l:'הסט הונח בחדר',t:'toggle'},{k:'notes',l:'הערות',t:'text'}],def:{type:'חדר לזוג',kitReady:false}},
  messages:{one:'הודעה',g:1,fields:[{k:'title',l:'נושא',t:'text'},{k:'date',l:'מתי לשלוח',t:'date'},{k:'text',l:'נוסח ההודעה',t:'textarea'},{k:'sent',l:'נשלחה',t:'toggle'}],def:{sent:false}},
  files:{one:'מסמך',fields:[{k:'name',l:'שם המסמך',t:'text'},{k:'category',l:'סוג',t:'chips',o:DOC_CATS},{k:'url',l:'קישור (גוגל דרייב, וואטסאפ או כל קישור)',t:'text'},{k:'notes',l:'הערות',t:'textarea'}],def:{}},
  notes:{one:'רעיון',fields:[{k:'text',l:'מה עובר לך בראש?',t:'textarea'},{k:'status',l:'מצב',t:'seg',o:['חדש','סודר']}],def:{status:'חדש'}},
@@ -578,7 +589,7 @@ function renderNav(){
   const myOpen=S.tasks.filter(t=>t.status!=='בוצע'&&mine(t)).length, idx=NAV.findIndex(n=>n[0]===V.tab);
   document.getElementById('nav').innerHTML=`<span class="ind" style="inset-inline-start:${idx*20}%"></span>`+NAV.map(([k,l])=>`<button data-nav="${k}" ${V.tab===k?'aria-current="page"':''}>${I[k]}${l}${k==='tasks'&&myOpen?`<span class="badge num">${myOpen}</span>`:''}</button>`).join('');
   document.getElementById('meBtn').innerHTML=`<i>${esc(ME?ME[0]:'?')}</i><span>${esc(ME||'מי אני?')}</span>`;
-  const show=['tasks','money','sched'].includes(V.tab)||(V.tab==='more'&&V.sub&&!['settings','guide','flights','claude'].includes(V.sub));
+  const show=['tasks','money','sched'].includes(V.tab)||(V.tab==='more'&&V.sub&&!['settings','guide','flights','claude','passports'].includes(V.sub));
   document.getElementById('fab').hidden=!show;
 }
 document.getElementById('nav').addEventListener('click',e=>{const b=e.target.closest('[data-nav]');if(b)go(b.dataset.nav)});
@@ -655,7 +666,7 @@ const VIEWS={
   <section class="pass"><span class="shine"></span><div class="pass-main"><div class="pass-top"><span>${out?`אל על · <span class="ltr">${esc(out.flightNo)}</span>`:'טיסת הלוך'}</span><span>חמישי 19.11</span></div>
     <div class="pass-route"><div><b>TLV</b><span>${esc(out?out.dep:'')}</span></div><div class="path"><svg viewBox="0 0 150 22" fill="none"><path d="M4 11h142" stroke="currentColor" stroke-width="1.6" stroke-dasharray="3 5"/><g class="plane"><path fill="currentColor" d="M146 11l-13-5.4v3.7l-6.5.1-2.8-3.8h-2l1.6 3.9-4.3.1v2.8l4.3.1-1.6 3.9h2l2.8-3.8 6.5.1v3.7z"/></g></svg></div><div><b>BUD</b><span>${esc(out?out.arr:'')}</span></div></div>
     <div class="days">${TRIP_DAYS.map((d,i)=>`<div class="${d.sh?'sh':''} ${i===idx?'now':''}"><b>${d.s}</b>${d.l}</div>`).join('')}</div></div>
-    <div class="pass-stub"><span class="big num" ${typeof big==='number'?`data-count="${big}"`:''}>${big}</span><small>${lbl}</small></div></section>
+    <div class="pass-stub">${depAt(out)>Date.now()?`<span class="big num" id="cdD">${cdParts(out).d}</span><small>ימים</small><div class="cdt num" id="cdT">${cdParts(out).t}</div><small class="cdl">שעות · דק׳ · שנ׳</small>`:`<span class="big num">${big}</span><small>${lbl}</small>`}</div></section>
   <section class="hub">
    <button class="big" data-idea><span class="ic">${I.spark}</span><span class="main"><b>עדכון או רעיון</b><span>${CAN_SEND()?'כותבים או מכתיבים, וזה מגיע ל-Claude':'כותבים או מכתיבים, וזה נשמר לכל הצוות'}</span></span><span class="mic">${I.mic}</span></button>
    ${CAN_SEND()?'':'<!--'}<div class="sync ${pn?'has':''}"><span class="dot"></span><div class="main"><b>${pn?`${pn} חדשים ל-Claude`:'Claude מעודכן'}</b><small>${pn?'שולחים אליו, והוא מעדכן כאן לבד':'אין שינויים שהוא לא ראה'}</small></div>
@@ -749,6 +760,7 @@ const VIEWS={
    ${T('flights','plane','טיסות',`${S.flights.length} טיסות · מי בכל טיסה`)}
    ${T('messages','chat','הודעות לקבוצה',`${S.messages.filter(m=>m.sent).length}/${S.messages.length} נשלחו`)}
    ${T('guide','spark','איך זה עובד','עדכון, רעיונות, ו-Claude')}
+   ${T('passports','people','צילומי דרכונים',`${S.participants.filter(p=>p.passport).length}/${S.participants.length} התקבלו`)}
    ${T('files','file','מסמכים',`${S.files.length} מסמכים וקישורים`)}
    ${T('notes','bulb','רעיונות ומחשבות',`${S.notes.filter(n=>n.status!=='סודר').length} חדשים`)}
    ${T('claude','spark','מ-Claude בשבילך',`${S.claude.filter(x=>x.status==='פתוח').length} פתוחים`)}
@@ -770,6 +782,16 @@ const SESSIONS=[
 ];
 const curSes=()=>SESSIONS.find(x=>x.k===V.filter.ses)||SESSIONS[0];
 const SUB={
+ passports(){
+  const ppl=S.participants.slice().sort((a,b)=>a.name.localeCompare(b.name,'he')), got=ppl.filter(p=>p.passport).length, pct=ppl.length?Math.round(got/ppl.length*100):0;
+  const f=V.filter.pp||'missing', rows=f==='missing'?ppl.filter(p=>!p.passport):ppl;
+  return subHead('צילומי דרכונים',`<span class="cnt num">${got}/${ppl.length}</span>`)+`
+   <a class="passfolder" href="https://drive.google.com/drive/folders/1NV28JvhIoFQ4BMdF-S4dP9XWonw03anW" target="_blank" rel="noopener"><span class="ic">${I.file}</span><span class="main"><b>תיקיית הדרכונים בדרייב</b><span>משותפת רק לך, לאיציק וליעל. מעלים לשם את הצילומים.</span></span><span aria-hidden="true">‹</span></a>
+   <div class="card" style="padding:14px;margin:12px 0"><div style="display:flex;justify-content:space-between;font-weight:800"><span>התקבלו</span><span class="num">${got} מתוך ${ppl.length}</span></div><div class="prog"><i data-w="${pct}%" style="width:0"></i></div>
+    <p class="note" style="margin:10px 0 0">כדאי לשמור כל קובץ בשם של בעל הדרכון. אחרי ההעלאה מסמנים ✓ ליד השם.</p></div>
+   <div class="chips"><button class="chip" data-filter="pp" data-val="missing" aria-pressed="${f==='missing'}">עוד לא התקבל (${ppl.length-got})</button><button class="chip" data-filter="pp" data-val="all" aria-pressed="${f==='all'}">כולם</button></div>
+   ${card(rows.map(p=>`<div class="row ${p.passport?'done':''}"><button class="check ${p.passport?'on':''}" data-pp="${p._id}" aria-label="התקבל">${p.passport?CHECK:''}</button><div class="main"><div class="t">${esc(p.name)}</div></div>${p.phone?`<a class="pill p-mute" href="https://wa.me/${String(p.phone).replace(/\D/g,'').replace(/^0/,'972')}?text=${encodeURIComponent('שלום '+p.name.split(' ')[0]+', נשמח לצילום של הדרכון לקראת המסע לבודפשט (בשביל הצ׳ק אין במלון). אפשר לשלוח לי כאן. תודה!')}" target="_blank" rel="noopener">בקשה בוואטסאפ</a>`:''}</div>`).join(''),'<b>כל הדרכונים התקבלו 🎉</b>')}`;
+ },
  packing(){
   const lists=[...new Set(S.packing.slice().sort((a,b)=>(a.listOrder??99)-(b.listOrder??99)).map(x=>x.list))];
   const cur=V.filter.list||lists[0]||'';
@@ -784,7 +806,7 @@ const SUB={
  rooms(){
   const rows=S.rooms.slice().sort(byOrder), rk=rows.filter(r=>r.kitReady).length;
   return subHead('חדרים',`<span class="cnt num">${rk}/${rows.length} עם סט</span>`)+updBar('rooms')+`<p class="note">לחיצה על העיגול מסמנת שהסט הונח בחדר.</p>`+card(rows.map(r=>`<div class="row" data-edit="rooms/${r._id}" role="button" tabindex="0"><button class="check ${r.kitReady?'on':''}" data-toggle="rooms/${r._id}" aria-label="סט הונח">${r.kitReady?CHECK:''}</button>
-   <div class="main"><div class="t">${esc(r.occupants)}</div><div class="m"><span>${esc(r.type)}</span>${r.notes?`<span>${esc(r.notes)}</span>`:''}</div></div>${r.roomNumber?`<span class="pill p-mute num">חדר ${esc(r.roomNumber)}</span>`:'<span class="pill p-warn">אין מספר</span>'}</div>`).join(''));
+   <div class="main"><div class="t">${esc(r.occupants)}</div><div class="m"><span>${esc(r.type)}</span>${r.notes?`<span>${esc(r.notes)}</span>`:''}</div></div>${r.roomNumber||r.floor?`<span class="pill p-mute num">${r.roomNumber?'חדר '+esc(r.roomNumber):''}${r.roomNumber&&r.floor?' · ':''}${r.floor?'קומה '+esc(r.floor):''}</span>`:'<span class="pill p-warn">אין מספר</span>'}</div>`).join(''));
  },
  flights(){
   const rows=S.flights.slice().sort((a,b)=>((a.date||'')+(a.dep||'')).localeCompare((b.date||'')+(b.dep||'')));
@@ -876,6 +898,7 @@ view.addEventListener('click',e=>{
   const f=t.closest('[data-flight]');if(f){flightSheet(f.dataset.flight);return}
   if(t.closest('[data-idea]')){updSheet(curScope());return}
   if(t.closest('[data-actfeed]')){actSheet();return}
+  const pp=t.closest('[data-pp]');if(pp){const p=find('participants',pp.dataset.pp);if(p){const on=!p.passport;pp.classList.toggle('on',on);pp.innerHTML=on?CHECK:'';if(on)burst(pp);save('participants',p._id,{...strip(p),passport:on})}return}
   if(t.closest('[data-send]')){if(CAN_SEND())sendSheet();return}
   if(t.closest('[data-code]')){codeSheet();return}
   const ub=t.closest('[data-upd]');if(ub){updSheet(ub.dataset.upd);return}
@@ -1408,6 +1431,15 @@ async function maybeSeed(w){
   for(let i=0;i<ops.length;i+=400){const bt=w.batch();ops.slice(i,i+400).forEach(([c,id,d])=>bt.set(w.collection(c).doc(id),d));await bt.commit()}
   ban.innerHTML='';
 }
+
+
+const depAt=f=>{const d=(f&&f.date)||'2026-11-19',t=((f&&f.dep)||'08:40').replace(/[^\d:]/g,'')||'08:40';return new Date(`${d}T${t.padStart(5,'0')}:00+02:00`).getTime()};
+const p2=n=>String(n).padStart(2,'0');
+function cdParts(f){let ms=Math.max(0,depAt(f)-Date.now());const d=Math.floor(ms/864e5);ms-=d*864e5;const h=Math.floor(ms/36e5);ms-=h*36e5;const m=Math.floor(ms/6e4);ms-=m*6e4;const sec=Math.floor(ms/1e3);
+  return {d,t:`${p2(h)}:${p2(m)}:<b>${p2(sec)}</b>`}}
+setInterval(()=>{const D=document.getElementById('cdD'),T=document.getElementById('cdT');if(!D||!T)return;
+  const out=S.flights.find(f=>f._id==='f1')||S.flights.find(f=>f.dir==='הלוך');if(depAt(out)<=Date.now()){render();return}
+  const c=cdParts(out);if(D.textContent!==String(c.d))D.textContent=c.d;T.innerHTML=c.t;const b=T.querySelector('b');if(b&&!reduce){b.classList.remove('tk');void b.offsetWidth;b.classList.add('tk')}},1000);
 
 
 document.addEventListener('pointerdown',e=>{if(reduce)return;const t=e.target.closest('.btn,.hub .big,.shortcuts button,.tile,.stat,.cashcard,.act');if(!t)return;
