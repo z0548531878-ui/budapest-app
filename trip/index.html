@@ -225,6 +225,7 @@ button.pill{padding:7px 12px;font-size:13px}
 .seg button{flex:1;border:0;background:none;border-radius:11px;padding:10px 4px;font-weight:800;font-size:14px;color:var(--muted);transition:background-color .2s,color .2s,box-shadow .2s}
 .seg button[aria-pressed="true"]{background:var(--gold-soft);color:var(--gold2);box-shadow:inset 0 0 0 1px rgba(224,178,90,.35)}
 .seg .c{font-weight:600;opacity:.75;margin-inline-start:3px}
+.seg button{font-size:13.5px}
 .chips{display:flex;gap:6px;overflow-x:auto;margin:0 -16px 12px;padding:2px 16px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
 .chip{white-space:nowrap;border:1px solid var(--line);background:var(--glass);border-radius:99px;padding:8px 14px;font-size:14px;font-weight:700}
@@ -434,6 +435,14 @@ body::before{background:
   .splash small{animation:rise .8s .55s var(--ease) both}
   .top .logo{animation:glow 4s ease-in-out infinite}
 }
+
+.cashgrid{display:grid;gap:10px}
+.cashcard{display:flex;align-items:center;gap:12px;width:100%;text-align:right;border:1px solid var(--edge);background:var(--glass);border-radius:18px;padding:14px;box-shadow:var(--shadow);color:var(--ink)}
+.cashcard.on{border-color:var(--gold);box-shadow:0 0 0 2px rgba(184,129,36,.25),var(--shadow)}
+.cashcard .av{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--goldbtn);color:var(--goldbtn-ink);font-weight:900;font-size:18px;flex:0 0 auto}
+.cashcard .main{flex:1;min-width:0}.cashcard b{display:block;font-size:17px}.cashcard .main>span{font-size:13px;color:var(--muted)}
+.cashcard .bal{font-family:var(--display);font-size:24px;font-weight:900;color:var(--ok);text-align:center;line-height:1.05}
+.cashcard .bal.neg{color:var(--bad)}.cashcard .bal small{display:block;font-family:var(--body);font-size:11.5px;color:var(--muted);font-weight:800}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -488,8 +497,8 @@ const outGroups=()=>{const s=S.settings.find(x=>x._id==='trip');return (s&&s.out
 const F={
  tasks:{one:'משימה',g:1,fields:[{k:'title',l:'מה צריך לעשות',t:'textarea'},{k:'owner',l:'אחראי',t:'owner'},{k:'status',l:'סטטוס',t:'seg',o:['לביצוע','בתהליך','ממתין','בוצע']},{k:'priority',l:'עדיפות',t:'seg',o:['רגילה','גבוהה']},{k:'due',l:'עד מתי',t:'date'},{k:'category',l:'תחום',t:'chips',o:TASK_CATS},{k:'notes',l:'הערות',t:'textarea'}],def:{status:'לביצוע',priority:'רגילה',category:'אחר'}},
  expenses:{one:'הוצאה',g:1,fields:[{k:'name',l:'על מה',t:'text'},{k:'estimate',l:'סכום (₪)',t:'number',half:1},{k:'paid',l:'שולם בפועל (₪)',t:'number',half:1},{k:'final',l:'הסכום סופי',t:'toggle'},{k:'status',l:'מצב',t:'seg',o:['לא שולם','מקדמה','שולם']},{k:'receipt',l:'יש קבלה',t:'toggle'},{k:'paidBy',l:'מי שילם',t:'owner'},{k:'category',l:'תחום',t:'chips',o:EXP_CATS},{k:'notes',l:'הערות',t:'textarea'}],def:{status:'לא שולם',category:'אחר',estimate:0,paid:0,final:false}},
- participants:{one:'משתתף',fields:[{k:'name',l:'שם',t:'text'},{k:'amount',l:'סכום (₪)',t:'number',half:1},{k:'phone',l:'טלפון',t:'tel',half:1},{k:'status',l:'תשלום',t:'seg',o:['לא שולם','שולם חלקית','שולם','פטור']},{k:'method',l:'איך שילם',t:'chips',o:['אשראי','העברה לאיציק','מזומן לאיציק']},{k:'nusach',l:'נוסח',t:'seg',o:['אשכנז','ספרד','עדות המזרח']},{k:'outbound',l:'טיסת הלוך',t:'chips',o:()=>outGroups()},{k:'returnGroup',l:'טיסת חזור',t:'chips',o:RETURN_GROUPS},{k:'notes',l:'הערות',t:'text'}],def:{amount:1750,status:'לא שולם',outbound:'קבוצתי'}},
- donations:{one:'תרומה',g:1,fields:[{k:'donor',l:'תורם',t:'text'},{k:'amount',l:'סכום (₪)',t:'number'},{k:'purpose',l:'מיועד ל',t:'chips',o:['כללי','סידורים','זמירות','תהילים','הדפסות']},{k:'status',l:'מצב',t:'seg',o:['התחייב','התקבל']},{k:'method',l:'איך התקבל',t:'chips',o:['אשראי','העברה לאיציק','מזומן לאיציק']},{k:'notes',l:'הערות',t:'textarea'}],def:{status:'התחייב',purpose:'כללי',amount:0}},
+ participants:{one:'משתתף',fields:[{k:'name',l:'שם',t:'text'},{k:'amount',l:'סכום (₪)',t:'number',half:1},{k:'phone',l:'טלפון',t:'tel',half:1},{k:'status',l:'תשלום',t:'seg',o:['לא שולם','שולם חלקית','שולם','פטור']},{k:'method',l:'איך שילם',t:'chips',o:['אשראי','העברה לאיציק','מזומן לאיציק','העברה לשלומי','מזומן לשלומי']},{k:'holder',l:'אצל מי הכסף',t:'owner'},{k:'nusach',l:'נוסח',t:'seg',o:['אשכנז','ספרד','עדות המזרח']},{k:'outbound',l:'טיסת הלוך',t:'chips',o:()=>outGroups()},{k:'returnGroup',l:'טיסת חזור',t:'chips',o:RETURN_GROUPS},{k:'notes',l:'הערות',t:'text'}],def:{amount:1750,status:'לא שולם',outbound:'קבוצתי'}},
+ donations:{one:'תרומה',g:1,fields:[{k:'donor',l:'תורם',t:'text'},{k:'amount',l:'סכום (₪)',t:'number'},{k:'purpose',l:'מיועד ל',t:'chips',o:['כללי','סידורים','זמירות','תהילים','הדפסות']},{k:'status',l:'מצב',t:'seg',o:['התחייב','התקבל']},{k:'method',l:'איך התקבל',t:'chips',o:['אשראי','העברה לאיציק','מזומן לאיציק','העברה לשלומי','מזומן לשלומי']},{k:'holder',l:'אצל מי הכסף',t:'owner'},{k:'notes',l:'הערות',t:'textarea'}],def:{status:'התחייב',purpose:'כללי',amount:0}},
  schedule:{one:'אירוע',fields:[{k:'day',l:'יום',t:'seg',o:TRIP_DAYS.map(d=>d.k)},{k:'time',l:'שעה',t:'text',half:1,ph:'18:00'},{k:'place',l:'מקום',t:'text',half:1},{k:'title',l:'מה קורה',t:'text'},{k:'owner',l:'אחראי',t:'owner'},{k:'notes',l:'הערות',t:'textarea'},{k:'menu',l:'תפריט',t:'textarea'}],def:{}},
  flights:{one:'טיסה',g:1,fields:[{k:'label',l:'שם',t:'text'},{k:'dir',l:'כיוון',t:'seg',o:['הלוך','חזור']},{k:'group',l:'קבוצה (כמו בכרטיס המשתתף)',t:'text'},{k:'flightNo',l:'מספר טיסה',t:'text',half:1},{k:'date',l:'תאריך',t:'date',half:1},{k:'dep',l:'המראה',t:'text',half:1},{k:'arr',l:'נחיתה',t:'text',half:1},{k:'notes',l:'הערות',t:'textarea'}],def:{dir:'חזור'}},
  packing:{one:'פריט',fields:[{k:'item',l:'פריט',t:'text'},{k:'list',l:'רשימה',t:'list'},{k:'qty',l:'כמות',t:'number',half:1},{k:'cost',l:'עלות (₪)',t:'number',half:1},{k:'done',l:'נקנה / נארז',t:'toggle'},{k:'notes',l:'הערות',t:'text'}],def:{qty:1,cost:0,done:false}},
@@ -636,8 +645,9 @@ const VIEWS={
   const head=`<div class="page-title"><h2>כסף</h2></div>${updBar('money')}
    <div class="money-top"><span class="lbl">מאזן צפוי</span><div class="bal num ${m.gap<0?'neg':'pos'}" data-count="${Math.abs(m.gap)}" data-fmt="ils" data-pre="${m.gap<0?'−':'+'}">${m.gap<0?'−':'+'}${ils(Math.abs(m.gap))}</div><small>${m.gap<0?'חסר כדי לכסות את כל ההוצאות':'יישאר עודף'} · לפי הסכומים הידועים היום</small>
     <div class="mt3"><div><span>ייכנס</span><b class="num pos">${ils(m.income)}</b></div><div><span>ייצא</span><b class="num neg">${ils(m.est)}</b></div><div><span>כבר בקופה</span><b class="num">${ils(got)}</b></div></div></div>
-   <div class="seg" style="margin-top:14px">${[['participants','משתתפים',m.unpaid.length],['expenses','הוצאות',S.expenses.length],['donations','תרומות',S.donations.length]].map(([k,l,c])=>`<button data-seg="${k}" aria-pressed="${seg===k}">${l}<span class="c num">${c}</span></button>`).join('')}</div>`;
+   <div class="seg" style="margin-top:14px">${[['participants','משתתפים',m.unpaid.length],['expenses','הוצאות',S.expenses.length],['donations','תרומות',S.donations.length],['cash','קופות',cashBook().rows.length]].map(([k,l,c])=>`<button data-seg="${k}" aria-pressed="${seg===k}">${l}<span class="c num">${c}</span></button>`).join('')}</div>`;
   if(!ready('participants','expenses','donations'))return head+skel(6);
+  if(seg==='cash')return cashSeg(head);
   if(seg==='participants'){
    const f=V.filter.pay||'open';
    let rows=S.participants.filter(x=>!V.q||x.name.includes(V.q));
@@ -648,7 +658,7 @@ const VIEWS={
     <div class="chips">${[['open',`עוד לא שילמו`],['paid','שילמו'],['all','כולם']].map(([k,l])=>`<button class="chip" data-filter="pay" data-val="${k}" aria-pressed="${f===k}">${l}</button>`).join('')}<button class="chip" data-remind style="border-color:var(--ok);color:var(--ok)">תזכורת בוואטסאפ</button></div>
     <input class="search" id="q" type="search" placeholder="חיפוש שם" value="${esc(V.q)}">
     ${card(rows.map(p=>{const c=p.status==='שולם'?'p-ok':p.status==='פטור'?'p-mute':p.status==='שולם חלקית'?'p-warn':'p-bad';
-     return `<div class="row" data-edit="participants/${p._id}" role="button" tabindex="0"><div class="main"><div class="t">${esc(p.name)}</div>${p.method&&p.status!=='לא שולם'?`<div class="m"><span>${esc(p.method)}</span></div>`:''}</div>
+     return `<div class="row" data-edit="participants/${p._id}" role="button" tabindex="0"><div class="main"><div class="t">${esc(p.name)}</div>${p.status!=='לא שולם'&&(p.method||holderOf(p))?`<div class="m">${p.method?`<span>${esc(p.method)}</span>`:''}${holderOf(p)?`<span class="who">אצל ${esc(holderOf(p))}</span>`:''}</div>`:''}</div>
      <div class="end"><span class="amt num">${p.status==='פטור'?'—':ils(p.amount)}</span><button class="pill ${c}" data-pay="${p._id}">${p.status==='לא שולם'?'רישום תשלום':esc(p.status)}</button></div></div>`}).join(''),f==='open'?'<b>כולם שילמו 🎉</b>':'<b>אין כאן אף אחד</b>')}`;
   }
   if(seg==='expenses'){
@@ -993,6 +1003,33 @@ const claudeCard=()=>{const p=pendingForClaude(),n=p.acts.length+p.notes.length+
   const hrs=last?(Date.now()-new Date(last))/36e5:99;
   return `<section class="sec"><div class="ccard" style="flex-wrap:wrap"><span class="ic" style="background:rgba(224,178,90,.2)">${I.spark}</span><div class="main"><b>${n?`${n} דברים חדשים ל-Claude`:'Claude מעודכן'}</b><span>${n?(hrs>4?'עברו כמה שעות מהעדכון האחרון. כדאי לשלוח.':'שולחים כשנוח, הכל נשמר.'):'אין שינויים שהוא עוד לא ראה'}</span></div>
    <div style="display:flex;gap:8px;width:100%;margin-top:10px"><button class="btn ${n?'primary':''}" data-send style="flex:1">שליחת עדכון ל-Claude</button><button class="btn" data-code style="flex:1">הדבקת קוד מ-Claude</button></div></div></section>`};
+
+
+const holderOf=x=>x.holder||(/איציק/.test(x.method||'')?'איציק':/שלומי/.test(x.method||'')?'שלומי':'');
+function cashBook(){
+  const ppl=[...new Set([...team(),...S.participants.map(holderOf),...S.donations.map(holderOf),...S.expenses.map(e=>e.paidBy||'')].filter(Boolean).flatMap(s=>s.split(/,\s*/)))];
+  const rows=ppl.map(n=>{
+    const pin=S.participants.filter(p=>p.status==='שולם'&&holderOf(p)===n), din=S.donations.filter(d=>d.status==='התקבל'&&holderOf(d)===n);
+    const out=S.expenses.filter(e=>+e.paid&&String(e.paidBy||'').split(/,\s*/)[0]===n);
+    const inn=pin.reduce((s,x)=>s+(+x.amount||0),0)+din.reduce((s,x)=>s+(+x.amount||0),0), o=out.reduce((s,x)=>s+(+x.paid||0),0);
+    return {n,pin,din,out,inn,o,bal:inn-o}});
+  const un=S.participants.filter(p=>p.status==='שולם'&&!holderOf(p)), und=S.donations.filter(d=>d.status==='התקבל'&&!holderOf(d));
+  return {rows,un,und};
+}
+function cashSeg(head){
+  const {rows,un,und}=cashBook(), who=V.filter.who||'';
+  const card1=r=>`<button class="cashcard ${who===r.n?'on':''}" data-filter="who" data-val="${who===r.n?'':esc(r.n)}"><span class="av">${esc(r.n[0])}</span><div class="main"><b>${esc(r.n)}</b><span>נכנס <span class="num">${ils(r.inn)}</span> · יצא <span class="num">${ils(r.o)}</span></span></div><div class="bal num ${r.bal<0?'neg':''}">${r.bal<0?'−':''}${ils(Math.abs(r.bal))}<small>יתרה</small></div></button>`;
+  let detail='';
+  const sel=rows.find(r=>r.n===who);
+  if(sel){
+    const mrow=(t,sub,amt,edit,sign)=>`<div class="row" data-edit="${edit}" role="button" tabindex="0"><div class="main"><div class="t">${esc(t)}</div>${sub?`<div class="m"><span>${esc(sub)}</span></div>`:''}</div><span class="amt num" style="color:${sign>0?'var(--ok)':'var(--bad)'}">${sign>0?'+':'−'}${ils(amt)}</span></div>`;
+    detail=`<div class="ghead"><span>נכנס ל${esc(sel.n)}</span><span class="num">${ils(sel.inn)}</span></div>`+card(sel.pin.sort((a,b)=>a.name.localeCompare(b.name,'he')).map(p=>mrow(p.name,p.method,p.amount,'participants/'+p._id,1)).join('')+sel.din.map(d=>mrow('תרומה: '+d.donor,d.method,d.amount,'donations/'+d._id,1)).join(''),'<b>עוד לא נכנס כסף</b>')
+     +`<div class="ghead"><span>יצא מ${esc(sel.n)}</span><span class="num">${ils(sel.o)}</span></div>`+card(sel.out.map(e=>mrow(e.name,e.category,e.paid,'expenses/'+e._id,-1)).join(''),'<b>עוד לא שילם כלום</b>');
+  }
+  const unk=un.length+und.length;
+  return head+`<p class="note">לחיצה על כרטיס מראה את הפירוט של אותו אחד. "אצל מי הכסף" נקבע בכרטיס המשתתף, ובהוצאות לפי "מי שילם".</p><div class="cashgrid">${rows.map(card1).join('')}</div>${detail}
+   ${unk?`<div class="ghead"><span>שולם, אבל לא רשום אצל מי הכסף</span><span class="num">${unk}</span></div>`+card(un.map(p=>`<div class="row" data-edit="participants/${p._id}" role="button" tabindex="0"><div class="main"><div class="t">${esc(p.name)}</div><div class="m"><span>${esc(p.method||'לא ידוע איך שילם')}</span></div></div><span class="amt num">${ils(p.amount)}</span></div>`).join('')+und.map(d=>`<div class="row" data-edit="donations/${d._id}" role="button" tabindex="0"><div class="main"><div class="t">תרומה: ${esc(d.donor)}</div></div><span class="amt num">${ils(d.amount)}</span></div>`).join('')):''}`;
+}
 
 /* ---- activity feed ---- */
 let actSeen='';try{actSeen=localStorage.getItem('actSeen')||''}catch(e){}
