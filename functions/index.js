@@ -28,7 +28,7 @@ const guests = r => r.role === 'guest';
 const orgs = r => r.role === 'org';
 const owners = t => String((t && t.owner) || '').split(/,\s*/).map(x => x.trim()).filter(Boolean);
 
-exports.tripPush = functions.firestore.document('trips/{trip}/{col}/{id}').onWrite(async (change, ctx) => {
+exports.tripPush = functions.region('europe-west1').firestore.document('trips/{trip}/{col}/{id}').onWrite(async (change, ctx) => {
   const { trip, col, id } = ctx.params;
   if (trip.length < 24) return;
   const before = change.before.exists ? change.before.data() : null;
