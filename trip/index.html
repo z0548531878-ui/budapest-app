@@ -871,6 +871,9 @@ a.cube{text-decoration:none;color:inherit}
 .cubes>.cube:nth-child(even) small{color:var(--muted)!important}
 .cubes>.cube:nth-child(even) .ci{background:var(--goldbtn)!important;color:#15110a!important}
 .home-cubes .sec-h{margin-top:4px}
+
+.lockbar{margin:0 0 12px;padding:11px 14px;border-radius:14px;border:1px solid rgba(214,178,98,.35);background:rgba(214,178,98,.07);color:#e9c46f;font-weight:800;font-size:13.5px;line-height:1.5}
+.check.lock{display:grid;place-items:center;font-size:15px;opacity:.6;border-style:dashed!important}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -1299,7 +1302,7 @@ const SUB={
  },
  rooms(){
   const rows=S.rooms.slice().sort(byOrder), rk=rows.filter(r=>r.kitReady).length;
-  return subHead('חדרים',`<span class="cnt num">${rk}/${rows.length} עם סט</span>`)+updBar('rooms')+`<p class="note">לחיצה על העיגול מסמנת שהסט הונח בחדר.</p>`+card(rows.map(r=>`<div class="row" data-edit="rooms/${r._id}" role="button" tabindex="0"><button class="check ${r.kitReady?'on':''}" data-toggle="rooms/${r._id}" aria-label="סט הונח">${r.kitReady?CHECK:''}</button>
+  return subHead('חדרים',`<span class="cnt num">${rk}/${rows.length} עם סט</span>`)+updBar('rooms')+`${KITLOCK()?'<div class="lockbar">🔒 סימון "הסט הונח בחדר" נפתח ביום המסע, 19.11. עד אז אפשר לצפות ולעדכן מספר חדר וקומה.</div>':'<p class="note">לחיצה על העיגול מסמנת שהסט הונח בחדר.</p>'}`+card(rows.map(r=>`<div class="row" data-edit="rooms/${r._id}" role="button" tabindex="0">${KITLOCK()?'<span class="check lock" aria-label="נעול">🔒</span>':`<button class="check ${r.kitReady?'on':''}" data-toggle="rooms/${r._id}" aria-label="סט הונח">${r.kitReady?CHECK:''}</button>`}
    <div class="main"><div class="t">${esc(r.occupants)}</div><div class="m"><span>${esc(r.type)}</span>${r.notes?`<span>${esc(r.notes)}</span>`:''}</div></div>${r.roomNumber||r.floor?`<span class="pill p-mute num">${r.roomNumber?'חדר '+esc(r.roomNumber):''}${r.roomNumber&&r.floor?' · ':''}${r.floor?'קומה '+esc(r.floor):''}</span>`:'<span class="pill p-mute">ממתין למלון</span>'}</div>`).join(''));
  },
  flights(){
@@ -1933,7 +1936,9 @@ function burst(el){if(reduce||!el)return;const r=el.getBoundingClientRect(),cx=r
 
 const strip=d=>{const o={...d};delete o._id;return o};
 const find=(c,id)=>S[c].find(x=>x._id===id);
+const KIT_DAY='2026-11-19';const KITLOCK=()=>todayISO()<KIT_DAY;
 function toggle(path,btn){const [c,id]=path.split('/'),d=find(c,id);if(!d)return;
+  if(c==='rooms'&&KITLOCK()){toast('סימון הסטים ייפתח ביום המסע, 19.11');return}
   const key=c==='tasks'?'status':c==='rooms'?'kitReady':'done', prev=d[key];
   const next=c==='tasks'?(prev==='בוצע'?'לביצוע':'בוצע'):!prev;
   if(btn){btn.classList.toggle('on');btn.innerHTML=btn.classList.contains('on')?CHECK:'';try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}}
@@ -2025,7 +2030,7 @@ function editor(c,id){
   const fld=f=>{const v=d[f.k]??'',iid='e_'+f.k,o=(typeof f.o==='function'?f.o():f.o)||[];
     if(f.t==='seg'||f.t==='chips'){const all=[...new Set([...o,...(v&&!o.includes(v)?[v]:[])])];return `<div class="field">${f.l}<div class="opts" data-k="${f.k}">${all.map(x=>`<button type="button" class="opt" data-v="${esc(x)}" aria-pressed="${v===x}">${esc(x)}</button>`).join('')}</div></div>`}
     if(f.t==='owner'){const cur=String(v).split(/,\s*/).filter(Boolean);const people=[...new Set([...team(),...cur])];return `<div class="field">${f.l}<div class="opts" data-k="${f.k}" data-multi="1">${people.map(x=>`<button type="button" class="opt" data-v="${esc(x)}" aria-pressed="${cur.includes(x)}">${esc(x)}</button>`).join('')}</div><input id="${iid}" placeholder="או כתבו שם אחר"></div>`}
-    if(f.t==='toggle')return `<label class="toggle">${f.l}<input type="checkbox" id="${iid}" ${v?'checked':''}></label>`;
+    if(f.t==='toggle')return f.k==='kitReady'&&KITLOCK()?`<label class="toggle" style="opacity:.55">${f.l} · 🔒 נפתח ב-19.11<input type="checkbox" id="${iid}" ${v?'checked':''} disabled></label>`:`<label class="toggle">${f.l}<input type="checkbox" id="${iid}" ${v?'checked':''}></label>`;
     if(f.t==='textarea')return `<label class="field">${f.l}<textarea id="${iid}">${esc(v)}</textarea></label>`;
     if(f.t==='list')return `<label class="field">${f.l}<input id="${iid}" list="dl" value="${esc(v)}"><datalist id="dl">${lists.map(l=>`<option value="${esc(l)}">`).join('')}</datalist></label>`;
     return `<label class="field">${f.l}<input id="${iid}" type="${f.t==='number'?'number':f.t}" ${f.t==='number'?'inputmode="decimal" step="any"':''} ${f.ph?`placeholder="${f.ph}"`:''} value="${esc(v)}"></label>`};
@@ -2128,7 +2133,7 @@ render(true);
 </script>
 
 <script>
-(function(){var B='cd1d3b4c76';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B='ebab14aa8e';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
