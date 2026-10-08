@@ -2342,9 +2342,14 @@ function showGate(step){
     g.innerHTML=`<div class="gbox">${logo}<h1>כניסת משתתפי המסע</h1><p>כתבו את שמכם המלא כפי שנרשמתם למסע</p>
      <input id="gname" class="gin" type="text" autocomplete="off" placeholder="שם מלא" enterkeyhint="go">
      <div id="gmsg" class="gmsg" role="alert"></div>
+     <div id="gkeybox" hidden style="display:grid;gap:8px"><input id="gkey" class="gin ltr" type="text" autocomplete="off" placeholder="הדביקו כאן את הקישור המלא" enterkeyhint="go"><button class="gbtn alt" id="gkeyok">שמירת הקישור</button></div>
      <button class="gbtn" id="ggo">כניסה</button><button class="glink" id="gback">חזרה</button></div>`;
+    const setKey=()=>{const m=(document.getElementById('gkey').value||'').match(/k=([A-Za-z0-9_-]{20,})/)||(document.getElementById('gkey').value||'').trim().match(/^([A-Za-z0-9_-]{24,})$/);const msg=document.getElementById('gmsg');
+      if(!m){msg.textContent='לא זוהה מפתח בקישור. הדביקו את הקישור המלא שמסתיים ב־#k=…';return}
+      try{localStorage.setItem('tripKey',m[1])}catch(e){}location.hash='k='+m[1];location.reload()};
+    document.getElementById('gkeyok').onclick=setKey;document.getElementById('gkey').onkeydown=e=>{if(e.key==='Enter')setKey()};
     const go=async()=>{const msg=document.getElementById('gmsg'),v=document.getElementById('gname').value;
-      if(!db){msg.textContent='חסר הקישור המלא של המסע. פתחו את האפליקציה מהקישור ששלומי שלח (הוא מסתיים ב־#k=…).';return}
+      if(!db){msg.textContent='חסר הקישור המלא של המסע. הדביקו אותו בשדה שנפתח למטה.';document.getElementById('gkeybox').hidden=false;document.getElementById('gkeybox').style.display='grid';return}
       if(!loaded.has('participants')){msg.textContent='טוען את הרשימה, נסו שוב בעוד רגע…';return}
       const p=matchGuest(v);
       if(!p){msg.textContent='השם הזה לא רשום במסע, ולכן אי אפשר להיכנס. בדקו את האיות או פנו למארגנים.';return}
@@ -2814,7 +2819,7 @@ render(true);
 </script>
 
 <script>
-(function(){var B='2258409e4f';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B='b4ca387c07';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
