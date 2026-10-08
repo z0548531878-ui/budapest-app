@@ -20,7 +20,7 @@
 <body>
 <title>שבת גיבוש בודפשט</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=Frank+Ruhl+Libre:wght@500;700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=Frank+Ruhl+Libre:wght@500;700;900&family=Suez+One&display=swap">
 <style>
 /* Layout: phone app shell. Navy masthead with parliament silhouette, boarding-pass hero, soft card sections,
    fixed bottom tab bar with a sliding indicator, floating gold +, bottom sheets that spring up and swipe down. */
@@ -445,8 +445,8 @@ body::before{background:
 .cashcard .bal{font-family:var(--display);font-size:24px;font-weight:900;color:var(--ok);text-align:center;line-height:1.05}
 .cashcard .bal.neg{color:var(--bad)}.cashcard .bal small{display:block;font-family:var(--body);font-size:11.5px;color:var(--muted);font-weight:800}
 
-.pass-stub{flex:0 0 112px}
-.pass::before,.pass::after{left:101px}
+.pass-stub{flex:0 0 118px}
+.pass::before,.pass::after{left:107px}
 .cdt{font-family:var(--body);font-weight:900;font-size:18px;color:#f6efdf;letter-spacing:.02em;margin-top:8px;direction:ltr;font-variant-numeric:tabular-nums}
 .cdt b{display:inline-block;color:#f2cb7c;font-weight:900}
 .pass-stub .cdl{font-size:10.5px;opacity:.7}
@@ -697,6 +697,43 @@ body{background:radial-gradient(120% 60% at 50% -10%,#221c11 0%,#0b0a08 60%) no-
   @keyframes lxSheen{0%,65%{transform:translateX(-140%)}100%{transform:translateX(140%)}}
   .rpl{background:rgba(246,220,147,.45)!important}
 }
+
+.parch{position:relative;margin-top:4px;padding:22px 18px 18px;border-radius:6px;color:#1A1A1A;
+ background:radial-gradient(ellipse at center,#FBF7EC 0%,#F6EFDD 70%,#EFE5CB 100%);border:2px solid #C8A24A;box-shadow:inset 0 0 0 5px #F6EFDD,inset 0 0 0 6px #C8A24A,0 18px 40px -18px rgba(0,0,0,.9)}
+.parch .cn{position:absolute;width:26px;height:26px;border-color:#C8A24A;border-style:solid;border-width:0}
+.parch .tl{top:10px;left:10px;border-top-width:2px;border-left-width:2px;border-top-left-radius:14px}
+.parch .tr{top:10px;right:10px;border-top-width:2px;border-right-width:2px;border-top-right-radius:14px}
+.parch .bl{bottom:10px;left:10px;border-bottom-width:2px;border-left-width:2px;border-bottom-left-radius:14px}
+.parch .br{bottom:10px;right:10px;border-bottom-width:2px;border-right-width:2px;border-bottom-right-radius:14px}
+.parch .ph{text-align:center}.parch .orn svg{width:170px;height:20px}
+.parch .pt{font-family:"Suez One","Frank Ruhl Libre",serif;font-size:32px;line-height:1.15;background:linear-gradient(180deg,#F6E3A8 0%,#D8B45A 40%,#A47C27 75%,#D9B865 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.parch .dayh{text-align:center;margin:12px 0 8px}
+.parch .dayh small{display:block;font-size:10px;letter-spacing:3px;color:#4A3A12}
+.parch .dayh b{display:block;font-family:"Suez One","Frank Ruhl Libre",serif;font-size:24px;font-weight:400;background:linear-gradient(180deg,#F6E3A8 0%,#D8B45A 40%,#A47C27 75%,#D9B865 100%);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.15}
+.parch .dayh span{font-size:12.5px;color:#6b5420;font-weight:700}
+.parch .rule{display:flex;align-items:center;gap:8px;margin-top:6px}.parch .rule i{flex:1;height:1px;background:linear-gradient(90deg,transparent,#C8A24A)}.parch .rule i:last-child{background:linear-gradient(270deg,transparent,#C8A24A)}.parch .rule em{color:#C8A24A;font-style:normal;font-size:9px}
+.parch .pi{display:flex;gap:12px;padding:10px 2px;border-bottom:1px dashed rgba(200,162,74,.45)}
+.parch .pi:last-of-type{border-bottom:0}
+.parch .ptm{flex:0 0 52px;font-family:"Frank Ruhl Libre",serif;font-weight:900;font-size:17px;color:#8a6516;text-align:center;padding-top:1px}
+.parch .pb b{display:block;font-size:16px;color:#1A1A1A;font-weight:800}
+.parch .pb span{display:block;font-size:13px;color:#4A3A12}
+.parch .pb q{display:block;font-family:"Frank Ruhl Libre",serif;font-size:13.5px;color:#7a5a12;margin-top:3px;quotes:none}
+.parch .pb q small{font-family:var(--body);font-size:10.5px;color:#9b8350}
+.parch .pfl{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;align-items:center;padding:10px;margin-top:8px;border:1px solid rgba(200,162,74,.6);border-radius:10px;background:rgba(255,255,255,.35)}
+.parch .pfl .pl{grid-row:span 2;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#a47c27,#f6e3a8,#a47c27);font-weight:900;color:#1a1a1a}
+.parch .pfl b{font-size:15px}.parch .pfl small{display:block;font-size:11.5px;color:#6b5420}
+.parch .pfl .pr{font-weight:900;font-size:13.5px;color:#1a1a1a}.parch .pfl .pn{grid-column:2/4}
+.parch .pfoot{text-align:center;margin-top:16px;font-family:"Suez One","Frank Ruhl Libre",serif;font-size:20px;background:linear-gradient(180deg,#D8B45A,#A47C27);-webkit-background-clip:text;background-clip:text;color:transparent}
+@media (prefers-reduced-motion:no-preference){.parch .pi{animation:lxIn .45s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i)*55ms)}}
+/* countdown in El Al style */
+.cdg{display:flex;align-items:flex-start;justify-content:center;gap:2px;margin-top:8px;direction:rtl}
+.cdg div{display:flex;flex-direction:column;align-items:center;min-width:26px}
+.cdg b{font-family:var(--body);font-weight:900;font-size:19px;line-height:1.1;color:#f3ead3;font-variant-numeric:tabular-nums;display:inline-block}
+.cdg div:last-child b{color:#f0d28c}
+.cdg small{font-size:9.5px;color:#a69a7d;font-weight:700;margin-top:1px}
+.cdg i{font-style:normal;font-weight:900;color:#d9b25f;font-size:17px;line-height:1.2}
+@media (prefers-reduced-motion:no-preference){.cdg b.tk{animation:cdflip .45s cubic-bezier(.2,.8,.2,1)}@keyframes cdflip{0%{transform:translateY(-55%) scale(.9);opacity:0}100%{transform:none;opacity:1}}
+ .cdg i{animation:blink 1s steps(2) infinite}@keyframes blink{50%{opacity:.35}}}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -778,7 +815,7 @@ function renderNav(){
   const myOpen=S.tasks.filter(t=>t.status!=='בוצע'&&mine(t)).length, idx=NAV.findIndex(n=>n[0]===V.tab);
   document.getElementById('nav').innerHTML=`<span class="ind" style="inset-inline-start:${idx*20}%"></span>`+NAV.map(([k,l])=>`<button data-nav="${k}" ${V.tab===k?'aria-current="page"':''}>${I[k]}${l}${k==='tasks'&&myOpen?`<span class="badge num">${myOpen}</span>`:''}</button>`).join('');
   document.getElementById('meBtn').innerHTML=`<i>${esc(ME?ME[0]:'?')}</i><span>${esc(ME||'מי אני?')}</span>`;
-  const show=['tasks','money','sched'].includes(V.tab)||(V.tab==='more'&&V.sub&&!['settings','guide','flights','claude','passports'].includes(V.sub));
+  const show=['tasks','money','sched'].includes(V.tab)||(V.tab==='more'&&V.sub&&!['settings','guide','flights','claude','passports','program'].includes(V.sub));
   document.getElementById('fab').hidden=!show;
 }
 document.getElementById('nav').addEventListener('click',e=>{const b=e.target.closest('[data-nav]');if(b)go(b.dataset.nav)});
@@ -855,7 +892,7 @@ const VIEWS={
   <section class="pass"><span class="shine"></span><div class="pass-main"><div class="pass-top"><span>${out?`אל על · <span class="ltr">${esc(out.flightNo)}</span>`:'טיסת הלוך'}</span><span>חמישי 19.11</span></div>
     <div class="pass-route"><div><b>TLV</b><span>${esc(out?out.dep:'')}</span></div><div class="path"><svg viewBox="0 0 150 22" fill="none"><path d="M4 11h142" stroke="currentColor" stroke-width="1.6" stroke-dasharray="3 5"/><g class="plane"><path fill="currentColor" d="M146 11l-13-5.4v3.7l-6.5.1-2.8-3.8h-2l1.6 3.9-4.3.1v2.8l4.3.1-1.6 3.9h2l2.8-3.8 6.5.1v3.7z"/></g></svg></div><div><b>BUD</b><span>${esc(out?out.arr:'')}</span></div></div>
     <div class="days">${TRIP_DAYS.map((d,i)=>`<div class="${d.sh?'sh':''} ${i===idx?'now':''}"><b>${d.s}</b>${d.l}</div>`).join('')}</div></div>
-    <div class="pass-stub">${depAt(out)>Date.now()?`<span class="big num" id="cdD">${cdParts(out).d}</span><small>ימים</small><div class="cdt num" id="cdT">${cdParts(out).t}</div><small class="cdl">שעות · דק׳ · שנ׳</small>`:`<span class="big num">${big}</span><small>${lbl}</small>`}</div></section>
+    <div class="pass-stub">${depAt(out)>Date.now()?`<span class="big num" id="cdD">${cdParts(out).d}</span><small>ימים</small><div class="cdg num" id="cdT">${cdParts(out).t}</div>`:`<span class="big num">${big}</span><small>${lbl}</small>`}</div></section>
   <section class="hub">
    <button class="big" data-idea><span class="ic">${I.spark}</span><span class="main"><b>עדכון או רעיון</b><span>${CAN_SEND()?'כותבים או מכתיבים, וזה מגיע ל-Claude':'כותבים או מכתיבים, וזה נשמר לכל הצוות'}</span></span><span class="mic">${I.mic}</span></button>
    ${CAN_SEND()?'':'<!--'}<div class="sync ${pn?'has':''}"><span class="dot"></span><div class="main"><b>${pn?`${pn} חדשים ל-Claude`:'Claude מעודכן'}</b><small>${pn?'שולחים אליו, והוא מעדכן כאן לבד':'אין שינויים שהוא לא ראה'}</small></div>
@@ -968,6 +1005,17 @@ const SESSIONS=[
 ];
 const curSes=()=>SESSIONS.find(x=>x.k===V.filter.ses)||SESSIONS[0];
 const SUB={
+ program(){
+  const t=todayISO(), def=t==='2026-11-20'?'fri':t==='2026-11-21'?'sat':'thu', k=V.filter.pd||def, d=PROG.find(x=>x.k===k)||PROG[0];
+  return subHead('לוח המסע')+`<div class="seg">${PROG.map(x=>`<button data-filter="pd" data-val="${x.k}" aria-pressed="${x.k===d.k}">${x.tab}</button>`).join('')}</div>
+   <div class="parch"><span class="cn tl"></span><span class="cn tr"></span><span class="cn bl"></span><span class="cn br"></span>
+    <div class="ph"><div class="orn">${ORN}</div><div class="pt">${k==='thu'?'תוכנית המסע':'תוכניית השבת'}</div></div>
+    <div class="dayh"><small>${d.over}</small><b>${d.title}</b><span>${d.date}</span><div class="rule"><i></i><em>◆</em><i></i></div></div>
+    ${d.items.map(([tm,ti,sub,q,src],i)=>`<div class="pi" style="--i:${i}"><div class="ptm">${tm}</div><div class="pb"><b>${ti}</b><span>${sub}</span>${q?`<q>${q} <small>· ${src}</small></q>`:''}</div></div>`).join('')}
+    ${k==='sat'?`<div class="dayh" style="margin-top:18px"><b>בדרך הביתה</b><span>טיסות חזרה באל על · שעות מקומיות</span><div class="rule"><i></i><em>◆</em><i></i></div></div>${FLIGHTS_HOME.map(f=>`<div class="pfl"><span class="pl">${f[0]}</span><div><b>${f[1]}</b><small>${f[2]} · ${f[3]}</small></div><div class="pr ltr">BUD ${f[4]} → TLV ${f[5]}${f[6]?' <small>+1</small>':''}</div><small class="pn">${f[7]}</small></div>`).join('')}`:''}
+    <div class="pfoot">${k==='sat'?'שבת שלום ומבורכת!':k==='fri'?'שבת שלום!':'נסיעה טובה ובשעה טובה!'}</div>
+   </div>`;
+ },
  people(){
   const f=V.filter.pf||'all';
   let rows=S.participants.filter(x=>!V.q||[x.name,x.phone,x.notes,x.carry,x.duties].join(' ').includes(V.q));
@@ -1404,6 +1452,7 @@ function bulkSheet(){
 
 
 const TILE_DEFS=()=>{const pk=S.packing,pd=pk.filter(x=>x.done).length,rk=S.rooms.filter(r=>r.kitReady).length;return [
+ ['program','sched','לוח המסע','חמישי · שישי · שבת','c2'],
  ['people','people','משתתפים',`${S.participants.length} נוסעים`,'c1'],
  ['passports','people','דרכונים',`${S.participants.filter(p=>p.passport).length}/${S.participants.length}`,'c2'],
  ['claude','spark','מ-Claude',`${S.claude.filter(x=>x.status==='פתוח').length} פתוחים`,'c3'],
@@ -1417,6 +1466,39 @@ const TILE_DEFS=()=>{const pk=S.packing,pd=pk.filter(x=>x.done).length,rk=S.room
  ['guide','spark','איך זה עובד','מדריך קצר','c11'],
  ['settings','gear','הגדרות','מי אני, צוות','c12']]};
 const homeTiles=()=>`<section class="sec"><div class="sec-h"><h3>הכל במקום אחד</h3></div><div class="cubes">${TILE_DEFS().map(([k,ic,l,s,c],i)=>`<button class="cube ${c}" data-go="more" data-opts='{"sub":"${k}"}' style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></button>`).join('')}</div></section>`;
+
+
+const PROG=[
+ {k:'thu',tab:'חמישי',over:'יום ההגעה',title:'יום חמישי',date:'ט׳ בכסלו · 19.11',items:[
+  ['08:40','המראה לבודפשט','אל על LY 2369 מנתב״ג, כולנו יחד','״וַיֵּצֵא יַעֲקֹב מִבְּאֵר שָׁבַע וַיֵּלֶךְ חָרָנָה״','בראשית כח'],
+  ['11:15','נחיתה ועלייה לאוטובוס','בשדה התעופה בבודפשט','״וְהִנֵּה אָנֹכִי עִמָּךְ וּשְׁמַרְתִּיךָ בְּכֹל אֲשֶׁר תֵּלֵךְ״','בראשית כח'],
+  ['12:00','נסיעה לקרעסטיר','בשירה, בחברותא ובמשחק הטריוויה','״שִׁיר הַמַּעֲלוֹת אֶשָּׂא עֵינַי אֶל הֶהָרִים״','תהילים קכא'],
+  ['15:00','סעודת הישועות','בקרעסטיר, בדברי תורה ובניגונים','״הוֹדוּ לַה׳ כִּי טוֹב כִּי לְעוֹלָם חַסְדּוֹ״','תהילים קלו'],
+  ['','עלייה לציון','רבי ישעיה מקרעסטיר זי״ע, תפילה ותהילים','״זֵכֶר צַדִּיק לִבְרָכָה״','משלי י'],
+  ['20:00','יציאה חזרה לבודפשט','לילה טוב באוטובוס','״וַיִּשָּׂא יַעֲקֹב רַגְלָיו״','בראשית כט'],
+  ['23:00','הגעה למלון','קבלת חדרים, ערכת פינוק ומנוחה','״בְּשָׁלוֹם יַחְדָּו אֶשְׁכְּבָה וְאִישָׁן״','תהילים ד']]},
+ {k:'fri',tab:'שישי',over:'ערב שבת',title:'יום שישי',date:'י׳ בכסלו · 20.11',items:[
+  ['09:00','תפילת שחרית','מניין בבית הכנסת שבמלון','״אַשְׁרֵי יוֹשְׁבֵי בֵיתֶךָ עוֹד יְהַלְלוּךָ סֶּלָה״','תהילים פד'],
+  ['09:30','זמן חופשי','ארוחת בוקר, קניות וטיול ברחובות העיר','״מָה רַבּוּ מַעֲשֶׂיךָ ה׳ כֻּלָּם בְּחָכְמָה עָשִׂיתָ״','תהילים קד'],
+  ['13:00','ארוחת ״טועמיה״','במסעדת חנה, בטרם נכנסת השבת','״טַעֲמוּ וּרְאוּ כִּי טוֹב ה׳״','תהילים לד'],
+  ['14:00','התארגנות לשבת','במלון, בגדי שבת ולב פתוח','״זָכוֹר אֶת יוֹם הַשַּׁבָּת לְקַדְּשׁוֹ״','שמות כ'],
+  ['15:15','תמונה קבוצתית','בפתח המלון, בעדשתו של יוסי רוזנבוים','״הִנֵּה מַה טּוֹב וּמַה נָּעִים שֶׁבֶת אַחִים גַּם יָחַד״','תהילים קלג'],
+  ['15:45','הדלקת נרות','בלובי המלון','״כִּי נֵר מִצְוָה וְתוֹרָה אוֹר״','משלי ו'],
+  ['16:00','מנחה וקבלת שבת','בבית הכנסת שבמלון','״לְכוּ נְרַנְּנָה לַה׳ נָרִיעָה לְצוּר יִשְׁעֵנוּ״','תהילים צה'],
+  ['18:00','סעודת ליל שבת','במסעדת חנה, כשבע דקות הליכה','״וְקָרָאתָ לַשַּׁבָּת עֹנֶג״','ישעיהו נח'],
+  ['20:30','זיץ ״עונג שבת״','אל תוך הלילה, בשירה ובדברי תורה','״אָז תִּתְעַנַּג עַל ה׳״','ישעיהו נח']]},
+ {k:'sat',tab:'שבת',over:'פרשת ויצא',title:'שבת קודש',date:'י״א בכסלו · 21.11',items:[
+  ['09:30','קפה ועוגה','בלובי המלון, בחברותא טובה','״שִׂמְחוּ בַה׳ וְגִילוּ צַדִּיקִים״','תהילים לב'],
+  ['10:00','שחרית ומוסף','בבית הכנסת שבמלון','״מִזְמוֹר שִׁיר לְיוֹם הַשַּׁבָּת״','תהילים צב'],
+  ['12:00','סעודת שבת וסעודה שלישית','במסעדת חנה, בנטילה שנייה ובחלה','״אִכְלֻהוּ הַיּוֹם כִּי שַׁבָּת הַיּוֹם לַה׳״','שמות טז'],
+  ['14:30','מנוחה וזמן חופשי','שינה, הליכה רגועה ושיחות לב','״שׁוּבִי נַפְשִׁי לִמְנוּחָיְכִי״','תהילים קטז'],
+  ['16:00','תפילת מנחה','בבית הכנסת שבמלון','״וַאֲנִי תְפִלָּתִי לְךָ ה׳ עֵת רָצוֹן״','תהילים סט'],
+  ['16:30','דברי סיכום למסע','מפי הרב חיים זאיד','״סוֹף דָּבָר הַכֹּל נִשְׁמָע״','קהלת יב'],
+  ['16:52','ערבית והבדלה מוזיקלית','בליווי הגיטרה של שימי ורקר','״לַיְּהוּדִים הָיְתָה אוֹרָה וְשִׂמְחָה״','אסתר ח'],
+  ['17:20','יציאה לשדה','קבוצה א׳ נוסעת לשדה התעופה','״ה׳ יִשְׁמָר צֵאתְךָ וּבוֹאֶךָ״','תהילים קכא'],
+  ['מוצ״ש','ארוחה חופשית לנשארים','ברובע היהודי','','']]}];
+const FLIGHTS_HOME=[['א','קבוצה א׳','מוצ״ש · 21.11','LY 2360','20:20','0:30','למחרת','יציאה לשדה 17:20'],['ב','קבוצה ב׳','ראשון · 22.11','LY 2360','12:25','16:35','','בשדה ב-09:45'],['ג','קבוצה ג׳','ראשון · 22.11','LY 2368','20:40','0:50','למחרת','בשדה ב-18:00']];
+const ORN='<svg viewBox="0 0 220 22" fill="none" stroke="#C8A24A" stroke-width="1.3"><path d="M0 11 H72M148 11 H220M72 11 Q84 0 96 11 Q84 22 72 11M148 11 Q136 0 124 11 Q136 22 148 11"/><path d="M110 2 L119 11 L110 20 L101 11z" fill="#C8A24A" stroke="none"/><circle cx="60" cy="11" r="2" fill="#C8A24A" stroke="none"/><circle cx="160" cy="11" r="2" fill="#C8A24A" stroke="none"/></svg>';
 
 /* ---- activity feed ---- */
 let actSeen='';try{actSeen=localStorage.getItem('actSeen')||''}catch(e){}
@@ -1721,10 +1803,11 @@ async function maybeSeed(w){
 const depAt=f=>{const d=(f&&f.date)||'2026-11-19',t=((f&&f.dep)||'08:40').replace(/[^\d:]/g,'')||'08:40';return new Date(`${d}T${t.padStart(5,'0')}:00+02:00`).getTime()};
 const p2=n=>String(n).padStart(2,'0');
 function cdParts(f){let ms=Math.max(0,depAt(f)-Date.now());const d=Math.floor(ms/864e5);ms-=d*864e5;const h=Math.floor(ms/36e5);ms-=h*36e5;const m=Math.floor(ms/6e4);ms-=m*6e4;const sec=Math.floor(ms/1e3);
-  return {d,t:`${p2(h)}:${p2(m)}:<b>${p2(sec)}</b>`}}
+  return {d,h:p2(h),m:p2(m),s:p2(sec),t:`<div><b data-u="h">${p2(h)}</b><small>שעות</small></div><i>:</i><div><b data-u="m">${p2(m)}</b><small>דקות</small></div><i>:</i><div><b data-u="s">${p2(sec)}</b><small>שניות</small></div>`}}
 setInterval(()=>{const D=document.getElementById('cdD'),T=document.getElementById('cdT');if(!D||!T)return;
   const out=S.flights.find(f=>f._id==='f1')||S.flights.find(f=>f.dir==='הלוך');if(depAt(out)<=Date.now()){render();return}
-  const c=cdParts(out);if(D.textContent!==String(c.d))D.textContent=c.d;T.innerHTML=c.t;const b=T.querySelector('b');if(b&&!reduce){b.classList.remove('tk');void b.offsetWidth;b.classList.add('tk')}},1000);
+  const c=cdParts(out);if(D.textContent!==String(c.d))D.textContent=c.d;
+  ['h','m','s'].forEach(u=>{const el=T.querySelector(`[data-u="${u}"]`);if(!el){T.innerHTML=c.t;return}if(el.textContent!==c[u]){el.textContent=c[u];if(!reduce){el.classList.remove('tk');void el.offsetWidth;el.classList.add('tk')}}})},1000);
 
 
 document.addEventListener('pointerdown',e=>{if(reduce)return;const t=e.target.closest('.btn,.hub .big,.shortcuts button,.tile,.stat,.cashcard,.act');if(!t)return;
