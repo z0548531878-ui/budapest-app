@@ -34,3 +34,21 @@ self.addEventListener('fetch', e => {
     return Promise.race([net, new Promise(ok => setTimeout(() => ok(cached), 5000))]).catch(() => cached);
   })());
 });
+
+// ---- push notifications (Firebase Cloud Messaging, data-only messages) ----
+self.addEventListener('push', e => {
+  let d = {};
+  try { d = e.data.json(); } catch (x) { try { d = { title: 'מבקשי ה׳', body: e.data.text() }; } catch (y) {} }
+  const n = d.data || d;
+  e.waitUntil(self.registration.showNotification(n.title || 'מבקשי ה׳', {
+    body: n.body || '', icon: 'icon-192.png', badge: 'icon-192.png', tag: n.tag || undefined, dir: 'rtl', lang: 'he', data: { tab: n.tab || '' }
+  }));
+});
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const tab = (e.notification.data || {}).tab || '';
+  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(cs => {
+    for (const c of cs) { if ('focus' in c) { c.postMessage({ tab }); return c.focus(); } }
+    return self.clients.openWindow('./' + (tab ? '#tab=' + tab : ''));
+  }));
+});

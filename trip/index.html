@@ -998,6 +998,12 @@ body.guest .nav-in button[data-gnav="gh"] .badge{inset-inline-end:calc(50% - 30p
 .grow:not(:active) .gi{transition:transform .25s}.grow:active .gi{transform:rotate(-8deg) scale(1.08)}
 }
 
+#pgate{position:fixed;inset:0;z-index:9998;background:radial-gradient(120% 80% at 50% 0%,#1a150c 0%,#050504 60%);display:grid;place-items:center;padding:24px;overflow:auto}
+#pgate .gbox{gap:12px}#pgate .glogo{width:min(40vw,150px);height:min(40vw,150px)}
+#pgate h1{font-size:30px}.pst{text-align:right;margin:4px 0;padding-inline-start:26px;color:#e8dfc7;font-size:16px;line-height:1.6;display:grid;gap:8px}.pst b{color:#f0d28c}
+body.pg #nav{display:none}
+#opush{position:fixed;inset-inline:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 86px);z-index:30;min-height:50px;border:0;border-radius:16px;font-weight:900;font-size:16px;color:#15110a;background:linear-gradient(180deg,#f6dc93,#c99a3d);box-shadow:0 12px 26px -10px rgba(0,0,0,.8)}
+
 /* ===== per-screen entrances + per-button motion ===== */
 @media (prefers-reduced-motion:no-preference){
 @keyframes kRise{from{opacity:0;transform:translate3d(0,26px,0) scale(.97)}}
@@ -2704,6 +2710,82 @@ function morphInto(el,html){
   const _m=render;render=function(a){MORPH.full=!!a;try{_m(a)}finally{MORPH.full=false}};
 })();
 
+/* ===== install-to-home-screen gate + push notifications (FCM) ===== */
+const VAPID_KEY='__VAPID__';
+const isStandalone=()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}};
+const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const nogate=()=>{try{return localStorage.getItem('nogate')==='1'}catch(e){return false}};
+let DEFER=null;
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();DEFER=e;pgate()});
+addEventListener('appinstalled',()=>{DEFER=null});
+function gateState(){
+  if(PREV||nogate()||!ROLE||ROLE==='org')return '';
+  if(!isStandalone())return 'install';
+  if(!('Notification' in window)||!('serviceWorker' in navigator))return 'unsupported';
+  if(Notification.permission==='denied')return 'denied';
+  if(Notification.permission!=='granted')return 'ask';
+  return ''}
+function pgate(){
+  const st=gateState();let el=document.getElementById('pgate');
+  if(!st){if(el)el.remove();document.body.classList.remove('pg');pushSync();return}
+  if(el&&el.dataset.st===st+(DEFER?'d':''))return;
+  if(!el){el=document.createElement('div');el.id='pgate';document.body.appendChild(el)}
+  el.dataset.st=st+(DEFER?'d':'');document.body.classList.add('pg');
+  const logo='<img class="glogo" src="logo.webp" alt="">';
+  let h='';
+  if(st==='install'){
+    const steps=isIOS()?
+      ['לחצו על כפתור השיתוף <b>⬆︎</b> בתחתית הדפדפן (ב־Safari)','גללו ובחרו <b>"הוסף למסך הבית"</b>','לחצו <b>"הוסף"</b> ופתחו את האפליקציה מהאייקון החדש']:
+      ['לחצו על שלוש הנקודות <b>⋮</b> בפינת הדפדפן (Chrome)','בחרו <b>"התקנת אפליקציה"</b> או <b>"הוסף למסך הבית"</b>','פתחו את האפליקציה מהאייקון החדש במסך הבית'];
+    h=`${logo}<h1>עוד צעד קטן</h1><p>כדי להמשיך צריך להוסיף את האפליקציה למסך הבית. כך תקבלו התראות על הודעות ומשימות חדשות.</p>
+      ${DEFER?'<button class="gbtn" id="pinst">הוספה למסך הבית</button>':''}
+      <ol class="pst">${steps.map(s=>`<li>${s}</li>`).join('')}</ol>
+      ${isIOS()?'<p class="gsub">חשוב: באייפון זה עובד רק דרך Safari.</p>':''}
+      <button class="glink" id="pchk">כבר הוספתי, בדיקה מחדש</button>`}
+  else if(st==='ask'){
+    h=`${logo}<h1>הפעלת התראות</h1><p>נשלח לכם התראה בכל הודעה מהמארגנים ובכל משימה חדשה. בלי זה אפשר לפספס שינויים בלוז.</p><button class="gbtn" id="pask">הפעלת התראות</button><p class="gsub">בחלון שייפתח לחצו על "אפשר".</p>`}
+  else if(st==='denied'){
+    h=`${logo}<h1>ההתראות חסומות</h1><p>כדי להמשיך צריך לאפשר התראות לאפליקציה.</p><ol class="pst">${(isIOS()?['פתחו <b>הגדרות</b> בטלפון','גללו אל האפליקציה "בודפשט"','בחרו <b>התראות</b> והפעילו "אפשר התראות"']:['לחצו לחיצה ארוכה על אייקון האפליקציה','בחרו <b>מידע על האפליקציה</b>, ואז <b>התראות</b>','הפעילו את ההתראות']).map(s=>`<li>${s}</li>`).join('')}</ol><button class="gbtn" id="pchk">הפעלתי, בדיקה מחדש</button>`}
+  else{
+    h=`${logo}<h1>המכשיר לא נתמך</h1><p>הדפדפן הזה לא תומך בהתראות. עדכנו את מערכת ההפעלה או פתחו בטלפון אחר.</p><button class="glink" id="pchk">בדיקה מחדש</button>`}
+  el.innerHTML=`<div class="gbox">${h}</div>`}
+async function loadMsg(){
+  if(window.firebase&&firebase.messaging)return;
+  await new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js';s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
+const tokId=t=>{let h=5381;for(let i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))>>>0;return 'tok_'+h.toString(36)+t.length};
+async function pushToken(){
+  if(!('Notification' in window)||Notification.permission!=='granted'||!('serviceWorker' in navigator))return;
+  try{
+    await loadMsg();if(!firebase.messaging.isSupported())return;
+    const reg=await navigator.serviceWorker.register('sw.js');await navigator.serviceWorker.ready;
+    const m=firebase.messaging(),token=await m.getToken({vapidKey:VAPID_KEY,serviceWorkerRegistration:reg});
+    if(!token)return;
+    if(!PUSHFG){PUSHFG=1;m.onMessage(p=>{const d=p.data||{};toast((d.title?d.title+': ':'')+(d.body||''));try{reg.showNotification(d.title||'מבקשי ה׳',{body:d.body||'',icon:'icon-192.png',dir:'rtl',lang:'he',tag:d.tag})}catch(e){}})}
+    const org=ROLE==='org', me=org?null:(typeof meG==='function'?meG():null), ppl=me&&typeof coupleOf==='function'?coupleOf(me):[];
+    const key=token+'|'+ROLE;let prev='';try{prev=localStorage.getItem('tokSaved')||''}catch(e){}
+    if(prev===key)return;
+    if(db){await db.doc('settings/'+tokId(token)).set({kind:'tok',token,role:org?'org':'guest',pids:ppl.map(p=>p._id),names:ppl.map(p=>p.name),orgName:org?(typeof ME!=='undefined'?ME:''):'',ts:Date.now()},{merge:true});try{localStorage.setItem('tokSaved',key)}catch(e){}}
+  }catch(e){console.warn('push',e)}}
+let PUSHFG=0;
+async function askPush(){
+  try{const r=await Notification.requestPermission();if(r==='granted'){await pushToken();toast('ההתראות הופעלו')}}catch(e){}
+  pgate()}
+/* organizers: a gentle button, never blocking */
+function pushSync(){
+  let b=document.getElementById('opush');
+  const show=ROLE==='org'&&!PREV&&isStandalone()&&'Notification' in window&&Notification.permission==='default';
+  if(!show){if(b)b.remove();if(ROLE==='org'&&!PREV&&isStandalone()&&'Notification' in window&&Notification.permission==='granted')pushToken();else if(GUEST()&&gateState()==='')pushToken();return}
+  if(!b){b=document.createElement('button');b.id='opush';b.textContent='🔔 הפעלת התראות';b.onclick=()=>askPush();document.body.appendChild(b)}}
+document.addEventListener('click',e=>{
+  const T=e.target;
+  if(T.closest('#pask')){askPush();return}
+  if(T.closest('#pchk')){location.reload();return}
+  if(T.closest('#pinst')&&DEFER){DEFER.prompt();DEFER.userChoice.finally(()=>{DEFER=null;pgate()});return}
+},true);
+if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>{const t=e.data&&e.data.tab;if(t&&GUEST()){GTAB=t;render(true)}});
+const _rp=render;render=function(a){_rp(a);pgate()};
+setInterval(pgate,4000);
+
 const _pickMeBase=pickMe;pickMe=function(){if(GUEST()||!ROLE)return;_pickMeBase();const sh=document.querySelector('#scrim .sheet');if(sh&&ROLE==='org'){const b=document.createElement('button');b.className='btn';b.style.cssText='margin-top:14px;width:100%';b.textContent='👁 תצוגת משתתף (כך זה נראה להם)';b.onclick=()=>{closeSheet();setPrev(true)};sh.appendChild(b)}};
 document.body.classList.toggle('guest',GUEST());if(!ROLE)showGate();
 let SEEN_MARKED=false;const _r2=render;render=function(a){_r2(a);if(!SEEN_MARKED&&ROLE.startsWith('guest:')&&!PREV&&db&&loaded.has('participants')){SEEN_MARKED=true;let done=false;try{done=sessionStorage.getItem('seenMark')==='1'}catch(e){}if(!done){try{sessionStorage.setItem('seenMark','1')}catch(e){}gset('participants/'+ROLE.slice(6),{seenAt:new Date().toISOString()})}}};
@@ -2721,7 +2803,7 @@ render(true);
 </script>
 
 <script>
-(function(){var B='92d909d6a0';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B='3b0236428c';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
