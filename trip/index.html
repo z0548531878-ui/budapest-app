@@ -604,8 +604,8 @@ const VIEWS={
     <div class="pass-stub"><span class="big num" ${typeof big==='number'?`data-count="${big}"`:''}>${big}</span><small>${lbl}</small></div></section>
   <section class="hub">
    <button class="big" data-idea><span class="ic">${I.spark}</span><span class="main"><b>עדכון או רעיון</b><span>כותבים או מכתיבים, וזה מגיע ל-Claude</span></span><span class="mic">${I.mic}</span></button>
-   <div class="sync ${pn?'has':''}"><span class="dot"></span><div class="main"><b>${pn?`${pn} חדשים ל-Claude`:'Claude מעודכן'}</b><small>${pn?'שולחים, מקבלים קוד, מדביקים':'אין שינויים שהוא לא ראה'}</small></div>
-    <div class="btns"><button class="btn ${pn?'primary':''}" data-send>שליחה</button><button class="btn" data-code>הדבקת קוד</button></div></div>
+   <div class="sync ${pn?'has':''}"><span class="dot"></span><div class="main"><b>${pn?`${pn} חדשים ל-Claude`:'Claude מעודכן'}</b><small>${pn?'שולחים אליו, והוא מעדכן כאן לבד':'אין שינויים שהוא לא ראה'}</small></div>
+    <div class="btns"><button class="btn ${pn?'primary':''}" data-send>שליחת עדכון ל-Claude</button></div></div>
   </section>
   ${guideCard()}
   ${fires.length?`<section class="sec"><div class="sec-h"><h3>דורש תשומת לב</h3></div>${card(fires.map(([c,l,to,o])=>`<button class="row" data-go="${to}" data-opts='${esc(JSON.stringify(o))}'><span class="pill ${c}">!</span><div class="main"><div class="t">${esc(l)}</div></div><span aria-hidden="true" style="color:var(--muted)">‹</span></button>`).join(''))}</section>`:''}
@@ -861,7 +861,7 @@ const UPD={
 const GUIDE=[
  ['spark','קרה משהו? עלה רעיון?','לוחצים על הכוכב הזהוב למעלה, או על "עדכון או רעיון" בכל מסך. כותבים או מקליטים במילים שלכם, בלי לחשוב איפה זה שייך.'],
  ['check','שולחים ל-Claude','"שליחת עדכון ל-Claude" מעתיק את כל מה שנכתב והשתנה, ופותח את השיחה איתו. מדביקים ושולחים.'],
- ['edit','מדביקים את הקוד שחוזר','Claude עונה עם קוד קצר. מעתיקים אותו, לוחצים "הדבקת קוד מ-Claude", וכל העדכונים נכנסים למקום הנכון.'],
+ ['edit','Claude מעדכן לבד','אחרי שקיבל את העדכון, Claude מכניס את השינויים לאפליקציה בעצמו תוך כמה דקות. תופיע הודעה "Claude עדכן", והשינויים יופיעו בפעמון.'],
  ['bell','רואים מה הצוות עשה','הפעמון מראה כל שינוי של איציק, יעל ושלך. מספר אדום אומר שיש משהו חדש שעוד לא ראית.'],
  ['chat','תזכורת כל כמה שעות','מקבלים התראה מ-Claude שהגיע הזמן לשלוח עדכון. גם בדף הבית רואים כמה דברים חדשים מחכים.'],
  ['tasks','משימות: לעשות, ממתין, בוצעו','משימה שתלויה בספק או באדם אחר מסמנים "ממתין", כך היא לא נשכחת ולא מעמיסה על "לעשות".'],
@@ -870,7 +870,7 @@ const GUIDE=[
 const GI={check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h4L19 9l-4-4L4 16v4z"/></svg>'};
 const gic=k=>GI[k]||I[k]||'';
 let guideDone=false;try{guideDone=localStorage.getItem('guideDone')==='1'}catch(e){}
-const guideCard=()=>guideDone?'':`<div class="guidecard"><h4>איך מעדכנים? כותבים, שולחים, מדביקים.</h4><ol><li>לוחצים על הכוכב הזהוב למעלה ומספרים מה קרה או מה עלה לכם.</li><li>"שליחת עדכון ל-Claude" מעתיק הכל ופותח את השיחה. מדביקים ושולחים.</li><li>Claude מחזיר קוד. מדביקים אותו ב"הדבקת קוד מ-Claude", וזהו.</li></ol><div class="acts"><button class="btn primary" data-idea>לנסות</button><button class="btn" data-sub="guide">מדריך</button><span class="sp" style="flex:1"></span><button class="btn" id="guideOk">הבנתי</button></div></div>`;
+const guideCard=()=>guideDone?'':`<div class="guidecard"><h4>איך מעדכנים? כותבים, שולחים, וזהו.</h4><ol><li>לוחצים על הכוכב הזהוב למעלה ומספרים מה קרה או מה עלה לכם.</li><li>"שליחת עדכון ל-Claude" מעתיק הכל ופותח את השיחה. מדביקים ושולחים.</li><li>Claude מעדכן את האפליקציה בעצמו תוך כמה דקות.</li></ol><div class="acts"><button class="btn primary" data-idea>לנסות</button><button class="btn" data-sub="guide">מדריך</button><span class="sp" style="flex:1"></span><button class="btn" id="guideOk">הבנתי</button></div></div>`;
 const updBar=k=>{const u=UPD[k];return u?`<button class="updbar slim" data-upd="${k}"><span class="ic">${I.spark}</span><span class="main"><b>עדכון או רעיון לגבי המסך הזה</b><small>${esc(u.ex)}</small></span><span class="ic" style="background:none;color:var(--gold)">${I.mic}</span></button>`:''};
 const curScope=()=>V.tab==='more'?(UPD[V.sub]?V.sub:'home'):(UPD[V.tab]?V.tab:'home');
 function fieldDesc(c){return F[c].fields.map(f=>{let o=f.o;if(typeof o==='function')o=o();
@@ -937,7 +937,7 @@ async function runUpd(text,cols,box,onApplied){
     if(e.target.id==='applyAll'){items.forEach((x,i)=>{if(x.a.type!=='keep')apply(i)});e.target.remove();toast('הכל עודכן')}};
 }
 function updSheet(k){const u=UPD[k]||UPD.home;
-  sheet(`<h3>עדכון או רעיון</h3><p class="note" style="margin-top:0">כתבו או הכתיבו מה קרה או מה עלה לכם. זה נשמר כאן, ונשלח ל-Claude עם העדכון הבא. Claude מחזיר קוד קצר שמסדר הכל למקום.</p>
+  sheet(`<h3>עדכון או רעיון</h3><p class="note" style="margin-top:0">כתבו או הכתיבו מה קרה או מה עלה לכם. זה נשמר כאן ונשלח ל-Claude עם העדכון הבא, והוא מסדר הכל למקום הנכון באפליקציה.</p>
    <textarea class="note-in" id="noteIn" placeholder="${esc(u.ex)}"></textarea>
    <button class="recbtn" id="recBtn" type="button"><span class="dot">${I.mic}</span><span id="recLbl">הקלטה: לחצו ודברו</span></button>
    <p class="note" id="recNote" style="margin:8px 2px 0" hidden></p>
@@ -963,21 +963,20 @@ function buildReport(extra){
   if(p.acts.length)t+=`\nשינויים באפליקציה (${p.acts.length}):\n`+p.acts.slice().sort((a,b)=>(a.at||'').localeCompare(b.at||'')).map(a=>`- [${a.col}/${a.rid}] ${a.by||'?'} ${ACTV[a.act]?ACTV[a.act][0]:a.act} ${LBL(a.col)}: ${a.title}${a.change?' · '+a.change:''}`).join('\n')+'\n';
   if(p.answers.length)t+=`\nתשובות לשאלות שלך:\n`+p.answers.map(x=>`- [claude/${x._id}] ${x.title} → ${x.answer}`).join('\n')+'\n';
   if(!p.notes.length&&!p.acts.length&&!p.answers.length&&!extra)t+='\nאין שינויים חדשים מאז העדכון הקודם.\n';
-  t+='\nתחזיר לי קוד לאפליקציה.';
+  t+='\nתעדכן את האפליקציה.';
   return t;
 }
 function sendSheet(extra){
   const txt=buildReport(extra);
   sheet(`<h3>שליחת עדכון ל-Claude</h3><div class="steps">
     <div class="step"><span class="n">1</span><div><b>מעתיקים</b><p>כל השינויים והרעיונות מאז הפעם הקודמת כבר מוכנים כאן.</p></div></div>
-    <div class="step"><span class="n">2</span><div><b>פותחים את Claude ומדביקים</b><p>הכפתור פותח את השיחה עם Claude. לוחצים לחיצה ארוכה בתיבת ההודעה ← הדבקה ← שליחה.</p></div></div>
-    <div class="step"><span class="n">3</span><div><b>מחזירים את הקוד לכאן</b><p>Claude עונה עם קוד. מעתיקים אותו, חוזרים לכאן ולוחצים על "הדבקת קוד מ-Claude".</p></div></div></div>
+    <div class="step"><span class="n">2</span><div><b>מדביקים ושולחים ל-Claude</b><p>הכפתור פותח את השיחה. לחיצה ארוכה בתיבת ההודעה ← הדבקה ← שליחה.</p></div></div>
+    <div class="step"><span class="n">3</span><div><b>זהו</b><p>Claude מעדכן את האפליקציה בעצמו תוך כמה דקות, ותופיע הודעה "Claude עדכן".</p></div></div></div>
    <textarea class="note-in" id="repTxt" style="min-height:120px;font-size:13.5px;margin-top:12px" readonly>${esc(txt)}</textarea>
-   <div class="sheet-acts"><button class="btn" id="codeIn">הדבקת קוד מ-Claude</button><span class="sp"></span><button class="btn primary" id="cpGo">העתקה ופתיחת Claude</button></div>`);
+   <div class="sheet-acts"><span class="sp"></span><button class="btn primary" id="cpGo">העתקה ופתיחת Claude</button></div>`);
   document.getElementById('cpGo').onclick=async()=>{let ok=false;try{await navigator.clipboard.writeText(txt);ok=true}catch(e){const ta=document.getElementById('repTxt');ta.select();try{ok=document.execCommand('copy')}catch(_){}}
     toast(ok?'הועתק. עכשיו מדביקים אצל Claude':'סמנו את הטקסט והעתיקו');try{localStorage.setItem('lastSent',new Date().toISOString())}catch(e){}
     setTimeout(()=>window.open(CHAT_URL,'_blank'),ok?500:1500)};
-  document.getElementById('codeIn').onclick=()=>codeSheet();
 }
 function parseCode(t){const a=t.indexOf('{'),b=t.lastIndexOf('}');if(a<0||b<a)throw 0;const j=JSON.parse(t.slice(a,b+1));if(!Array.isArray(j.ops))throw 0;return j}
 function codeSheet(){
@@ -1002,7 +1001,32 @@ function codeSheet(){
 const claudeCard=()=>{const p=pendingForClaude(),n=p.acts.length+p.notes.length+p.answers.length;let last='';try{last=localStorage.getItem('lastSent')||''}catch(e){}
   const hrs=last?(Date.now()-new Date(last))/36e5:99;
   return `<section class="sec"><div class="ccard" style="flex-wrap:wrap"><span class="ic" style="background:rgba(224,178,90,.2)">${I.spark}</span><div class="main"><b>${n?`${n} דברים חדשים ל-Claude`:'Claude מעודכן'}</b><span>${n?(hrs>4?'עברו כמה שעות מהעדכון האחרון. כדאי לשלוח.':'שולחים כשנוח, הכל נשמר.'):'אין שינויים שהוא עוד לא ראה'}</span></div>
-   <div style="display:flex;gap:8px;width:100%;margin-top:10px"><button class="btn ${n?'primary':''}" data-send style="flex:1">שליחת עדכון ל-Claude</button><button class="btn" data-code style="flex:1">הדבקת קוד מ-Claude</button></div></div></section>`};
+   <div style="display:flex;gap:8px;width:100%;margin-top:10px"><button class="btn ${n?'primary':''}" data-send style="flex:1">שליחת עדכון ל-Claude</button></div></div></section>`};
+
+/* ---- auto-apply updates that Claude publishes (encrypted, in updates.enc) ---- */
+let autoBusy=false;
+async function decryptBlob(j){const b=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));const key=await deriveKey(TRIP_KEY,b(j.salt));
+  return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b(j.iv)},key,b(j.ct))))}
+async function applyOps(ops){const ok=ops.filter(o=>o&&o.c&&o.id&&COLS.includes(o.c));
+  for(let i=0;i<ok.length;i+=400){const bt=db.batch();ok.slice(i,i+400).forEach(o=>{const ref=db.collection(o.c).doc(o.id);if(o.op==='delete')bt.delete(ref);else if(o.op==='update')bt.set(ref,o.d||{},{merge:true});else bt.set(ref,o.d||{})});await bt.commit()}
+  return ok.length}
+async function autoApply(){
+  if(autoBusy||!db||!TRIP_KEY||!loaded.has('settings'))return;autoBusy=true;
+  try{
+    const r=await fetch('updates.enc?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;
+    const all=(await decryptBlob(await r.json())).batches||[];
+    const st=S.settings.find(x=>x._id==='claude')||{}, done=new Set(st.applied||[]);
+    const todo=all.filter(b=>b&&b.id&&!done.has(b.id));if(!todo.length)return;
+    let n=0;const notes=[];
+    for(const b of todo){n+=await applyOps(b.ops||[]);if(b.note)notes.push(b.note);
+      const now=new Date().toISOString();
+      await db.collection('settings').doc('claude').set({applied:firebase.firestore.FieldValue.arrayUnion(b.id),seenAt:b.seen&&b.seen>(st.seenAt||'')?b.seen:(st.seenAt||now),appliedAt:now},{merge:true});
+      db.collection('activity').add({by:'Claude',at:now,act:'edit',col:'claude',rid:'',title:`עדכן ${(b.ops||[]).length} דברים`,change:b.note||''}).catch(()=>{});}
+    toast(`Claude עדכן ${n} דברים`);setTimeout(()=>burst(document.getElementById('actBtn')),200);
+  }catch(e){console.warn('autoApply',e)}finally{autoBusy=false}
+}
+setInterval(autoApply,120000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)autoApply()});
 
 
 const holderOf=x=>x.holder||(/איציק/.test(x.method||'')?'איציק':/שלומי/.test(x.method||'')?'שלומי':'');
@@ -1054,9 +1078,9 @@ function actSheet(){
   const list=rows.map(a=>{const d=day(a.at),h=d!==last?`<div class="ghead" style="margin:14px 4px 6px"><span>${d}</span></div>`:'';last=d;
     return h+`<button class="it ${others(a)&&(a.at||'')>actSeen?'new':''}" ${find(a.col,a.rid)?`data-open="${a.col}/${a.rid}"`:''}><span class="av">${esc((a.by||'?')[0])}</span><span class="main"><b>${esc(a.by||'מישהו')}</b> ${esc(actLine(a))}${a.change?`<small>${esc(a.change)}</small>`:''}<small class="num">${tm(a.at)}</small></span></button>`}).join('');
   sheet(`<h3>מה חדש</h3>
-   <div style="display:flex;gap:8px;margin-bottom:8px"><button class="btn primary" id="sendNow" style="flex:1">שליחת עדכון ל-Claude${forClaude?` (${forClaude})`:''}</button><button class="btn" id="codeNow" style="flex:1">הדבקת קוד מ-Claude</button></div>
+   <div style="display:flex;gap:8px;margin-bottom:8px"><button class="btn primary" id="sendNow" style="flex:1">שליחת עדכון ל-Claude${forClaude?` (${forClaude})`:''}</button></div>
    <div class="card feed">${list||'<div class="empty"><b>עוד אין פעולות</b>מעכשיו כל שינוי של כל אחד בצוות יופיע כאן</div>'}</div>`);
-  document.getElementById('sendNow').onclick=()=>sendSheet();document.getElementById('codeNow').onclick=()=>codeSheet();
+  document.getElementById('sendNow').onclick=()=>sendSheet();
   document.querySelector('.feed').onclick=e=>{const o=e.target.closest('[data-open]');if(o){const [c,id]=o.dataset.open.split('/');editor(c,id)}};
   actSeen=new Date().toISOString();try{localStorage.setItem('actSeen',actSeen)}catch(e){}renderBadge();
 }
@@ -1331,7 +1355,7 @@ async function maybeSeed(w){
 }
 
 let rq=0, firstAll=false;
-const later=()=>{if(rq)return;if(V.sub==='notes'&&document.querySelector('#sortBox .prop,#sortBox .thinking'))return;rq=requestAnimationFrame(()=>{rq=0;const all=COLS.every(c=>loaded.has(c));render(all&&!firstAll);if(all)firstAll=true})};
+const later=()=>{if(rq)return;if(V.sub==='notes'&&document.querySelector('#sortBox .prop,#sortBox .thinking'))return;rq=requestAnimationFrame(()=>{rq=0;const all=COLS.every(c=>loaded.has(c));render(all&&!firstAll);if(all&&!firstAll)setTimeout(autoApply,800);if(all)firstAll=true})};
 render(true);
 (()=>{const sp=document.getElementById('splash');let seen=false;try{seen=sessionStorage.getItem('splash')==='1';sessionStorage.setItem('splash','1')}catch(e){}
   if(seen||reduce){sp.remove();return}setTimeout(()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),520)},1900)})();
