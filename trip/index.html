@@ -1061,6 +1061,38 @@ body.guest .btn,body.guest button.btn,body.guest a.btn{display:inline-flex;align
 
 .gcb>.gc.gtrv,.gcb>.gc:nth-child(9){min-height:176px!important}
 
+/* ---- program swipe + participants cards ---- */
+.swhint{text-align:center;color:#a69a7d;font-size:14.5px;margin:6px 0 10px;letter-spacing:.2px}
+.daynav{display:flex;gap:12px;justify-content:space-between;margin:14px 0 4px}.daynav i{flex:1}
+.daynav button{flex:1;min-height:56px;border:1.5px solid rgba(214,178,98,.55);border-radius:18px;background:linear-gradient(160deg,#241c0e,#0e0c08);color:#f0d28c;font-weight:900;font-size:18px;display:flex;align-items:center;justify-content:center;gap:10px}
+.daynav button span{font-size:28px;line-height:1}.daynav button:active{transform:scale(.96)}
+.pcards{display:grid;gap:12px;margin-top:6px}
+.pl{display:flex;align-items:center;gap:10px;margin:10px 4px 0;color:#f0d28c;font-family:var(--display);font-size:26px;font-weight:700}
+.pl span{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:linear-gradient(180deg,#f6dc93,#c99a3d);color:#15110a;font-size:24px}
+.pl::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(214,178,98,.5),transparent)}
+.pc{position:relative;overflow:hidden;border-radius:24px;border:1px solid rgba(214,178,98,.28);background:linear-gradient(150deg,#1b1710,#0c0b08);padding:6px 14px 6px 10px;box-shadow:0 14px 28px -18px #000}
+.pc::before{content:"";position:absolute;inset-block:0;inset-inline-start:0;width:6px;background:linear-gradient(180deg,var(--a),var(--b),var(--a));background-size:100% 220%}
+.pc::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 90% at 100% 0%,color-mix(in srgb,var(--a) 16%,transparent),transparent 60%);pointer-events:none}
+.pm{position:relative;z-index:1;display:flex;align-items:center;gap:14px;padding:12px 6px}
+.pm+.pm{border-top:1px dashed rgba(214,178,98,.22)}
+.pc .av{width:64px!important;height:64px!important;flex:none;border-radius:50%!important;box-shadow:0 0 0 3px var(--a),0 8px 18px -8px var(--b)}
+.pc .av.nophoto{background:linear-gradient(160deg,#2a251a,#13110c)!important;color:var(--a)!important}
+.pc .av svg{width:34px;height:34px}
+.pn{flex:1;min-width:0;display:grid;gap:3px}.pn b{font-size:21px;line-height:1.2}.pn span{font-size:16px;color:#cfc3a6;white-space:nowrap}.pn .mut{color:#8f846b}
+.pwa{flex:none;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;text-decoration:none;color:#0e2417;background:linear-gradient(180deg,#9ce7b8,#3fae72);box-shadow:0 8px 16px -8px rgba(63,174,114,.8)}
+.pwa svg{width:28px;height:28px}.pwa:active{transform:scale(.88)}
+@media (prefers-reduced-motion:no-preference){
+@keyframes pcIn{from{opacity:0;transform:translate3d(0,30px,0) scale(.94)}to{opacity:1;transform:none}}
+@keyframes pcBar{50%{background-position:0 100%}}
+@keyframes swN{from{opacity:0;transform:translate3d(-60px,0,0)}to{opacity:1;transform:none}}
+@keyframes swP{from{opacity:0;transform:translate3d(60px,0,0)}to{opacity:1;transform:none}}
+.pc,.pl{animation:pcIn .55s cubic-bezier(.2,.85,.25,1.05) both;animation-delay:calc(min(var(--i,0),10)*55ms)}
+.pc::before{animation:pcBar 5s ease-in-out infinite;animation-delay:calc(var(--i,0)*-.4s)}
+.pc .av{animation:pcRing 4s ease-in-out infinite;animation-delay:calc(var(--i,0)*-.3s)}
+@keyframes pcRing{50%{box-shadow:0 0 0 3px var(--b),0 8px 22px -6px var(--a)}}
+.parch.sw-n{animation:swN .42s cubic-bezier(.2,.85,.25,1) both}.parch.sw-p{animation:swP .42s cubic-bezier(.2,.85,.25,1) both}
+}
+
 /* ===== per-screen entrances + per-button motion ===== */
 @media (prefers-reduced-motion:no-preference){
 @keyframes kRise{from{opacity:0;transform:translate3d(0,26px,0) scale(.97)}}
@@ -2431,7 +2463,8 @@ function showGate(step){
 
 /* ===== participant (guest) app ===== */
 const IX={food:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 9H9V2H7v7H5V2H3v7c0 2.1 1.7 3.8 3.8 4v9h2.4v-9c2.1-.2 3.8-1.9 3.8-4V2h-2v7zm5-3v8h2.5v8H21V2c-2.8 0-5 2.2-5 4z"/></svg>',pin:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.500a2.5 2.5 0 0 1 0 5z"/></svg>',nav:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4.500 20.300l.7.7L12 18l6.800 3 .7-.7z"/></svg>'};
-const GNAV=[['gl','לוח המסע','sched'],['gr','החדר שלי','bed'],['gh','בית','home'],['gx','מסעדות','food'],['gp','משתתפים','people']];
+IX.wa='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.600 15.100L2 22l5-1.300A10 10 0 1 0 12 2zm5.200 14.100c-.2.600-1.200 1.200-1.700 1.200-.4.100-1 .1-1.600-.1-.4-.1-.9-.3-1.500-.6-2.600-1.100-4.300-3.700-4.400-3.900-.1-.2-1-1.300-1-2.500s.6-1.800.9-2c.2-.2.500-.3.700-.3h.5c.2 0 .4 0 .6.500l.8 1.900c.1.200.1.300 0 .500l-.3.400-.4.400c-.1.100-.3.300-.1.600.2.300.7 1.200 1.600 1.900 1.100 1 2 1.300 2.300 1.400.3.100.4.100.6-.1l.8-1c.2-.2.400-.2.600-.1l1.900.9c.3.100.4.200.5.300.1.200.1.800-.1 1.400z"/></svg>';
+const GNAV=[['gl','לוח המסע','sched'],['gr','החדר שלי','bed'],['gh','בית','home'],['gt','משימות','tasks'],['gq','בקשות','mic']];
 const gIco=k=>IX[k]||I[k]||'';
 const HOTEL={name:'מלון סילבר קראון',en:'Silver Crown Hotel & Residence, Palace Quarter',q:'Silver Crown Hotel & Residence Palace Quarter Budapest'};
 const mapsFind=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
@@ -2541,6 +2574,7 @@ const hotelCard=()=>`<div class="hotel"><div class="ht-h"><span class="ht-ic">${
      <a class="btn primary navbtn" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener">${IX.nav}<span>ניווט למלון בגוגל מפס</span></a>
      <a class="btn ghost" href="${mapsFind(HOTEL.q)}" target="_blank" rel="noopener" style="width:100%;justify-content:center;margin-top:8px">📍 הצגת המלון במפה</a>
      <p class="note">יצאתם ולא בטוחים איך חוזרים? לחצו על הכפתור, ובחרו הליכה.</p></div>`;
+const progDay=()=>{const t=todayISO(),def=t==='2026-11-20'?'fri':t==='2026-11-21'?'sat':'thu';return V.filter.pd||def};
 function guestHTML(){const h=guestHTML0();return GTAB==='gh'?h:h+`<button class="gback bot" data-gnav="gh"><span>›</span><b>חזרה למסך הבית</b></button>`}
 function guestHTML0(){
   const me=meG(), ppl=coupleOf(me);
@@ -2582,7 +2616,8 @@ function guestHTML0(){
      PLACES.map((g,gi)=>`<section class="pgrp" style="--g:${gi}"><div class="ghead"><span>${g.h}</span><span class="num">${g.l.length}</span></div>${g.l.map((p,i)=>`<div class="place" style="--i:${i}"><div class="pl-t"><b>${esc(p[0])}</b><span class="ltr en">${esc(p[1])}</span></div>${p[3]?`<span class="pill p-mute">${esc(p[3])}</span>`:''}${p[4]?`<small>${esc(p[4])}</small>`:''}
        <div class="pl-a"><a class="btn" href="${mapsFind(p[1]+' '+p[2])}" target="_blank" rel="noopener">${IX.pin}<span>במפה</span></a><a class="btn primary" href="${mapsGo(p[1]+' '+p[2])}" target="_blank" rel="noopener">${IX.nav}<span>ניווט</span></a></div></div>`).join('')}</section>`).join('')+
      `<p class="note">טיפ: מזמינים מונית באפליקציית Bolt או בקבלה. כרטיס אשראי מתקבל כמעט בכל מקום.</p>`}
-  if(GTAB==='gl'){const h=SUB.program().replace(/<div class="page-title">[\s\S]*?<\/div>/,'');return head('לוח המסע')+h}
+  if(GTAB==='gl'){const h=SUB.program().replace(/<div class="page-title">[\s\S]*?<\/div>/,'');const k=progDay(),i=PROG.findIndex(x=>x.k===k),pv_=PROG[i-1],nx=PROG[i+1];
+    return head('לוח המסע')+h.replace('<div class="parch">','<div class="swhint">‹ החליקו ימינה ושמאלה בין הימים ›</div><div class="parch">')+`<div class="daynav">${pv_?`<button data-gday="${pv_.k}"><span>›</span> ${pv_.tab}</button>`:'<i></i>'}${nx?`<button data-gday="${nx.k}">${nx.tab} <span>‹</span></button>`:'<i></i>'}</div>`}
   if(GTAB==='gp'){
     const nm=p=>p.name.replace(/^הרב(נית)?\s+/,''), ord=[], seen={};
     const base=S.participants.slice().sort((a,b)=>nm(a).localeCompare(nm(b),'he'));
@@ -2592,12 +2627,16 @@ function guestHTML0(){
     const cnt={all:rows.length,m:rows.filter(p=>p.gender==='גבר').length,f:rows.filter(p=>p.gender==='אישה').length};
     if(GGEN==='m')rows=rows.filter(p=>p.gender==='גבר');if(GGEN==='f')rows=rows.filter(p=>p.gender==='אישה');
     if(GQ)rows=rows.filter(p=>p.name.includes(GQ));
-    const prow=p=>`<div class="row">${avatarHTML(p)}<div class="main"><div class="t">${esc(p.name)}</div>${p.phone?`<div class="m"><span class="num ltr">${esc(p.phone)}</span></div>`:''}</div>${p.phone?`<a class="pill p-ok" href="${waLink(p.phone)}" target="_blank" rel="noopener">💬 וואטסאפ</a>`:''}</div>`;
-    const grouped=[];for(let i=0;i<rows.length;i++){const p=rows[i],q=rows[i+1];if(q&&p.spouse===q._id){grouped.push(`<div class="cpl">${prow(p)}${prow(q)}</div>`);i++}else grouped.push(prow(p))}
+    const HUES=[['#f6dc93','#c99a3d'],['#f3c4b0','#c9806a'],['#e8d9b0','#b59a5a'],['#d9c3ff','#8e6fc4'],['#bfe3d0','#5fa98a'],['#f0b9a0','#d07a4e']];
+    const prow=p=>`<div class="pm">${avatarHTML(p)}<div class="pn"><b>${esc(p.name)}</b>${p.phone?`<span class="num ltr">${esc(p.phone)}</span>`:'<span class="mut">אין טלפון</span>'}</div>${p.phone?`<a class="pwa" href="${waLink(p.phone)}" target="_blank" rel="noopener" aria-label="וואטסאפ">${IX.wa}</a>`:''}</div>`;
+    const groups=[];for(let i=0;i<rows.length;i++){const p=rows[i],q=rows[i+1];if(q&&p.spouse===q._id){groups.push([p,q]);i++}else groups.push([p])}
+    let lastL='',idx=0;
+    const listH=groups.map(g=>{const L=nm(g[0])[0]||'';let h='';if(L!==lastL){lastL=L;h=`<div class="pl" style="--i:${idx}"><span>${esc(L)}</span></div>`}
+      const hu=HUES[idx%HUES.length];const c=`<div class="pc" style="--i:${idx};--a:${hu[0]};--b:${hu[1]}">${g.map(prow).join('')}</div>`;idx++;return h+c}).join('');
     const chip=(k,l)=>`<button class="chip" data-ggen="${k}" aria-pressed="${GGEN===k}">${l} <span class="num">${cnt[k]}</span></button>`;
     return head('משתתפי המסע',`<span class="cnt num">${cnt.all}</span>`)+`<div class="chips">${chip('all','כולם')}${chip('m','גברים')}${chip('f','נשים')}</div>
      <input class="search" id="gq" type="search" placeholder="חיפוש לפי שם" value="${esc(GQ)}">
-     ${card(grouped.join(''),'לא נמצא שם כזה')}
+     <div class="pcards">${listH||'<div class="card"><div class="empty">לא נמצא שם כזה</div></div>'}</div>
      <p class="note">הרשימה לפי זוגות. מי שלא העלה תמונה מופיע עם סמל נעילה. אפשר להעלות תמונה ב"הפרופיל שלי".</p>`}
   if(GTAB==='gr'){
     const rid=(ppl.find(p=>p.roomId)||{}).roomId, r=rid&&S.rooms.find(x=>x._id===rid);
@@ -2644,18 +2683,19 @@ function guestHTML0(){
      <div class="tool"><small>חירום</small><a class="btn" href="tel:112" style="width:100%;justify-content:center">112 · מספר החירום באירופה</a></div>`}
   return head('')}
 const _renderBase=render;
-let _lastScr='';
+let _lastScr='',_lastDay='';
 render=function(anim){
   if(!GUEST()){document.body.classList.remove('guest');_renderBase(anim);const v=document.getElementById('view');if(v)v.dataset.scr=(V.tab==='more'&&V.sub?V.sub:V.tab)||'';return}
   document.body.classList.add('guest');
   const p=ROLE.startsWith('guest:')?S.participants.find(p=>p._id===ROLE.slice(6)):1;
   if(!PREV&&loaded.has('participants')&&S.participants.length&&!p){logoutRole();return}
   const un=annUnread();
-  document.getElementById('nav').innerHTML=GNAV.map(([k,l,ic])=>`<button data-gnav="${k}" ${GTAB===k?'aria-current="page"':''}>${gIco(ic)}<span>${l}</span>${k==='gh'&&(un||pendOpen())?`<span class="badge num">${un+pendOpen()}</span>`:''}</button>`).join('');
+  document.getElementById('nav').innerHTML=GNAV.map(([k,l,ic])=>`<button data-gnav="${k}" ${GTAB===k?'aria-current="page"':''}>${gIco(ic)}<span>${l}</span>${k==='gh'&&un?`<span class="badge num">${un}</span>`:''}${k==='gt'&&pendOpen()?`<span class="badge num">${pendOpen()}</span>`:''}</button>`).join('');
   const v=document.getElementById('view'), a=document.activeElement, keep=a&&a.id&&v.contains(a)?{id:a.id,val:a.value,pos:a.selectionStart}:null;
   v.innerHTML=guestHTML();v.dataset.scr='g'+GTAB;
   if(anim||_lastScr!==GTAB){v.classList.remove('enter');if(!reduce){void v.offsetWidth;v.classList.add('enter')}}
   _lastScr=GTAB;
+  if(GTAB==='gl'){const d=progDay();if(_lastDay&&_lastDay!==d){const o=PROG.findIndex(x=>x.k===_lastDay),n2=PROG.findIndex(x=>x.k===d),el=v.querySelector('.parch');if(el&&!reduce){el.classList.remove('sw-n','sw-p');void el.offsetWidth;el.classList.add(n2>o?'sw-n':'sw-p')}}_lastDay=d}else _lastDay='';
   if(keep){const el=document.getElementById(keep.id);if(el&&'value' in el){el.value=keep.val;el.focus();try{el.setSelectionRange(keep.pos,keep.pos)}catch(e){}}}
   const cv=document.getElementById('cvI');if(cv)convUpd();
 };
@@ -2679,6 +2719,7 @@ document.addEventListener('click',e=>{
   const T=e.target;
   if(T.closest('#prevx')){setPrev(false);return}
   if(!GUEST()){orgClick(e);return}
+  const gd=T.closest('[data-gday]');if(gd){e.stopPropagation();e.preventDefault();V.filter.pd=gd.dataset.gday;render();window.scrollTo({top:0,behavior:'smooth'});return}
   const lk=T.closest('[data-glock]');if(lk){toast('המשחק ייפתח כשנגיע ונחתנו בבודפשט 🛬');return}
   const n=T.closest('[data-gnav]');if(n){e.stopPropagation();e.preventDefault();GTAB=n.dataset.gnav;V.seg=null;render(true);window.scrollTo(0,0);return}
   const s=T.closest('[data-gseg]');if(s){V.seg=s.dataset.gseg;render();return}
@@ -2695,6 +2736,15 @@ document.addEventListener('click',e=>{
   if(T.closest('[data-g-req]')){if(blockPrev())return;const txt=(DRAFT.reqText||'').trim();if(txt.length<3){toast('כתבו מה צריך');return}
     const ts=Date.now();gset('settings/req_'+ts,{kind:'req',by:me._id,byName:ppl.map(p=>p.name).join(' ו'),cat:DRAFT.reqCat,text:txt,status:'חדש',note:'',ts}).then(ok=>{if(ok){DRAFT.reqText='';toast('הבקשה נשלחה למארגנים');render()}});return}
 },true);
+
+/* swipe between program days */
+(()=>{let x0=0,y0=0,t0=0,on=false;
+  document.addEventListener('touchstart',e=>{on=GUEST()&&GTAB==='gl'&&e.touches.length===1;if(!on)return;const t=e.touches[0];x0=t.clientX;y0=t.clientY;t0=Date.now()},{passive:true});
+  document.addEventListener('touchend',e=>{if(!on)return;on=false;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;
+    if(Math.abs(dx)<60||Math.abs(dy)>50||Date.now()-t0>800||Math.abs(dx)<Math.abs(dy)*1.6)return;
+    const i=PROG.findIndex(x=>x.k===progDay()),j=i+(dx<0?1:-1);if(j<0||j>=PROG.length)return;
+    V.filter.pd=PROG[j].k;render();window.scrollTo({top:0,behavior:'smooth'})},{passive:true});
+})();
 
 /* ===== organizer additions: approvals, personal requests, announcements ===== */
 SUB.reqs=function(){
@@ -2889,7 +2939,7 @@ render(true);
 </script>
 
 <script>
-(function(){var B='293cf944fd';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B='cf1dbb758d';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
