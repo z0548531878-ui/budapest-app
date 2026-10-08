@@ -806,6 +806,9 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 .cdg b{font-size:23px!important}.cdg small{font-size:10.5px!important}.cdg i{font-size:20px!important}.cdg div{min-width:30px!important}
 @media (max-width:380px){.pass-stub{flex-basis:118px!important}.cdg b{font-size:20px!important}}
 .nav .badge.insb{background:#e5736a}
+
+.pprow .m span{color:#7fd1a5}
+a.pill{text-decoration:none!important}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -1194,13 +1197,14 @@ const SUB={
  },
  passports(){
   const ppl=S.participants.slice().sort((a,b)=>a.name.localeCompare(b.name,'he')), got=ppl.filter(p=>p.passport).length, pct=ppl.length?Math.round(got/ppl.length*100):0;
-  const f=V.filter.pp||'missing', rows=f==='missing'?ppl.filter(p=>!p.passport):ppl;
+  const f=V.filter.pp||'missing', q=(V.q||'').trim(), rows=ppl.filter(p=>(f==='missing'?!p.passport:f==='got'?p.passport:true)&&(!q||p.name.includes(q)));
   return subHead('צילומי דרכונים',`<span class="cnt num">${got}/${ppl.length}</span>`)+`
    <a class="passfolder" href="https://drive.google.com/drive/folders/1NV28JvhIoFQ4BMdF-S4dP9XWonw03anW" target="_blank" rel="noopener"><span class="ic">${I.file}</span><span class="main"><b>תיקיית הדרכונים בדרייב</b><span>משותפת רק לך, לאיציק וליעל. מעלים לשם את הצילומים.</span></span><span aria-hidden="true">‹</span></a>
    <div class="card" style="padding:14px;margin:12px 0"><div style="display:flex;justify-content:space-between;font-weight:800"><span>התקבלו</span><span class="num">${got} מתוך ${ppl.length}</span></div><div class="prog"><i data-w="${pct}%" style="width:0"></i></div>
     <p class="note" style="margin:10px 0 0">כדאי לשמור כל קובץ בשם של בעל הדרכון. אחרי ההעלאה מסמנים ✓ ליד השם.</p></div>
-   <div class="chips"><button class="chip" data-filter="pp" data-val="missing" aria-pressed="${f==='missing'}">עוד לא התקבל (${ppl.length-got})</button><button class="chip" data-filter="pp" data-val="all" aria-pressed="${f==='all'}">כולם</button></div>
-   ${card(rows.map(p=>`<div class="row ${p.passport?'done':''}"><button class="check ${p.passport?'on':''}" data-pp="${p._id}" aria-label="התקבל">${p.passport?CHECK:''}</button><div class="main"><div class="t">${esc(p.name)}</div></div>${p.phone?`<a class="pill p-mute" href="https://wa.me/${String(p.phone).replace(/\D/g,'').replace(/^0/,'972')}?text=${encodeURIComponent('שלום '+p.name.split(' ')[0]+', נשמח לצילום של הדרכון לקראת המסע לבודפשט (בשביל הצ׳ק אין במלון). אפשר לשלוח לי כאן. תודה!')}" target="_blank" rel="noopener">בקשה בוואטסאפ</a>`:''}</div>`).join(''),'<b>כל הדרכונים התקבלו 🎉</b>')}`;
+   <div class="chips"><button class="chip" data-filter="pp" data-val="missing" aria-pressed="${f==='missing'}">עוד לא התקבל (${ppl.length-got})</button><button class="chip" data-filter="pp" data-val="got" aria-pressed="${f==='got'}">התקבלו (${got})</button><button class="chip" data-filter="pp" data-val="all" aria-pressed="${f==='all'}">כולם</button></div>
+   <input class="search" id="q" type="search" placeholder="חיפוש לפי שם" value="${esc(V.q)}">
+   ${card(rows.map(p=>`<div class="row pprow"><button class="check ${p.passport?'on':''}" data-pp="${p._id}" aria-label="התקבל">${p.passport?CHECK:''}</button><div class="main"><div class="t">${esc(p.name)}</div>${p.passport?`<div class="m"><span>${p.passportUrl?'שמור בדרייב':'סומן שהתקבל'}</span></div>`:''}</div>${p.passportUrl?`<a class="pill p-ok" href="${esc(p.passportUrl)}" target="_blank" rel="noopener">צפייה</a>`:''}${!p.passport&&p.phone?`<a class="pill p-mute" href="https://wa.me/${String(p.phone).replace(/\D/g,'').replace(/^0/,'972')}?text=${encodeURIComponent('שלום '+p.name.split(' ')[0]+', נשמח לצילום של הדרכון לקראת המסע לבודפשט (בשביל הצ׳ק אין במלון). אפשר לשלוח לי כאן. תודה!')}" target="_blank" rel="noopener">בקשה בוואטסאפ</a>`:''}</div>`).join(''),q?'<b>לא נמצא שם כזה</b>':f==='got'?'<b>עוד לא התקבלו דרכונים</b>':'<b>כל הדרכונים התקבלו 🎉</b>')}`;
  },
  packing(){
   const rest=S.packing.filter(x=>x.list!=='סט לכל חדר'), setItems=S.packing.filter(x=>x.list==='סט לכל חדר');
