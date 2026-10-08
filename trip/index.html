@@ -520,6 +520,14 @@ body::before{background:
 .ph-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
 .kvs{padding:4px 14px}.kv{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line);font-size:14.5px}.kv:first-child{border-top:0}
 .kv span{color:var(--muted);font-weight:700;flex:0 0 auto}.kv b{text-align:left;font-weight:700}
+
+.bulkbar{display:flex;align-items:center;gap:10px;width:100%;border:0;border-radius:16px;padding:13px 15px;margin:0 0 12px;background:linear-gradient(150deg,#1fae5b,#128c4a);color:#fff;font-weight:800;font-size:15.5px;box-shadow:0 10px 24px -10px rgba(18,140,74,.6);text-align:right}
+.bulkbar .n{margin-inline-start:auto;background:rgba(255,255,255,.2);border-radius:99px;padding:2px 10px;font-size:13px}
+.brow{display:flex;align-items:center;gap:10px;padding:10px 12px;border-top:1px solid var(--line)}.brow:first-child{border-top:0}
+.brow .main{flex:1;min-width:0}.brow b{display:block;font-size:15px}.brow small{color:var(--muted);font-size:12.5px}
+.brow a.pill{text-decoration:none}.brow.sent{opacity:.6}.brow.skip{opacity:.4}
+.bnext{width:100%;justify-content:center;font-size:16px;padding:14px}
+.bdone{text-align:center;font-weight:800;color:var(--ok);padding:10px}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -805,6 +813,7 @@ const SUB={
   return subHead('משתתפי המסע',`<span class="cnt num">${S.participants.length}</span>`)+updBar('people')+`
    <div class="chips">${chip('all','כולם')}${chip('unpaid','לא שילמו')}${chip('nopass','בלי דרכון')}${chip('carry','עם תפקיד/מזוודה')}${cnt.nophone?chip('nophone','בלי טלפון'):''}</div>
    <input class="search" id="q" type="search" placeholder="חיפוש שם, טלפון או הערה" value="${esc(V.q)}">
+   ${(()=>{const n=rows.filter(p=>p.phone).length;const l={all:'הודעה לכולם',unpaid:'הודעה לכל מי שלא שילם',nopass:'בקשת דרכון מכל מי שלא שלח',carry:'הודעה לכל מי שיש לו תפקיד'}[f];return n&&l?`<button class="bulkbar" data-bulk>💬 ${l}<span class="n num">${n}</span></button>`:''})()}
    ${card(rows.map(p=>`<div class="row prow" data-person="${p._id}" role="button" tabindex="0"><span class="av">${esc(p.name.replace(/^הרב(נית)? /,'')[0])}</span>
      <div class="main"><div class="t">${esc(p.name)}</div><div class="m">${p.phone?`<span class="num ltr">${esc(p.phone)}</span>`:'<span style="color:var(--warn)">אין טלפון</span>'}${p.carry?`<span class="who">🧳 ${esc(p.carry)}</span>`:''}${p.duties?`<span class="who">📌 ${esc(p.duties)}</span>`:''}${p.notes?`<span>${esc(p.notes)}</span>`:''}</div></div>
      <div class="end"><span class="pill ${payCls(p)}">${p.status==='לא שולם'?'לא שילם':esc(p.status)}</span><span class="pp ${p.passport?'ok':''}" title="דרכון">${p.passport?'דרכון ✓':'דרכון ✗'}</span></div>
@@ -926,6 +935,7 @@ view.addEventListener('click',e=>{
   const f=t.closest('[data-flight]');if(f){flightSheet(f.dataset.flight);return}
   if(t.closest('[data-idea]')){updSheet(curScope());return}
   if(t.closest('[data-actfeed]')){actSheet();return}
+  if(t.closest('[data-bulk]')){bulkSheet();return}
   const pr=t.closest('[data-person]');if(pr&&!t.closest('a')){personSheet(pr.dataset.person);return}
   const pp=t.closest('[data-pp]');if(pp){const p=find('participants',pp.dataset.pp);if(p){const on=!p.passport;pp.classList.toggle('on',on);pp.innerHTML=on?CHECK:'';if(on)burst(pp);save('participants',p._id,{...strip(p),passport:on})}return}
   if(t.closest('[data-send]')){if(CAN_SEND())sendSheet();return}
@@ -1182,6 +1192,39 @@ function personSheet(id){
   const pa=document.getElementById('phPay');if(pa)pa.onclick=()=>paySheet(id);
   document.getElementById('phPass').onclick=async e=>{const on=!p.passport;if(await save('participants',id,{...strip(p),passport:on})){if(on)burst(e.target);setTimeout(()=>personSheet(id),250)}};
   document.querySelector('.sheet').addEventListener('click',e=>{const tg=e.target.closest('[data-toggle]');if(tg){e.stopPropagation();toggle(tg.dataset.toggle,tg);return}const ed=e.target.closest('[data-edit]');if(ed){const [c,i]=ed.dataset.edit.split('/');editor(c,i)}});
+}
+
+
+const BULK_TPL={
+ unpaid:'שלום {שם}, תזכורת ידידותית לתשלום על שבת הגיבוש בבודפשט: {סכום}. אפשר בהעברה לאיציק, באשראי דרך שלומי (עד 5 תשלומים) או במזומן. תודה רבה!',
+ nopass:'שלום {שם}, נשמח לצילום של הדרכון לקראת המסע לבודפשט (בשביל הצ׳ק אין במלון). אפשר לשלוח לי כאן. תודה!',
+ all:'שלום {שם}, ',
+ carry:'שלום {שם}, תודה שאתה עוזר לנו! רק מזכיר: {סוחב}. ',
+ nophone:'שלום {שם}, '};
+function bulkSheet(){
+  const f=V.filter.pf||'all';
+  let list=S.participants.filter(p=>p.phone&&(!V.q||[p.name,p.phone,p.notes,p.carry,p.duties].join(' ').includes(V.q)));
+  if(f==='unpaid')list=list.filter(p=>p.status!=='שולם'&&p.status!=='פטור');if(f==='nopass')list=list.filter(p=>!p.passport);if(f==='carry')list=list.filter(p=>p.carry||p.duties);
+  list.sort((a,b)=>a.name.localeCompare(b.name,'he'));
+  const key='bulkTpl_'+f;let tpl=BULK_TPL[f]||BULK_TPL.all;try{tpl=localStorage.getItem(key)||tpl}catch(e){}
+  const sent=new Set(), skip=new Set();
+  const fill=p=>tpl.replaceAll('{שם}',p.name.replace(/^הרב(נית)? /,'').split(' ')[0]).replaceAll('{סכום}',ils(p.amount)).replaceAll('{סוחב}',[p.carry,p.duties].filter(Boolean).join(' · '));
+  const title={unpaid:'הודעה למי שלא שילם',nopass:'בקשת צילום דרכון',carry:'הודעה למי שיש לו תפקיד',all:'הודעה לכולם'}[f]||'הודעה לרשימה';
+  const todo=()=>list.filter(p=>!sent.has(p._id)&&!skip.has(p._id));
+  const rows=()=>list.map(p=>`<div class="brow ${sent.has(p._id)?'sent':''} ${skip.has(p._id)?'skip':''}"><button class="check ${skip.has(p._id)?'':'on'}" data-bsk="${p._id}" aria-label="לכלול">${skip.has(p._id)?'':CHECK}</button><div class="main"><b>${esc(p.name)}</b><small class="num ltr">${esc(p.phone)}</small></div>${sent.has(p._id)?'<span class="pill p-ok">נשלח ✓</span>':`<a class="pill p-gold" href="${waLink(p.phone,fill(p))}" target="_blank" rel="noopener" data-bsend="${p._id}">שליחה</a>`}</div>`).join('');
+  const nextBtn=()=>{const t=todo();return t.length?`<button class="btn primary bnext" id="bNext">שליחה ל${esc(t[0].name)} <span class="num">(${list.length-t.length+1}/${list.length-skip.size})</span></button>`:`<div class="bdone">🎉 נשלח לכולם</div>`};
+  sheet(`<h3>${title}</h3><p class="note" style="margin-top:0">${list.length} אנשים לפי הסינון שבחרת. וואטסאפ לא מאפשר לשלוח לכולם בלחיצה אחת, אז לוחצים "שליחה", שולחים בוואטסאפ, חוזרים לכאן ולוחצים שוב לבא בתור.</p>
+   <label class="field">נוסח ההודעה ({שם}${f==='unpaid'?', {סכום}':''}${f==='carry'?', {סוחב}':''} מתמלאים לבד)<textarea id="bTpl">${esc(tpl)}</textarea></label>
+   <div id="bNextWrap" style="margin:12px 0">${nextBtn()}</div><div class="card" id="bList">${rows()||'<div class="empty"><b>אין למי לשלוח</b>אין טלפונים לאנשים ברשימה</div>'}</div>
+   <div class="sheet-acts"><button class="btn" id="bCopyNames">העתקת רשימת השמות לקבוצה</button></div>`);
+  const ta=document.getElementById('bTpl'),L=document.getElementById('bList'),N=document.getElementById('bNextWrap');
+  const redraw=()=>{L.innerHTML=rows();N.innerHTML=nextBtn()};
+  ta.oninput=()=>{tpl=ta.value;try{localStorage.setItem(key,tpl)}catch(e){}redraw()};
+  const mark=id=>{sent.add(id);setTimeout(redraw,400)};
+  L.onclick=e=>{const sk=e.target.closest('[data-bsk]');if(sk){const id=sk.dataset.bsk;skip.has(id)?skip.delete(id):skip.add(id);redraw();return}
+    const s=e.target.closest('[data-bsend]');if(s)mark(s.dataset.bsend)};
+  N.onclick=e=>{if(!e.target.closest('#bNext'))return;const p=todo()[0];if(!p)return;window.open(waLink(p.phone,fill(p)),'_blank');mark(p._id)};
+  document.getElementById('bCopyNames').onclick=()=>copy(title+':\n'+list.filter(p=>!skip.has(p._id)).map(p=>'• '+p.name).join('\n'));
 }
 
 /* ---- activity feed ---- */
