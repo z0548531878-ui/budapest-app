@@ -49,5 +49,13 @@ service cloud.firestore {
         allow delete: if false;
       }
     }
+
+    // ---- Trip management app (/trip): everything lives under trips/{teamKey}. ----
+    // The team key is a long random string that only the organizers' link carries,
+    // and trips themselves can't be listed, so only someone holding the link can read or write.
+    match /trips/{trip}/{col}/{id} {
+      allow read, write: if trip.size() >= 24
+        && col.matches('tasks|expenses|participants|donations|schedule|flights|packing|rooms|messages|files|notes|claude|contacts|settings|activity|attendance');
+    }
   }
 }
