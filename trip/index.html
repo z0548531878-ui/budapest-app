@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#16244a">
+<meta name="theme-color" content="#0b0a07">
 <meta name="robots" content="noindex,nofollow">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -14,7 +14,7 @@
 <link rel="manifest" href="manifest.json">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<style>html,body{margin:0;padding:0;background:#e6dfd1}</style>
+<style>html,body{margin:0;padding:0;background:#e7d39f}</style>
 </head>
 <body>
 <title>שבת גיבוש בודפשט</title>
@@ -535,10 +535,10 @@ body::before{background:
 @media (prefers-reduced-motion:no-preference){
   .enter>*{animation:rise3 .5s var(--ease) both}
   @keyframes rise3{from{opacity:0;transform:translate3d(0,14px,0)}}
-  .splash img{animation:logoIn3 .9s var(--ease) both;will-change:transform,opacity}
+  .splash img{animation:logoIn3 .9s var(--ease) both}
   @keyframes logoIn3{0%{transform:scale(.6) rotate(-14deg);opacity:0}65%{transform:scale(1.04) rotate(1deg);opacity:1}100%{transform:none;opacity:1}}
-  .splash .rays{animation:spinr 24s linear infinite;will-change:transform}
-  .splash .dust i{will-change:transform,opacity}
+  .splash .rays{animation:spinr 24s linear infinite}
+  
   body::before{animation:none}
 }
 .splash .rays{width:120vmax;height:120vmax;-webkit-mask:none;mask:none;background:repeating-conic-gradient(from 0deg,rgba(242,203,124,.09) 0 6deg,transparent 6deg 18deg)}
@@ -585,6 +585,78 @@ body::before{background:
 .stat .tx b{display:block;white-space:nowrap}
 .stat b span{display:inline!important;font-size:inherit!important;color:inherit!important;font-weight:inherit!important}
 .guidecard{background-image:linear-gradient(135deg,rgba(214,166,75,.22),rgba(120,150,210,.18),rgba(214,166,75,.22))!important}
+
+/* ===================== GOLD & BLACK ===================== */
+:root{
+  --bg:#e7d39f; --surface:#f3e5bd; --sunk:#e3cc8e; --ink:#15120b; --muted:#5a4a26; --line:#1a160d;
+  --navy:#121110; --navy2:#2a2416; --navy-ink:#f3dfa6; --gold:#7a5a12; --gold2:#a87b1f; --gold-soft:rgba(21,18,11,.08);
+  --glass:#f3e5bd; --edge:#1a160d;
+  --shadow:0 2px 0 #1a160d,0 10px 22px -12px rgba(21,18,11,.45);
+  --goldbtn:linear-gradient(150deg,#f6d98c,#d9a83f); --goldbtn-ink:#15120b;
+  --ok:#1f6e3f; --ok-soft:rgba(31,110,63,.14); --warn:#8a4b00; --bad:#a22a1c; --bad-soft:rgba(162,42,28,.12);
+}
+body{background:linear-gradient(180deg,#ecd9a8,#e2c98b) fixed;background-color:#e7d39f}
+body::before{display:none!important}
+/* black frames */
+.card,.stat,.pass,.tile,.flight,.sync,.qcard,.step,.cashcard,.chip,.search,.quick,.btn,.updbar,.seg,.guidecard,.ccard,.shortcuts button{border:1.5px solid #1a160d!important}
+.card .row{border-top-color:rgba(26,22,13,.25)}
+.row.urgent{box-shadow:inset -5px 0 0 var(--bad)}
+/* header + nav: black with gold */
+.top{background:linear-gradient(170deg,#1b1810,#0b0a07)!important;border-bottom:2px solid #c9993a!important;contain:paint;isolation:isolate}
+.top h1{color:#f3cf7a}.top .sub{color:#e9d49c}
+.top .sky{color:#c9993a;opacity:.18}
+.top .ideabtn{background:rgba(243,207,122,.1)!important;border-color:rgba(243,207,122,.45)!important;color:#f3cf7a!important}
+.top .ideabtn.spk{background:var(--goldbtn)!important;color:#15120b!important;border:0!important}
+.me{background:rgba(243,207,122,.12);border-color:rgba(243,207,122,.45);color:#f3dfa6}
+.nav{background:#0f0d09!important;border-top:2px solid #c9993a!important}
+.nav button{color:#b9a46d}
+.nav button[aria-current="page"],.nav button[aria-current="page"] svg{color:#f3cf7a!important}
+.ind{background:rgba(243,207,122,.16)}
+/* dark feature blocks */
+.hub .big,.passfolder,.money-top{background:linear-gradient(160deg,#1f1b12,#0d0b07)!important;color:#f3dfa6!important;border:1.5px solid #c9993a!important}
+.money-top .lbl,.money-top small{color:#e9d49c}
+.pass-stub{background:linear-gradient(170deg,#1f1b12,#0d0b07)!important;color:#f3dfa6}
+.pass-stub .big{color:#f3cf7a!important}
+.pass-route b{color:#15120b}.pass-route .path{color:#7a5a12}
+.days div{background:#e8d29a;border:1px solid rgba(26,22,13,.3)}.days .sh{background:#15120b}.days .sh b{color:#f3cf7a}.days .sh{color:#e9d49c}
+.ic{background:#15120b;color:#f3cf7a}
+.seg{background:#e0c886}.seg button[aria-pressed="true"]{background:#15120b!important;color:#f3cf7a!important}
+.chip[aria-pressed="true"]{background:#15120b!important;color:#f3cf7a!important}
+.btn{background:#f3e5bd}.btn.primary,.fab,.quick button{background:var(--goldbtn)!important;color:#15120b!important;border:1.5px solid #1a160d!important}
+.pill.p-gold{background:#15120b;color:#f3cf7a}
+.who{background:#15120b;color:#f3dfa6}
+.check{border-color:#1a160d}
+.check.on{background:#15120b;border-color:#15120b;color:#f3cf7a}
+.prog,.bar{background:#d9c07e}.prog i{background:#15120b}
+.ring .bgc{stroke:#dcc383}.ring .v{stroke:#15120b}
+.sheet{background:#f1e2b6!important;border-top:2px solid #c9993a!important}
+.field input,.field textarea,.opt,.toggle,.note-in,.qcard textarea,.search{background:#faf0d4!important}
+.opt{border-color:#1a160d}.opt[aria-pressed="true"]{background:#15120b!important;color:#f3cf7a!important}
+.toast{background:#15120b!important;color:#f3dfa6!important;border-color:#c9993a!important}
+.feed .it.new{background:rgba(201,153,58,.18)}
+.sec-h h3{background:linear-gradient(90deg,#15120b,#8a6516,#15120b)!important;background-size:200% 100%!important;-webkit-background-clip:text!important;background-clip:text!important}
+.sec-h .link{color:#7a5a12}
+.cashcard .av,.prow .av,.feed .av{background:#15120b!important;color:#f3cf7a!important}
+.updbar{background:rgba(21,18,11,.05)}
+.guidecard,.ccard{background-image:linear-gradient(135deg,#f6dc94,#e9c66f,#f6dc94)!important}
+.bulkbar{border:1.5px solid #1a160d}
+/* splash: black + gold rays */
+.splash{background:radial-gradient(70% 55% at 50% 42%,#2a2213,#0b0a07 72%)!important}
+.splash::after{background:radial-gradient(circle at 50% 44%,transparent 0,transparent 22%,#0b0a07 62%)!important}
+.splash .rays{background:repeating-conic-gradient(from 0deg,rgba(243,207,122,.14) 0 6deg,transparent 6deg 18deg)!important}
+.splash span{color:#f3cf7a}
+/* cubes: gold family */
+.cube{color:#15120b;border:1.5px solid #1a160d}
+.cube .ci{background:rgba(21,18,11,.85);color:#f3cf7a}
+.c1,.c4,.c7,.c10{background-image:linear-gradient(135deg,#f7dd97,#d9a83f,#f7dd97)!important}
+.c2,.c5,.c8,.c11{background-image:linear-gradient(135deg,#1f1b12,#3a3020,#1f1b12)!important;color:#f3dfa6}
+.c2 .ci,.c5 .ci,.c8 .ci,.c11 .ci{background:var(--goldbtn);color:#15120b}
+.c3,.c6,.c9,.c12{background-image:linear-gradient(135deg,#e8c26a,#b98a2c,#e8c26a)!important}
+/* stop paint glitches: fewer composited layers in the header */
+@media (prefers-reduced-motion:no-preference){
+  .top .logo{animation:glow 4s ease-in-out infinite!important}
+  .ideabtn.spk svg{animation:none!important}
+}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -643,7 +715,7 @@ const F={
  donations:{one:'תרומה',g:1,fields:[{k:'donor',l:'תורם',t:'text'},{k:'amount',l:'סכום (₪)',t:'number'},{k:'purpose',l:'מיועד ל',t:'chips',o:['כללי','סידורים','זמירות','תהילים','הדפסות']},{k:'status',l:'מצב',t:'seg',o:['התחייב','התקבל']},{k:'method',l:'איך התקבל',t:'chips',o:['אשראי','העברה לאיציק','מזומן לאיציק','העברה לשלומי','מזומן לשלומי']},{k:'holder',l:'אצל מי הכסף',t:'seg',o:['שלומי','איציק']},{k:'notes',l:'הערות',t:'textarea'}],def:{status:'התחייב',purpose:'כללי',amount:0}},
  schedule:{one:'אירוע',fields:[{k:'day',l:'יום',t:'seg',o:TRIP_DAYS.map(d=>d.k)},{k:'time',l:'שעה',t:'text',half:1,ph:'18:00'},{k:'place',l:'מקום',t:'text',half:1},{k:'title',l:'מה קורה',t:'text'},{k:'owner',l:'אחראי',t:'owner'},{k:'notes',l:'הערות',t:'textarea'},{k:'menu',l:'תפריט',t:'textarea'}],def:{}},
  flights:{one:'טיסה',g:1,fields:[{k:'label',l:'שם',t:'text'},{k:'dir',l:'כיוון',t:'seg',o:['הלוך','חזור']},{k:'group',l:'קבוצה (כמו בכרטיס המשתתף)',t:'text'},{k:'flightNo',l:'מספר טיסה',t:'text',half:1},{k:'date',l:'תאריך',t:'date',half:1},{k:'dep',l:'המראה',t:'text',half:1},{k:'arr',l:'נחיתה',t:'text',half:1},{k:'notes',l:'הערות',t:'textarea'}],def:{dir:'חזור'}},
- packing:{one:'פריט',fields:[{k:'item',l:'פריט',t:'text'},{k:'list',l:'רשימה',t:'list'},{k:'qty',l:'כמות',t:'number',half:1},{k:'cost',l:'עלות (₪)',t:'number',half:1},{k:'done',l:'נקנה / נארז',t:'toggle'},{k:'notes',l:'הערות',t:'text'}],def:{qty:1,cost:0,done:false}},
+ packing:{one:'פריט',fields:[{k:'item',l:'פריט',t:'text'},{k:'where',l:'איפה קונים',t:'seg',o:['בארץ','בבודפשט']},{k:'buyer',l:'מי קונה',t:'owner'},{k:'list',l:'מזוודה / רשימה',t:'list'},{k:'qty',l:'כמות',t:'number',half:1},{k:'cost',l:'עלות (₪)',t:'number',half:1},{k:'done',l:'נקנה',t:'toggle'},{k:'notes',l:'הערות',t:'text'}],def:{qty:1,cost:0,done:false}},
  rooms:{one:'חדר',fields:[{k:'occupants',l:'דיירים',t:'text'},{k:'roomNumber',l:'מספר חדר',t:'text',half:1},{k:'floor',l:'קומה',t:'text',half:1},{k:'type',l:'סוג',t:'seg',o:['חדר לזוג','חדר ליחיד']},{k:'kitReady',l:'הסט הונח בחדר',t:'toggle'},{k:'notes',l:'הערות',t:'text'}],def:{type:'חדר לזוג',kitReady:false}},
  messages:{one:'הודעה',g:1,fields:[{k:'title',l:'נושא',t:'text'},{k:'date',l:'מתי לשלוח',t:'date'},{k:'text',l:'נוסח ההודעה',t:'textarea'},{k:'sent',l:'נשלחה',t:'toggle'}],def:{sent:false}},
  files:{one:'מסמך',fields:[{k:'name',l:'שם המסמך',t:'text'},{k:'category',l:'סוג',t:'chips',o:DOC_CATS},{k:'url',l:'קישור (גוגל דרייב, וואטסאפ או כל קישור)',t:'text'},{k:'notes',l:'הערות',t:'textarea'}],def:{}},
@@ -828,7 +900,7 @@ const VIEWS={
   const pk=S.packing, pd=pk.filter(x=>x.done).length, rk=S.rooms.filter(r=>r.kitReady).length;
   const T=(k,ic,l,s)=>`<button class="tile" data-sub="${k}"><span class="ic">${I[ic]}</span><b>${l}</b><span>${s}</span></button>`;
   return `<div class="page-title"><h2>עוד</h2></div><div class="tiles">
-   ${T('packing','box','ציוד וקניות',`${pd}/${pk.length} מוכנים`)}
+   ${T('packing','box','רשימת קניות',`${pd}/${pk.length} מוכנים`)}
    ${T('rooms','bed','חדרים',`${S.rooms.length} חדרים · ${rk} עם סט`)}
    ${T('flights','plane','טיסות',`${S.flights.length} טיסות · מי בכל טיסה`)}
    ${T('messages','chat','הודעות לקבוצה',`${S.messages.filter(m=>m.sent).length}/${S.messages.length} נשלחו`)}
@@ -883,15 +955,23 @@ const SUB={
    ${card(rows.map(p=>`<div class="row ${p.passport?'done':''}"><button class="check ${p.passport?'on':''}" data-pp="${p._id}" aria-label="התקבל">${p.passport?CHECK:''}</button><div class="main"><div class="t">${esc(p.name)}</div></div>${p.phone?`<a class="pill p-mute" href="https://wa.me/${String(p.phone).replace(/\D/g,'').replace(/^0/,'972')}?text=${encodeURIComponent('שלום '+p.name.split(' ')[0]+', נשמח לצילום של הדרכון לקראת המסע לבודפשט (בשביל הצ׳ק אין במלון). אפשר לשלוח לי כאן. תודה!')}" target="_blank" rel="noopener">בקשה בוואטסאפ</a>`:''}</div>`).join(''),'<b>כל הדרכונים התקבלו 🎉</b>')}`;
  },
  packing(){
-  const lists=[...new Set(S.packing.slice().sort((a,b)=>(a.listOrder??99)-(b.listOrder??99)).map(x=>x.list))];
-  const cur=V.filter.list||lists[0]||'';
-  const all=S.packing.filter(x=>x.list===cur), rows=all.filter(x=>!V.filter.open||!x.done).sort(byOrder);
-  const d=all.filter(x=>x.done).length, c=all.reduce((s,x)=>s+(+x.cost||0),0), p=all.length?Math.round(d/all.length*100):0;
-  return subHead('ציוד וקניות')+updBar('packing')+`<div class="chips">${lists.map(l=>{const a=S.packing.filter(x=>x.list===l);return `<button class="chip" data-filter="list" data-val="${esc(l)}" aria-pressed="${l===cur}">${esc(l)} <span class="num">${a.filter(x=>x.done).length}/${a.length}</span></button>`}).join('')}</div>
-   <div class="card" style="padding:14px;margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-weight:800"><span>${esc(cur)}</span><span class="num">${d}/${all.length}</span></div><div class="prog"><i data-w="${p}%" style="width:0"></i></div>
-   <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:14px;color:var(--muted)"><span>${c?`עלות <span class="num">${ils(c)}</span>`:''}</span><button class="chip" data-filter="open" data-val="1" aria-pressed="${!!V.filter.open}" style="padding:5px 11px">רק מה שחסר</button></div></div>
-   ${card(rows.map(r=>`<div class="row ${r.done?'done':''}" data-edit="packing/${r._id}" role="button" tabindex="0"><button class="check ${r.done?'on':''}" data-toggle="packing/${r._id}" aria-label="סמן">${r.done?CHECK:''}</button>
-    <div class="main"><div class="t"><span class="num">${esc(r.qty)}</span> × ${esc(r.item)}</div>${r.notes?`<div class="m">${esc(r.notes)}</div>`:''}</div>${+r.cost?`<span class="num" style="color:var(--muted)">${ils(r.cost)}</span>`:''}</div>`).join(''),'<b>הכל מוכן ברשימה הזאת</b>')}`;
+  const rest=S.packing.filter(x=>x.list!=='סט לכל חדר'), setItems=S.packing.filter(x=>x.list==='סט לכל חדר');
+  const where=x=>x.where||(/בודפשט/.test(x.list||'')?'בבודפשט':'בארץ');
+  const seg=V.filter.sh||'todo', q=V.q;
+  let rows=rest.filter(x=>!q||[x.item,x.notes,x.buyer].join(' ').includes(q));
+  const todo=rest.filter(x=>!x.done), done=rest.filter(x=>x.done), sug=rest.filter(x=>x.sug&&!x.done);
+  if(seg==='todo')rows=rows.filter(x=>!x.done);else if(seg==='done')rows=rows.filter(x=>x.done);else if(seg==='sug')rows=rows.filter(x=>x.sug&&!x.done);
+  const cost=a=>a.reduce((s,x)=>s+(+x.cost||0),0), pct=rest.length?Math.round(done.length/rest.length*100):0;
+  const row=r=>`<div class="row ${r.done?'done':''}" data-edit="packing/${r._id}" role="button" tabindex="0"><button class="check ${r.done?'on':''}" data-toggle="packing/${r._id}" aria-label="נקנה">${r.done?CHECK:''}</button>
+    <div class="main"><div class="t"><span class="num">${esc(r.qty)}</span> × ${esc(r.item)} ${r.sug?'<span class="pill p-gold">💡 הצעה</span>':''}</div><div class="m">${r.buyer?`<span class="who">${esc(r.buyer)}</span>`:''}${r.notes?`<span>${esc(r.notes)}</span>`:''}</div></div>
+    <div class="end">${+r.cost?`<span class="num" style="font-weight:800">${ils(r.cost)}</span>`:''}${r.sug&&!r.done?`<button class="pill p-mute" data-nr="${r._id}">לא רלוונטי</button>`:''}</div></div>`;
+  const groups=['בארץ','בבודפשט'].map(w=>{const g=rows.filter(x=>where(x)===w).sort(byOrder);return g.length?`<div class="ghead"><span>${w==='בארץ'?'🇮🇱 קונים בארץ':'🇭🇺 קונים בבודפשט'}</span><span class="num">${g.length} · ${ils(cost(g))}</span></div>`+card(g.map(row).join('')):''}).join('');
+  return subHead('רשימת קניות',`<span class="cnt num">${done.length}/${rest.length}</span>`)+updBar('packing')+`
+   <div class="card" style="padding:14px;margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-weight:800"><span>נקנו <span class="num">${done.length}</span> מתוך <span class="num">${rest.length}</span></span><span class="num">נשאר ${ils(cost(todo))}</span></div><div class="prog"><i data-w="${pct}%" style="width:0"></i></div></div>
+   <div class="seg">${[['todo','לקנות',todo.length],['done','נקנה',done.length],['sug','💡 הצעות',sug.length],['all','הכל',rest.length]].map(([k,l,c])=>`<button data-filter="sh" data-val="${k}" aria-pressed="${seg===k}">${l}<span class="c num">${c}</span></button>`).join('')}</div>
+   <input class="search" id="q" type="search" placeholder="חיפוש פריט" value="${esc(q)}">
+   ${groups||card('','<b>'+(seg==='todo'?'הכל נקנה 🎉':'אין כאן פריטים')+'</b>')}
+   <p class="note" style="margin-top:16px">תכולת הסט לכל חדר (${setItems.length} פריטים) והחלוקה למזוודות יגיעו בשלב הבא.</p>`;
  },
  rooms(){
   const rows=S.rooms.slice().sort(byOrder), rk=rows.filter(r=>r.kitReady).length;
@@ -988,6 +1068,7 @@ view.addEventListener('click',e=>{
   const f=t.closest('[data-flight]');if(f){flightSheet(f.dataset.flight);return}
   if(t.closest('[data-idea]')){updSheet(curScope());return}
   if(t.closest('[data-actfeed]')){actSheet();return}
+  const nr=t.closest('[data-nr]');if(nr){e.stopPropagation();const x=find('packing',nr.dataset.nr);if(x){db.doc('packing/'+x._id).delete().then(()=>{logAct('delete','packing',x._id,x);toast('הוסר',()=>save('packing',x._id,strip(x)))})}return}
   if(t.closest('[data-bulk]')){bulkSheet();return}
   const pr=t.closest('[data-person]');if(pr&&!t.closest('a')){personSheet(pr.dataset.person);return}
   const pp=t.closest('[data-pp]');if(pp){const p=find('participants',pp.dataset.pp);if(p){const on=!p.passport;pp.classList.toggle('on',on);pp.innerHTML=on?CHECK:'';if(on)burst(pp);save('participants',p._id,{...strip(p),passport:on})}return}
@@ -1285,7 +1366,7 @@ const TILE_DEFS=()=>{const pk=S.packing,pd=pk.filter(x=>x.done).length,rk=S.room
  ['people','people','משתתפים',`${S.participants.length} נוסעים`,'c1'],
  ['passports','people','דרכונים',`${S.participants.filter(p=>p.passport).length}/${S.participants.length}`,'c2'],
  ['claude','spark','מ-Claude',`${S.claude.filter(x=>x.status==='פתוח').length} פתוחים`,'c3'],
- ['packing','box','ציוד וקניות',`${pd}/${pk.length}`,'c4'],
+ ['packing','box','רשימת קניות',`${pd}/${pk.length}`,'c4'],
  ['rooms','bed','חדרים',`${S.rooms.length} · ${rk} עם סט`,'c5'],
  ['flights','plane','טיסות',`${S.flights.length} טיסות`,'c6'],
  ['messages','chat','הודעות',`${S.messages.filter(m=>m.sent).length}/${S.messages.length} נשלחו`,'c7'],
