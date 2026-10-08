@@ -811,6 +811,28 @@ body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-r
 a.pill{text-decoration:none!important}
 
 .chips.own{align-items:center}.chips .chl{flex:0 0 auto;font-size:12.5px;font-weight:800;color:#a69a7d;padding-inline-end:2px}
+
+.suglist{display:grid;gap:10px;margin-bottom:6px}
+.sugcard{border:1px solid rgba(214,178,98,.3);background:linear-gradient(160deg,#17140f,#100e0b);border-radius:18px;padding:14px}
+.sugcard .sh{display:flex;justify-content:space-between;align-items:baseline;gap:10px}.sugcard .sh b{font-size:16px}.sugcard .sh .num{font-weight:900;color:#f0d28c}.sugcard .mute{font-size:12.5px;color:#a69a7d}
+.sugcard p{margin:6px 0 0;font-size:13.5px;color:#cfc3a6;line-height:1.45}
+.sugcard .sm{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;font-size:12.5px;color:#a69a7d}.sugcard .sm span:not(.who)::before{content:"· "}
+.sugcard .sa{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.sugcard .sa .btn{font-size:14px;padding:10px 8px;min-height:44px;justify-content:center;text-align:center}.sugcard .sh .num{white-space:nowrap}
+.sugcard .sa .btn.primary{grid-column:1/-1}.sugcard .sa .btn.ghost{background:transparent;color:#a69a7d}
+.sugnote{display:block;width:100%;text-align:right;margin:0 0 12px;padding:11px 14px;border-radius:14px;border:1px dashed rgba(214,178,98,.45);background:rgba(214,178,98,.06);color:#e9c46f;font-weight:800;font-size:14px}
+
+.rolelist{display:grid;gap:10px}
+.rolecard{border:1px solid rgba(214,178,98,.2);background:#13110d;border-radius:18px;padding:12px 12px 6px}
+.rolecard.team{border-color:rgba(214,178,98,.45);background:linear-gradient(160deg,#19150e,#100e0b)}
+.rolecard .rh{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.rolecard .av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(180deg,#f6dc93,#c99a3d);color:#1a1408;font-weight:900;flex:0 0 auto}
+.rolecard .rh b{font-size:16px;flex:1;min-width:0}.rolecard .rh .cnt{font-size:12.5px;color:#a69a7d;font-weight:800}
+.rolecard .rl{display:flex;align-items:center;gap:8px;width:100%;text-align:right;background:none;border:0;border-top:1px solid rgba(214,178,98,.1);padding:9px 2px;color:var(--ink);font-size:14px;line-height:1.35}
+.rolecard .rl .tx{flex:1;min-width:0}.rolecard .rl .dd{font-size:12px;color:#a69a7d}
+.rt{flex:0 0 auto;font-size:11px;font-weight:900;border-radius:999px;padding:2px 8px;border:1px solid}
+.rt-role{color:#f0d28c;border-color:rgba(240,210,140,.45)}.rt-task{color:#8fc2e8;border-color:rgba(143,194,232,.4)}.rt-buy{color:#7fd1a5;border-color:rgba(127,209,165,.4)}.rt-sched{color:#e2a3d6;border-color:rgba(226,163,214,.4)}.rt-carry{color:#e8b04f;border-color:rgba(232,176,79,.45)}
+.rolecard summary{list-style:none;cursor:pointer;padding:9px 2px;border-top:1px solid rgba(214,178,98,.1);color:#e9c46f;font-weight:800;font-size:13.5px}.rolecard summary::-webkit-details-marker{display:none}.rolecard details[open] summary{display:none}
+.nonelist{display:flex;flex-wrap:wrap;gap:6px}.nonelist span{font-size:13px;color:#cfc3a6;background:#15130f;border:1px solid rgba(214,178,98,.15);border-radius:999px;padding:5px 10px}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -1220,17 +1242,20 @@ const SUB={
   const where=x=>x.where||(/בודפשט/.test(x.list||'')?'בבודפשט':'בארץ');
   const seg=V.filter.sh||'todo', q=V.q;
   let rows=rest.filter(x=>!q||[x.item,x.notes,x.buyer].join(' ').includes(q));
-  const todo=rest.filter(x=>!x.done), done=rest.filter(x=>x.done), sug=rest.filter(x=>x.sug&&!x.done);
-  if(seg==='todo')rows=rows.filter(x=>!x.done);else if(seg==='done')rows=rows.filter(x=>x.done);else if(seg==='sug')rows=rows.filter(x=>x.sug&&!x.done);
-  const cost=a=>a.reduce((s,x)=>s+(+x.cost||0),0), pct=rest.length?Math.round(done.length/rest.length*100):0;
-  const row=r=>`<div class="row ${r.done?'done':''}" data-edit="packing/${r._id}" role="button" tabindex="0"><button class="check ${r.done?'on':''}" data-toggle="packing/${r._id}" aria-label="נקנה">${r.done?CHECK:''}</button>
+  const todo=rest.filter(x=>!x.done&&!x.sug), done=rest.filter(x=>x.done), sug=rest.filter(x=>x.sug&&!x.done);
+  if(seg==='todo')rows=rows.filter(x=>!x.done&&!x.sug);else if(seg==='done')rows=rows.filter(x=>x.done);else if(seg==='sug')rows=rows.filter(x=>x.sug&&!x.done);
+  const cost=a=>a.reduce((s,x)=>s+(+x.cost||0),0), pct=(todo.length+done.length)?Math.round(done.length/(todo.length+done.length)*100):0;
+  const sugRow=r=>`<div class="sugcard"><div class="sh"><b><span class="num">${esc(r.qty)}</span> × ${esc(r.item)}</b>${+r.cost?`<span class="num">${ils(r.cost)}</span>`:'<span class="mute">בלי מחיר</span>'}</div>${r.notes?`<p>${esc(r.notes)}</p>`:''}<div class="sm">${r.buyer?`<span class="who">${esc(r.buyer)}</span>`:''}<span>${where(r)==='בבודפשט'?'קונים בבודפשט':'קונים בארץ'}</span></div>
+    <div class="sa"><button class="btn primary" data-sugok="${r._id}">✓ להכניס לרשימה</button><button class="btn" data-edit="packing/${r._id}">עריכה</button><button class="btn ghost" data-nr="${r._id}">לא רלוונטי</button></div></div>`;
+  const row=r=>r.sug&&!r.done?sugRow(r):`<div class="row ${r.done?'done':''}" data-edit="packing/${r._id}" role="button" tabindex="0"><button class="check ${r.done?'on':''}" data-toggle="packing/${r._id}" aria-label="נקנה">${r.done?CHECK:''}</button>
     <div class="main"><div class="t"><span class="num">${esc(r.qty)}</span> × ${esc(r.item)} ${r.sug?'<span class="pill p-gold">💡 הצעה</span>':''}</div><div class="m">${r.buyer?`<span class="who">${esc(r.buyer)}</span>`:''}${r.notes?`<span>${esc(r.notes)}</span>`:''}</div></div>
     <div class="end">${+r.cost?`<span class="num" style="font-weight:800">${ils(r.cost)}</span>`:''}${r.sug&&!r.done?`<button class="pill p-mute" data-nr="${r._id}">לא רלוונטי</button>`:''}</div></div>`;
-  const groups=['בארץ','בבודפשט'].map(w=>{const g=rows.filter(x=>where(x)===w).sort(byOrder);return g.length?`<div class="ghead"><span>${w==='בארץ'?'🇮🇱 קונים בארץ':'🇭🇺 קונים בבודפשט'}</span><span class="num">${g.length} · ${ils(cost(g))}</span></div>`+card(g.map(row).join('')):''}).join('');
-  return subHead('רשימת קניות',`<span class="cnt num">${done.length}/${rest.length}</span>`)+updBar('packing')+`
-   <div class="card" style="padding:14px;margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-weight:800"><span>נקנו <span class="num">${done.length}</span> מתוך <span class="num">${rest.length}</span></span><span class="num">נשאר ${ils(cost(todo))}</span></div><div class="prog"><i data-w="${pct}%" style="width:0"></i></div></div>
-   <div class="seg">${[['todo','לקנות',todo.length],['done','נקנה',done.length],['sug','💡 הצעות',sug.length],['all','הכל',rest.length]].map(([k,l,c])=>`<button data-filter="sh" data-val="${k}" aria-pressed="${seg===k}">${l}<span class="c num">${c}</span></button>`).join('')}</div>
+  const groups=['בארץ','בבודפשט'].map(w=>{const g=rows.filter(x=>where(x)===w).sort(byOrder);return g.length?`<div class="ghead"><span>${w==='בארץ'?'🇮🇱 קונים בארץ':'🇭🇺 קונים בבודפשט'}</span><span class="num">${g.length} · ${ils(cost(g))}</span></div>`+(seg==='sug'?`<div class="suglist">${g.map(row).join('')}</div>`:card(g.map(row).join(''))):''}).join('');
+  return subHead('רשימת קניות',`<span class="cnt num">${done.length}/${todo.length+done.length}</span>`)+updBar('packing')+`
+   <div class="card" style="padding:14px;margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-weight:800"><span>נקנו <span class="num">${done.length}</span> מתוך <span class="num">${todo.length+done.length}</span></span><span class="num">נשאר ${ils(cost(todo))}</span></div><div class="prog"><i data-w="${pct}%" style="width:0"></i></div></div>
+   ${seg==='sug'&&sug.length?'<p class="note">אלה הצעות שלי. "להכניס לרשימה" מעביר את הפריט לרשימת הקניות. אפשר קודם לערוך כמות, מחיר ומי קונה.</p>':''}<div class="seg">${[['todo','לקנות',todo.length],['done','נקנה',done.length],['sug','💡 הצעות',sug.length],['all','הכל',rest.length]].map(([k,l,c])=>`<button data-filter="sh" data-val="${k}" aria-pressed="${seg===k}">${l}<span class="c num">${c}</span></button>`).join('')}</div>
    <input class="search" id="q" type="search" placeholder="חיפוש פריט" value="${esc(q)}">
+   ${seg==='todo'&&sug.length?`<button class="sugnote" data-filter="sh" data-val="sug">💡 ${sug.length} הצעות מחכות להחלטה שלך: להכניס לרשימה או לא ›</button>`:''}
    ${groups||card('','<b>'+(seg==='todo'?'הכל נקנה 🎉':'אין כאן פריטים')+'</b>')}
    <p class="note" style="margin-top:16px">תכולת הסט לכל חדר (${setItems.length} פריטים) והחלוקה למזוודות יגיעו בשלב הבא.</p>`;
  },
@@ -1331,6 +1356,7 @@ view.addEventListener('click',e=>{
   if(t.closest('[data-idea]')){updSheet(curScope());return}
   if(t.closest('[data-actfeed]')){actSheet();return}
   const pk=t.closest('[data-pick]');if(pk){const x=find('claude',pk.dataset.pick);if(x){save('claude',x._id,{...strip(x),answer:pk.dataset.v,answeredAt:new Date().toISOString(),status:'נענה'}).then(ok=>ok&&toast('נשמר: '+pk.dataset.v))}return}
+  const so=t.closest('[data-sugok]');if(so){e.stopPropagation();const x=find('packing',so.dataset.sugok);if(x){save('packing',x._id,{...strip(x),sug:false}).then(ok=>{if(ok)toast('נכנס לרשימת הקניות',()=>save('packing',x._id,strip(x)))})}return}
   const nr=t.closest('[data-nr]');if(nr){e.stopPropagation();const x=find('packing',nr.dataset.nr);if(x){db.doc('packing/'+x._id).delete().then(()=>{logAct('delete','packing',x._id,x);toast('הוסר',()=>save('packing',x._id,strip(x)))})}return}
   if(t.closest('[data-bulk]')){bulkSheet();return}
   const pr=t.closest('[data-person]');if(pr&&!t.closest('a')){personSheet(pr.dataset.person);return}
@@ -1354,6 +1380,39 @@ view.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('[data-
 view.addEventListener('input',e=>{if(e.target.id==='q'){V.q=e.target.value.trim();render()}});
 view.addEventListener('submit',e=>{if(e.target.id==='qadd'){e.preventDefault();const i=document.getElementById('qaddIn');const v=i.value.trim();if(!v)return;
   add('tasks',{title:v,owner:ME||'',status:'לביצוע',priority:'רגילה',category:V.filter.cat||'אחר',due:'',notes:''}).then(ok=>{if(ok){i.value='';toast('המשימה נוספה')}})}});
+
+const TEAM_FULL={'שלומי':'שלומי זינגר','איציק':'איציק שרייבר','יעל':'יעל שרייבר'};
+function rolesMap(){
+  const M={}, full=n=>TEAM_FULL[n]||n;
+  const put=(n,o)=>{n=full(String(n||'').trim());if(!n)return;(M[n]=M[n]||[]).push(o)};
+  const split=v=>String(v||'').split(/,\s*/).map(x=>x.trim()).filter(Boolean);
+  S.participants.forEach(p=>{
+    String(p.duties||'').split(/\s*·\s*/).filter(Boolean).forEach(d=>put(p.name,{k:'role',t:d,e:'participants/'+p._id}));
+    if(p.carry)put(p.name,{k:'carry',t:'סוחב: '+p.carry,e:'participants/'+p._id});
+  });
+  S.tasks.filter(t=>t.status!=='בוצע').forEach(t=>split(t.owner).forEach(n=>put(n,{k:'task',t:t.title,e:'tasks/'+t._id,due:t.due})));
+  S.packing.filter(x=>!x.done&&!x.sug&&x.buyer).forEach(x=>split(x.buyer).forEach(n=>put(n,{k:'buy',t:`קונה: ${x.qty?x.qty+' × ':''}${x.item}`,e:'packing/'+x._id})));
+  S.schedule.filter(x=>x.owner).forEach(x=>split(x.owner).forEach(n=>put(n,{k:'sched',t:`${x.day||''} ${x.time||''} · ${x.title}`,e:'schedule/'+x._id})));
+  const W=t=>new Set(String(t).replace(/[^\u0590-\u05FFa-z0-9 ]/gi,' ').split(/\s+/).filter(w=>w.length>=3));
+  Object.keys(M).forEach(n=>{const tw=M[n].filter(o=>o.k==='task').map(o=>W(o.t));
+    M[n]=M[n].filter(o=>o.k!=='role'||!tw.some(T=>[...W(o.t)].filter(w=>T.has(w)).length>=2))});
+  return M;
+}
+const ROLE_TAG={role:['תפקיד','rt-role'],task:['משימה','rt-task'],buy:['קנייה','rt-buy'],sched:['לו״ז','rt-sched'],carry:['סוחב','rt-carry']};
+SUB.roles=function(){
+  const M=rolesMap(), q=(V.q||'').trim(), team=Object.values(TEAM_FULL);
+  let names=Object.keys(M).sort((a,b)=>(team.includes(b)-team.includes(a))||(M[b].length-M[a].length)||a.localeCompare(b,'he'));
+  if(q)names=names.filter(n=>n.includes(q)||M[n].some(o=>o.t.includes(q)));
+  const none=S.participants.filter(p=>!M[p.name]&&p.status!=='פטור').map(p=>p.name).sort((a,b)=>a.localeCompare(b,'he'));
+  const pc=n=>S.participants.find(p=>p.name===n);
+  return subHead('חלוקת תפקידים',`<span class="cnt num">${names.length} אנשים</span>`)+`
+   <p class="note">כל מי שיש לו תפקיד, משימה פתוחה, קנייה או אחריות בלו״ז. לחיצה על שורה פותחת אותה לעריכה.</p>
+   <input class="search" id="q" type="search" placeholder="חיפוש שם או תפקיד" value="${esc(V.q)}">
+   <div class="rolelist">${names.map(n=>{const it=M[n].slice().sort((a,b)=>'role carry task buy sched'.indexOf(a.k)-'role carry task buy sched'.indexOf(b.k)),p=pc(n);
+    return `<div class="rolecard ${team.includes(n)?'team':''}"><div class="rh"><span class="av">${esc(n[0])}</span><b>${esc(n)}</b><span class="num cnt">${it.length}</span>${p&&p.phone?`<a class="pill p-mute" href="https://wa.me/${String(p.phone).replace(/\D/g,'').replace(/^0/,'972')}" target="_blank" rel="noopener">וואטסאפ</a>`:''}</div>
+     ${(L=>it.length>5&&!q?L(it.slice(0,4))+`<details><summary>עוד ${it.length-4} ›</summary>${L(it.slice(4))}</details>`:L(it))(a=>a.map(o=>`<button class="rl" data-edit="${o.e}"><span class="rt ${ROLE_TAG[o.k][1]}">${ROLE_TAG[o.k][0]}</span><span class="tx">${esc(o.t)}</span>${o.due?`<span class="num dd">${fmtDate(o.due)}</span>`:''}</button>`).join(''))}</div>`}).join('')||card('','<b>לא נמצא</b>')}</div>
+   ${!q&&none.length?`<div class="ghead"><span>עוד בלי תפקיד</span><span class="num">${none.length}</span></div><div class="nonelist">${none.map(n=>`<span>${esc(n)}</span>`).join('')}</div><p class="note">כדי לתת למישהו תפקיד, פותחים את הכרטיס שלו במסך המשתתפים וכותבים בשדה "תפקידים", או ממנים אותו כאחראי על משימה.</p>`:''}`;
+};
 document.getElementById('fab').onclick=()=>{let col={tasks:'tasks',sched:'schedule'}[V.tab];if(V.tab==='money')col=['participants','expenses','donations'].includes(V.seg)?V.seg:'participants';if(V.tab==='more')col=V.sub;if(col==='notes'){updSheet('home');return}if(col)editor(col,null)};
 document.getElementById('meBtn').onclick=()=>pickMe();
 document.getElementById('ideaBtn').onclick=()=>updSheet(curScope());
@@ -1637,7 +1696,7 @@ const TILE_DEFS=()=>{const pk=S.packing,pd=pk.filter(x=>x.done).length,rk=S.room
  ['files','file','מסמכים',`${S.files.length} קבצים`,'c8'],
  ['contacts','phone','אנשי קשר',`${S.contacts.length} ספקים`,'c9'],
  ['notes','bulb','רעיונות',`${S.notes.filter(n=>n.status!=='סודר').length} חדשים`,'c10'],
- ['guide','spark','איך זה עובד','מדריך קצר','c11'],
+ ['roles','people','חלוקת תפקידים',`${Object.keys(rolesMap()).length} עם תפקיד`,'c11'],
  ]};
 const homeTiles=()=>`<section class="sec"><div class="sec-h"><h3>הכל במקום אחד</h3></div><div class="cubes">${TILE_DEFS().map(([k,ic,l,s,c],i)=>`<button class="cube ${c}" data-go="more" data-opts='{"sub":"${k}"}' style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></button>`).join('')}</div></section>`;
 
