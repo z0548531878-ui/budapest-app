@@ -961,19 +961,19 @@ body.guest .nav-in button[data-gnav="gh"][aria-current="page"] svg{transform:sca
 body.guest .nav-in button[data-gnav="gh"] .badge{inset-inline-end:calc(50% - 30px);top:-18px}
 .grow,.hbtn,.gnews{display:flex;align-items:center;gap:12px;width:100%;text-align:right;border:1px solid rgba(214,178,98,.28);border-radius:20px;padding:12px 14px;margin:8px 0;min-height:68px;background:linear-gradient(160deg,#1b1710,#0d0c09);color:var(--ink,#f3ead3);text-decoration:none;position:relative;transition:transform .15s,border-color .2s,background .2s}
 .grow:active,.hbtn:active,.gnews:active{transform:scale(.97);border-color:rgba(240,210,140,.8)}
-.gi{flex:none;width:46px;height:46px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(180deg,#f6dc93,#c99a3d);color:#15110a;box-shadow:0 6px 14px -6px rgba(201,154,61,.7)}
-.gi svg{width:23px;height:23px}
-.gt{flex:1;min-width:0;display:grid;gap:2px}.gt b{font-size:17px;line-height:1.25}.gt small{color:#a69a7d;font-size:13px;line-height:1.3}
+.gic{flex:none;width:46px;height:46px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(180deg,#f6dc93,#c99a3d);color:#15110a;box-shadow:0 6px 14px -6px rgba(201,154,61,.7)}
+.gic svg{width:23px;height:23px}
+.gtx{flex:1;min-width:0;display:grid;gap:2px;-webkit-text-fill-color:initial!important;background:none!important}.gtx b{font-size:19px;line-height:1.25;color:inherit!important;-webkit-text-fill-color:currentColor!important}.gtx small{color:#a69a7d;font-size:14px;line-height:1.3}
 .gch{flex:none;color:#e9c46f;font-size:30px;line-height:1;font-weight:300;transition:transform .2s}.grow:active .gch{transform:translateX(-5px)}
 .gbd{flex:none;min-width:24px;height:24px;border-radius:99px;padding:0 7px;display:grid;place-items:center;background:#d44a3a;color:#fff;font-size:13px;font-weight:900}
-.grow.locked{opacity:.65}.grow.locked .gi{background:#2a251a;color:#e9c46f;font-size:22px}
+.grow.locked{opacity:.65}.grow.locked .gic{background:#2a251a;color:#e9c46f;font-size:22px}
 .gsec{display:flex;align-items:center;gap:10px;margin:18px 4px 4px;color:#e9c46f;font-weight:900;font-size:14px;letter-spacing:.3px}
 .gsec::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(214,178,98,.5),transparent)}
 .hbtn{background:linear-gradient(180deg,#f6dc93,#c99a3d);color:#15110a;border-color:transparent;overflow:hidden;box-shadow:0 14px 28px -14px rgba(201,154,61,.8)}
-.hbtn .gt b{color:#15110a!important}.hbtn .gt small{color:#3d2f12!important;font-weight:800}.hbtn .gi{background:#15110a;color:#f0d28c;box-shadow:none}.hbtn .gt small{color:#3d2f12}.hbtn .gch{color:#15110a}
+.hbtn .gtx b{color:#15110a!important;-webkit-text-fill-color:#15110a!important}.hbtn .gtx small{color:#3d2f12!important;font-weight:800}.hbtn .gic{background:#15110a;color:#f0d28c;box-shadow:none}.hbtn .gtx small{color:#3d2f12}.hbtn .gch{color:#15110a}
 .hbtn::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.5) 50%,transparent 65%);transform:translateX(-130%);pointer-events:none}
 .gnews{border-color:rgba(240,210,140,.75);background:linear-gradient(160deg,#2a2112,#14110b)}
-.gnews .gt b{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gnews .gt small{color:#f0d28c;font-weight:800}
+.gnews .gtx b{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gnews .gtx small{color:#f0d28c;font-weight:800}
 .gtodo{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 2px;padding:10px 12px;border-radius:16px;border:1px dashed rgba(214,178,98,.45);color:#e9c46f}
 .gtodo b{font-size:14px}.gtodo button{border:0;border-radius:99px;padding:8px 14px;background:rgba(214,178,98,.16);color:#f0d28c;font-weight:800;font-size:14px}
 .cpl{border-inline-start:3px solid rgba(214,178,98,.75);background:linear-gradient(90deg,rgba(214,178,98,.07),transparent)}
@@ -1003,6 +1003,47 @@ body.guest .nav-in button[data-gnav="gh"] .badge{inset-inline-end:calc(50% - 30p
 #pgate h1{font-size:30px}.pst{text-align:right;margin:4px 0;padding-inline-start:26px;color:#e8dfc7;font-size:16px;line-height:1.6;display:grid;gap:8px}.pst b{color:#f0d28c}
 body.pg #nav{display:none}
 #opush{position:fixed;inset-inline:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 86px);z-index:30;min-height:50px;border:0;border-radius:16px;font-weight:900;font-size:16px;color:#15110a;background:linear-gradient(180deg,#f6dc93,#c99a3d);box-shadow:0 12px 26px -10px rgba(0,0,0,.8)}
+
+/* ---- guest v3: big cubes, bigger type, labelled back buttons ---- */
+body.guest #view{font-size:17px}
+body.guest .note{font-size:15.5px;line-height:1.6}
+body.guest .btn{min-height:52px;font-size:17px}
+body.guest .pill{font-size:14px;padding:5px 12px}
+body.guest .row .t{font-size:19px}body.guest .row .m{font-size:15px}
+body.guest .page-title h2{font-size:34px}
+body.guest .greet small{font-size:16px}body.guest .greet b{font-size:30px}
+.gback{display:flex;align-items:center;gap:8px;width:100%;min-height:52px;margin:14px 0 0;padding:0 16px;border:1.5px solid rgba(214,178,98,.5);border-radius:16px;background:rgba(214,178,98,.08);color:#f0d28c;font-weight:900;font-size:18px;text-align:right}
+.gback span{font-size:28px;line-height:1;margin-top:-3px}.gback:active{transform:scale(.97);background:rgba(214,178,98,.2)}.gback.bot{margin:22px 0 8px;justify-content:center}
+.gsech{margin:22px 4px 10px;font-family:var(--display);font-size:24px;font-weight:700;color:#f0d28c}
+.gcb{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.gc{position:relative;overflow:hidden;border:1px solid rgba(214,178,98,.35);border-radius:26px;min-height:184px;padding:16px 14px;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;gap:4px;text-align:right;text-decoration:none;color:var(--ink,#f3ead3);background:linear-gradient(160deg,#1d1912,#0d0b08);box-shadow:0 14px 28px -16px rgba(0,0,0,.9)}
+.gcb>.gc:nth-child(4n+1),.gcb>.gc:nth-child(4n+4){background:linear-gradient(160deg,#f6dc93,#c99a3d);color:#15110a;border-color:transparent}
+.gc-i{position:absolute;top:14px;inset-inline-start:14px;width:60px;height:60px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(180deg,#f6dc93,#c99a3d);color:#15110a;font-size:28px;box-shadow:0 8px 16px -8px rgba(201,154,61,.8)}
+.gc-i svg{width:32px;height:32px}
+.gcb>.gc:nth-child(4n+1) .gc-i,.gcb>.gc:nth-child(4n+4) .gc-i{background:#15110a;color:#f0d28c;box-shadow:none}
+.gc-t{font-family:var(--display);font-size:23px;font-weight:700;line-height:1.1}
+.gc-s{font-size:15px;line-height:1.35;color:#b9ad8f;font-weight:600}
+.gcb>.gc:nth-child(4n+1) .gc-s,.gcb>.gc:nth-child(4n+4) .gc-s{color:#3d2f12}
+.gc-b{position:absolute;top:12px;inset-inline-end:12px;min-width:30px;height:30px;border-radius:99px;padding:0 9px;display:grid;place-items:center;background:#d44a3a;color:#fff;font-size:16px;font-weight:900}
+.gc.gtrv{grid-column:1/-1;min-height:120px;justify-content:center;padding-inline-start:90px}
+.gc.locked{opacity:.7}
+.gcb>.gc:nth-child(9){grid-column:1/-1;min-height:130px;justify-content:center;padding-inline-start:96px}
+.gc::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.22) 50%,transparent 62%);transform:translateX(-130%);pointer-events:none}
+.gc:active{transform:scale(.95)}
+@media (prefers-reduced-motion:no-preference){
+@keyframes gcIn{from{opacity:0;transform:translate3d(0,34px,0) scale(.9) rotate(-1.5deg)}to{opacity:1;transform:none}}
+@keyframes gcFloat{50%{transform:translateY(-5px) rotate(-4deg)}}
+@keyframes gcShine{0%,70%{transform:translateX(-130%)}100%{transform:translateX(130%)}}
+.gc{animation:gcIn .6s cubic-bezier(.2,.85,.25,1.1) both;animation-delay:calc(var(--i,0)*70ms),0s;transition:transform .15s}
+.gc-i{animation:gcFloat 4.5s ease-in-out infinite;animation-delay:calc(var(--i,0)*-0.7s)}
+.gc::after{animation:gcShine 7s ease-in-out infinite;animation-delay:calc(var(--i,0)*.6s)}
+#view.enter[data-scr="gh"]>.gcb{animation:none}
+}
+.hello{margin-top:6px}
+.gstat .gs b{font-size:21px}.gs small{font-size:14px}.gs .num,.gs .pl{font-size:15px}
+.hbtn{min-height:78px}.hbtn .gtx b{font-size:22px}
+.place .pl-t b{font-size:21px}.pl-a .btn{min-height:50px}
+.gtodo b{font-size:16px}.gtodo button{font-size:15.5px;padding:10px 16px}
 
 /* ===== per-screen entrances + per-button motion ===== */
 @media (prefers-reduced-motion:no-preference){
@@ -2464,11 +2505,11 @@ function payCard(ppl){
   if(!need.length)return `<div class="gs ok"><small>תשלום</small><b>פטור</b></div>`;
   const all=paidL.length===need.length, part=paidL.length&&!all;
   const meth=[...new Set(paidL.map(x=>x.method).filter(Boolean))].join(' · ');
-  return `<div class="gs ${all?'ok':part?'mid':'bad'}"><small>תשלום${ppl.length>1?' (לזוג)':''}</small><b>${all?'שולם ✓':part?'שולם חלקית':'טרם שולם'}</b>
+  return `<div class="gs ${all?'ok':part?'mid':'bad'}"><small>תשלום${ppl.length>1?' (לזוג)':''}</small><b>${all?'שולם ✓':part?'שולם חלקית':'עוד לא שולם'}</b>
    ${got?`<span class="num">שולם ${ils(got)}${meth?' · '+esc(meth):''}</span>`:''}${!all?`<span class="num">${part?'נותר':'לתשלום'} ${ils(tot-got)}</span>`:''}</div>`}
 function passCard(ppl){
   const all=ppl.every(x=>x.passport);
-  return `<div class="gs ${all?'ok':'bad'}"><small>דרכון</small>${ppl.map(x=>`<span class="pl">${esc(firstN(x.name))}: <b class="${x.passport?'y':'n'}">${x.passport?'הועלה ✓':'לא הועלה'}</b></span>`).join('')}</div>`}
+  return `<div class="gs ${all?'ok':'bad'}"><small>דרכון</small>${ppl.map(x=>`<span class="pl">${esc(firstN(x.name))}: <b class="${x.passport?'y':'n'}">${x.passport?'התקבל ✓':'עוד לא נשלח'}</b></span>`).join('')}</div>`}
 
 function myTasks(ppl){
   const names=ppl.map(p=>p.name);
@@ -2477,46 +2518,54 @@ function taskCard(t,mode,ppl){
   const pending=t.claimStatus==='ממתין לאישור', done=t.status==='בוצע';
   return `<div class="gtask ${done?'done':''}"><div class="gth"><b>${esc(t.title)}</b>${t.due?`<span class="pill p-mute num">עד ${fmtDate(t.due)}</span>`:''}</div>
    ${t.notes?`<p>${esc(t.notes)}</p>`:''}
-   <div class="gta">${mode==='open'?(pending?`<span class="pill p-warn">ממתין לאישור${t.claimBy?' · '+esc(firstN(t.claimBy)):''}</span>`:`<button class="btn primary" data-g-claim="${t._id}">✋ אני לוקח/ת את זה</button>`)
-    :pending?`<span class="pill p-warn">⏳ ממתין לאישור המארגנים</span>`:done?`<span class="pill p-ok">בוצעה ✓</span><button class="btn ghost" data-g-undo="${t._id}">ביטול סימון</button>`:`<button class="btn primary" data-g-done="${t._id}">✓ סימון כבוצעה</button>`}</div></div>`}
+   <div class="gta">${mode==='open'?(pending?`<span class="pill p-warn">ממתין לאישור${t.claimBy?' · '+esc(firstN(t.claimBy)):''}</span>`:`<button class="btn primary" data-g-claim="${t._id}">אני לוקח את זה</button>`)
+    :pending?`<span class="pill p-warn">ממתין לאישור</span>`:done?`<span class="pill p-ok">בוצעה ✓</span><button class="btn ghost" data-g-undo="${t._id}">החזרה</button>`:`<button class="btn primary" data-g-done="${t._id}">סיימתי ✓</button>`}</div></div>`}
 
 const hotelCard=()=>`<div class="hotel"><div class="ht-h"><span class="ht-ic">${IX.pin}</span><div><small>המלון שלנו</small><b>${HOTEL.name}</b><span class="en ltr">${HOTEL.en}</span></div></div>
      <a class="btn primary navbtn" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener">${IX.nav}<span>ניווט למלון בגוגל מפס</span></a>
      <a class="btn ghost" href="${mapsFind(HOTEL.q)}" target="_blank" rel="noopener" style="width:100%;justify-content:center;margin-top:8px">הצגת המלון במפה</a>
-     <p class="note">אם יצאתם מהמלון ולא בטוחים איך חוזרים: לחצו על הכפתור, ובחרו הליכה. גוגל מפס יוביל אתכם ישר לכניסה.</p></div>`;
-function guestHTML(){
+     <p class="note">יצאתם ולא בטוחים איך חוזרים? לחצו על הכפתור, ובחרו הליכה.</p></div>`;
+function guestHTML(){const h=guestHTML0();return GTAB==='gh'?h:h+`<button class="gback bot" data-gnav="gh"><span>›</span> חזרה לבית</button>`}
+function guestHTML0(){
   const me=meG(), ppl=coupleOf(me);
   const pv=isPrevOrg()?`<div class="prevbar">👁 כך זה נראה למשתתפים<button id="prevx">חזרה למארגן</button></div>`:'';
-  const head=(t,extra='')=>pv+`<div class="page-title"><button class="back" data-gnav="gh" aria-label="חזרה למסך הראשי">›</button><h2>${t}</h2>${extra}</div>`;
+  const head=(t,extra='')=>pv+`<button class="gback" data-gnav="gh"><span>›</span> חזרה לבית</button><div class="page-title"><h2>${t}</h2>${extra}</div>`;
   if(GTAB==='gh'){
     const open=triviaOpen(), og=flightGroups(ppl,'הלוך'), openT=S.tasks.filter(t=>t.open==='כן'&&t.status!=='בוצע'&&!t.owner&&!t.claimBy).length, mineT=myTasks(ppl).filter(t=>t.status!=='בוצע').length, un=annUnread();
     const first=og[0]&&og[0].f, passBlock=first?passHTML(first):(og[0]&&og[0].solo?'<div class="fx"><div class="fx-h"><b>✈ הטיסה שלכם · הלוך</b></div><div class="fx-note">מזמינים טיסה בעצמם</div></div>':'');
     const extraOut=og.slice(1).map(g=>guestFlightCard(g,ppl,'הלוך')).join('');
     let n=0;
-    const row=(k,ic,l,sub,badge,cls='')=>`<button class="grow ${cls}" data-gnav="${k}" style="--i:${n++}"><span class="gi">${gIco(ic)}</span><span class="gt"><b>${l}</b><small>${sub}</small></span>${badge?`<span class="gbd num">${badge}</span>`:''}<span class="gch">‹</span></button>`;
-    const grp=(t,inner)=>`<div class="gsec" style="--i:${n}"><span>${t}</span></div>${inner}`;
+    const cube=(k,ic,l,sub,badge)=>`<button class="gc" data-gnav="${k}" style="--i:${n++}"><span class="gc-i">${ic}</span><span class="gc-t">${l}</span><span class="gc-s">${sub}</span>${badge?`<span class="gc-b num">${badge}</span>`:''}</button>`;
     const L=annList()[0];
-    const banner=un&&L?`<button class="gnews" data-gnav="gm"><span class="gi">${I.chat}</span><span class="gt"><small>הודעה חדשה מהמארגנים${un>1?' · '+un+' חדשות':''}</small><b>${esc(L.title||L.text||'')}</b></span><span class="gch">‹</span></button>`:'';
+    const banner=un&&L?`<button class="gnews" data-gnav="gm"><span class="gic">${I.chat}</span><span class="gtx"><small>הודעה חדשה מהמארגנים${un>1?' ('+un+')':''}</small><b>${esc(L.title||L.text||'')}</b></span><span class="gch">‹</span></button>`:'';
     const needs=[];
-    const need=ppl.filter(x=>x.status!=='פטור'&&+x.amount>0&&x.status!=='שולם').length; 
-    if(ppl.some(x=>!x.passport))needs.push(['gf','דרכון','שלחו צילום דרכון']);
-    if(ppl.some(x=>!x.photo))needs.push(['gf','תמונה','העלו תמונה']);
-    const todo=needs.length?`<div class="gtodo"><b>כדאי להשלים</b>${needs.map(x=>`<button data-gnav="${x[0]}">${x[2]} ›</button>`).join('')}</div>`:'';
+    if(ppl.some(x=>!x.passport))needs.push(['gf','לשלוח צילום דרכון']);
+    if(ppl.some(x=>!x.photo))needs.push(['gf','להעלות תמונה']);
+    const todo=needs.length?`<div class="gtodo"><b>עוד מעט סיימנו:</b>${needs.map(x=>`<button data-gnav="${x[0]}">${x[1]} ›</button>`).join('')}</div>`:'';
     return pv+`<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(ppl.map(x=>x.name).join(' ו')||'')}</b></div>${isPrevOrg()?'':'<button class="glink gout" id="gout">יציאה</button>'}</div>
      ${banner}${passBlock}${extraOut}
-     <a class="hbtn" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener"><span class="gi">${IX.nav}</span><span class="gt"><small>אבדתם את הדרך?</small><b>ניווט חזרה למלון</b></span><span class="gch">‹</span></a>
+     <a class="hbtn" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener"><span class="gic">${IX.nav}</span><span class="gtx"><small>יצאתם מהמלון ולא בטוחים איך חוזרים?</small><b>ניווט חזרה למלון</b></span><span class="gch">‹</span></a>
      <div class="gstat">${payCard(ppl)}${passCard(ppl)}</div>${todo}
-     ${grp('במסע',row('gl','sched','לוח המסע','כל התוכנית, יום אחרי יום','')+row('gx','food','מסעדות ואטרקציות','כשר, קפה ומה לראות','')+row('gr','bed','החדר שלי והמלון','כניסה, קומה, חדר וניווט',''))}
-     ${grp('אנשים ומשימות',row('gp','people','משתתפים','שמות, תמונות וטלפונים לפי זוגות','')+row('gt','tasks','משימות',openT?`${openT} פתוחות לקחת`:'המשימות שלי',mineT||'')+row('gm','chat','הודעות','מהמארגנים',un||'')+row('gq','mic','בקשה אישית','לצוות המארגן',''))}
-     ${grp('אני',row('gf','people','הפרופיל שלי','תמונה ודרכון','')+row('gk','box','כלי נוסע','שעון, מטבע ורשימה',''))}
-     ${open?`<a class="grow gtriv" href="../" target="_blank" rel="noopener" style="--i:${n++}"><span class="gi">${I.spark}</span><span class="gt"><b>טריוויה</b><small>משחק לאוטובוס · פתוח!</small></span><span class="gch">‹</span></a>`:`<button class="grow gtriv locked" data-glock style="--i:${n++}"><span class="gi">🔒</span><span class="gt"><b>טריוויה</b><small>ייפתח עם הנחיתה בבודפשט</small></span></button>`}
+     <div class="gsech">מה רוצים לעשות?</div>
+     <div class="gcb">
+      ${cube('gl',I.sched,'לוח המסע','מה קורה בכל יום, ובאיזו שעה')}
+      ${cube('gx',IX.food,'מסעדות ואטרקציות','איפה אוכלים כשר, ומה כדאי לראות')}
+      ${cube('gr',I.bed,'החדר שלי','מספר חדר, קומה ופרטי המלון')}
+      ${cube('gp',I.people,'משתתפים','מי בא איתנו, ואיך מתקשרים')}
+      ${cube('gt',I.tasks,'משימות',openT?`יש ${openT} משימות שמחכות למתנדבים`:'לעזור ולקחת משימה',mineT||'')}
+      ${cube('gm',I.chat,'הודעות','עדכונים מהמארגנים',un||'')}
+      ${cube('gq',I.mic,'בקשה אישית','צריכים משהו? כתבו לנו')}
+      ${cube('gf',SIL,'הפרופיל שלי','תמונה ודרכון')}
+      ${cube('gk',I.box,'כלי נוסע','שעון בודפשט, מטבע ורשימת ציוד')}
+      ${open?`<a class="gc gtrv" href="../" target="_blank" rel="noopener" style="--i:${n++}"><span class="gc-i">${I.spark}</span><span class="gc-t">טריוויה</span><span class="gc-s">משחק לאוטובוס. פתוח עכשיו!</span></a>`:`<button class="gc gtrv locked" data-glock style="--i:${n++}"><span class="gc-i">🔒</span><span class="gc-t">טריוויה</span><span class="gc-s">נפתח כשנחתים בבודפשט</span></button>`}
+     </div>
      ${flightGroups(ppl,'חזור').map(g=>guestFlightCard(g,ppl,'חזור')).join('')}`}
   if(GTAB==='gx'){
     const hn=`<a class="hotelbar" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener">${IX.nav}<span>חזרה למלון · ניווט</span></a>`;
-    return head('מסעדות ואטרקציות')+hn+`<p class="note">כל מקום נפתח בגוגל מפס. "ניווט" מתחיל הליכה מהמיקום שלכם. מרחקים משוערים מהמלון. כשרות: מומלץ לוודא תעודה בכניסה.</p>`+
+    return head('מסעדות ואטרקציות')+hn+`<p class="note">לחצו "במפה" כדי לראות את המקום, או "ניווט" כדי להגיע אליו בהליכה. המרחקים הם מהמלון, בערך. לפני שאוכלים, כדאי לבדוק תעודת כשרות.</p>`+
      PLACES.map((g,gi)=>`<section class="pgrp" style="--g:${gi}"><div class="ghead"><span>${g.h}</span><span class="num">${g.l.length}</span></div>${g.l.map((p,i)=>`<div class="place" style="--i:${i}"><div class="pl-t"><b>${esc(p[0])}</b><span class="ltr en">${esc(p[1])}</span></div>${p[3]?`<span class="pill p-mute">${esc(p[3])}</span>`:''}${p[4]?`<small>${esc(p[4])}</small>`:''}
        <div class="pl-a"><a class="btn" href="${mapsFind(p[1]+' '+p[2])}" target="_blank" rel="noopener">${IX.pin}<span>במפה</span></a><a class="btn primary" href="${mapsGo(p[1]+' '+p[2])}" target="_blank" rel="noopener">${IX.nav}<span>ניווט</span></a></div></div>`).join('')}</section>`).join('')+
-     `<p class="note">טיפ: אפשר להזמין מונית ב־Bolt או דרך הקבלה. כרטיסי אשראי בינלאומיים מתקבלים כמעט בכל מקום.</p>`}
+     `<p class="note">טיפ: מזמינים מונית באפליקציית Bolt או בקבלה. כרטיס אשראי מתקבל כמעט בכל מקום.</p>`}
   if(GTAB==='gl'){const h=SUB.program().replace(/<div class="page-title">[\s\S]*?<\/div>/,'');return head('לוח המסע')+h}
   if(GTAB==='gp'){
     const nm=p=>p.name.replace(/^הרב(נית)?\s+/,''), ord=[], seen={};
@@ -2533,28 +2582,28 @@ function guestHTML(){
     return head('משתתפי המסע',`<span class="cnt num">${cnt.all}</span>`)+`<div class="chips">${chip('all','כולם')}${chip('m','גברים')}${chip('f','נשים')}</div>
      <input class="search" id="gq" type="search" placeholder="חיפוש לפי שם" value="${esc(GQ)}">
      ${card(grouped.join(''),'לא נמצא שם כזה')}
-     <p class="note">הרשימה מסודרת לפי זוגות. מי שלא העלה תמונה מופיע עם תמונה חסויה. אפשר להעלות תמונה במסך "הפרופיל שלי".</p>`}
+     <p class="note">הרשימה לפי זוגות. מי שלא העלה תמונה מופיע עם סמל נעילה. אפשר להעלות תמונה ב"הפרופיל שלי".</p>`}
   if(GTAB==='gr'){
     const rid=(ppl.find(p=>p.roomId)||{}).roomId, r=rid&&S.rooms.find(x=>x._id===rid);
     const line=(l,v)=>`<div class="rline"><small>${l}</small><b>${v?esc(v):'טרם עודכן'}</b></div>`;
     return head('החדר שלי')+(r&&(r.roomNumber||r.floor||r.entrance)?`<div class="roomcard"><div class="rc-h">🛏 ${esc(r.occupants||'')}</div>${line('כניסה',r.entrance)}${line('קומה',r.floor)}${line('מספר חדר',r.roomNumber)}${r.notes?`<p class="note">${esc(r.notes)}</p>`:''}</div>`
-      :`<div class="roomcard unassigned"><div class="rc-h">🛏 טרם שובץ</div><p>החדר שלכם עדיין לא שובץ. ברגע שנעדכן, הפרטים יופיעו כאן: כניסה, קומה ומספר חדר.</p></div>`)+hotelCard()}
+      :`<div class="roomcard unassigned"><div class="rc-h">🛏 טרם שובץ</div><p>עוד לא שובצתם לחדר. כשנעדכן, תראו כאן את הכניסה, הקומה ומספר החדר.</p></div>`)+hotelCard()}
   if(GTAB==='gt'){
     const mine=myTasks(ppl), openL=S.tasks.filter(t=>t.open==='כן'&&t.status!=='בוצע'&&!t.owner&&(!t.claimBy||t.claimStatus==='ממתין לאישור')&&!(t.claimStatus==='ממתין לאישור'&&!ppl.some(p=>p.name===t.claimBy)));
     const showL=GSEG==='open'?openL:mine;
-    return head('משימות')+`<div class="seg"><button data-gseg2="open" aria-pressed="${GSEG==='open'}">פתוחות לקחת<span class="c num">${openL.length}</span></button><button data-gseg2="mine" aria-pressed="${GSEG==='mine'}">המשימות שלי<span class="c num">${mine.length}</span></button></div>
-     <p class="note">${GSEG==='open'?'משימות שהמארגנים מבקשים שמשתתפים ייקחו. אחרי הלחיצה הבקשה ממתינה לאישור המארגנים, ואז המשימה עוברת ל"המשימות שלי".':'כאן המשימות שאושרו לכם. אפשר לסמן כבוצעה.'}</p>
-     <div class="gtasks">${showL.map(t=>taskCard(t,GSEG,ppl)).join('')||card('', GSEG==='open'?'אין כרגע משימות פתוחות':'אין לכם משימות עדיין')}</div>`}
+    return head('משימות')+`<div class="seg"><button data-gseg2="open" aria-pressed="${GSEG==='open'}">פתוחות<span class="c num">${openL.length}</span></button><button data-gseg2="mine" aria-pressed="${GSEG==='mine'}">המשימות שלי<span class="c num">${mine.length}</span></button></div>
+     <p class="note">${GSEG==='open'?'משימות שמחכות למתנדבים. לחצו "אני לוקח את זה", והמארגנים יאשרו.':'אלה המשימות שלכם. כשמסיימים, לוחצים "סיימתי".'}</p>
+     <div class="gtasks">${showL.map(t=>taskCard(t,GSEG,ppl)).join('')||card('', GSEG==='open'?'אין כרגע משימות פתוחות. תודה על הרצון לעזור!':'עוד אין לכם משימות')}</div>`}
   if(GTAB==='gm'){
     const L=annList(), seen=annSeen();
-    const h=head('הודעות מהמארגנים')+(L.length?`<div class="annlist">${L.map(a=>`<div class="ann ${(a.ts||0)>seen?'new':''}"><div class="ah"><b>${esc(a.title||'הודעה')}</b>${(a.ts||0)>seen?'<span class="pill p-gold">חדש</span>':''}</div><p>${esc(a.text||'').replace(/\n/g,'<br>')}</p><small>${tsStr(a.ts)}</small></div>`).join('')}</div>`:card('','אין הודעות כרגע'));
+    const h=head('הודעות')+(L.length?`<div class="annlist">${L.map(a=>`<div class="ann ${(a.ts||0)>seen?'new':''}"><div class="ah"><b>${esc(a.title||'הודעה')}</b>${(a.ts||0)>seen?'<span class="pill p-gold">חדש</span>':''}</div><p>${esc(a.text||'').replace(/\n/g,'<br>')}</p><small>${tsStr(a.ts)}</small></div>`).join('')}</div>`:card('','אין הודעות כרגע'));
     try{if(L.length&&!isPrevOrg())setTimeout(()=>{try{localStorage.setItem('annSeen',String(Math.max(...L.map(a=>a.ts||0))))}catch(e){}},1500)}catch(e){}
     return h}
   if(GTAB==='gq'){
     const mineR=reqList().filter(r=>ppl.some(p=>p._id===r.by));
     const cats=['אוכל','חדר','בריאות','נסיעה','אחר'];
     const st={'חדש':['p-mute','התקבלה'],'בטיפול':['p-warn','בטיפול'],'בוצע':['p-ok','בוצע ✓'],'לא אפשרי':['p-bad','לצערנו לא אפשרי']};
-    return head('בקשה אישית')+`<p class="note">צריכים משהו מיוחד? מנה מיוחדת, התאמה בחדר, עזרה בבריאות או בהליכה? כתבו כאן, והבקשה מגיעה למארגנים. נעדכן אם בוצע, בטיפול, או שלצערנו לא אפשרי.</p>
+    return head('בקשה אישית')+`<p class="note">צריכים משהו מיוחד? מנה מיוחדת, שינוי בחדר, עזרה בהליכה? כתבו כאן והמארגנים יענו. תראו כאן אם זה בטיפול, בוצע, או שלא הצלחנו.</p>
      <div class="opts reqcats">${cats.map(c=>`<button type="button" class="opt" data-gcat="${c}" aria-pressed="${DRAFT.reqCat===c}">${c}</button>`).join('')}</div>
      <textarea class="note-in" id="reqText" data-draft="reqText" placeholder="מה צריך?" style="min-height:110px">${esc(DRAFT.reqText)}</textarea>
      <button class="btn primary" data-g-req style="width:100%;margin-top:10px">שליחה למארגנים</button>
@@ -2564,8 +2613,8 @@ function guestHTML(){
     return head('הפרופיל שלי')+ppl.map(p=>`<div class="profcard">${avatarHTML(p,'big')}<div class="pmain"><b>${esc(p.name)}</b>
        <button class="btn" data-g-photo="${p._id}">${p.photo?'📷 החלפת תמונה':'📷 העלאת תמונה'}</button></div></div>
       <div class="passbox ${p.passport?'ok':''}"><div class="pb-h"><b>דרכון · ${esc(firstN(p.name))}</b><span class="pill ${p.passport?'p-ok':'p-warn'}">${p.passport?'התקבל ✓':'טרם התקבל'}</span></div>
-       ${p.passport?'<p>הדרכון התקבל אצל המארגנים. תודה!</p>':`<p>צלמו את עמוד הפרטים בדרכון ושלחו למארגן בוואטסאפ. אחרי שיתקבל יסומן כאן.</p><a class="btn primary" href="${wa(p)}" target="_blank" rel="noopener" style="width:100%;justify-content:center">שליחת הדרכון בוואטסאפ</a>`}</div>`).join('')+
-      `<p class="note">התמונה תופיע ליד השם שלכם אצל כל המשתתפים. עד שתעלו תמונה יוצג סמל חסוי.</p>`}
+       ${p.passport?'<p>הדרכון התקבל אצל המארגנים. תודה!</p>':`<p>צלמו את עמוד הפרטים בדרכון ושלחו לשלומי בוואטסאפ. אחרי שנקבל, יופיע כאן ✓</p><a class="btn primary" href="${wa(p)}" target="_blank" rel="noopener" style="width:100%;justify-content:center">שליחת הדרכון בוואטסאפ</a>`}</div>`).join('')+
+      `<p class="note">התמונה תופיע ליד השם שלכם אצל כולם. עד שתעלו, יופיע סמל נעילה.</p>`}
   if(GTAB==='gk'){
     const rate=(()=>{try{return +localStorage.getItem('huf')||100}catch(e){return 100}})();
     let chk={};try{chk=JSON.parse(localStorage.getItem('chk')||'{}')}catch(e){}
@@ -2574,7 +2623,7 @@ function guestHTML(){
     return head('כלי נוסע')+`<div class="tool"><small>השעה בבודפשט עכשיו</small><b class="num" id="gbud">${new Date().toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Budapest'})}</b><span>שעה אחורה מישראל</span></div>
      <div class="tool"><small>ממיר מטבע · פורינט הונגרי</small>
       <div class="conv"><label>₪<input id="cvI" type="number" inputmode="decimal" value="100"></label><span>=</span><label>HUF<input id="cvH" type="text" inputmode="decimal" readonly></label></div>
-      <label class="rate">שער (פורינט לשקל) <input id="cvR" type="number" inputmode="decimal" value="${rate}"></label><p class="note">השער משוער. עדכנו לפי השער בפועל לפני הנסיעה.</p></div>
+      <label class="rate">שער (פורינט לשקל) <input id="cvR" type="number" inputmode="decimal" value="${rate}"></label><p class="note">השער בערך. כדאי לעדכן לפני הנסיעה.</p></div>
      <div class="tool"><small>רשימת מה לקחת</small><div class="chklist">${items.map((x,i)=>`<label class="chk"><input type="checkbox" data-chk="${i}" ${chk[i]?'checked':''}><span>${esc(x)}</span></label>`).join('')}</div></div>
      <div class="tool"><small>חירום</small><a class="btn" href="tel:112" style="width:100%;justify-content:center">112 · מספר החירום באירופה</a></div>`}
   return head('')}
@@ -2824,7 +2873,7 @@ render(true);
 </script>
 
 <script>
-(function(){var B='fa8846a240';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B='9ebf94bdf4';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
