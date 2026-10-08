@@ -2344,7 +2344,8 @@ function showGate(step){
      <div id="gmsg" class="gmsg" role="alert"></div>
      <button class="gbtn" id="ggo">כניסה</button><button class="glink" id="gback">חזרה</button></div>`;
     const go=async()=>{const msg=document.getElementById('gmsg'),v=document.getElementById('gname').value;
-      if(!db||!loaded.has('participants')){msg.textContent='טוען את הרשימה, נסו שוב בעוד רגע…';return}
+      if(!db){msg.textContent='חסר הקישור המלא של המסע. פתחו את האפליקציה מהקישור ששלומי שלח (הוא מסתיים ב־#k=…).';return}
+      if(!loaded.has('participants')){msg.textContent='טוען את הרשימה, נסו שוב בעוד רגע…';return}
       const p=matchGuest(v);
       if(!p){msg.textContent='השם הזה לא רשום במסע, ולכן אי אפשר להיכנס. בדקו את האיות או פנו למארגנים.';return}
       setRole('guest:'+p._id)};
@@ -2786,6 +2787,16 @@ if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('messag
 const _rp=render;render=function(a){_rp(a);pgate()};
 setInterval(pgate,4000);
 
+/* installed copy must start with the team link, otherwise iPhone opens an empty app */
+(()=>{try{
+  if(!TRIP_KEY)return;
+  const base=location.origin+location.pathname.replace(/[^/]*$/,'');
+  const m={name:'שבת גיבוש בודפשט',short_name:'בודפשט',lang:'he',dir:'rtl',id:base,scope:base,start_url:base+'#k='+TRIP_KEY,display:'standalone',background_color:'#050504',theme_color:'#050504',
+    icons:[{src:base+'icon-192.png',sizes:'192x192',type:'image/png',purpose:'any'},{src:base+'icon-512.png',sizes:'512x512',type:'image/png',purpose:'any'},{src:base+'icon-512.png',sizes:'512x512',type:'image/png',purpose:'maskable'}]};
+  const url=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}));
+  let l=document.querySelector('link[rel="manifest"]');if(!l){l=document.createElement('link');l.rel='manifest';document.head.appendChild(l)}l.href=url;
+}catch(e){}})();
+
 const _pickMeBase=pickMe;pickMe=function(){if(GUEST()||!ROLE)return;_pickMeBase();const sh=document.querySelector('#scrim .sheet');if(sh&&ROLE==='org'){const b=document.createElement('button');b.className='btn';b.style.cssText='margin-top:14px;width:100%';b.textContent='👁 תצוגת משתתף (כך זה נראה להם)';b.onclick=()=>{closeSheet();setPrev(true)};sh.appendChild(b);const o=document.createElement('button');o.className='btn ghost';o.style.cssText='margin-top:10px;width:100%';o.textContent='🚪 יציאה וכניסה מחדש כמשתתף';o.onclick=()=>{closeSheet();logoutRole()};sh.appendChild(o)}};
 document.body.classList.toggle('guest',GUEST());if(!ROLE)showGate();
 let SEEN_MARKED=false;const _r2=render;render=function(a){_r2(a);if(!SEEN_MARKED&&ROLE.startsWith('guest:')&&!PREV&&db&&loaded.has('participants')){SEEN_MARKED=true;let done=false;try{done=sessionStorage.getItem('seenMark')==='1'}catch(e){}if(!done){try{sessionStorage.setItem('seenMark','1')}catch(e){}gset('participants/'+ROLE.slice(6),{seenAt:new Date().toISOString()})}}};
@@ -2803,7 +2814,7 @@ render(true);
 </script>
 
 <script>
-(function(){var B='f957c360e9';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B='2258409e4f';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
