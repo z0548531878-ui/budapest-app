@@ -3518,7 +3518,9 @@ let groupStreak=0, groupStreakQ=-1, endedFxFor=null, hostRevealFxFor=-1;
 // ---------- אחד על אחד (דו-קרב) ----------
 // שני שחקנים בלי מנחה: בחדר ההמתנה רואים מי ממתין, שולחים הזמנה, וכשהשני מאשר מתחיל דו-קרב של 30 שאלות זהות לשניהם.
 // כל דו-קרב נשמר במסמך אחד באוסף rooms (מזהה שמתחיל ב-D).
-const DUEL_Q_COUNT = 30, DUEL_REVEAL_MS = 1600, DUEL_HB_MS = 4000, DUEL_HB_STALE = 15000, DUEL_GONE_MS = 20000;
+// 'דופק' = כתיבה למסד, שכל המכשירים בחדר קוראים. דופק תכוף מכלה את מכסת הקריאות היומית של Firebase:
+// בחדר ההמתנה כל 15 שניות (נחשב שיצא אחרי 45), ובזמן הדו-קרב כל 8 שניות (היריב נחשב שעזב אחרי 25)
+const DUEL_Q_COUNT = 30, DUEL_REVEAL_MS = 1600, DUEL_HB_MS = 15000, DUEL_HB_STALE = 45000, DUEL_GAME_HB_MS = 8000, DUEL_GONE_MS = 25000;
 let duel = null;
 function duelRef(){ return db.collection('rooms').doc(duel.code); }
 function seededRand(seed){ let a = seed>>>0; return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
@@ -3720,7 +3722,7 @@ function duelAttach(code, slot, me){
   duel = {code, slot, me, v:null, unsub:null, hb:null, gone:null, opHb:null, opSeenAt:Date.now(), qi:-1, startLocal:0, locked:false, revealedFor:-1, splashFor:false, endedFx:false, timers:[]};
   // 'דופק' בזמן הדו-קרב: אם היריב סגר את האפליקציה — לא נשארים לבד עד סוף 30 השאלות
   const beat = ()=>{ if(duel) duelRef().update({['hb'+slot]:Date.now()}).catch(()=>{}); };
-  beat(); duel.hb = setInterval(beat, DUEL_HB_MS);
+  beat(); duel.hb = setInterval(beat, DUEL_GAME_HB_MS);
   duel.gone = setInterval(duelCheckOpponent, 2000);
   duel.unsub = duelRef().onSnapshot(snap=>{ if(!duel || !snap.exists) return; duel.v = snap.data();
     const ohb = duel.v['hb'+(3-duel.slot)]; if(ohb!==duel.opHb){ duel.opHb = ohb; duel.opSeenAt = Date.now(); } // לפי השעון של המכשיר הזה בלבד
@@ -4029,7 +4031,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-08y';
+const APP_VERSION = '2026-10-08z';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
