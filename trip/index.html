@@ -1471,7 +1471,7 @@ const TRIP_DAYS=[{d:'2026-11-19',k:'יום חמישי',s:'ה׳ 19.11',l:'קרע�
 const RETURN_GROUPS=['מוצ״ש','ראשון צהריים','ראשון ערב','שלישי בוקר','עצמאי'];
 const DOC_CATS=['עלון','משחק','תפריטים','הדפסות','ספקים והזמנות','טיסות','אחר'];
 const TASK_CATS=['כספים','לינה','קרעסטיר','אוטובוס','שבת','קניות','מזכרות ודפוס','משתתפים','אחר'];
-const EXP_CATS=['לינה','אוכל','הסעות','מזכרות ודפוס','הפקה','אוטובוס','חדרים','סט קוויטל','שבת','אחר'];
+const EXP_CATS=['לינה','אוכל','הסעות','מזכרות ודפוס','הפקה','אוטובוס','חדרים','סט קוויטל','קרעסטיר','שבת','אחר'];
 
 const outGroups=()=>{const s=S.settings.find(x=>x._id==='trip');return (s&&s.outboundGroups)||['קבוצתי','נפרד']};
 const F={
@@ -1772,7 +1772,7 @@ const VIEWS={
    const st=e=>e.status==='שולם'?['ok','שולם ✓']:e.status==='מקדמה'?['w',`מקדמה ${ils(e.paid)} · נשאר ${ils(Math.max(0,(+e.estimate||0)-(+e.paid||0)))}`]:['m',isFinal(e)?'לא שולם · סכום סופי':'לא שולם · הערכה'];
    return head+`<div class="card" style="padding:14px;margin-bottom:6px"><div class="mt3" style="margin-top:0"><div><span>סה״כ</span><b class="num">${ils(m.est)}</b></div><div><span>שולם</span><b class="num pos">${ils(out)}</b></div><div><span>נשאר לשלם</span><b class="num">${ils(left)}</b></div></div>
     <p class="note" style="margin:10px 2px 0"><span class="num">${finN}</span> מתוך <span class="num">${S.expenses.length}</span> סכומים סופיים. השאר הערכה.${noRec?` · <b style="color:var(--warn)">${noRec} תשלומים בלי קבלה</b>`:''}</p></div>`
-    +EXP_CATS.filter(c=>g[c]).map(c=>`<div class="ghead"><span>${c}</span><span class="num">${ils(g[c].reduce((s,x)=>s+(+x.estimate||0),0))}</span></div>`+card(g[c].map(e=>{const [k,l]=st(e);
+    +[...EXP_CATS,...Object.keys(g).filter(c=>!EXP_CATS.includes(c))].filter(c=>g[c]).map(c=>`<div class="ghead"><span>${c}</span><span class="num">${ils(g[c].reduce((s,x)=>s+(+x.estimate||0),0))}</span></div>`+card(g[c].map(e=>{const [k,l]=st(e);
      return `<div class="row erow" data-edit="expenses/${e._id}" role="button" tabindex="0"><div class="main"><div class="t">${esc(e.name)}</div><div class="est ${k}">${l}${+e.paid&&!e.receipt?' · <span style="color:var(--warn)">חסרה קבלה</span>':''}</div></div>
      <div class="end"><span class="amt num">${+e.estimate?ils(e.estimate):'—'}</span></div></div>`}).join(''))).join('');
   }
