@@ -2660,7 +2660,16 @@ async function save(c,id,data){
   if(!db){toast('אין עדיין חיבור לנתוני המסע. פתחו את האפליקציה מהקישור של הצוות');return false}
   const prev=find(c,id);
   try{commit(db.doc(c+'/'+id).set(data))}catch(err){toast(failMsg(err));return false}
+  try{linkSync(c,id,data,prev)}catch(e){}
   logAct(prev?'edit':'set',c,id,data,prev);return true
+}
+// keeps shopping items and expenses in step: a paid expense marks its items as ordered, a changed item price moves its expense by the difference
+function linkSync(c,id,data,prev){
+  if(!db||!prev)return;
+  if(c==='expenses'&&data.status==='שולם'&&prev.status!=='שולם'){
+    S.packing.filter(x=>x.item&&x.exp===id&&!kst(x,'ordered')).forEach(x=>commit(db.doc('packing/'+x._id).set({ordered:true},{merge:true})))}
+  if(c==='packing'&&data.exp&&data.exp===prev.exp&&(+data.cost||0)!==(+prev.cost||0)){
+    const e=find('expenses',data.exp);if(e&&!e.final&&e.status!=='שולם')commit(db.doc('expenses/'+e._id).set({estimate:(+e.estimate||0)+(+data.cost||0)-(+prev.cost||0)},{merge:true}))}
 }
 async function add(c,data){
   if(!db){toast('אין עדיין חיבור לנתוני המסע. פתחו את האפליקציה מהקישור של הצוות');return false}
