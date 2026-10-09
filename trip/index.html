@@ -3048,6 +3048,13 @@ const isPrevOrg=()=>PREV&&ROLE==='org';
 const landingMs=()=>{const f=S.flights.find(f=>f._id==='f1')||S.flights.find(f=>f.dir==='הלוך');if(!f)return 0;const a=(f.arr||'12:00').replace(/[^\d:]/g,'').padStart(5,'0');return new Date(`${f.date||'2026-11-19'}T${a}:00+01:00`).getTime()};
 const triviaOpen=()=>Date.now()>=landingMs();
 const firstN=n=>String(n||'').replace(/^הרב(נית)?\s+/,'').split(' ')[0];
+// couple shown as "A ו B Last" (the logged-in person first) instead of repeating the family name
+function coupleLabel(ppl,me){
+  const a=(ppl||[]).filter(Boolean).slice().sort((x,y)=>(y===me||(me&&y._id===me._id))-(x===me||(me&&x._id===me._id)));
+  if(a.length<2)return a.map(x=>x.name).join('');
+  const parts=a.map(x=>String(x.name||'').trim().split(/\s+/)), last=parts[0].length>1?parts[0][parts[0].length-1]:'';
+  if(last&&parts.every(w=>w.length>1&&w[w.length-1]===last))return parts.map(w=>w.slice(0,-1).join(' ')).join(' ו')+' '+last;
+  return a.map(x=>x.name).join(' ו')}
 const coupleOf=p=>p?[p,...(p.spouse?S.participants.filter(x=>x._id===p.spouse):[])]:[];
 const fullNm=n=>(typeof TEAM_FULL!=='undefined'&&TEAM_FULL[n])||n;
 const ownersOf=t=>String(t.owner||'').split(/,\s*/).map(x=>fullNm(x.trim())).filter(Boolean);
@@ -3163,7 +3170,7 @@ function guestHTML0(){
     const ph=orgPhone();
     const help=`<section class="ghelp" aria-label="עזרה"><div><b>צריכים עזרה?</b><small>שלומי, מארגן המסע · <span class="num ltr">${esc(fmtPhone(ph))}</span></small></div>
       <a class="btn" href="${telLink(ph)}" aria-label="שיחה לשלומי">${I.phone}<span>שיחה</span></a><a class="btn" href="${waLink(ph)}" target="_blank" rel="noopener" aria-label="וואטסאפ לשלומי">${IX.wa||'💬'}<span>וואטסאפ</span></a><a class="btn sos" href="tel:112" aria-label="חירום 112">112</a></section>`;
-    return pv+`<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(ppl.map(x=>x.name).join(' ו')||'')}</b></div></div>
+    return pv+`<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(coupleLabel(ppl,me)||'')}</b></div></div>
      ${nowCard('data-gnav="gl"')}${banner}${passBlock}${extraOut}
      ${stat}
      <div class="gcb">
