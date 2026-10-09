@@ -1,6 +1,6 @@
 // The trip management app (/trip): money, payments, delete and restore, backup, export and offline.
 // Each test seeds its own trip in the fake Firestore (or the emulator with firestore.rules, npm run test:rules).
-import { test, expect, a11y, openTrip, TRIP as T, TRIP_KEY as KEY, type Db } from './helpers';
+import { test, expect, a11y, openTrip, TRIP_AXE_SKIP, TRIP as T, TRIP_KEY as KEY, type Db } from './helpers';
 import type { Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import * as XLSX from 'xlsx';
@@ -41,7 +41,7 @@ test.describe('trip app', () => {
     await expect(page.locator('.money-top .bal')).toHaveText('+2,500 ₪');
     await expect(page.locator('.money-top')).toContainText('כבר בקופה3,250 ₪');
     await expect(page.locator('.row', { hasText: 'בני לוי' })).toContainText('500 ₪ / 1,750 ₪');
-    expect(await a11y(page)).toEqual([]);
+    expect(await a11y(page, undefined, TRIP_AXE_SKIP)).toEqual([]);
     expect(errors).toEqual([]);
   });
 
@@ -61,7 +61,7 @@ test.describe('trip app', () => {
     await sheet(page).getByRole('button', { name: 'שמירה' }).click();
     await expect(shlomi).toContainText('פער בספירה: −100 ₪');
     await expect.poll(async () => (await db.get(`${T}/settings/cash`))?.counts?.['שלומי']?.amt).toBe(1400);
-    expect(await a11y(page)).toEqual([]);
+    expect(await a11y(page, undefined, TRIP_AXE_SKIP)).toEqual([]);
     expect(errors).toEqual([]);
   });
 
@@ -111,7 +111,7 @@ test.describe('trip app', () => {
     await row.getByRole('button', { name: 'שחזור' }).click();
     await expect.poll(async () => (await db.get(`${T}/expenses/e1`))?.paid).toBe(2000);
     await expect(page.getByText('לא נמחק כלום')).toBeVisible();
-    expect(await a11y(page)).toEqual([]);
+    expect(await a11y(page, undefined, TRIP_AXE_SKIP)).toEqual([]);
     expect(errors).toEqual([]);
   });
 

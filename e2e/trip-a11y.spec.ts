@@ -1,5 +1,5 @@
 // Accessibility of every screen and sheet in the trip app: axe (WCAG 2.1 AA), touch targets, and keyboard use of sheets.
-import { test, expect, a11y, openTrip, TRIP as T, type Db } from './helpers';
+import { test, expect, a11y, openTrip, TRIP_AXE_SKIP, TRIP as T, type Db } from './helpers';
 import type { Page } from '@playwright/test';
 
 async function seed(db: Db) {
@@ -23,7 +23,9 @@ async function seed(db: Db) {
   await put('trash/tasks__old', { col: 'tasks', rid: 'old', data: { title: 'משימה שנמחקה' }, by: 'יעל', at: '2026-10-07T10:00:00Z' });
 }
 
-const axe = async (page: Page, where: string) => (await a11y(page, ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])).map(v => `${where}: ${v}`);
+// check the settled screen: colours mid-transition (a tab button fading out) aren't what anyone reads
+const settled = (page: Page) => page.waitForFunction(() => document.getAnimations().every(a => a.playState !== 'running' || a.effect?.getTiming().iterations === Infinity));
+const axe = async (page: Page, where: string) => (await settled(page), await a11y(page, ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'], TRIP_AXE_SKIP)).map(v => `${where}: ${v}`);
 
 test('A11Y-1 every screen and sheet passes axe (WCAG 2.1 AA)', async ({ browser, db }) => {
   test.setTimeout(240_000);
@@ -86,4 +88,21 @@ test('A11Y-3 buttons are big enough to tap (at least 24×24, WCAG 2.5.8)', async
       .map(el => `${where}: <${el.tagName.toLowerCase()} class="${el.className}"> ${(el.textContent || el.getAttribute('aria-label') || '').trim().slice(0, 20)} ${Math.round(el.getBoundingClientRect().width)}×${Math.round(el.getBoundingClientRect().height)}`), tab + (sub ? '/' + sub : '')));
   }
   expect(small).toEqual([]);
+});
+
+test('A11Y-4 the participant app: every screen opens without errors and passes axe', async ({ browser, db }) => {
+  await seed(db);
+  const { page, errors } = await openTrip(browser, db);
+  await page.evaluate(() => { localStorage.setItem('nogate', '1'); sessionStorage.setItem('skipInst', '1'); localStorage.setItem('role', 'guest:p2'); });
+  await page.reload();
+  await expect.poll(() => page.evaluate('COLS.every(c => loaded.has(c))')).toBe(true);
+  await expect(page.locator('body.guest')).toHaveCount(1);
+  const found: string[] = [];
+  for (const t of ['gh', 'gx', 'gl', 'gp', 'gr', 'gt', 'gm', 'gq', 'gf']) {
+    await page.evaluate(`GTAB='${t}';render(true);scrollTo(0,0)`);
+    await expect(page.locator('#view')).not.toBeEmpty();
+    found.push(...await axe(page, 'guest ' + t));
+  }
+  expect(found).toEqual([]);
+  expect(errors).toEqual([]);
 });

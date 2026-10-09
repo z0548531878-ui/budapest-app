@@ -42,12 +42,14 @@ export async function enterName(page: Page, name: string) {
 }
 
 /** axe scan of the current screen; returns the serious/critical violations so specs can assert on them. */
-export async function a11y(page: Page, tags?: string[]) {
-  const axe = new AxeBuilder({ page });
+export async function a11y(page: Page, tags?: string[], skip: string[] = []) {
+  const axe = new AxeBuilder({ page }).disableRules(skip);
   const r = await (tags ? axe.withTags(tags) : axe).analyze();
   return r.violations.filter(v => v.impact === 'serious' || v.impact === 'critical').map(v => `${v.id}: ${v.help} (${v.nodes.length}) ${v.nodes.slice(0, 2).map(n => n.target.join(' ')).join(' | ')}`);
 }
 
+/** The trip app turns off pinch-zoom on purpose (an organizers' decision, 9.10), so its specs skip that one axe rule. */
+export const TRIP_AXE_SKIP = ['meta-viewport'];
 /** The trip app (/trip) on its own test trip: the team key and "who am I" already on the phone, no splash or guide. */
 export const TRIP_KEY = 'test-trip-key-0123456789abcdef';
 export const TRIP = `trips/${TRIP_KEY}`;
