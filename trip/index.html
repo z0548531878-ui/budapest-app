@@ -1471,7 +1471,7 @@ const TRIP_DAYS=[{d:'2026-11-19',k:'יום חמישי',s:'ה׳ 19.11',l:'קרע�
 const RETURN_GROUPS=['מוצ״ש','ראשון צהריים','ראשון ערב','שלישי בוקר','עצמאי'];
 const DOC_CATS=['עלון','משחק','תפריטים','הדפסות','ספקים והזמנות','טיסות','אחר'];
 const TASK_CATS=['כספים','לינה','קרעסטיר','אוטובוס','שבת','קניות','מזכרות ודפוס','משתתפים','אחר'];
-const EXP_CATS=['לינה','אוכל','הסעות','מזכרות ודפוס','הפקה','אוטובוס','חדרים','סט קוויטל','שבת','אחר'];
+const EXP_CATS=['לינה','אוכל','הסעות','מזכרות ודפוס','הפקה','אוטובוס','חדרים','סט קוויטל','קרעסטיר','שבת','אחר'];
 
 const outGroups=()=>{const s=S.settings.find(x=>x._id==='trip');return (s&&s.outboundGroups)||['קבוצתי','נפרד']};
 const F={
@@ -1772,9 +1772,12 @@ const VIEWS={
    const st=e=>e.status==='שולם'?['ok','שולם ✓']:e.status==='מקדמה'?['w',`מקדמה ${ils(e.paid)} · נשאר ${ils(Math.max(0,(+e.estimate||0)-(+e.paid||0)))}`]:['m',isFinal(e)?'לא שולם · סכום סופי':'לא שולם · הערכה'];
    return head+`<div class="card" style="padding:14px;margin-bottom:6px"><div class="mt3" style="margin-top:0"><div><span>סה״כ</span><b class="num">${ils(m.est)}</b></div><div><span>שולם</span><b class="num pos">${ils(out)}</b></div><div><span>נשאר לשלם</span><b class="num">${ils(left)}</b></div></div>
     <p class="note" style="margin:10px 2px 0"><span class="num">${finN}</span> מתוך <span class="num">${S.expenses.length}</span> סכומים סופיים. השאר הערכה.${noRec?` · <b style="color:var(--warn)">${noRec} תשלומים בלי קבלה</b>`:''}</p></div>`
-    +EXP_CATS.filter(c=>g[c]).map(c=>`<div class="ghead"><span>${c}</span><span class="num">${ils(g[c].reduce((s,x)=>s+(+x.estimate||0),0))}</span></div>`+card(g[c].map(e=>{const [k,l]=st(e);
+    +`<div class="chips" style="margin:6px 0 4px">${[['topic','לפי נושאים'],['detail','פירוט מורחב']].map(([k,l])=>`<button class="chip" data-filter="exv" data-val="${k}" aria-pressed="${(V.filter.exv||'topic')===k}">${l}</button>`).join('')}</div>`
+    +[...EXP_CATS,...Object.keys(g).filter(c=>!EXP_CATS.includes(c))].filter(c=>g[c]).map(c=>`<div class="ghead"><span>${c}</span><span class="num">${ils(g[c].reduce((s,x)=>s+(+x.estimate||0),0))}</span></div>`+card(g[c].map(e=>{const [k,l]=st(e);
+     const subs=V.filter.exv==='detail'?(()=>{const it=S.packing.filter(x=>x.item&&x.exp===e._id);if(!it.length)return '';const sm=it.reduce((t,x)=>t+(+x.cost||0),0),rest=(+e.estimate||0)-sm,ln=(a,b)=>`<div class="row" data-edit="expenses/${e._id}" style="min-height:0;padding:5px 18px 5px 8px;opacity:.88"><div class="main"><div class="m" style="font-size:14px">${a}</div></div><div class="end"><span class="num" style="font-size:14px">${b}</span></div></div>`;
+      return it.map(x=>ln('• '+esc(x.item)+(x.qty?' · '+esc(x.qty)+' יח׳':''),ils(+x.cost||0))).join('')+(Math.abs(rest)>=1?ln('• '+(rest>0?'יתרה לא מפורטת':'חריגה מההוצאה'),ils(Math.abs(rest))):'')})():'';
      return `<div class="row erow" data-edit="expenses/${e._id}" role="button" tabindex="0"><div class="main"><div class="t">${esc(e.name)}</div><div class="est ${k}">${l}${+e.paid&&!e.receipt?' · <span style="color:var(--warn)">חסרה קבלה</span>':''}</div></div>
-     <div class="end"><span class="amt num">${+e.estimate?ils(e.estimate):'—'}</span></div></div>`}).join(''))).join('');
+     <div class="end"><span class="amt num">${+e.estimate?ils(e.estimate):'—'}</span></div></div>`+subs}).join(''))).join('');
   }
   return head+`<div class="card" style="padding:14px;margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-weight:800"><span>התקבלו</span><span class="num">${ils(m.dIn)} / ${ils(m.dAll)}</span></div><div class="prog"><i data-w="${m.dAll?Math.round(m.dIn/m.dAll*100):0}%" style="width:0"></i></div></div>`+card(S.donations.map(d=>`<div class="row" data-edit="donations/${d._id}" role="button" tabindex="0"><div class="main"><div class="t">${esc(d.donor)}</div><div class="m"><span>${esc(d.purpose||'כללי')}</span></div></div>
    <div class="end"><span class="amt num">${d.amount?ils(d.amount):'—'}</span><button class="pill ${d.status==='התקבל'?'p-ok':'p-warn'}" data-don="${d._id}">${d.status==='התקבל'?'התקבל ✓':'סימון שהתקבל'}</button></div></div>`).join(''));
@@ -2694,6 +2697,8 @@ function msgSheet(id){
   document.getElementById('medit').onclick=()=>editor('messages',id);
   document.getElementById('msent').onclick=async()=>{if(await save('messages',id,{...strip(m),sent:!m.sent})){closeSheet();toast(m.sent?'סומנה כלא נשלחה':'סומנה כנשלחה')}};
 }
+const expBreak=(c,id)=>{if(c!=='expenses'||!id)return '';const it=S.packing.filter(x=>x.item&&x.exp===id);if(!it.length)return '';const sum=it.reduce((t,x)=>t+(+x.cost||0),0),e=find('expenses',id)||{},rest=(+e.estimate||0)-sum;
+  return `<div class="card" style="margin:12px 0"><div class="ghead"><span>מה כלול בהוצאה</span><span class="num">${ils(sum)}</span></div>${it.map(x=>`<div class="row"><div class="main"><div class="t">${esc(x.item)}</div><div class="m">${x.qty?`<span class="num">${esc(x.qty)} יח׳</span>`:''}<span>${esc(x.kit||x.list||'')}</span></div></div><div class="num">${ils(+x.cost||0)}</div></div>`).join('')}${Math.abs(rest)>=1?`<div class="row"><div class="main"><div class="t">${rest>0?'יתרה לא מפורטת':'חריגה מההוצאה'}</div></div><div class="num">${ils(Math.abs(rest))}</div></div>`:''}</div>`};
 function editor(c,id){
   const sc=F[c]; if(!sc)return;
   const d=id?find(c,id):{...sc.def,...(c==='tasks'?{owner:ME||'',category:V.filter.cat||'אחר'}:{}),...(c==='schedule'&&V.seg?{day:V.seg}:{}),...(c==='packing'&&V.filter.list?{list:V.filter.list}:{}),...(c==='packing'&&V.filter.kit?{kit:V.filter.kit}:{})};
@@ -2708,7 +2713,7 @@ function editor(c,id){
     return `<label class="field">${f.l}<input id="${iid}" type="${f.t==='number'?'number':f.t}" ${f.t==='number'?'inputmode="decimal" step="any"':''} ${f.ph?`placeholder="${f.ph}"`:''} value="${esc(v)}"></label>`};
   let html='',buf=[];const flush=()=>{if(buf.length){html+=buf.length===2?`<div class="two">${buf.join('')}</div>`:buf[0];buf=[]}};
   sc.fields.forEach(f=>{if(f.half){buf.push(fld(f));if(buf.length===2)flush()}else{flush();html+=fld(f)}});flush();
-  sheet(`<h3>${id?'עריכת '+sc.one:sc.one+' '+(sc.g?'חדשה':'חדש')}</h3><div class="form" id="ef">${html}</div>
+  sheet(`<h3>${id?'עריכת '+sc.one:sc.one+' '+(sc.g?'חדשה':'חדש')}</h3><div class="form" id="ef">${html}</div>${expBreak(c,id)}
    <div class="sheet-acts">${id?'<button class="btn danger" id="del">מחיקה</button>':''}<span class="sp"></span><button class="btn" data-close>ביטול</button><button class="btn primary" id="sv">שמירה</button></div>`);
   const ef=document.getElementById('ef');
   ef.addEventListener('click',e=>{const b=e.target.closest('.opt');if(!b)return;const box=b.parentElement;
