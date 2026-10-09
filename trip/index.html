@@ -1256,6 +1256,29 @@ input,select,textarea{font-size:16px!important}
 .mline:active{transform:scale(.985)}
 }
 
+/* ===== room page animations ===== */
+@media (prefers-reduced-motion:no-preference){
+@keyframes rmIn{from{opacity:0;transform:translate3d(0,28px,0) scale(.95)}to{opacity:1;transform:none}}
+@keyframes rmLine{from{opacity:0;transform:translate3d(30px,0,0)}to{opacity:1;transform:none}}
+@keyframes rmBed{0%,100%{transform:rotate(-4deg) translateY(0)}50%{transform:rotate(4deg) translateY(-3px)}}
+@keyframes rmGlow{0%,100%{box-shadow:0 0 0 0 rgba(255,180,106,0)}50%{box-shadow:0 0 0 6px rgba(255,180,106,.13)}}
+@keyframes rmShine{0%,55%{transform:translateX(-140%)}100%{transform:translateX(140%)}}
+@keyframes rmPin{0%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}60%{transform:translateY(0)}75%{transform:translateY(-2px)}}
+@keyframes rmRing{0%{box-shadow:0 0 0 0 rgba(246,220,147,.55)}100%{box-shadow:0 0 0 14px rgba(246,220,147,0)}}
+#view[data-scr="gr"] .roomcard{animation:rmIn .6s cubic-bezier(.2,.85,.25,1.08) both;position:relative;overflow:hidden}
+#view[data-scr="gr"] .roomcard::after,#view[data-scr="gr"] .navbtn::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 40%,rgba(255,255,255,.14) 50%,transparent 60%);transform:translateX(-140%);animation:rmShine 5s ease-in-out infinite;pointer-events:none}
+#view[data-scr="gr"] .rline{animation:rmLine .5s cubic-bezier(.2,.85,.25,1.05) both}
+#view[data-scr="gr"] .rline:nth-child(2){animation-delay:.3s}#view[data-scr="gr"] .rline:nth-child(3){animation-delay:.4s}#view[data-scr="gr"] .rline:nth-child(4){animation-delay:.5s}#view[data-scr="gr"] .rline:nth-child(5){animation-delay:.6s}
+#view[data-scr="gr"] .roomcard.unassigned{animation:rmIn .6s cubic-bezier(.2,.85,.25,1.08) both,rmGlow 3.5s ease-in-out 1s infinite}
+#view[data-scr="gr"] .rc-h{display:flex;align-items:center;gap:8px}
+#view[data-scr="gr"] .rc-h .bed{display:inline-block;animation:rmBed 3.2s ease-in-out infinite;transform-origin:50% 80%}
+#view[data-scr="gr"] .hotel{animation:rmIn .65s cubic-bezier(.2,.85,.25,1.08) .2s both}
+#view[data-scr="gr"] .ht-ic{animation:rmPin 2.8s ease-in-out infinite}
+#view[data-scr="gr"] .ht-h>div{animation:rmLine .55s cubic-bezier(.2,.85,.25,1.05) .4s both}
+#view[data-scr="gr"] .navbtn{position:relative;overflow:hidden;animation:rmIn .5s cubic-bezier(.2,.85,.25,1.08) .5s both,rmRing 2.6s ease-out 1.4s infinite}
+#view[data-scr="gr"] .hotel .btn.ghost,#view[data-scr="gr"] .hotel .note{animation:rmIn .5s cubic-bezier(.2,.85,.25,1.08) .65s both}
+#view[data-scr="gr"] .navbtn:active,#view[data-scr="gr"] .hotel .btn:active{transform:scale(.96)}
+}
 /* ===== v5b: header, guest status cubes, smaller home cubes, tools, gate ===== */
 .top h1,.top .sub{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
 body:not(.guest) .top .ideabtn,body:not(.guest) .top .me{width:38px!important;height:38px!important;padding:0!important}
@@ -1460,17 +1483,18 @@ function moneySum(head){
 }
 /* ---- back navigation: in-app history so the phone's back button stays inside the app ---- */
 let NAVKEY=null, SKIPPOP=0, EXITARM=0, DEPTH=0;
-const navKey=()=>V.tab+'|'+(V.tab==='more'?V.sub||'':'');
-const navState=d=>({nav:1,d,tab:V.tab,sub:V.sub,seg:V.seg,filter:V.filter});
+const navKey=()=>GUEST()?'g|'+GTAB:V.tab+'|'+(V.tab==='more'?V.sub||'':'');
+const navState=d=>({nav:1,d,tab:V.tab,sub:V.sub,seg:V.seg,filter:V.filter,g:(()=>{try{return GTAB}catch(e){return 'gh'}})()});
 function navSync(){const k=navKey();if(k===NAVKEY)return;
   try{if(NAVKEY===null){history.replaceState({nav:1,root:1,d:0},'');DEPTH=1;history.pushState(navState(1),'')}
-   else if(k==='home|'&&DEPTH>1){SKIPPOP++;history.go(1-DEPTH);DEPTH=1}
+   else if((k==='home|'||k==='g|gh')&&DEPTH>1){SKIPPOP++;history.go(1-DEPTH);DEPTH=1}
    else{DEPTH++;history.pushState(navState(DEPTH),'')}}catch(e){}
   NAVKEY=k}
 const _render=render;
 render=function(a){_render(a);navSync();hintScroll()};
 function navBack(){if(DEPTH>1)history.back();else go('home')}
 window.addEventListener('popstate',e=>{
+  if(GUEST()){guestPop(e);return}
   const st=e.state||{};
   if(SKIPPOP){SKIPPOP--;DEPTH=st.d||0;if(st.root){try{history.pushState(navState(1),'')}catch(x){}DEPTH=1}return}
   DEPTH=st.d||0;
@@ -2820,8 +2844,8 @@ function guestHTML0(){
   if(GTAB==='gr'){
     const rid=(ppl.find(p=>p.roomId)||{}).roomId, r=rid&&S.rooms.find(x=>x._id===rid);
     const line=(l,v)=>`<div class="rline"><small>${l}</small><b>${v?esc(v):'טרם עודכן'}</b></div>`;
-    return head('החדר שלי')+(r&&(r.roomNumber||r.floor||r.entrance)?`<div class="roomcard"><div class="rc-h">🛏 ${esc(r.occupants||'')}</div>${line('כניסה',r.entrance)}${line('קומה',r.floor)}${line('מספר חדר',r.roomNumber)}${r.notes?`<p class="note">${esc(r.notes)}</p>`:''}</div>`
-      :`<div class="roomcard unassigned"><div class="rc-h">🛏 טרם שובץ</div><p>עוד לא שובצתם לחדר. כשנעדכן, תראו כאן את הכניסה, הקומה ומספר החדר.</p></div>`)+hotelCard()}
+    return head('החדר שלי')+(r&&(r.roomNumber||r.floor||r.entrance)?`<div class="roomcard"><div class="rc-h"><span class="bed">🛏</span> ${esc(r.occupants||'')}</div>${line('כניסה',r.entrance)}${line('קומה',r.floor)}${line('מספר חדר',r.roomNumber)}${r.notes?`<p class="note">${esc(r.notes)}</p>`:''}</div>`
+      :`<div class="roomcard unassigned"><div class="rc-h"><span class="bed">🛏</span> טרם שובץ</div><p>עוד לא שובצתם לחדר. כשנעדכן, תראו כאן את הכניסה, הקומה ומספר החדר.</p></div>`)+hotelCard()}
   if(GTAB==='gt'){
     const mine=myTasks(ppl), openL=S.tasks.filter(t=>t.open==='כן'&&t.status!=='בוצע'&&!t.owner&&(!t.claimBy||t.claimStatus==='ממתין לאישור')&&!(t.claimStatus==='ממתין לאישור'&&!ppl.some(p=>p.name===t.claimBy)));
     const showL=GSEG==='open'?openL:mine;
@@ -2882,6 +2906,7 @@ render=function(anim){
   if(anim||_lastScr!==GTAB){v.classList.remove('enter');if(!reduce){void v.offsetWidth;v.classList.add('enter')}}
   _lastScr=GTAB;
   if(GTAB==='gl'){const d=progDay();if(_lastDay&&_lastDay!==d){const o=PROG.findIndex(x=>x.k===_lastDay),n2=PROG.findIndex(x=>x.k===d),el=v.querySelector('.parch');if(el&&!reduce){el.classList.remove('sw-n','sw-p');void el.offsetWidth;el.classList.add(n2>o?'sw-n':'sw-p')}}_lastDay=d}else _lastDay='';
+  try{navSync()}catch(e){}
   if(keep){const el=document.getElementById(keep.id);if(el&&'value' in el){el.value=keep.val;el.focus();try{el.setSelectionRange(keep.pos,keep.pos)}catch(e){}}}
   const cv=document.getElementById('cvI');if(cv)convUpd();
 };
@@ -3055,6 +3080,18 @@ async function delDoc(c,id){
     const i=PROG.findIndex(x=>x.k===progDay()),j=i+(dx<0?1:-1);if(j<0||j>=PROG.length)return;
     V.filter.pd=PROG[j].k;render();window.scrollTo({top:0,behavior:'smooth'})},{passive:true});
 })();
+
+/* phone back button inside the participant app: back = previous screen */
+function guestPop(e){
+  const st=e.state||{};
+  if(SKIPPOP){SKIPPOP--;DEPTH=st.d||0;if(st.root){try{history.pushState(navState(1),'')}catch(x){}DEPTH=1}return}
+  DEPTH=st.d||0;
+  if(st.root||!st.nav){
+    if(GTAB==='gh'){if(EXITARM){history.back();return}EXITARM=1;setTimeout(()=>EXITARM=0,2500);toast('לחיצה נוספת על "חזור" תצא מהאפליקציה')}
+    else{GTAB='gh';NAVKEY=navKey();render(true);window.scrollTo({top:0})}
+    try{history.pushState(navState(1),'')}catch(x){}DEPTH=1;NAVKEY=navKey();return}
+  GTAB=st.g||'gh';NAVKEY=navKey();render(true);window.scrollTo({top:0});
+}
 
 /* ===== organizer additions: approvals, personal requests, announcements ===== */
 SUB.reqs=function(){
@@ -3249,7 +3286,7 @@ render(true);
 </script>
 
 <script>
-(function(){var B='90c3a8b364';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B='b07138ed56';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
