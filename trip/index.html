@@ -2694,6 +2694,8 @@ function msgSheet(id){
   document.getElementById('medit').onclick=()=>editor('messages',id);
   document.getElementById('msent').onclick=async()=>{if(await save('messages',id,{...strip(m),sent:!m.sent})){closeSheet();toast(m.sent?'סומנה כלא נשלחה':'סומנה כנשלחה')}};
 }
+const expBreak=(c,id)=>{if(c!=='expenses'||!id)return '';const it=S.packing.filter(x=>x.item&&x.exp===id);if(!it.length)return '';const sum=it.reduce((t,x)=>t+(+x.cost||0),0),e=find('expenses',id)||{},rest=(+e.estimate||0)-sum;
+  return `<div class="card" style="margin:12px 0"><div class="ghead"><span>מה כלול בהוצאה</span><span class="num">${ils(sum)}</span></div>${it.map(x=>`<div class="row"><div class="main"><div class="t">${esc(x.item)}</div><div class="m">${x.qty?`<span class="num">${esc(x.qty)} יח׳</span>`:''}<span>${esc(x.kit||x.list||'')}</span></div></div><div class="num">${ils(+x.cost||0)}</div></div>`).join('')}${Math.abs(rest)>=1?`<div class="row"><div class="main"><div class="t">${rest>0?'יתרה לא מפורטת':'חריגה מההוצאה'}</div></div><div class="num">${ils(Math.abs(rest))}</div></div>`:''}</div>`};
 function editor(c,id){
   const sc=F[c]; if(!sc)return;
   const d=id?find(c,id):{...sc.def,...(c==='tasks'?{owner:ME||'',category:V.filter.cat||'אחר'}:{}),...(c==='schedule'&&V.seg?{day:V.seg}:{}),...(c==='packing'&&V.filter.list?{list:V.filter.list}:{}),...(c==='packing'&&V.filter.kit?{kit:V.filter.kit}:{})};
@@ -2708,7 +2710,7 @@ function editor(c,id){
     return `<label class="field">${f.l}<input id="${iid}" type="${f.t==='number'?'number':f.t}" ${f.t==='number'?'inputmode="decimal" step="any"':''} ${f.ph?`placeholder="${f.ph}"`:''} value="${esc(v)}"></label>`};
   let html='',buf=[];const flush=()=>{if(buf.length){html+=buf.length===2?`<div class="two">${buf.join('')}</div>`:buf[0];buf=[]}};
   sc.fields.forEach(f=>{if(f.half){buf.push(fld(f));if(buf.length===2)flush()}else{flush();html+=fld(f)}});flush();
-  sheet(`<h3>${id?'עריכת '+sc.one:sc.one+' '+(sc.g?'חדשה':'חדש')}</h3><div class="form" id="ef">${html}</div>
+  sheet(`<h3>${id?'עריכת '+sc.one:sc.one+' '+(sc.g?'חדשה':'חדש')}</h3><div class="form" id="ef">${html}</div>${expBreak(c,id)}
    <div class="sheet-acts">${id?'<button class="btn danger" id="del">מחיקה</button>':''}<span class="sp"></span><button class="btn" data-close>ביטול</button><button class="btn primary" id="sv">שמירה</button></div>`);
   const ef=document.getElementById('ef');
   ef.addEventListener('click',e=>{const b=e.target.closest('.opt');if(!b)return;const box=b.parentElement;
