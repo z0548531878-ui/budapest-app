@@ -2,31 +2,13 @@
 // Not part of the normal run (it measures, it doesn't pass/fail on taste): PERF=1 npx playwright test e2e/trip-perf.spec.ts
 // For each screen: frames that took too long while the screen enters, layout shifts (things jumping), endless animations
 // that repaint every frame, and what a background data change does (animations that restart = the "flash"/"shake").
-import { test, expect, openTrip, TRIP as T, type Db } from './helpers';
+import { test, expect, openTrip, TRIP as T } from './helpers';
+import { seedBigTrip as seed } from './trip-seed';
 import type { Page } from '@playwright/test';
 import { writeFileSync } from 'node:fs';
 
 test.skip(!process.env.PERF && !process.env.PROBE, 'measurement only: PERF=1');
 test.setTimeout(600_000);
-
-const FIRST = ['אבי', 'בני', 'גלעד', 'דוד', 'הדס', 'ורד', 'זיו', 'חנה', 'טל', 'יעל', 'כרמל', 'לאה', 'מיכל', 'נועה', 'עדי'];
-const LAST = ['כהן', 'לוי', 'מור', 'פז', 'רוזן', 'שגיא', 'ברק', 'גולד'];
-async function seed(db: Db) {
-  const put = (p: string, d: object) => db.put(`${T}/${p}`, d);
-  await put('settings/trip', { team: ['שלומי', 'איציק', 'יעל'] });
-  for (let i = 0; i < 60; i++) {
-    const st = ['שולם', 'שולם', 'לא שולם', 'שולם חלקית'][i % 4];
-    await put(`participants/p${i}`, { name: `${FIRST[i % 15]} ${LAST[i % 8]}${i > 14 ? ' ' + i : ''}`, amount: 1750, phone: '05012345' + String(i).padStart(2, '0'),
-      status: st, paidAmt: st === 'שולם חלקית' ? 500 : 0, holder: i % 2 ? 'שלומי' : 'איציק', passport: i % 3 !== 0, outbound: 'קבוצתי', returnGroup: ['מוצ״ש', 'ראשון צהריים', 'ראשון ערב'][i % 3], order: i });
-  }
-  for (let i = 0; i < 40; i++) await put(`tasks/t${i}`, { title: `משימה מספר ${i}`, owner: ['שלומי', 'איציק', 'יעל'][i % 3], status: ['לביצוע', 'בתהליך', 'ממתין', 'בוצע'][i % 4], priority: i % 5 ? 'רגילה' : 'גבוהה', category: 'אחר', due: '', notes: '', order: i });
-  for (let i = 0; i < 25; i++) await put(`expenses/e${i}`, { name: `הוצאה ${i}`, category: ['לינה', 'אוכל', 'הסעות', 'אחר'][i % 4], estimate: 1000 + i * 100, paid: i % 2 ? 500 : 0, status: i % 2 ? 'מקדמה' : 'לא שולם', paidBy: 'איציק', order: i });
-  for (let i = 0; i < 30; i++) await put(`rooms/r${i}`, { occupants: `${FIRST[i % 15]} ${LAST[i % 8]}`, roomNumber: String(400 + i), floor: '4', type: 'חדר לזוג', kitReady: i % 2 === 0, order: i });
-  for (let i = 0; i < 40; i++) await put(`packing/k${i}`, { item: `פריט ${i}`, qty: 10, list: 'שבת', where: i % 2 ? 'בארץ' : 'בבודפשט', done: i % 3 === 0, order: i });
-  for (let i = 0; i < 12; i++) await put(`schedule/s${i}`, { day: ['יום חמישי', 'יום שישי', 'שבת'][i % 3], time: `${8 + i}:00`, title: `אירוע ${i}`, place: 'מלון', order: i });
-  await put('flights/f1', { label: 'קבוצתי', dir: 'הלוך', group: 'קבוצתי', flightNo: 'LY 2369', date: '2026-11-19', dep: '08:40', arr: '11:15' });
-  for (let i = 0; i < 30; i++) await put(`activity/a${i}`, { by: 'יעל', at: `2026-10-0${1 + (i % 8)}T10:${String(i).padStart(2, '0')}:00Z`, act: 'edit', col: 'tasks', rid: `t${i}`, title: `משימה מספר ${i}` });
-}
 
 /** Measures the next `ms` of the page: long frames, layout shift, and which animations run. */
 async function measure(page: Page, ms: number, act: string) {

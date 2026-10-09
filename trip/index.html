@@ -1373,6 +1373,51 @@ button.sc,a.sc{cursor:pointer}.sc:active{transform:scale(.97)}
 /* long lists: rows below the screen aren't laid out or painted until they scroll near (their height is reserved, so nothing jumps) */
 .pc{content-visibility:auto;contain-intrinsic-size:auto 102px}
 .prow{content-visibility:auto;contain-intrinsic-size:auto 72px}
+
+/* ===== now / next, live programme, status strip, help row ===== */
+.nowc{margin:14px 0 4px;padding:14px 16px 12px;border-radius:20px;border:1px solid rgba(214,178,98,.4);background:linear-gradient(160deg,#1c170e,#0e0c09);box-shadow:0 14px 34px -22px rgba(0,0,0,.9)}
+.nc-h{display:flex;align-items:center;gap:8px;margin-bottom:8px}.nc-h b{font-size:15px;color:#f3ead3}.nc-h small{margin-inline-start:auto;font-size:12px;color:#a69a7d}
+.live{width:9px;height:9px;border-radius:50%;background:#7fd1a5;box-shadow:0 0 0 3px rgba(127,209,165,.18);flex:0 0 auto}
+@media (prefers-reduced-motion:no-preference){.live{animation:kBreath 1.6s ease-in-out infinite}}
+.nc-row{display:grid;gap:2px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.03)}
+.nc-row+.nc-row{margin-top:8px}
+.nc-row small{font-size:12.5px;font-weight:700;color:#a69a7d}.nc-row b{font-size:18px;line-height:1.3;color:#f3ead3}.nc-row span{font-size:13.5px;color:#cfc3a6;line-height:1.45}
+.nc-row.now{border-inline-start:3px solid #7fd1a5}.nc-row.now small{color:#7fd1a5}
+.nc-row.next{border-inline-start:3px solid rgba(214,178,98,.55)}.nc-row.next.soon{border-inline-start-color:#f0d28c;background:rgba(240,210,140,.07)}.nc-row.next.soon small{color:#f0d28c}
+.nc-all{width:100%;justify-content:center;margin-top:10px;min-height:44px}
+.pupd{display:inline-block;font-size:11px;font-weight:900;color:#1a1408;background:linear-gradient(180deg,#f6dc93,#c99a3d);border-radius:999px;padding:1px 8px;vertical-align:2px}
+.parch .pi{position:relative}
+.nc-row .pupd,.parch .pb .pupd{display:inline-block;width:auto;font-size:11px;line-height:1.5;color:#1a1408;margin:0;vertical-align:2px}
+.parch .pi.fixed{background:rgba(200,162,74,.1);border-radius:10px}
+.parch .ptm s{display:block;font-size:12px;font-weight:700;color:#a3824a;opacity:.8}
+.pedit{position:absolute;inset-inline-end:0;top:6px;width:36px;height:36px;border-radius:12px;border:1px solid rgba(138,101,22,.35);background:rgba(255,255,255,.55);color:#6d4f12;font-size:16px;display:grid;place-items:center}
+.parch .pi:has(.pedit) .pb{padding-inline-end:40px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 6px}
+.kpi{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:74px;padding:10px 4px;border-radius:16px;border:1px solid rgba(214,178,98,.2);background:#13110d;color:var(--ink);text-align:center}
+.kpi b{font-size:22px;font-weight:900;line-height:1}.kpi span{font-size:11.5px;font-weight:700;color:#a69a7d;line-height:1.25}
+.kpi.ok b{color:#7fd1a5}.kpi.mid b{color:#f0d28c}.kpi.bad b{color:#f08b82}.kpi.bad{border-color:rgba(240,139,130,.35)}
+.kpi.skel{min-height:74px}
+@media (max-width:360px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.ghelp{display:flex;align-items:center;gap:8px;margin:18px 0 6px;padding:12px 14px;border-radius:18px;border:1px solid rgba(214,178,98,.25);background:#13110d}
+.ghelp>div{flex:1;min-width:0;display:grid;gap:2px}.ghelp b{font-size:15px}.ghelp small{font-size:12.5px;color:#a69a7d}
+.ghelp .btn{min-height:44px;padding:8px 10px;gap:5px;font-size:13px;flex:0 0 auto}.ghelp .btn svg{width:18px;height:18px}
+.ghelp .btn.sos{color:#f08b82;border-color:rgba(240,139,130,.45);font-weight:900}
+.ghelp{flex-wrap:wrap}.ghelp>div{flex-basis:100%}.ghelp .btn{flex:1;justify-content:center}.ghelp .btn.sos{flex:0 0 64px}.ghelp small .num{white-space:nowrap}
+
+/* empty states: a soft mark, a title and one line of what to do */
+.empty{padding:30px 22px;line-height:1.55;font-size:14px}
+.empty::before{content:"✦";display:grid;place-items:center;width:46px;height:46px;margin:0 auto 10px;border-radius:50%;font-size:18px;color:#e9c46f;background:rgba(214,178,98,.1);border:1px solid rgba(214,178,98,.22)}
+.empty b{margin-bottom:4px}
+/* participant app while the data loads */
+.gload{display:grid;gap:12px;margin-top:16px}.gload .skel{border-radius:18px;min-height:18px}
+.gload .gl2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.gload .gl2 .skel{height:120px}
+
+/* organizer quick actions */
+.qact{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:4px 0 2px}
+.qact button{display:flex;flex-direction:column;align-items:center;gap:6px;min-height:76px;padding:10px 4px;border-radius:16px;border:1px solid rgba(214,178,98,.2);background:#13110d;color:#e8dcc0;font-weight:800;font-size:12.5px;line-height:1.25;text-align:center}
+.qact .ic{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:var(--goldbtn,linear-gradient(180deg,#f6dc93,#c99a3d));color:#15110a}
+.qact .ic svg{width:19px;height:19px}
+.qact button:active{transform:scale(.95)}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -1398,7 +1443,9 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const safeUrl=u=>{u=String(u??'').trim();return /^(https?:|tel:|mailto:)/i.test(u)?u:/^[\w.-]+\.[a-z]{2,}(\/|$)/i.test(u)?'https://'+u:''};
 const ils=n=>Math.round(+n||0).toLocaleString('he-IL')+' ₪';
 const todayISO=()=>{const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
-const fmtWhen=iso=>{const d=new Date(iso);return isNaN(d)?'':d.toLocaleString('he-IL',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'})};
+const fmtWhen=iso=>{const d=new Date(iso);return isNaN(d)?'':`${d.getDate()}.${d.getMonth()+1} · ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`};
+// Israeli mobile numbers read as 050-123-4567; anything else stays as typed
+const fmtPhone=ph=>{const d=String(ph||'').replace(/\D/g,'');return /^05\d{8}$/.test(d)?`${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`:String(ph||'')};
 const fmtDate=d=>{if(!d)return'';const p=d.split('-');return `${+p[2]}.${+p[1]}`};
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const CHECK='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M3 8.5l3.2 3L13 4.5"/></svg>';
@@ -1646,7 +1693,18 @@ const VIEWS={
   const p=pendingForClaude(), pn=p.acts.length+p.notes.length+p.answers.length;
   const na=newActs().sort((a,b)=>(b.at||'').localeCompare(a.at||''));
   const today=new Date().toLocaleDateString('he-IL',{weekday:'long',day:'numeric',month:'numeric'});
+  const ppN=S.participants.length, ppOk=S.participants.filter(x=>x.passport).length, rq=pendN();
+  const kpi=(cls,v,l,to,o)=>`<button class="kpi ${cls}" data-go="${to}" data-opts='${esc(JSON.stringify(o||{}))}'><b class="num">${v}</b><span>${l}</span></button>`;
+  const kpis=ready('participants','tasks')?`<section class="kpis" aria-label="תמונת מצב">
+    ${kpi(pct>=90?'ok':pct>=60?'mid':'bad',pct+'%','נגבה ממשתתפים','money',{seg:'participants',filter:{pay:'open'}})}
+    ${kpi(ppOk===ppN?'ok':ppOk/Math.max(1,ppN)>=.7?'mid':'bad',`${ppOk}/${ppN}`,'דרכונים','more',{sub:'passports'})}
+    ${kpi(rq?'mid':'ok',rq,rq===1?'בקשה מחכה':'בקשות מחכות','more',{sub:'reqs'})}
+    ${kpi(late.length?'bad':'ok',late.length,'משימות באיחור','tasks',{seg:'all'})}</section>`:`<div class="kpis">${'<div class="kpi skel shimmer"></div>'.repeat(4)}</div>`;
+  const attention=fires.length?`<section class="sec"><div class="sec-h"><h3>דורש תשומת לב</h3><button class="link" data-go="more">כל התובנות ›</button></div>${card(fires.map(([c,l,to,o])=>`<button class="row" data-go="${to}" data-opts='${esc(JSON.stringify(o))}'><span class="pill ${c}">!</span><div class="main"><div class="t">${esc(l)}</div></div><span aria-hidden="true" style="color:var(--muted)">‹</span></button>`).join(''))}</section>`:'';
   return `<div class="hello"><div class="greet">${greeting()}<b>${ME?esc(ME):'ברוכים הבאים'}</b></div><span class="date">${today}</span></div>
+  ${nowCard(`data-go="more" data-opts='{"sub":"program"}'`)}${kpis}
+  <section class="qact" aria-label="פעולות מהירות">${[['announce',I.chat,'הודעה לכולם'],['program',I.sched,'שינוי בלו״ז'],['attendance',I.people,'ספירת נוכחות'],['people',I.phone,'חיפוש משתתף']].map(([k,ic,l])=>`<button data-go="more" data-opts='{"sub":"${k}"}'><span class="ic">${ic}</span><span>${l}</span></button>`).join('')}</section>
+  ${attention}
   <section class="pass"><span class="shine"></span><div class="pass-main"><div class="pass-top"><span>${out?`אל על · <span class="ltr">${esc(out.flightNo)}</span>`:'טיסת הלוך'}</span><span>חמישי 19.11</span></div>
     <div class="pass-route"><div><b>TLV</b><span>${esc(out?out.dep:'')}</span></div><div class="path"><svg viewBox="0 0 150 22" fill="none"><path d="M4 11h142" stroke="currentColor" stroke-width="1.6" stroke-dasharray="3 5"/><g class="plane"><path fill="currentColor" d="M146 11l-13-5.4v3.7l-6.5.1-2.8-3.8h-2l1.6 3.9-4.3.1v2.8l4.3.1-1.6 3.9h2l2.8-3.8 6.5.1v3.7z"/></g></svg></div><div><b>BUD</b><span>${esc(out?out.arr:'')}</span></div></div>
     <div class="days">${TRIP_DAYS.map((d,i)=>`<div class="${d.sh?'sh':''} ${i===idx?'now':''}"><b>${d.s}</b>${d.l}</div>`).join('')}</div></div>
@@ -1658,14 +1716,9 @@ const VIEWS={
     <div class="btns"><button class="btn ${pn?'primary':''}" data-send>שליחת עדכון ל-Claude</button></div></div>${CAN_SEND()?'':'-->'}
   </section>
   ${guideCard()}
-  ${fires.length?`<section class="sec"><div class="sec-h"><h3>דורש תשומת לב</h3><button class="link" data-go="more">כל התובנות ›</button></div>${card(fires.map(([c,l,to,o])=>`<button class="row" data-go="${to}" data-opts='${esc(JSON.stringify(o))}'><span class="pill ${c}">!</span><div class="main"><div class="t">${esc(l)}</div></div><span aria-hidden="true" style="color:var(--muted)">‹</span></button>`).join(''))}</section>`:''}
   <section class="sec"><div class="sec-h"><h3>${ME?'הבא בתור שלך':'המשימות שלי'}</h3>${ME?`<button class="link" data-go="tasks" data-opts='{"seg":"mine"}'>הכל ›</button>`:''}</div>
     ${!ready('tasks')?skel(3):ME?card(my.map(taskRow).join(''),'<b>אין לך משימות פתוחות</b>כל הכבוד'):card('<button class="row" data-pickme><div class="main"><div class="t">בחרו מי אתם</div><div class="m">כדי לראות כאן את המשימות שלכם</div></div><span class="pill p-gold">בחירה</span></button>')}
   </section>
-  <div class="stats" style="margin-top:22px">
-    <button class="stat" data-go="tasks" data-opts='{"seg":"all"}'><svg class="ring" viewBox="0 0 48 48"><circle class="bgc" cx="24" cy="24" r="21"/><circle class="v" data-p="${tp}" cx="24" cy="24" r="21"/></svg><div class="tx"><span>משימות שבוצעו</span><b class="num"><span data-count="${done}">${done}</span>/${S.tasks.length}</b></div></button>
-    <button class="stat" data-go="money" data-opts='{"seg":"participants","filter":{"pay":"open"}}'><svg class="ring" viewBox="0 0 48 48"><circle class="bgc" cx="24" cy="24" r="21"/><circle class="v" data-p="${pct/100}" cx="24" cy="24" r="21"/></svg><div class="tx"><span>נגבה ממשתתפים</span><b class="num" data-count="${pct}" data-fmt="pct">${pct}%</b></div></button>
-  </div>
   ${na.length?`<section class="sec"><div class="sec-h"><h3>מה הצוות עשה</h3><button class="link" id="seeAct">הכל ›</button></div><div class="card feed">${na.slice(0,3).map(a=>`<button class="it new" ${find(a.col,a.rid)?`data-edit="${a.col}/${a.rid}"`:''}><span class="av">${esc((a.by||'?')[0])}</span><span class="main"><b>${esc(a.by||'מישהו')}</b> ${esc(actLine(a))}${a.change?`<small>${esc(a.change)}</small>`:''}</span></button>`).join('')}</div></section>`:''}
 `;
  },
@@ -1760,7 +1813,7 @@ const SUB={
    <div class="parch"><span class="cn tl"></span><span class="cn tr"></span><span class="cn bl"></span><span class="cn br"></span>
     <div class="ph"><div class="orn">${ORN}</div><div class="pt">${k==='thu'?'תוכנית המסע':'תוכניית השבת'}</div></div>
     <div class="dayh"><small>${d.over}</small><b>${d.title}</b><span>${d.date}</span><div class="rule"><i></i><em>◆</em><i></i></div></div>
-    ${d.items.map(([tm,ti,sub,q,src],i)=>`<div class="pi" style="--i:${i}"><div class="ptm">${tm}</div><div class="pb"><b>${ti}</b><span>${sub}</span>${q?`<q>${q} <small>· ${src}</small></q>`:''}</div></div>`).join('')}
+    ${progItems(d).map(({tm,ti,sub,q,src,i,key,fix,old})=>`<div class="pi ${fix?'fixed':''}" style="--i:${i}"><div class="ptm">${esc(tm)}${fix&&old[0]&&old[0]!==tm?`<s>${esc(old[0])}</s>`:''}</div><div class="pb"><b>${esc(ti)}${fix?' <span class="pupd">עודכן</span>':''}</b><span>${esc(sub)}</span>${q?`<q>${q} <small>· ${src}</small></q>`:''}</div>${GUEST()?'':`<button class="pedit" data-pfix="${key}" aria-label="שינוי: ${esc(ti)}">✎</button>`}</div>`).join('')}
     ${k==='sat'?`<div class="dayh" style="margin-top:18px"><b>בדרך הביתה</b><span>טיסות חזרה באל על · שעות מקומיות</span><div class="rule"><i></i><em>◆</em><i></i></div></div>${FLIGHTS_HOME.map(f=>`<div class="pfl"><span class="pl">${f[0]}</span><div><b>${f[1]}</b><small>${f[2]} · ${f[3]}</small></div><div class="pr ltr">BUD ${f[4]} → TLV ${f[5]}${f[6]?' <small>+1</small>':''}</div><small class="pn">${f[7]}</small></div>`).join('')}`:''}
     <div class="pfoot">${k==='sat'?'שבת שלום ומבורכת!':k==='fri'?'שבת שלום!':'נסיעה טובה ובשעה טובה!'}</div>
    </div>`;
@@ -1894,6 +1947,7 @@ const view=document.getElementById('view');
 view.addEventListener('click',e=>{
   const t=e.target;
   if(t.closest('[data-stop]')){e.stopPropagation();return}
+  const pf=t.closest('[data-pfix]');if(pf){e.stopPropagation();progSheet(pf.dataset.pfix);return}
   const g=t.closest('[data-go]');if(g){go(g.dataset.go,JSON.parse(g.dataset.opts||'{}'));return}
   if(t.closest('[data-pickme]')){pickMe();return}
   if(t.closest('#seeAct')){actSheet();return}
@@ -2105,9 +2159,9 @@ function updSheet(k){const u=UPD[k]||UPD.home;
    <p class="note" id="recNote" style="margin:8px 2px 0" hidden></p>
    <div class="sheet-acts">${CAN_SEND()?`<button class="btn" id="updKeep">שמירה</button><span class="sp"></span><button class="btn primary" id="updGo">שמירה ושליחה ל-Claude</button>`:`<span class="sp"></span><button class="btn primary" id="updKeep">שמירה</button>`}</div><div id="props"></div>`);
   const ta=document.getElementById('noteIn');setTimeout(()=>ta.focus(),340);setupRec(ta);
-  document.getElementById('updKeep').onclick=async()=>{const v=ta.value.trim();if(!v){toast('לא נכתב כלום');return}
+  document.getElementById('updKeep').onclick=async()=>{const v=ta.value.trim();if(!v){toast('עוד לא כתבתם כלום');return}
     if(await add('notes',{text:v,by:ME||'',at:new Date().toISOString(),status:'חדש'})){closeSheet();toast('נשמר ברעיונות')}};
-  const ug=document.getElementById('updGo');if(ug)ug.onclick=async e=>{const v=ta.value.trim();if(!v){toast('לא נכתב כלום');return}
+  const ug=document.getElementById('updGo');if(ug)ug.onclick=async e=>{const v=ta.value.trim();if(!v){toast('עוד לא כתבתם כלום');return}
     e.target.disabled=true;
     if(await add('notes',{text:v,by:ME||'',at:new Date().toISOString(),status:'חדש',where:k})){closeSheet();setTimeout(()=>sendSheet(),350)}
   };
@@ -2247,7 +2301,7 @@ const tasksOf=p=>{const first=p.name.replace(/^הרב(נית)? /,'').split(' ')[
 function personSheet(id){
   const p=find('participants',id);if(!p)return;const r=roomOf(p),ts=tasksOf(p);
   const kv=(k,v)=>v?`<div class="kv"><span>${k}</span><b>${v}</b></div>`:'';
-  sheet(`<div class="ph-head"><span class="av big">${esc(p.name.replace(/^הרב(נית)? /,'')[0])}</span><div><h3 style="margin:0">${esc(p.name)}</h3>${p.phone?`<a class="ltr phone" href="${telLink(p.phone)}">${esc(p.phone)}</a>`:'<span class="note">אין טלפון</span>'}</div></div>
+  sheet(`<div class="ph-head"><span class="av big">${esc(p.name.replace(/^הרב(נית)? /,'')[0])}</span><div><h3 style="margin:0">${esc(p.name)}</h3>${p.phone?`<a class="ltr phone" href="${telLink(p.phone)}">${esc(fmtPhone(p.phone))}</a>`:'<span class="note">אין טלפון</span>'}</div></div>
    ${p.phone?`<div class="ph-acts"><a class="btn" href="${telLink(p.phone)}">📞 שיחה</a><a class="btn" href="${waLink(p.phone)}" target="_blank" rel="noopener">💬 וואטסאפ</a></div>`:''}
    <div class="ph-badges"><span class="pill ${payCls(p)}">${p.status==='לא שולם'?'עוד לא שילם':esc(p.status)}${p.status==='שולם חלקית'?` · ${ils(paidOf(p))} מתוך ${ils(p.amount)}`:p.status!=='פטור'&&+p.amount?' · '+ils(p.amount):''}</span><span class="pill ${p.passport?'p-ok':'p-warn'}">${p.passport?'דרכון התקבל ✓':'אין צילום דרכון'}</span></div>
    <div class="card kvs">${kv('איך שילם',esc(p.method||''))}${kv('הכסף אצל',esc(holderOf(p)))}${kv('חדר',r?esc([r.roomNumber&&'חדר '+r.roomNumber,r.floor&&'קומה '+r.floor].filter(Boolean).join(' · ')||'עוד אין מספר')+' · '+esc(r.occupants):'')}${kv('טיסת הלוך',esc(p.outbound||''))}${kv('טיסת חזור',esc(p.returnGroup||''))}${kv('נוסח',esc(p.nusach||''))}${kv('סוחב',esc(p.carry||''))}${kv('תפקידים',esc(p.duties||''))}${kv('הערות',esc(p.notes||''))}</div>
@@ -2342,6 +2396,44 @@ const PROG=[
   ['17:20','יציאה לשדה','קבוצה א׳ נוסעת לשדה התעופה','״ה׳ יִשְׁמָר צֵאתְךָ וּבוֹאֶךָ״','תהילים קכא'],
   ['מוצ״ש','ארוחה חופשית לנשארים','ברובע היהודי','','']]}];
 const FLIGHTS_HOME=[['א','קבוצה א׳','מוצ״ש · 21.11','LY 2360','20:20','0:30','למחרת','יציאה לשדה 17:20'],['ב','קבוצה ב׳','ראשון · 22.11','LY 2360','12:25','16:35','','בשדה ב-09:45'],['ג','קבוצה ג׳','ראשון · 22.11','LY 2368','20:40','0:50','למחרת','בשדה ב-18:00']];
+
+/* ===== live programme: organizers change an item from the app; participants see it at once, marked "עודכן" ===== */
+const PROG_DATE={thu:'2026-11-19',fri:'2026-11-20',sat:'2026-11-21'};
+const progFix=()=>(find('settings','prog')||{}).fix||{};
+const progItems=d=>d.items.map((it,i)=>{const f=progFix()[d.k+'_'+i];return {tm:f&&f.tm!=null?f.tm:it[0],ti:f&&f.ti?f.ti:it[1],sub:f&&f.sub!=null?f.sub:it[2],q:it[3],src:it[4],i,key:d.k+'_'+i,fix:f||null,old:it}});
+// the clock in Budapest, whatever time zone the phone is set to
+const budNow=()=>{const p=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Budapest',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date()),g=k=>(p.find(x=>x.type===k)||{}).value;return {d:`${g('year')}-${g('month')}-${g('day')}`,m:+g('hour')*60+ +g('minute')}};
+const toMin=tm=>{const m=/^(\d{1,2}):(\d{2})$/.exec(String(tm||'').trim());return m?+m[1]*60+ +m[2]:null};
+function nowNext(){const n=budNow(),k=Object.keys(PROG_DATE).find(x=>PROG_DATE[x]===n.d);if(!k)return null;
+  const d=PROG.find(x=>x.k===k);if(!d)return null;let cur=null,nxt=null;
+  for(const x of progItems(d)){const mi=toMin(x.tm);if(mi==null)continue;if(mi<=n.m)cur={...x,mi};else{nxt={...x,mi};break}}
+  return (cur||nxt)?{k,d,cur,nxt,now:n.m}:null}
+const inMin=n=>n<1?'עכשיו':n<60?`בעוד ${n} דק׳`:`בעוד ${Math.floor(n/60)} שע׳${n%60?` ו־${n%60} דק׳`:''}`;
+// "now / next" on the home screen during the trip; go = the attributes of the "whole day" button
+function nowCard(go){const z=nowNext();if(!z)return '';const nx=z.nxt,cu=z.cur,soon=nx&&nx.mi-z.now<=30;
+  return `<section class="nowc" aria-live="polite"><div class="nc-h"><span class="live" aria-hidden="true"></span><b>${esc(z.d.title)} במסע</b><small>לפי שעון בודפשט</small></div>
+   ${cu?`<div class="nc-row now"><small>עכשיו</small><b>${esc(cu.ti)}</b>${cu.sub?`<span>${esc(cu.sub)}</span>`:''}</div>`:''}
+   ${nx?`<div class="nc-row next ${soon?'soon':''}"><small>הבא · <span class="num">${esc(nx.tm)}</span> · ${inMin(nx.mi-z.now)}${nx.fix?' · <span class="pupd">עודכן</span>':''}</small><b>${esc(nx.ti)}</b>${nx.sub?`<span>${esc(nx.sub)}</span>`:''}</div>`
+     :`<div class="nc-row next"><small>זהו להיום</small><b>${z.k==='sat'?'שבוע טוב! 🌙':'לילה טוב 🌙'}</b></div>`}
+   <button class="btn nc-all" ${go}>כל התוכנית של היום <span aria-hidden="true">‹</span></button></section>`}
+// refresh "now / next" once a minute while it's on screen
+setInterval(()=>{if(document.querySelector('.nowc')&&!document.getElementById('scrim'))render()},60000);
+function progSheet(key){
+  const [k,ix]=key.split('_'),d=PROG.find(x=>x.k===k);if(!d)return;const it=progItems(d)[+ix];if(!it)return;
+  sheet(`<h3>שינוי בלוח המסע</h3><p class="note" style="margin-top:0">${esc(d.title)} · במקור: <span class="num">${esc(it.old[0]||'—')}</span> ${esc(it.old[1])}</p>
+   <div class="form"><div class="two"><label class="field">שעה<input id="pfTm" value="${esc(it.tm)}" inputmode="numeric" placeholder="16:30"></label><label class="field">מה קורה<input id="pfTi" value="${esc(it.ti)}"></label></div>
+   <label class="field">איפה ופרטים<input id="pfSub" value="${esc(it.sub)}"></label>
+   <label class="toggle">לשלוח הודעה על השינוי לכל המשתתפים<input type="checkbox" id="pfAnn" checked></label></div>
+   <div class="sheet-acts">${it.fix?'<button class="btn" id="pfReset">חזרה למקור</button>':''}<span class="sp"></span><button class="btn" data-close>ביטול</button><button class="btn primary" id="pfOk">עדכון לכולם</button></div>`);
+  const put=async(f,annText)=>{const all={...progFix()};if(f)all[key]=f;else delete all[key];
+    if(!await save('settings','prog',{...strip(find('settings','prog')||{}),fix:all}))return;
+    if(annText&&document.getElementById('pfAnn').checked&&db){const ts=Date.now();db.doc('settings/ann_'+ts).set({kind:'ann',title:'שינוי בלוח המסע',text:annText,ts}).catch(()=>toast('ההודעה למשתתפים לא נשלחה'))}
+    closeSheet();toast(f?'עודכן. כל המשתתפים רואים את השינוי':'חזר לתוכנית המקורית')};
+  document.getElementById('pfOk').onclick=()=>{const tm=document.getElementById('pfTm').value.trim(),ti=document.getElementById('pfTi').value.trim(),sub=document.getElementById('pfSub').value.trim();
+    if(!ti){toast('כתבו מה קורה');return}if(tm&&toMin(tm)==null&&!/[א-ת]/.test(tm)){toast('כתבו שעה כמו 16:30');return}
+    const moved=tm!==it.old[0];put({tm,ti,sub,at:new Date().toISOString(),by:ME||''},`${d.tab}: ${ti}${moved?` · ${it.old[0]?`במקום ${it.old[0]}, `:''}עכשיו ב־${tm}`:''}${sub&&sub!==it.old[2]?` · ${sub}`:''}`)};
+  const rs=document.getElementById('pfReset');if(rs)rs.onclick=()=>put(null,`${d.tab}: ${it.old[1]} חוזר לשעה המקורית, ${it.old[0]}`);
+}
 const ORN='<svg viewBox="0 0 220 22" fill="none" stroke="#C8A24A" stroke-width="1.3"><path d="M0 11 H72M148 11 H220M72 11 Q84 0 96 11 Q84 22 72 11M148 11 Q136 0 124 11 Q136 22 148 11"/><path d="M110 2 L119 11 L110 20 L101 11z" fill="#C8A24A" stroke="none"/><circle cx="60" cy="11" r="2" fill="#C8A24A" stroke="none"/><circle cx="160" cy="11" r="2" fill="#C8A24A" stroke="none"/></svg>';
 
 /* ---- activity feed ---- */
@@ -2383,10 +2475,10 @@ function ideaSheet(){
    <div id="props"></div>`);
   const ta=document.getElementById('noteIn');setTimeout(()=>ta.focus(),340);
   setupRec(ta);
-  document.getElementById('noteOnly').onclick=async()=>{const v=ta.value.trim();if(!v){toast('הפתק ריק');return}
+  document.getElementById('noteOnly').onclick=async()=>{const v=ta.value.trim();if(!v){toast('עוד לא כתבתם כלום');return}
     if(await add('notes',{text:v,by:ME||'',at:new Date().toISOString(),status:'חדש'})){closeSheet();toast('נשמר')}};
-  document.getElementById('noteSort').onclick=async()=>{const v=ta.value.trim();if(!v){toast('הפתק ריק');return}
-    const ref=db?db.collection('notes').doc():null; if(!ref){toast('אין חיבור לנתונים');return}
+  document.getElementById('noteSort').onclick=async()=>{const v=ta.value.trim();if(!v){toast('עוד לא כתבתם כלום');return}
+    const ref=db?db.collection('notes').doc():null; if(!ref){toast('אין עדיין חיבור לנתוני המסע. פתחו את האפליקציה מהקישור של הצוות');return}
     const note={text:v,by:ME||'',at:new Date().toISOString(),status:'חדש',order:Math.max(0,...S.notes.map(x=>+x.order||0))+1};
     commit(ref.set(note));
     document.getElementById('noteSort').disabled=true;document.getElementById('noteOnly').hidden=true;
@@ -2500,13 +2592,13 @@ const failMsg=(err,del)=>err&&err.code==='permission-denied'?`${del?'המחיק�
 function commit(p,del){p.catch(err=>toast(failMsg(err,del)))}  // (a write the SDK refuses outright, e.g. an undefined field, throws at once: callers catch that)
 async function save(c,id,data){
   if(c==='packing')data=normPack(data,find(c,id));
-  if(!db){toast('אין חיבור לנתונים');return false}
+  if(!db){toast('אין עדיין חיבור לנתוני המסע. פתחו את האפליקציה מהקישור של הצוות');return false}
   const prev=find(c,id);
   try{commit(db.doc(c+'/'+id).set(data))}catch(err){toast(failMsg(err));return false}
   logAct(prev?'edit':'set',c,id,data,prev);return true
 }
 async function add(c,data){
-  if(!db){toast('אין חיבור לנתונים');return false}
+  if(!db){toast('אין עדיין חיבור לנתוני המסע. פתחו את האפליקציה מהקישור של הצוות');return false}
   data.order=Math.max(0,...S[c].map(x=>+x.order||0))+1;
   const ref=db.collection(c).doc();
   try{commit(ref.set(data))}catch(err){toast(failMsg(err));return false}
@@ -2515,7 +2607,7 @@ async function add(c,data){
 // Deleting keeps a copy in trash (the rules refuse a delete without one), so it can be restored from the settings screen
 const trashIn=(bt,c,id,d)=>{if(c!=='attendance')bt.set(db.collection('trash').doc(c+'__'+id),{col:c,rid:id,...(d?{data:strip(d)}:{}),by:ME||'',at:new Date().toISOString()},{merge:true})};
 async function remove(c,id,d){
-  if(!db){toast('אין חיבור לנתונים');return false}
+  if(!db){toast('אין עדיין חיבור לנתוני המסע. פתחו את האפליקציה מהקישור של הצוות');return false}
   try{const bt=db.batch();trashIn(bt,c,id,d);bt.delete(db.doc(c+'/'+id));commit(bt.commit(),true)}catch(err){toast(failMsg(err,true));return false}
   logAct('delete',c,id,d);return true
 }
@@ -2898,7 +2990,7 @@ const annList=()=>S.settings.filter(x=>x.kind==='ann'&&!x.hidden).sort((a,b)=>(b
 const claims=()=>S.tasks.filter(t=>t.claimStatus==='ממתין לאישור');
 const pendOpen=()=>{const me=meG(),ppl=coupleOf(me);return myTasks(ppl).filter(t=>t.status!=='בוצע'&&t.claimStatus!=='ממתין לאישור').length};
 const pendN=()=>claims().length+reqList().filter(r=>r.status==='חדש').length;
-const tsStr=ts=>{try{return new Date(ts).toLocaleString('he-IL',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'})}catch(e){return ''}};
+const tsStr=ts=>{const d=new Date(ts);return isNaN(d)?'':`${d.getDate()}.${d.getMonth()+1} · ${p2(d.getHours())}:${p2(d.getMinutes())}`};
 const annSeen=()=>{try{return +localStorage.getItem('annSeen')||0}catch(e){return 0}};
 const annUnread=()=>annList().filter(a=>(a.ts||0)>annSeen()).length;
 const SIL='<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z"/></svg>';
@@ -2963,6 +3055,8 @@ const hotelCard=()=>`<div class="hotel"><div class="ht-h"><span class="ht-ic">${
 const progDay=()=>{const t=todayISO(),def=t==='2026-11-20'?'fri':t==='2026-11-21'?'sat':'thu';return V.filter.pd||def};
 function guestHTML(){const h=guestHTML0();return GTAB==='gh'?h:h+`<button class="gback bot" data-gnav="gh"><span>›</span><b>חזרה למסך הבית</b></button>`}
 function guestHTML0(){
+  // until the trip's data arrives: the shape of the screen, not half-empty cards
+  if(!ready('participants','settings','tasks'))return `<div class="gload" aria-busy="true" aria-label="טוען את נתוני המסע"><div class="skel shimmer" style="height:22px;width:45%"></div><div class="skel shimmer" style="height:150px"></div><div class="gl2"><div class="skel shimmer"></div><div class="skel shimmer"></div><div class="skel shimmer"></div><div class="skel shimmer"></div></div></div>`;
   const me=meG(), ppl=coupleOf(me);
   const pv=isPrevOrg()?`<div class="prevbar">👁 כך זה נראה למשתתפים<button id="prevx">חזרה למארגן</button></div>`:'';
   const head=(t,extra='')=>pv+`<button class="gback" data-gnav="gh"><span>›</span><b>חזרה למסך הבית</b></button><div class="page-title"><h2>${t}</h2>${extra}</div>`;
@@ -2999,8 +3093,11 @@ function guestHTML0(){
       const nav=sc('nav',IX.nav,'חזרה למלון','ניווט','יצאתם ואבדתם? נחזיר אתכם','','a',`href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener"`);
       const todo=sc(needs.length?'bad':'ok',needs.length?I.tasks:`<span style="font-size:26px">✓</span>`,'עוד מעט סיימנו',needs.length?`${needs.length===1?'דבר אחד':needs.length+' דברים'}`:'הכל מסודר',needs.length?needs.map(x=>x[1]).join(' · '):'אין לכם מה להשלים',needs.length?'<span class="sc-go">‹</span>':'','button',needs.length?'data-gnav="gf"':'');
       return `<div class="gst">${pay}${pass}${nav}${todo}</div>`})();
+    const ph=orgPhone();
+    const help=`<section class="ghelp" aria-label="עזרה"><div><b>צריכים עזרה?</b><small>שלומי, מארגן המסע · <span class="num ltr">${esc(fmtPhone(ph))}</span></small></div>
+      <a class="btn" href="${telLink(ph)}" aria-label="שיחה לשלומי">${I.phone}<span>שיחה</span></a><a class="btn" href="${waLink(ph)}" target="_blank" rel="noopener" aria-label="וואטסאפ לשלומי">${IX.wa||'💬'}<span>וואטסאפ</span></a><a class="btn sos" href="tel:112" aria-label="חירום 112">112</a></section>`;
     return pv+`<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(ppl.map(x=>x.name).join(' ו')||'')}</b></div></div>
-     ${banner}${passBlock}${extraOut}
+     ${nowCard('data-gnav="gl"')}${banner}${passBlock}${extraOut}
      ${stat}
      <div class="gcb">
       ${cube('gl',I.sched,'לוח המסע','מה קורה בכל יום, ובאיזו שעה')}
@@ -3014,7 +3111,8 @@ function guestHTML0(){
       ${cube('gk',I.box,'מדריך כיס','שעון, מטבע, חשמל וביטויים')}
       ${open?`<a class="gc gtrv" href="../" target="_blank" rel="noopener" style="--i:${n++}"><span class="gc-i">${I.spark}</span><span class="gc-t">טריוויה</span><span class="gc-s">משחק לאוטובוס. פתוח עכשיו!</span></a>`:`<button class="gc gtrv locked" data-glock style="--i:${n++}"><span class="gc-i">🔒</span><span class="gc-t">טריוויה</span><span class="gc-s">נפתח כשנחתים בבודפשט</span></button>`}
      </div>
-     ${flightGroups(ppl,'חזור').map(g=>guestFlightCard(g,ppl,'חזור')).join('')}`}
+     ${flightGroups(ppl,'חזור').map(g=>guestFlightCard(g,ppl,'חזור')).join('')}
+     ${help}`}
   if(GTAB==='gx'){
     const hn=`<a class="hotelbar" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener">${IX.nav}<span>חזרה למלון · ניווט</span></a>`;
     return head('מסעדות ואטרקציות')+hn+`<p class="note">לחצו "במפה" כדי לראות את המקום, או "ניווט" כדי להגיע אליו בהליכה. המרחקים הם מהמלון, בערך. לפני שאוכלים, כדאי לבדוק תעודת כשרות.</p>`+
@@ -3033,7 +3131,7 @@ function guestHTML0(){
     if(GGEN==='m')rows=rows.filter(p=>p.gender==='גבר');if(GGEN==='f')rows=rows.filter(p=>p.gender==='אישה');
     if(GQ)rows=rows.filter(p=>p.name.includes(GQ));
     const HUES=[['#f6dc93','#c99a3d'],['#f3c4b0','#c9806a'],['#e8d9b0','#b59a5a'],['#d9c3ff','#8e6fc4'],['#bfe3d0','#5fa98a'],['#f0b9a0','#d07a4e']];
-    const prow=p=>`<div class="pm">${avatarHTML(p)}<div class="pn"><b>${esc(p.name)}</b>${p.phone?`<span class="num ltr">${esc(p.phone)}</span>`:'<span class="mut">אין טלפון</span>'}</div>${p.phone?`<a class="pwa" href="${waLink(p.phone)}" target="_blank" rel="noopener" aria-label="וואטסאפ">${IX.wa}</a>`:''}</div>`;
+    const prow=p=>`<div class="pm">${avatarHTML(p)}<div class="pn"><b>${esc(p.name)}</b>${p.phone?`<span class="num ltr">${esc(fmtPhone(p.phone))}</span>`:'<span class="mut">אין טלפון</span>'}</div>${p.phone?`<a class="pwa" href="${waLink(p.phone)}" target="_blank" rel="noopener" aria-label="וואטסאפ">${IX.wa}</a>`:''}</div>`;
     const groups=[];for(let i=0;i<rows.length;i++){const p=rows[i],q=rows[i+1];if(q&&p.spouse===q._id){groups.push([p,q]);i++}else groups.push([p])}
     let lastL='',idx=0;
     const listH=groups.map(g=>{const L=nm(g[0])[0]||'';let h='';if(L!==lastL){lastL=L;h=`<div class="pl" style="--i:${idx}"><span>${esc(L)}</span></div>`}
@@ -3041,7 +3139,7 @@ function guestHTML0(){
     const chip=(k,l)=>`<button class="chip" data-ggen="${k}" aria-pressed="${GGEN===k}">${l} <span class="num">${cnt[k]}</span></button>`;
     return head('משתתפי המסע',`<span class="cnt num">${cnt.all}</span>`)+`<div class="chips">${chip('all','כולם')}${chip('m','גברים')}${chip('f','נשים')}</div>
      <input class="search" id="gq" type="search" placeholder="חיפוש לפי שם" value="${esc(GQ)}">
-     <div class="pcards">${listH||'<div class="card"><div class="empty">לא נמצא שם כזה</div></div>'}</div>
+     <div class="pcards">${listH||'<div class="card"><div class="empty"><b>לא מצאנו שם כזה</b>נסו רק שם פרטי או רק שם משפחה</div></div>'}</div>
      <p class="note">הרשימה לפי זוגות. מי שלא העלה תמונה מופיע עם סמל נעילה. אפשר להעלות תמונה ב"הפרופיל שלי".</p>`}
   if(GTAB==='gr'){
     const rid=(ppl.find(p=>p.roomId)||{}).roomId, r=rid&&S.rooms.find(x=>x._id===rid);
@@ -3053,10 +3151,10 @@ function guestHTML0(){
     const showL=GSEG==='open'?openL:mine;
     return head('משימות')+`<div class="seg"><button data-gseg2="open" aria-pressed="${GSEG==='open'}">פתוחות<span class="c num">${openL.length}</span></button><button data-gseg2="mine" aria-pressed="${GSEG==='mine'}">המשימות שלי<span class="c num">${mine.length}</span></button></div>
      <p class="note">${GSEG==='open'?'משימות שמחכות למתנדבים. לחצו "אני לוקח את זה", והמארגנים יאשרו.':'אלה המשימות שלכם. כשמסיימים, לוחצים "סיימתי".'}</p>
-     <div class="gtasks">${showL.map(t=>taskCard(t,GSEG,ppl)).join('')||card('', GSEG==='open'?'אין כרגע משימות פתוחות. תודה על הרצון לעזור!':'עוד אין לכם משימות')}</div>`}
+     <div class="gtasks">${showL.map(t=>taskCard(t,GSEG,ppl)).join('')||card('', GSEG==='open'?'<b>כל המשימות כבר נלקחו</b>תודה על הרצון לעזור! כשתהיה משימה חדשה, היא תופיע כאן':'<b>עוד אין לכם משימות</b>רוצים לעזור? בלשונית "פתוחות" יש משימות שמחכות למתנדבים')}</div>`}
   if(GTAB==='gm'){
     const L=annList(), seen=annSeen();
-    const h=head('הודעות')+(L.length?`<div class="annlist">${L.map(a=>`<div class="ann ${(a.ts||0)>seen?'new':''}"><div class="ah"><b>${esc(a.title||'הודעה')}</b>${(a.ts||0)>seen?'<span class="pill p-gold">חדש</span>':''}</div><p>${esc(a.text||'').replace(/\n/g,'<br>')}</p><small>${tsStr(a.ts)}</small></div>`).join('')}</div>`:card('','אין הודעות כרגע'));
+    const h=head('הודעות')+(L.length?`<div class="annlist">${L.map(a=>`<div class="ann ${(a.ts||0)>seen?'new':''}"><div class="ah"><b>${esc(a.title||'הודעה')}</b>${(a.ts||0)>seen?'<span class="pill p-gold">חדש</span>':''}</div><p>${esc(a.text||'').replace(/\n/g,'<br>')}</p><small>${tsStr(a.ts)}</small></div>`).join('')}</div>`:card('','<b>אין הודעות חדשות</b>כשהמארגנים יפרסמו עדכון, הוא יופיע כאן'));
     try{if(L.length&&!isPrevOrg())setTimeout(()=>{try{localStorage.setItem('annSeen',String(Math.max(...L.map(a=>a.ts||0))))}catch(e){}},1500)}catch(e){}
     return h}
   if(GTAB==='gq'){
@@ -3117,11 +3215,11 @@ setInterval(()=>{const el=document.getElementById('gbud');if(el)el.textContent=n
 
 /* ---- guest actions ---- */
 const blockPrev=()=>{if(isPrevOrg()){toast('זו תצוגה מקדימה, אי אפשר לשלוח מכאן');return true}return false};
-const gset=(path,data)=>{if(!db){toast('אין חיבור לנתונים');return Promise.resolve(false)}return db.doc(path).set(data,{merge:true}).then(()=>true).catch(()=>{toast('הפעולה נכשלה, נסו שוב');return false})};
+const gset=(path,data)=>{if(!db){toast('אין עדיין חיבור לנתוני המסע. פתחו את האפליקציה מהקישור של הצוות');return Promise.resolve(false)}return db.doc(path).set(data,{merge:true}).then(()=>true).catch(()=>{toast('זה לא עבר. בדקו שיש אינטרנט ונסו שוב');return false})};
 function resizePhoto(file){return new Promise((res,rej)=>{const img=new Image(),u=URL.createObjectURL(file);img.onload=()=>{const s=160,c=document.createElement('canvas');c.width=c.height=s;const x=c.getContext('2d'),m=Math.min(img.width,img.height),sx=(img.width-m)/2,sy=(img.height-m)/2;x.drawImage(img,sx,sy,m,m,0,0,s,s);URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',.72))};img.onerror=()=>rej();img.src=u})}
 let PHOTO_FOR='';
 (()=>{const f=document.createElement('input');f.type='file';f.accept='image/*';f.id='gfile';f.hidden=true;document.body.appendChild(f);
-  f.addEventListener('change',async()=>{const file=f.files&&f.files[0];f.value='';if(!file||!PHOTO_FOR)return;try{const d=await resizePhoto(file);if(await gset('participants/'+PHOTO_FOR,{photo:d}))toast('התמונה נשמרה ותופיע אצל כולם')}catch(e){toast('לא הצלחנו לקרוא את התמונה')}})})();
+  f.addEventListener('change',async()=>{const file=f.files&&f.files[0];f.value='';if(!file||!PHOTO_FOR)return;try{const d=await resizePhoto(file);if(await gset('participants/'+PHOTO_FOR,{photo:d}))toast('התמונה נשמרה ותופיע אצל כולם')}catch(e){toast('לא הצלחנו לקרוא את התמונה. נסו תמונה אחרת')}})})();
 document.addEventListener('input',e=>{
   const d=e.target.closest('[data-draft]');if(d){DRAFT[d.dataset.draft]=d.value}
   if(e.target.id==='gq'){GQ=e.target.value;render()}
@@ -3133,7 +3231,7 @@ document.addEventListener('click',e=>{
   if(T.closest('#prevx')){setPrev(false);return}
   if(!GUEST()){orgClick(e);return}
   const gd=T.closest('[data-gday]');if(gd){e.stopPropagation();e.preventDefault();V.filter.pd=gd.dataset.gday;render();window.scrollTo({top:0,behavior:'smooth'});return}
-  const lk=T.closest('[data-glock]');if(lk){toast('המשחק ייפתח כשנגיע ונחתנו בבודפשט 🛬');return}
+  const lk=T.closest('[data-glock]');if(lk){toast('המשחק ייפתח כשננחת בבודפשט 🛬');return}
   const n=T.closest('[data-gnav]');if(n){e.stopPropagation();e.preventDefault();GTAB=n.dataset.gnav;V.seg=null;render(true);window.scrollTo(0,0);return}
   const s=T.closest('[data-gseg]');if(s){V.seg=s.dataset.gseg;render();return}
   const s2=T.closest('[data-gseg2]');if(s2){GSEG=s2.dataset.gseg2;render();return}
@@ -3232,7 +3330,7 @@ function peopleList(rows){
   let n=0;
   return groups.map((g,gi)=>`<div class="plh" style="--i:${Math.min(n,14)}"><span>${esc(g.L)}</span><i></i><small class="num">${g.r.length}</small></div>`+card(g.r.map(p=>{const i=Math.min(n++,14);
     return `<div class="row prow" style="--i:${i};--h:${PHUES[gi%PHUES.length]}" data-person="${p._id}" role="button" tabindex="0">${p.photo?`<span class="av ph"><img src="${p.photo}" alt=""></span>`:`<span class="av">${esc(famKey(p.name).last[0]||'?')}</span>`}
-     <div class="main"><div class="t"><span class="fn">${esc(famKey(p.name).first)}</span> <b class="ln">${esc(famKey(p.name).last)}</b></div><div class="m">${p.phone?`<span class="num ltr">${esc(p.phone)}</span>`:'<span style="color:var(--warn)">אין טלפון</span>'}${p.carry?`<span class="who">🧳 ${esc(p.carry)}</span>`:''}${p.duties?`<span class="who">📌 ${esc(p.duties)}</span>`:''}${p.notes?`<span>${esc(p.notes)}</span>`:''}</div></div>
+     <div class="main"><div class="t"><span class="fn">${esc(famKey(p.name).first)}</span> <b class="ln">${esc(famKey(p.name).last)}</b></div><div class="m">${p.phone?`<span class="num ltr">${esc(fmtPhone(p.phone))}</span>`:'<span style="color:var(--warn)">אין טלפון</span>'}${p.carry?`<span class="who">🧳 ${esc(p.carry)}</span>`:''}${p.duties?`<span class="who">📌 ${esc(p.duties)}</span>`:''}${p.notes?`<span>${esc(p.notes)}</span>`:''}</div></div>
      <div class="end"><span class="pill ${payCls(p)}">${p.status==='לא שולם'?'לא שילם':esc(p.status)}</span><span class="pp ${p.passport?'ok':''}" title="דרכון">${p.passport?'דרכון ✓':'דרכון ✗'}</span></div>
      ${p.phone?`<a class="wa" href="${waLink(p.phone)}" target="_blank" rel="noopener" data-stop aria-label="וואטסאפ">💬</a>`:''}</div>`}).join('')),'').join('')}
 
@@ -3303,9 +3401,9 @@ SUB.reqs=function(){
   return subHead('בקשות ואישורים',`<span class="cnt num">${C.length+openR.length}</span>`)+`
    <div class="ghead"><span>משימות שמחכות לאישור</span><span class="num">${C.length}</span></div>
    ${C.length?`<div class="annlist">${C.map(t=>`<div class="ann"><div class="ah"><b>${esc(t.title)}</b></div><p>${esc(t.claimBy||'')} מבקש/ת לקחת את המשימה</p>
-     <div class="gta"><button class="btn primary" data-claim-ok="${t._id}">✓ אישור</button><button class="btn ghost" data-claim-no="${t._id}">דחייה</button></div></div>`).join('')}</div>`:card('','אין בקשות לקיחה כרגע')}
+     <div class="gta"><button class="btn primary" data-claim-ok="${t._id}">✓ אישור</button><button class="btn ghost" data-claim-no="${t._id}">דחייה</button></div></div>`).join('')}</div>`:card('','<b>אין התנדבויות שמחכות לאישור</b>כשמשתתף ייקח משימה, תאשרו אותה כאן')}
    <div class="ghead"><span>בקשות אישיות</span><span class="num">${openR.length}</span></div>
-   ${openR.length?`<div class="annlist">${openR.map(reqCard).join('')}</div>`:card('','אין בקשות פתוחות')}
+   ${openR.length?`<div class="annlist">${openR.map(reqCard).join('')}</div>`:card('','<b>אין בקשות פתוחות</b>כשמשתתף ישלח בקשה אישית, היא תופיע כאן')}
    ${doneR.length?`<div class="ghead"><span>טופלו</span><span class="num">${doneR.length}</span></div><div class="annlist">${doneR.map(reqCard).join('')}</div>`:''}
    <p class="note">משימות שמסומנות "פתוח למשתתפים" בכרטיס המשימה מופיעות אצל המשתתפים ברשימת "פתוחות לקחת".</p>`};
 SUB.announce=function(){
@@ -3319,7 +3417,7 @@ SUB.announce=function(){
    ${not.length?`<details class="annlist"><summary class="note">עוד לא נכנסו (${not.length}) ›</summary><div class="nonelist" style="margin-top:8px">${not.map(p=>`<span>${esc(p.name)}</span>`).join('')}</div></details>`:'<p class="note">כל המשתתפים נכנסו 🎉</p>'}`};
 function orgClick(e){
   if(ROLE!=='org')return;
-  const T=e.target, ms=(path,d)=>db&&db.doc(path).set(d,{merge:true}).then(()=>true).catch(()=>{toast('הפעולה נכשלה');return false});
+  const T=e.target, ms=(path,d)=>db&&db.doc(path).set(d,{merge:true}).then(()=>true).catch(()=>{toast('זה לא עבר. בדקו שיש אינטרנט ונסו שוב');return false});
   const ok=T.closest('[data-claim-ok]');if(ok){e.stopPropagation();const t=find('tasks',ok.dataset.claimOk);if(!t)return;
     const owner=t.owner?t.owner+', '+t.claimBy:t.claimBy;ms('tasks/'+t._id,{owner,claimBy:'',claimId:'',claimStatus:'',status:t.status==='ממתין'?'לביצוע':t.status}).then(r=>r&&toast('אושר. המשימה עברה אל '+firstN(t.claimBy)));return}
   const no=T.closest('[data-claim-no]');if(no){e.stopPropagation();ms('tasks/'+no.dataset.claimNo,{claimBy:'',claimId:'',claimStatus:''}).then(r=>r&&toast('הבקשה נדחתה'));return}

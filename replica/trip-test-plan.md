@@ -23,6 +23,10 @@ B backup and export, S links and content safety, O offline. Tasks, schedule, Cla
 | A11Y-1 | all | screen reader | axe (WCAG 2.1 AA) on every screen, every money tab and 8 sheets | no serious or critical violations | e2e | pass |
 | A11Y-2 | all | keyboard | open a task with Enter, close with Escape | focus moves into the sheet and back to the same row | e2e | pass |
 | A11Y-3 | all | touch targets | measure every button and link on 6 screens | none smaller than 24×24 (WCAG 2.5.8) | e2e | pass |
+| LIVE-1 | programme | happy: last-minute change | organizer moves Friday's lunch 13:00 → 13:30, then back | saved for everyone; participant sees 13:30 with "עודכן" and no edit button; a message to all; back to the original removes it | e2e | pass |
+| NOW-1 | home | happy: trip day | clock at Friday 12:40 Budapest; then a day outside the trip | "now" = free time, "next" = lunch in 20 min (highlighted); button opens the day; no card outside the trip | e2e | pass |
+| KPI-1 | organizer home | happy | open home | collected %, passports, waiting requests, overdue tasks; each opens its screen; quick action opens the announcement composer | e2e | pass |
+| HELP-1 | participant home | happy | open home | call / WhatsApp the organizer and 112 | e2e | pass |
 
 ## Manual pass (needs a real phone)
 

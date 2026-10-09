@@ -1,0 +1,99 @@
+// Trip-day features: "now / next" on the home screens, last-minute programme changes, the organizer's status strip.
+import { test, expect, openTrip, TRIP as T, type Db } from './helpers';
+import type { Page } from '@playwright/test';
+
+async function seed(db: Db) {
+  const put = (p: string, d: object) => db.put(`${T}/${p}`, d);
+  await put('settings/trip', { team: ['שלומי', 'איציק', 'יעל'] });
+  await put('tasks/t1', { title: 'להזמין אוטובוס', owner: 'שלומי', status: 'לביצוע', priority: 'רגילה', category: 'אוטובוס', due: '2026-10-01', notes: '', order: 1 });
+  await put('participants/p1', { name: 'אבי כהן', amount: 1750, phone: '0501234567', status: 'שולם', passport: true, order: 1 });
+  await put('participants/p2', { name: 'בני לוי', amount: 1750, phone: '0502345678', status: 'לא שולם', passport: false, order: 2 });
+  await put('settings/req_1', { kind: 'req', by: 'p2', cat: 'אוכל', text: 'מנה צמחונית', status: 'חדש', ts: 1 });
+}
+const asGuest = async (page: Page, id = 'p1') => {
+  await page.evaluate(i => { localStorage.setItem('nogate', '1'); sessionStorage.setItem('skipInst', '1'); localStorage.setItem('role', 'guest:' + i); }, id);
+  await page.reload();
+  await expect.poll(() => page.evaluate('COLS.every(c => loaded.has(c))')).toBe(true);
+};
+
+test('LIVE-1 an organizer moves an item in the programme; participants see the new time, marked updated, and get a message', async ({ browser, db }) => {
+  await seed(db);
+  const { page, errors } = await openTrip(browser, db);
+  await page.evaluate("go('more',{sub:'program'})");
+  await page.locator('.seg').getByRole('button', { name: 'שישי' }).click();
+  await page.getByRole('button', { name: /^שינוי: .*טועמיה/ }).click();
+  const sheet = page.getByRole('dialog');
+  await expect(sheet).toContainText('במקור: 13:00');
+  await sheet.getByLabel('שעה').fill('13:30');
+  await sheet.getByRole('button', { name: 'עדכון לכולם' }).click();
+  await expect.poll(async () => (await db.get(`${T}/settings/prog`))?.fix?.fri_2?.tm).toBe('13:30');
+  await expect.poll(async () => (await db.list(`${T}/settings`)).find((d: any) => d.data.kind === 'ann')?.data.text).toContain('במקום 13:00, עכשיו ב־13:30');
+  const item = page.locator('.parch .pi', { hasText: 'טועמיה' });
+  await expect(item).toContainText('עודכן');
+  await expect(item.locator('s')).toHaveText('13:00');
+  // the participant's programme shows it too, without an edit button
+  const guest = await openTrip(browser, db);
+  await asGuest(guest.page);
+  await guest.page.evaluate("GTAB='gl';V.filter.pd='fri';render(true)");
+  const gItem = guest.page.locator('.parch .pi', { hasText: 'טועמיה' });
+  await expect(gItem).toContainText('13:30');
+  await expect(gItem).toContainText('עודכן');
+  await expect(guest.page.locator('.pedit')).toHaveCount(0);
+  // back to the original
+  await page.getByRole('button', { name: /^שינוי: .*טועמיה/ }).click();
+  await sheet.getByRole('button', { name: 'חזרה למקור' }).click();
+  await expect.poll(async () => (await db.get(`${T}/settings/prog`))?.fix?.fri_2).toBeUndefined();
+  expect(errors).toEqual([]);
+  expect(guest.errors).toEqual([]);
+});
+
+test('NOW-1 during the trip the home screens say what is happening now and next, by Budapest time', async ({ browser, db }) => {
+  await seed(db);
+  const { page, errors } = await openTrip(browser, db);
+  // Friday 20.11, 12:40 in Budapest (the phone may be on Israel time: the card follows Budapest)
+  await page.clock.setFixedTime(new Date('2026-11-20T12:40:00+01:00'));
+  await page.evaluate("go('home')");
+  const card = page.locator('.nowc');
+  await expect(card).toContainText('יום שישי במסע');
+  await expect(card.locator('.nc-row.now')).toContainText('זמן חופשי');
+  await expect(card.locator('.nc-row.next')).toContainText('13:00 · בעוד 20 דק׳');
+  await expect(card.locator('.nc-row.next')).toHaveClass(/soon/);
+  await card.getByRole('button', { name: /כל התוכנית של היום/ }).click();
+  await expect(page.locator('.parch')).toContainText('יום שישי');
+  // participant
+  await asGuest(page);
+  await expect(page.locator('.nowc .nc-row.next')).toContainText('טועמיה');
+  // a day that isn't a trip day: no card
+  await page.clock.setFixedTime(new Date('2026-11-10T12:00:00+01:00'));
+  await page.evaluate('render(true)');
+  await expect(page.locator('.nowc')).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+test('KPI-1 the organizer home opens with the status strip; each number leads to its screen', async ({ browser, db }) => {
+  await seed(db);
+  const { page, errors } = await openTrip(browser, db);
+  await page.evaluate("go('home')");
+  const strip = page.getByRole('region', { name: 'תמונת מצב' });
+  await expect(strip.getByRole('button', { name: /נגבה ממשתתפים/ })).toContainText('50%');
+  await expect(strip.getByRole('button', { name: /דרכונים/ })).toContainText('1/2');
+  await expect(strip.getByRole('button', { name: /בקשה מחכה/ })).toContainText('1');
+  await expect(strip.getByRole('button', { name: /משימות באיחור/ })).toContainText('1');
+  await strip.getByRole('button', { name: /בקשה מחכה/ }).click();
+  await expect(page.locator('.page-title')).toContainText('בקשות ואישורים');
+  await page.evaluate("go('home')");
+  await page.getByRole('region', { name: 'פעולות מהירות' }).getByRole('button', { name: 'הודעה לכולם' }).click();
+  await expect(page.locator('.page-title')).toContainText('הודעות לכולם');
+  expect(errors).toEqual([]);
+});
+
+test('HELP-1 participants can reach the organizer from the home screen', async ({ browser, db }) => {
+  await seed(db);
+  const { page, errors } = await openTrip(browser, db);
+  await asGuest(page);
+  const help = page.getByRole('region', { name: 'עזרה' });
+  await expect(help.getByRole('link', { name: 'שיחה לשלומי' })).toHaveAttribute('href', /^tel:/);
+  await expect(help.getByRole('link', { name: 'וואטסאפ לשלומי' })).toHaveAttribute('href', /^https:\/\/wa\.me\/972/);
+  await expect(help.getByRole('link', { name: 'חירום 112' })).toHaveAttribute('href', 'tel:112');
+  expect(errors).toEqual([]);
+});
