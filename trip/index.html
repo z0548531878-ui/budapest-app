@@ -1418,12 +1418,41 @@ button.sc,a.sc{cursor:pointer}.sc:active{transform:scale(.97)}
 .qact .ic{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:var(--goldbtn,linear-gradient(180deg,#f6dc93,#c99a3d));color:#15110a}
 .qact .ic svg{width:19px;height:19px}
 .qact button:active{transform:scale(.95)}
+/* home for organizers: shorter, fewer scrolls */
+.cubes{grid-template-columns:repeat(4,1fr)!important;gap:8px!important}
+.cubes>.cube{min-height:84px!important;padding:8px 8px 9px!important;border-radius:16px!important;justify-content:flex-end!important}
+.cubes>.cube{justify-content:flex-start!important;gap:3px!important;min-height:92px!important}.cubes>.cube .ci{position:static!important;margin-bottom:auto;width:28px!important;height:28px!important;border-radius:9px!important}.cubes>.cube .ci svg{width:16px!important;height:16px!important}
+.cubes>.cube b{font-size:13.5px!important;line-height:1.15!important}.cubes>.cube small{font-size:10.5px!important;line-height:1.2!important}
+.qact button{min-height:64px!important;padding:8px 2px!important;gap:4px!important;font-size:12px!important}.qact .ic{width:28px!important;height:28px!important;border-radius:9px!important}.qact .ic svg{width:16px!important;height:16px!important}
+.kpi{min-height:64px!important;padding:8px 3px!important}.kpi b{font-size:20px!important}
+.hello{margin-bottom:0!important}
+.guidecard{padding:10px 14px!important;margin:10px 0!important}
+.guidecard h4{margin:0!important;font-size:14.5px!important;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.guidecard h4::after{content:"‹";font-size:20px;transition:transform .25s;transform:rotate(-90deg);color:#d9c48a}
+.guidecard.open h4::after{transform:rotate(90deg)}
+.guidecard ol,.guidecard .acts{display:none}.guidecard.open ol,.guidecard.open .acts{display:flex}.guidecard.open ol{display:block;margin-top:8px!important}
+.hub{margin-top:10px!important;gap:8px!important}
+.hub .big{padding:12px 14px!important}.hub .big .ic{width:40px!important;height:40px!important}
+.sync{flex-wrap:nowrap!important;padding:9px 10px 9px 12px!important}.sync .btns{width:auto!important;padding:0!important}.sync .btns .btn{flex:0 0 auto;padding:8px 10px!important;font-size:12.5px!important;white-space:nowrap}
+.sync small{display:none}
+@media (prefers-reduced-motion:no-preference){
+ .hello .greet b{background:linear-gradient(100deg,#f0d28c 20%,#fff3cf 50%,#f0d28c 80%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:nameShine 5s ease-in-out infinite}
+ @keyframes nameShine{0%,60%{background-position:120% 0}100%{background-position:-120% 0}}
+ .kpi.bad{animation:kpiPulse 2.6s ease-in-out infinite}
+ @keyframes kpiPulse{50%{box-shadow:0 0 0 5px rgba(240,139,130,.14)}}
+ .qact button .ic{transition:transform .25s}.qact button:active .ic{transform:rotate(-12deg) scale(1.15)}
+ .pass{position:relative;overflow:hidden}
+ .guidecard h4::after{animation:chevNudge 2.4s ease-in-out infinite}
+ @keyframes chevNudge{50%{margin-inline-end:-3px}}
+ #view.enter[data-scr="home"]>.sec,#view.enter[data-scr="home"]>.pass,#view.enter[data-scr="home"]>.hub{animation-name:kRise}
+ #view.enter[data-scr="home"] .cubes>.cube{animation:cubeIn .5s var(--ease) both,hue 7s ease-in-out infinite;animation-delay:calc(var(--i)*35ms),0s}
+}
 </style>
 
 <div id="app" dir="rtl" lang="he">
   <header class="top">
     <img class="logo" src="logo.webp" alt="לוגו המסע – שיעור מבקשי ה׳">
-    <h1>מסע גיבוש הונגריה<span class="sub">שיעור מבקשי ה׳<br>ט׳–י״ב כסלו<br>תשפ״ז · <bdi dir="ltr">19–22.11</bdi></span></h1>
+    <h1>מסע גיבוש הונגריה<span class="sub">שיעור מבקשי ה׳<br>ט׳–י״ב כסלו תשפ״ז<br><bdi dir="ltr">19–22.11</bdi></span></h1>
     <button class="ideabtn spk" id="ideaBtn" aria-label="עדכון או רעיון"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.1 6.1 6.4 1.9-6.4 1.9L12 18.5l-2.1-6.1-6.4-1.9 6.4-1.9z"/><path d="M19 15.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" opacity=".7"/></svg></button>
     <button class="ideabtn bellbtn" id="actBtn" aria-label="מה חדש"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="badge num" id="actBadge" hidden></span></button>
     <button class="me" id="meBtn"><i>?</i><span>מי אני?</span></button>
@@ -1694,7 +1723,7 @@ const VIEWS={
   const na=newActs().sort((a,b)=>(b.at||'').localeCompare(a.at||''));
   const today=new Date().toLocaleDateString('he-IL',{weekday:'long',day:'numeric',month:'numeric'});
   const ppN=S.participants.length, ppOk=S.participants.filter(x=>x.passport).length, rq=pendN();
-  const kpi=(cls,v,l,to,o)=>`<button class="kpi ${cls}" data-go="${to}" data-opts='${esc(JSON.stringify(o||{}))}'><b class="num">${v}</b><span>${l}</span></button>`;
+  const kpi=(cls,v,l,to,o)=>`<button class="kpi ${cls}" data-go="${to}" data-opts='${esc(JSON.stringify(o||{}))}'><b class="num"${/^\d+%?$/.test(String(v))?` data-count="${parseInt(v)}"${String(v).endsWith('%')?' data-fmt="pct"':''}`:''}>${v}</b><span>${l}</span></button>`;
   const kpis=ready('participants','tasks')?`<section class="kpis" aria-label="תמונת מצב">
     ${kpi(pct>=90?'ok':pct>=60?'mid':'bad',pct+'%','נגבה ממשתתפים','money',{seg:'participants',filter:{pay:'open'}})}
     ${kpi(ppOk===ppN?'ok':ppOk/Math.max(1,ppN)>=.7?'mid':'bad',`${ppOk}/${ppN}`,'דרכונים','more',{sub:'passports'})}
@@ -1709,16 +1738,16 @@ const VIEWS={
     <div class="pass-route"><div><b>TLV</b><span>${esc(out?out.dep:'')}</span></div><div class="path"><svg viewBox="0 0 150 22" fill="none"><path d="M4 11h142" stroke="currentColor" stroke-width="1.6" stroke-dasharray="3 5"/><g class="plane"><path fill="currentColor" d="M146 11l-13-5.4v3.7l-6.5.1-2.8-3.8h-2l1.6 3.9-4.3.1v2.8l4.3.1-1.6 3.9h2l2.8-3.8 6.5.1v3.7z"/></g></svg></div><div><b>BUD</b><span>${esc(out?out.arr:'')}</span></div></div>
     <div class="days">${TRIP_DAYS.map((d,i)=>`<div class="${d.sh?'sh':''} ${i===idx?'now':''}"><b>${d.s}</b>${d.l}</div>`).join('')}</div></div>
     <div class="pass-stub">${depAt(out)>Date.now()?`<span class="big num" id="cdD">${cdParts(out).d}</span><small>ימים</small><div class="cdg num" id="cdT">${cdParts(out).t}</div>`:`<span class="big num">${big}</span><small>${lbl}</small>`}</div></section>
-  ${homeTiles()}
   <section class="hub">
    <button class="big" data-idea><span class="ic">${I.spark}</span><span class="main"><b>עדכון או רעיון</b><span>${CAN_SEND()?'כותבים או מכתיבים, וזה מגיע ל-Claude':'כותבים או מכתיבים, וזה נשמר לכל הצוות'}</span></span><span class="mic">${I.mic}</span></button>
    ${CAN_SEND()?'':'<!--'}<div class="sync ${pn?'has':''}"><span class="dot"></span><div class="main"><b>${pn?`${pn} חדשים ל-Claude`:'Claude מעודכן'}</b><small>${pn?'שולחים אליו, והוא מעדכן כאן לבד':'אין שינויים שהוא לא ראה'}</small></div>
     <div class="btns"><button class="btn ${pn?'primary':''}" data-send>שליחת עדכון ל-Claude</button></div></div>${CAN_SEND()?'':'-->'}
   </section>
-  ${guideCard()}
   <section class="sec"><div class="sec-h"><h3>${ME?'הבא בתור שלך':'המשימות שלי'}</h3>${ME?`<button class="link" data-go="tasks" data-opts='{"seg":"mine"}'>הכל ›</button>`:''}</div>
     ${!ready('tasks')?skel(3):ME?card(my.map(taskRow).join(''),'<b>אין לך משימות פתוחות</b>כל הכבוד'):card('<button class="row" data-pickme><div class="main"><div class="t">בחרו מי אתם</div><div class="m">כדי לראות כאן את המשימות שלכם</div></div><span class="pill p-gold">בחירה</span></button>')}
   </section>
+  ${homeTiles()}
+  ${guideCard()}
   ${na.length?`<section class="sec"><div class="sec-h"><h3>מה הצוות עשה</h3><button class="link" id="seeAct">הכל ›</button></div><div class="card feed">${na.slice(0,3).map(a=>`<button class="it new" ${find(a.col,a.rid)?`data-edit="${a.col}/${a.rid}"`:''}><span class="av">${esc((a.by||'?')[0])}</span><span class="main"><b>${esc(a.by||'מישהו')}</b> ${esc(actLine(a))}${a.change?`<small>${esc(a.change)}</small>`:''}</span></button>`).join('')}</div></section>`:''}
 `;
  },
@@ -1954,6 +1983,7 @@ view.addEventListener('click',e=>{
   const g=t.closest('[data-go]');if(g){go(g.dataset.go,JSON.parse(g.dataset.opts||'{}'));return}
   if(t.closest('[data-pickme]')){pickMe();return}
   if(t.closest('#seeAct')){actSheet();return}
+  if(t.closest&&t.closest('.guidecard h4')){t.closest('.guidecard').classList.toggle('open');return}
   if(t.id==='guideOk'){guideDone=true;try{localStorage.setItem('guideDone','1')}catch(_){}render(true);return}
   const cp=t.closest('[data-copy]');if(cp){e.stopPropagation();copy(cp.dataset.copy);return}
   const tg=t.closest('[data-toggle]');if(tg){e.stopPropagation();toggle(tg.dataset.toggle,tg);return}
