@@ -1435,6 +1435,15 @@ button.sc,a.sc{cursor:pointer}.sc:active{transform:scale(.97)}
 .hub .big{padding:12px 14px!important}.hub .big .ic{width:40px!important;height:40px!important}
 .sync{flex-wrap:nowrap!important;padding:9px 10px 9px 12px!important}.sync .btns{width:auto!important;padding:0!important}.sync .btns .btn{flex:0 0 auto;padding:8px 10px!important;font-size:12.5px!important;white-space:nowrap}
 .sync small{display:none}
+/* compact flight + countdown pass at the top */
+.pass{margin:8px 0 0!important}.pass-main{padding:8px 11px!important}
+.pass-top{font-size:11.5px!important}
+.pass-route{margin:4px 0 0!important}.pass-route b{font-size:26px!important}.pass-route span{font-size:12px!important}
+.pass-route .path{height:16px!important}
+.pass-stub{flex:0 0 96px!important}.pass-stub .big{font-size:38px!important}.pass-stub small{font-size:11px!important}
+.pass .days div{padding:3px 2px!important;font-size:10px!important}.pass .days b{font-size:12px!important}
+.pass .cdg{font-size:12px!important;gap:1px}.pass .cdg b{font-size:15px!important}
+.pass::before,.pass::after{left:85px!important}
 @media (prefers-reduced-motion:no-preference){
  .hello .greet b{background:linear-gradient(100deg,#f0d28c 20%,#fff3cf 50%,#f0d28c 80%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:nameShine 5s ease-in-out infinite}
  @keyframes nameShine{0%,60%{background-position:120% 0}100%{background-position:-120% 0}}
@@ -1731,18 +1740,19 @@ const VIEWS={
     ${kpi(late.length?'bad':'ok',late.length,'משימות באיחור','tasks',{seg:'all'})}</section>`:`<div class="kpis">${'<div class="kpi skel shimmer"></div>'.repeat(4)}</div>`;
   const attention=fires.length?`<section class="sec"><div class="sec-h"><h3>דורש תשומת לב</h3><button class="link" data-go="more">כל התובנות ›</button></div>${card(fires.map(([c,l,to,o])=>`<button class="row" data-go="${to}" data-opts='${esc(JSON.stringify(o))}'><span class="pill ${c}">!</span><div class="main"><div class="t">${esc(l)}</div></div><span aria-hidden="true" style="color:var(--muted)">‹</span></button>`).join(''))}</section>`:'';
   return `<div class="hello"><div class="greet">${greeting()}<b>${ME?esc(ME):'ברוכים הבאים'}</b></div><span class="date">${today}</span></div>
-  ${nowCard(`data-go="more" data-opts='{"sub":"program"}'`)}${kpis}
-  <section class="qact" aria-label="פעולות מהירות">${[['announce',I.chat,'הודעה לכולם'],['program',I.sched,'שינוי בלו״ז'],['attendance',I.people,'ספירת נוכחות'],['people',I.phone,'חיפוש משתתף']].map(([k,ic,l])=>`<button data-go="more" data-opts='{"sub":"${k}"}'><span class="ic">${ic}</span><span>${l}</span></button>`).join('')}</section>
-  ${attention}
   <section class="pass"><span class="shine"></span><div class="pass-main"><div class="pass-top"><span>${out?`אל על · <span class="ltr">${esc(out.flightNo)}</span>`:'טיסת הלוך'}</span><span>חמישי 19.11</span></div>
     <div class="pass-route"><div><b>TLV</b><span>${esc(out?out.dep:'')}</span></div><div class="path"><svg viewBox="0 0 150 22" fill="none"><path d="M4 11h142" stroke="currentColor" stroke-width="1.6" stroke-dasharray="3 5"/><g class="plane"><path fill="currentColor" d="M146 11l-13-5.4v3.7l-6.5.1-2.8-3.8h-2l1.6 3.9-4.3.1v2.8l4.3.1-1.6 3.9h2l2.8-3.8 6.5.1v3.7z"/></g></svg></div><div><b>BUD</b><span>${esc(out?out.arr:'')}</span></div></div>
     <div class="days">${TRIP_DAYS.map((d,i)=>`<div class="${d.sh?'sh':''} ${i===idx?'now':''}"><b>${d.s}</b>${d.l}</div>`).join('')}</div></div>
     <div class="pass-stub">${depAt(out)>Date.now()?`<span class="big num" id="cdD">${cdParts(out).d}</span><small>ימים</small><div class="cdg num" id="cdT">${cdParts(out).t}</div>`:`<span class="big num">${big}</span><small>${lbl}</small>`}</div></section>
+  ${nowCard(`data-go="more" data-opts='{"sub":"program"}'`)}${kpis}
+  <section class="qact" aria-label="פעולות מהירות">${[['announce',I.chat,'הודעה לכולם'],['program',I.sched,'שינוי בלו״ז'],['attendance',I.people,'ספירת נוכחות'],['people',I.phone,'חיפוש משתתף']].map(([k,ic,l])=>`<button data-go="more" data-opts='{"sub":"${k}"}'><span class="ic">${ic}</span><span>${l}</span></button>`).join('')}</section>
+  
   <section class="hub">
    <button class="big" data-idea><span class="ic">${I.spark}</span><span class="main"><b>עדכון או רעיון</b><span>${CAN_SEND()?'כותבים או מכתיבים, וזה מגיע ל-Claude':'כותבים או מכתיבים, וזה נשמר לכל הצוות'}</span></span><span class="mic">${I.mic}</span></button>
    ${CAN_SEND()?'':'<!--'}<div class="sync ${pn?'has':''}"><span class="dot"></span><div class="main"><b>${pn?`${pn} חדשים ל-Claude`:'Claude מעודכן'}</b><small>${pn?'שולחים אליו, והוא מעדכן כאן לבד':'אין שינויים שהוא לא ראה'}</small></div>
     <div class="btns"><button class="btn ${pn?'primary':''}" data-send>שליחת עדכון ל-Claude</button></div></div>${CAN_SEND()?'':'-->'}
   </section>
+  ${attention}
   <section class="sec"><div class="sec-h"><h3>${ME?'הבא בתור שלך':'המשימות שלי'}</h3>${ME?`<button class="link" data-go="tasks" data-opts='{"seg":"mine"}'>הכל ›</button>`:''}</div>
     ${!ready('tasks')?skel(3):ME?card(my.map(taskRow).join(''),'<b>אין לך משימות פתוחות</b>כל הכבוד'):card('<button class="row" data-pickme><div class="main"><div class="t">בחרו מי אתם</div><div class="m">כדי לראות כאן את המשימות שלכם</div></div><span class="pill p-gold">בחירה</span></button>')}
   </section>
