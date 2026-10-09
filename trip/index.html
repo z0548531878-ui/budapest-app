@@ -1215,6 +1215,8 @@ input,select,textarea{font-size:16px!important}
 .kst button span{font-size:20px;line-height:1}
 .kst button.on{background:linear-gradient(180deg,#f6dc93,#c99a3d);color:#15110a;border-color:transparent}
 .kst button:active{transform:scale(.92)}
+
+.kper{color:#f0d28c}
 .kwho{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.kwho:empty{display:none}
 @media (prefers-reduced-motion:no-preference){
 @keyframes kIn{from{opacity:0;transform:translate3d(0,26px,0) scale(.96)}to{opacity:1;transform:none}}
@@ -1311,7 +1313,7 @@ const F={
  donations:{one:'תרומה',g:1,fields:[{k:'donor',l:'תורם',t:'text'},{k:'amount',l:'סכום (₪)',t:'number'},{k:'purpose',l:'מיועד ל',t:'chips',o:['כללי','סידורים','זמירות','תהילים','הדפסות']},{k:'status',l:'מצב',t:'seg',o:['התחייב','התקבל']},{k:'method',l:'איך התקבל',t:'chips',o:['אשראי','העברה לאיציק','מזומן לאיציק','העברה לשלומי','מזומן לשלומי']},{k:'holder',l:'אצל מי הכסף',t:'seg',o:['שלומי','איציק']},{k:'notes',l:'הערות',t:'textarea'}],def:{status:'התחייב',purpose:'כללי',amount:0}},
  schedule:{one:'אירוע',fields:[{k:'day',l:'יום',t:'seg',o:TRIP_DAYS.map(d=>d.k)},{k:'time',l:'שעה',t:'text',half:1,ph:'18:00'},{k:'place',l:'מקום',t:'text',half:1},{k:'title',l:'מה קורה',t:'text'},{k:'owner',l:'אחראי',t:'owner'},{k:'notes',l:'הערות',t:'textarea'},{k:'menu',l:'תפריט',t:'textarea'}],def:{}},
  flights:{one:'טיסה',g:1,fields:[{k:'label',l:'שם',t:'text'},{k:'dir',l:'כיוון',t:'seg',o:['הלוך','חזור']},{k:'group',l:'קבוצה (כמו בכרטיס המשתתף)',t:'text'},{k:'flightNo',l:'מספר טיסה',t:'text',half:1},{k:'date',l:'תאריך',t:'date',half:1},{k:'dep',l:'המראה',t:'text',half:1},{k:'arr',l:'נחיתה',t:'text',half:1},{k:'notes',l:'הערות',t:'textarea'}],def:{dir:'חזור'}},
- packing:{one:'פריט',fields:[{k:'item',l:'פריט',t:'text'},{k:'where',l:'קונים בארץ או בבודפשט',t:'seg',o:['בארץ','בבודפשט']},{k:'buyer',l:'מי קונה',t:'owner'},{k:'kit',l:'ערכה',t:'chips',o:()=>KIT_NAMES},{k:'shop',l:'באיזו חנות או אתר',t:'text',ph:'למשל: ויינר, עלי אקספרס'},{k:'qty',l:'כמות',t:'number',half:1},{k:'cost',l:'עלות (₪)',t:'number',half:1},{k:'packer',l:'מי אחראי על האריזה',t:'owner'},{k:'placer',l:'מי אחראי על ההנחה במקום',t:'owner'},{k:'ordered',l:'🛒 הוזמן',t:'toggle',ks:1},{k:'arrived',l:'📦 הגיע',t:'toggle',ks:1},{k:'packed',l:'🧳 נארז',t:'toggle',ks:1},{k:'placed',l:'📍 הונח במקום',t:'toggle',ks:1},{k:'notes',l:'הערות',t:'text'}],def:{qty:1,cost:0,done:false}},
+ packing:{one:'פריט',fields:[{k:'item',l:'פריט',t:'text'},{k:'where',l:'קונים בארץ או בבודפשט',t:'seg',o:['בארץ','בבודפשט']},{k:'buyer',l:'מי קונה',t:'owner'},{k:'kit',l:'ערכה',t:'chips',o:()=>KIT_NAMES},{k:'shop',l:'באיזו חנות או אתר',t:'text',ph:'למשל: ויינר, עלי אקספרס'},{k:'per',l:'כמות לכל חדר (רק בערכה לחדר)',t:'number',half:1},{k:'qty',l:'כמות סה״כ',t:'number',half:1},{k:'cost',l:'עלות (₪)',t:'number',half:1},{k:'packer',l:'מי אחראי על האריזה',t:'owner'},{k:'placer',l:'מי אחראי על ההנחה במקום',t:'owner'},{k:'ordered',l:'🛒 הוזמן',t:'toggle',ks:1},{k:'arrived',l:'📦 הגיע',t:'toggle',ks:1},{k:'packed',l:'🧳 נארז',t:'toggle',ks:1},{k:'placed',l:'📍 הונח במקום',t:'toggle',ks:1},{k:'notes',l:'הערות',t:'text'}],def:{qty:1,cost:0,done:false}},
  rooms:{one:'חדר',fields:[{k:'occupants',l:'דיירים',t:'text'},{k:'entrance',l:'כניסה (במלון)',t:'text'},{k:'roomNumber',l:'מספר חדר',t:'text',half:1},{k:'floor',l:'קומה',t:'text',half:1},{k:'type',l:'סוג',t:'seg',o:['חדר לזוג','חדר ליחיד']},{k:'kitReady',l:'הסט הונח בחדר',t:'toggle'},{k:'notes',l:'הערות',t:'text'}],def:{type:'חדר לזוג',kitReady:false}},
  messages:{one:'הודעה',g:1,fields:[{k:'title',l:'נושא',t:'text'},{k:'date',l:'מתי לשלוח',t:'date'},{k:'text',l:'נוסח ההודעה',t:'textarea'},{k:'sent',l:'נשלחה',t:'toggle'}],def:{sent:false}},
  files:{one:'מסמך',fields:[{k:'name',l:'שם המסמך',t:'text'},{k:'category',l:'סוג',t:'chips',o:DOC_CATS},{k:'url',l:'קישור (גוגל דרייב, וואטסאפ או כל קישור)',t:'text'},{k:'notes',l:'הערות',t:'textarea'}],def:{}},
@@ -1775,7 +1777,7 @@ view.addEventListener('click',e=>{
   if(t.closest('[data-actfeed]')){actSheet();return}
   const pk=t.closest('[data-pick]');if(pk){const x=find('claude',pk.dataset.pick);if(x){save('claude',x._id,{...strip(x),answer:pk.dataset.v,answeredAt:new Date().toISOString(),status:'נענה'}).then(ok=>ok&&toast('נשמר: '+pk.dataset.v))}return}
   const so=t.closest('[data-sugok]');if(so){e.stopPropagation();const x=find('packing',so.dataset.sugok);if(x){save('packing',x._id,{...strip(x),sug:false}).then(ok=>{if(ok)toast('נכנס לרשימת הקניות',()=>save('packing',x._id,strip(x)))})}return}
-  const nr=t.closest('[data-nr]');if(nr){e.stopPropagation();const x=find('packing',nr.dataset.nr);if(x){db.doc('packing/'+x._id).delete().then(()=>{logAct('delete','packing',x._id,x);toast('הוסר',()=>save('packing',x._id,strip(x)))})}return}
+  const nr=t.closest('[data-nr]');if(nr){e.stopPropagation();const x=find('packing',nr.dataset.nr);if(x){delDoc('packing',x._id).then(()=>{logAct('delete','packing',x._id,x);toast('הוסר',()=>save('packing',x._id,strip(x)))})}return}
   if(t.closest('[data-bulk]')){bulkSheet();return}
   const pr=t.closest('[data-person]');if(pr&&!t.closest('a')){personSheet(pr.dataset.person);return}
   const pp=t.closest('[data-pp]');if(pp){const p=find('participants',pp.dataset.pp);if(p){const on=!p.passport;pp.classList.toggle('on',on);pp.innerHTML=on?CHECK:'';if(on)burst(pp);save('participants',p._id,{...strip(p),passport:on})}return}
@@ -2008,7 +2010,7 @@ function codeSheet(){
     const line=o=>{const cur=find(o.c,o.id);const t=ttl(o.d||cur||{})||o.id;return `${o.op==='delete'?'מחיקת':cur?'עדכון':'הוספת'} ${LBL(o.c)}: ${t}`};
     out.innerHTML=(j.note?`<p class="note" style="margin-top:12px">${esc(j.note)}</p>`:'')+`<div class="ghead"><span>${ok.length} שינויים</span></div>`+ok.map(o=>`<div class="prop"><span class="pill p-gold">${o.op==='delete'?'מחיקה':'עדכון'}</span><div class="main"><b>${esc(line(o))}</b></div></div>`).join('')+`<div class="sheet-acts"><span class="sp"></span><button class="btn primary" id="applyCode">להכניס הכל לאפליקציה</button></div>`;
     document.getElementById('applyCode').onclick=async e=>{e.target.disabled=true;let n=0;
-      try{for(let i=0;i<ok.length;i+=400){const bt=db.batch();ok.slice(i,i+400).forEach(o=>{const ref=db.collection(o.c).doc(o.id);if(o.op==='delete')bt.delete(ref);else if(o.op==='update')bt.set(ref,o.d||{},{merge:true});else bt.set(ref,o.d||{})});await bt.commit();n+=Math.min(400,ok.length-i)}
+      try{for(let i=0;i<ok.length;i+=400){const bt=db.batch();ok.slice(i,i+400).forEach(o=>{const ref=db.collection(o.c).doc(o.id);if(o.op==='delete'){if(o.c!=='attendance'){const cu=find(o.c,o.id);bt.set(db.doc('trash/'+o.c+'__'+o.id),{col:o.c,rid:o.id,data:cu?strip(cu):{},by:ME||'',at:new Date().toISOString()})}bt.delete(ref)}else if(o.op==='update')bt.set(ref,o.d||{},{merge:true});else bt.set(ref,o.d||{})});await bt.commit();n+=Math.min(400,ok.length-i)}
         const now=new Date().toISOString();
         await db.collection('settings').doc('claude').set({seenAt:j.seen||now,appliedAt:now},{merge:true});
         db.collection('activity').add({by:'Claude',at:now,act:'edit',col:'claude',rid:'',title:`הכניס ${n} עדכונים`,change:j.note||''}).catch(()=>{});
@@ -2026,7 +2028,7 @@ let autoBusy=false;
 async function decryptBlob(j){const b=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));const key=await deriveKey(TRIP_KEY,b(j.salt));
   return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b(j.iv)},key,b(j.ct))))}
 async function applyOps(ops){const ok=ops.filter(o=>o&&o.c&&o.id&&COLS.includes(o.c));
-  for(let i=0;i<ok.length;i+=400){const bt=db.batch();ok.slice(i,i+400).forEach(o=>{const ref=db.collection(o.c).doc(o.id);if(o.op==='delete')bt.delete(ref);else if(o.op==='update')bt.set(ref,o.d||{},{merge:true});else bt.set(ref,o.d||{})});await bt.commit()}
+  for(let i=0;i<ok.length;i+=400){const bt=db.batch();ok.slice(i,i+400).forEach(o=>{const ref=db.collection(o.c).doc(o.id);if(o.op==='delete'){if(o.c!=='attendance'){const cu=find(o.c,o.id);bt.set(db.doc('trash/'+o.c+'__'+o.id),{col:o.c,rid:o.id,data:cu?strip(cu):{},by:ME||'',at:new Date().toISOString()})}bt.delete(ref)}else if(o.op==='update')bt.set(ref,o.d||{},{merge:true});else bt.set(ref,o.d||{})});await bt.commit()}
   return ok.length}
 async function autoApply(){
   if(autoBusy||!db||!TRIP_KEY||!loaded.has('settings'))return;autoBusy=true;
@@ -2430,12 +2432,12 @@ function editor(c,id){
       else if(f.t==='number')out[f.k]=el.value===''?0:+el.value;
       else out[f.k]=el.value.trim()});
     const k0=sc.fields[0];if(!out[k0.k]&&k0.t!=='seg'){toast('חסר: '+k0.l);return}
-    if(c==='packing'&&!out.list)out.list=out.kit||V.filter.kit||'כללי ומארגנים';if(c==='packing'&&!id){const ex=S.packing.find(x=>x.list===out.list);out.listOrder=ex?ex.listOrder:99}
+    if(c==='packing'&&+out.per>0&&+out.per!==+(d.per||0))out.qty=+out.per*(S.rooms.length||31);if(c==='packing'&&!out.list)out.list=out.kit||V.filter.kit||'כללי ומארגנים';if(c==='packing'&&!id){const ex=S.packing.find(x=>x.list===out.list);out.listOrder=ex?ex.listOrder:99}
     const ok=id?await save(c,id,out):await add(c,out);if(ok){closeSheet();toast('נשמר')}
   };
   const del=document.getElementById('del');
   if(del)del.onclick=async()=>{if(!del.classList.contains('armed')){del.classList.add('armed');del.textContent='לחצו שוב למחיקה';return}
-    try{await db.doc(c+'/'+id).delete();logAct('delete',c,id,d);closeSheet();toast('נמחק')}catch(e){toast('המחיקה נכשלה')}};
+    try{await delDoc(c,id);logAct('delete',c,id,d);closeSheet();toast('נמחק')}catch(e){toast('המחיקה נכשלה')}};
 }
 const MSG='שלום {שם}, תזכורת ידידותית לתשלום על שבת הגיבוש בבודפשט: {סכום}. נשמח לסגור עד 19.10. אפשר לשלם באשראי, בהעברה או במזומן לאיציק. תודה!';
 function reminder(){
@@ -2845,12 +2847,12 @@ const DEFKIT=(()=>{const m={};const a=(k,ids)=>ids.split(' ').forEach(i=>m[i]=k)
  a('ערכה לסעודה בקרעסטיר','k010 k011 k012 k013 k014 k015 k016 k017 k018');
  a('ערכה לפינת קפה','k024 k025 k026 k027 k028 k029 k030 k031 k032 k033 k034 k035 k036 k037 k038 k039 k040 s03 s20');
  a('ערכה לעונג שבת','k004 k005 k009 k020 k021 k022 k023 k041 k042 k043 k044 k045 k046 k047 k048 s21 s05');
- a('ערכה להבדלה','s04'); a('ערכה להדלקת נרות שבת','k069 k073');
+ a('ערכה להבדלה','s04 k073'); a('ערכה להדלקת נרות שבת','k069');
  a('ערכת חד פעמי','k006 k007 k008 s11');
  return m})();
 const kitOf=x=>x.kit||DEFKIT[x._id]||(x.list==='סט לכל חדר'?'ערכה לחדר':'כללי ומארגנים');
 const kst=(x,k)=>x[k]===undefined?((k==='ordered'||k==='arrived')?!!x.done:false):!!x[k];
-const kitItems=()=>S.packing.filter(x=>!(x.sug&&!x.done));
+const kitItems=()=>S.packing.filter(x=>x.item&&!(x.sug&&!x.done));
 const kwhere=x=>x.where||(/בודפשט/.test(x.list||'')?'בבודפשט':'בארץ');
 function normPack(d,p){
   p=p||{};d={...d};const O=['ordered','arrived','packed','placed'];
@@ -2894,7 +2896,7 @@ SUB.kits=function(){
    <div class="chips">${[['all','הכול'],...KSTAGES.map(([k,l])=>[k,'לא '+l])].map(([k,l])=>`<button class="chip" data-kfilter="${k}" aria-pressed="${f===k}">${l}</button>`).join('')}</div>
    <div class="kitems">${rows.map((x,i)=>{const sh=x.shop?` · ${esc(x.shop)}`:'',w=kwhere(x);
      const o=(r,e)=>{const n=String(x[r]||'').trim()||kown(cur,r).join(', ');return n?`<span class="who">${e} ${esc(n)}</span>`:''};
-     return `<div class="kit" style="--i:${Math.min(i,12)}"><button class="ktop" data-edit="packing/${x._id}"><span class="kq num">${esc(x.qty)}×</span><span class="main"><b>${esc(x.item)}</b><small>${w==='בבודפשט'?'🇭🇺 בבודפשט':'🇮🇱 בארץ'}${sh}${x.notes?` · ${esc(x.notes)}`:''}</small></span><span class="kc num">${+x.cost?ils(x.cost):'—'}</span></button>
+     return `<div class="kit" style="--i:${Math.min(i,12)}"><button class="ktop" data-edit="packing/${x._id}"><span class="kq num">${esc(x.qty)}×</span><span class="main"><b>${esc(x.item)}</b><small>${+x.per?`<b class="kper">${esc(x.per)} לחדר · סה״כ ${esc(x.qty)}</b> · `:''}${w==='בבודפשט'?'🇭🇺 בבודפשט':'🇮🇱 בארץ'}${sh}${x.notes?` · ${esc(x.notes)}`:''}</small></span><span class="kc num">${+x.cost?ils(x.cost):'—'}</span></button>
       <div class="kst">${KSTAGES.map(([k,l,em])=>`<button class="${kst(x,k)?'on':''}" data-kst="${x._id}|${k}" aria-pressed="${kst(x,k)}"><span>${kst(x,k)?'✓':em}</span>${l}</button>`).join('')}</div>
       <div class="kwho">${o('buyer','🛒')}${o('packer','🧳')}${o('placer','📍')}</div></div>`}).join('')||`<div class="card"><div class="empty"><b>${f==='all'?'אין פריטים בערכה':'הכול בוצע בשלב הזה 🎉'}</b></div></div>`}</div>
    <p class="note">כדי להוסיף מוצר לערכה לחצו על ה-+.</p>`;
@@ -2949,6 +2951,12 @@ document.addEventListener('click',e=>{if(GUEST())return;const gd=e.target.closes
 document.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1&&e.cancelable)e.preventDefault()},{passive:false});
 document.addEventListener('wheel',e=>{if(e.ctrlKey)e.preventDefault()},{passive:false});
 let _lt=0;document.addEventListener('touchend',e=>{const n=Date.now();if(n-_lt<300&&e.cancelable&&!e.target.closest('input,textarea,select,a,button'))e.preventDefault();_lt=n},{passive:false});
+
+/* delete = copy to trash + delete in one batch (the Firestore rules require the copy) */
+async function delDoc(c,id){
+  const d=find(c,id),bt=db.batch();
+  if(c!=='attendance')bt.set(db.doc('trash/'+c+'__'+id),{col:c,rid:id,data:d?strip(d):{},by:ME||'',at:new Date().toISOString()});
+  bt.delete(db.doc(c+'/'+id));await bt.commit()}
 
 /* swipe between program days */
 (()=>{let x0=0,y0=0,t0=0,on=false;
@@ -3152,7 +3160,7 @@ render(true);
 </script>
 
 <script>
-(function(){var B='1e54efdce7';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B='b7e83dc794';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
