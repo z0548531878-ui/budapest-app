@@ -18,7 +18,7 @@
 <style>html,body{margin:0;padding:0;background:#0b0a08}</style>
 </head>
 <body>
-<title>שבת גיבוש בודפשט</title>
+<title>מסע גיבוש הונגריה</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=Frank+Ruhl+Libre:wght@500;700;900&family=Suez+One&display=swap">
 <style>
@@ -1255,12 +1255,73 @@ input,select,textarea{font-size:16px!important}
 .mt3 div{animation:mIn .5s both}.mt3 div:nth-child(2){animation-delay:.07s}.mt3 div:nth-child(3){animation-delay:.14s}
 .mline:active{transform:scale(.985)}
 }
+
+/* ===== v5b: header, guest status cubes, smaller home cubes, tools, gate ===== */
+.top h1,.top .sub{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
+body:not(.guest) .top .ideabtn,body:not(.guest) .top .me{width:38px!important;height:38px!important;padding:0!important}
+body:not(.guest) .top .me i{width:30px;height:30px}
+body:not(.guest) .top{gap:8px!important}
+.top .logo{width:76px!important;height:76px!important}
+.top{min-height:108px!important}
+.top h1{font-size:21px!important;line-height:1.18!important}
+.top .sub{font-size:12.5px!important;line-height:1.35;margin-top:5px!important}
+@media(max-width:430px){.top .logo{width:70px!important;height:70px!important}.top h1{font-size:19.5px!important}.top .sub{font-size:10.5px!important;letter-spacing:-.1px}}
+body.guest #meBtn{display:flex!important;align-items:center;gap:8px;min-width:0;width:auto!important;height:44px;padding:4px 14px 4px 5px!important;border-radius:99px}
+body.guest #meBtn span{display:inline!important;font-size:15px;font-weight:800;max-width:84px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body.guest #meBtn i{width:34px;height:34px;overflow:hidden;font-size:16px}
+body.guest #meBtn i img{width:100%;height:100%;object-fit:cover}
+.gst{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 6px}
+.sc{position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:3px;text-align:center;min-height:150px;padding:14px 10px 12px;border-radius:24px;border:1px solid rgba(214,178,98,.4);background:radial-gradient(130% 100% at 50% -10%,rgba(246,220,147,.2),transparent 62%),linear-gradient(160deg,#1c1810,#0b0a07);color:var(--ink,#f3ead3);text-decoration:none;box-shadow:0 16px 30px -20px #000}
+button.sc,a.sc{cursor:pointer}.sc:active{transform:scale(.97)}
+.sc-i{display:grid;place-items:center;width:48px;height:48px;border-radius:17px;background:linear-gradient(180deg,#f6dc93,#c99a3d);color:#15110a;box-shadow:0 8px 16px -8px rgba(201,154,61,.9);position:relative}
+.sc-i svg{width:27px;height:27px}
+.sc-i .ring{position:relative;display:grid;place-items:center;width:48px;height:48px}
+.sc-i:has(.ring){background:none;box-shadow:none;color:#f0d28c}
+.sc-i .ring svg.sc-ring{position:absolute;top:-2px;left:-2px;right:auto;bottom:auto;width:52px;height:52px}
+.sc-i .ring i{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:linear-gradient(180deg,#f6dc93,#c99a3d);color:#15110a;font-style:normal}
+.sc-i .ring i svg{width:22px;height:22px}
+.sc-l{font-size:14.5px;font-weight:800;color:#d9c48a;letter-spacing:.2px;margin-top:2px}
+.sc-v{font-size:21px;line-height:1.15;font-weight:900;color:#f6e7b8}
+.sc-v .sc-pl{display:block;font-size:15.5px;font-weight:700;line-height:1.5}
+.sc-pl u{text-decoration:none;font-weight:900}.sc-pl u.y{color:#8fe0b7}.sc-pl u.n{color:#f0be5a}
+.sc-s{font-size:13.5px;line-height:1.35;color:#b9ad8f;font-weight:600}
+.sc-d{margin-top:4px;padding:3px 10px;border-radius:99px;background:rgba(246,220,147,.14);color:#f6dc93;font-size:13px;font-weight:800}
+.sc-go{position:absolute;inset-inline-start:10px;top:12px;font-size:26px;color:#f0d28c}
+.sc.ok .sc-v{color:#9be7bd}.sc.bad .sc-v{color:#f6c46a}.sc.mid .sc-v{color:#f6dc93}.sc.nav .sc-v{color:#f6dc93}
+.sc.ok{border-color:rgba(120,210,160,.45)}.sc.bad{border-color:rgba(240,190,90,.55)}
+.gcb .gc,.gcb>.gc.gtrv,.gcb>.gc:nth-child(9){min-height:128px!important;padding:12px 8px!important;align-items:center!important;justify-content:center!important;gap:3px;grid-column:auto!important;border-radius:22px}
+.gcb .gc .gc-i{position:static!important;inset:auto!important;margin:0 0 4px!important;width:46px;height:46px;border-radius:16px}
+.gcb .gc .gc-i svg{width:26px;height:26px}
+.gcb .gc .gc-t{font-size:19px;line-height:1.15}
+.gcb .gc .gc-s{font-size:13.5px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.gcb{gap:10px;margin-top:14px}
+.gc-b{top:8px!important}
+.tool .tp{margin:6px 0 0;font-size:16.5px;line-height:1.55;color:#e9dfc3}
+.phr{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.phr div{display:grid;gap:2px;text-align:center;border:1px solid rgba(214,178,98,.25);border-radius:14px;padding:8px 6px;background:#0e0c09}
+.phr b{font-size:14px;color:#cfc3a6}.phr span{font-size:18px;font-weight:800;color:#f0d28c}.phr small{font-size:14px;color:#a69a7d}
+.tnav svg{width:24px;height:24px;flex:none}
+.gout2{width:100%;margin-top:12px;justify-content:center}
+.gbox .gsub{line-height:1.5}.gbox .gdate{color:#d9c48a;font-size:15px}
+@media (prefers-reduced-motion:no-preference){
+@keyframes scIn{from{opacity:0;transform:translate3d(0,26px,0) scale(.94)}to{opacity:1;transform:none}}
+@keyframes ringGo{from{stroke-dashoffset:var(--c)}to{stroke-dashoffset:var(--o)}}
+@keyframes scFloat{50%{transform:translateY(-3px)}}
+@keyframes scShine{0%,60%{transform:translateX(-140%)}100%{transform:translateX(140%)}}
+@keyframes scPulse{0%,100%{box-shadow:0 16px 30px -20px #000,0 0 0 0 rgba(240,190,90,0)}50%{box-shadow:0 16px 30px -20px #000,0 0 0 5px rgba(240,190,90,.12)}}
+.sc{animation:scIn .6s cubic-bezier(.2,.85,.25,1.1) both;animation-delay:calc(var(--i,0)*90ms)}
+.sc.bad{animation:scIn .6s cubic-bezier(.2,.85,.25,1.1) both,scPulse 3.2s ease-in-out infinite;animation-delay:calc(var(--i,0)*90ms),1s}
+.sc-i{animation:scFloat 4s ease-in-out infinite;animation-delay:calc(var(--i,0)*-.6s)}
+.sc-ring .rg{stroke-dashoffset:var(--o);animation:ringGo 1.3s cubic-bezier(.3,.8,.3,1) .3s both}
+.sc::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 40%,rgba(255,255,255,.12) 50%,transparent 60%);transform:translateX(-140%);animation:scShine 6s ease-in-out infinite;animation-delay:calc(var(--i,0)*.8s);pointer-events:none}
+.gbox .glogo,.gbox img{animation:scFloat 5s ease-in-out infinite}
+}
 </style>
 
 <div id="app" dir="rtl" lang="he">
   <header class="top">
     <img class="logo" src="logo.webp" alt="לוגו המסע – שיעור מבקשי ה׳">
-    <h1>שבת גיבוש בודפשט<span class="sub">מבקשי ה׳ · <bdi dir="ltr">19–22.11</bdi></span></h1>
+    <h1>מסע גיבוש הונגריה<span class="sub">שיעור מבקשי ה׳<br>ט׳–י״ב כסלו<br>תשפ״ז · <bdi dir="ltr">19–22.11</bdi></span></h1>
     <button class="ideabtn spk" id="ideaBtn" aria-label="עדכון או רעיון"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.1 6.1 6.4 1.9-6.4 1.9L12 18.5l-2.1-6.1-6.4-1.9 6.4-1.9z"/><path d="M19 15.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" opacity=".7"/></svg></button>
     <button class="ideabtn bellbtn" id="actBtn" aria-label="מה חדש"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="badge num" id="actBadge" hidden></span></button>
     <button class="me" id="meBtn"><i>?</i><span>מי אני?</span></button>
@@ -1272,7 +1333,7 @@ input,select,textarea{font-size:16px!important}
 <button class="fab" id="fab" aria-label="הוספה" hidden>+</button>
 <nav class="nav" dir="rtl" lang="he"><div class="nav-in" id="nav"></div></nav>
 <div id="sheetRoot" dir="rtl" lang="he"></div>
-<div class="splash" id="splash" dir="rtl" lang="he"><span class="rays"></span><span class="dust"></span><img src="logo.webp" alt=""><span>שבת גיבוש בודפשט</span><small>מבקשי ה׳ · בודפשט 19–22.11</small></div>
+<div class="splash" id="splash" dir="rtl" lang="he"><span class="rays"></span><span class="dust"></span><img src="logo.webp" alt=""><span>שבת גיבוש בודפשט</span><small>שיעור מבקשי ה׳ · מסע גיבוש הונגריה</small></div>
 
 <script>
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -2553,13 +2614,15 @@ function showGate(step){
       if(await sha('budapest-salt:'+v)===ORG_HASH)setRole('org');else document.getElementById('gmsg').textContent='הקוד שגוי'};
     document.getElementById('ggo').onclick=go;document.getElementById('gcode').onkeydown=e=>{if(e.key==='Enter')go()};
     document.getElementById('gback').onclick=()=>showGate('choice');setTimeout(()=>document.getElementById('gcode').focus(),50);return}
-  g.innerHTML=`<div class="gbox">${logo}<h1>מבקשי ה׳</h1><p class="gsub">שבת גיבוש בבודפשט · <bdi dir=\"ltr\">19–22.11.2026</bdi></p>
+  g.innerHTML=`<div class="gbox">${logo}<h1>שיעור מבקשי ה׳</h1><p class="gsub">מסע גיבוש הונגריה<br><span class=\"gdate\">ט׳–י״ב כסלו תשפ״ז · <bdi dir=\"ltr\">19–22.11.2026</bdi></span></p>
     <button class="gbtn" id="gg">כניסת משתתפי המסע</button><button class="gbtn alt" id="go">כניסת מארגנים</button></div>`;
   document.getElementById('gg').onclick=()=>showGate('guest');document.getElementById('go').onclick=()=>showGate('org');
 }
 
 /* ===== participant (guest) app ===== */
 const IX={food:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 9H9V2H7v7H5V2H3v7c0 2.1 1.7 3.8 3.8 4v9h2.4v-9c2.1-.2 3.8-1.9 3.8-4V2h-2v7zm5-3v8h2.5v8H21V2c-2.8 0-5 2.2-5 4z"/></svg>',pin:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.500a2.5 2.5 0 0 1 0 5z"/></svg>',nav:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4.500 20.300l.7.7L12 18l6.800 3 .7-.7z"/></svg>'};
+IX.coin='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.5"/><path d="M9 9.5c0-1.2 1.3-2 3-2s3 .8 3 2-1.3 1.7-3 2-3 .8-3 2 1.3 2 3 2 3-.8 3-2"/><path d="M12 6v1.5M12 16.5V18"/></svg>';
+IX.pass='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M8.5 17h7"/></svg>';
 IX.wa='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.600 15.100L2 22l5-1.300A10 10 0 1 0 12 2zm5.200 14.100c-.2.600-1.200 1.200-1.700 1.200-.4.100-1 .1-1.600-.1-.4-.1-.9-.3-1.500-.6-2.600-1.100-4.300-3.700-4.400-3.900-.1-.2-1-1.300-1-2.500s.6-1.800.9-2c.2-.2.500-.3.700-.3h.5c.2 0 .4 0 .6.500l.8 1.900c.1.200.1.300 0 .500l-.3.400-.4.400c-.1.100-.3.300-.1.600.2.300.7 1.200 1.600 1.900 1.100 1 2 1.300 2.300 1.400.3.100.4.100.6-.1l.8-1c.2-.2.400-.2.600-.1l1.900.9c.3.100.4.200.5.300.1.200.1.800-.1 1.400z"/></svg>';
 const GNAV=[['gl','לוח המסע','sched'],['gr','החדר שלי','bed'],['gh','בית','home'],['gt','משימות','tasks'],['gq','בקשות','mic']];
 const gIco=k=>IX[k]||I[k]||'';
@@ -2688,12 +2751,31 @@ function guestHTML0(){
     const needs=[];
     if(ppl.some(x=>!x.passport))needs.push(['gf','לשלוח צילום דרכון']);
     if(ppl.some(x=>!x.photo))needs.push(['gf','להעלות תמונה']);
-    const todo=needs.length?`<div class="gtodo"><b>עוד מעט סיימנו:</b>${needs.map(x=>`<button data-gnav="${x[0]}">${x[1]} ›</button>`).join('')}</div>`:'';
-    return pv+`<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(ppl.map(x=>x.name).join(' ו')||'')}</b></div>${isPrevOrg()?'':'<button class="glink gout" id="gout">יציאה</button>'}</div>
+    let m5=0;
+    const sc=(cls,ic,l,v,s,ex,tag,at)=>`<${tag||'div'} class="sc ${cls}" ${at||''} style="--i:${m5++}"><span class="sc-i">${ic}</span><span class="sc-l">${l}</span><b class="sc-v">${v}</b>${s?`<span class="sc-s">${s}</span>`:''}${ex||''}</${tag||'div'}>`;
+    const stat=(()=>{
+      const need=ppl.filter(x=>x.status!=='פטור'&&+x.amount>0), paidL=need.filter(x=>x.status==='שולם');
+      const tot=need.reduce((s,x)=>s+(+x.amount||0),0), got=paidL.reduce((s,x)=>s+(+x.amount||0),0), pc=tot?Math.round(got/tot*100):100;
+      const all=!need.length||paidL.length===need.length, part=paidL.length&&!all;
+      const nms=ppl.map(x=>String(x.name||'').replace(/^הרב(נית)?\s+/,'').trim().toLowerCase());
+      const dn=S.donations.filter(d=>d.donor&&nms.some(n=>{const dd=String(d.donor).replace(/^הרב(נית)?\s+/,'').trim().toLowerCase();return dd&&(dd.includes(n)||(dd.split(/\s+/).length>1&&n.includes(dd)))}));
+      const dsum=dn.reduce((s,d)=>s+(+d.amount||0),0), dgot=dn.every(d=>d.status==='התקבל');
+      const R=19,C=2*Math.PI*R;
+      const ring=`<svg class="sc-ring" viewBox="0 0 44 44"><circle cx="22" cy="22" r="${R}" fill="none" stroke="rgba(214,178,98,.25)" stroke-width="3"/><circle class="rg" cx="22" cy="22" r="${R}" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-dasharray="${C}" style="--c:${C};--o:${C*(1-pc/100)}" transform="rotate(-90 22 22)"/></svg>`;
+      const meth=[...new Set(paidL.map(x=>x.method).filter(Boolean))].join(' · ');
+      const payV=!need.length?'פטור ✓':all?'שולם ✓':part?'שולם חלקית':'עוד לא שולם';
+      const payS=!need.length?'':all?`${ils(got)}${meth?' · '+esc(meth):''}`:`${part?'נותר':'לתשלום'} ${ils(tot-got)}`;
+      const don=dn.length?`<span class="sc-d">🙏 ${dgot?'תרמתם':'התחייבתם לתרום'} ${ils(dsum)}${dgot?'. תודה!':''}</span>`:'';
+      const pay=sc(all?'ok':part?'mid':'bad',`<span class="ring">${ring}<i>${IX.coin}</i></span>`,'התשלום',payV,payS,don);
+      const allP=ppl.every(x=>x.passport);
+      const pv_=ppl.length===1?(ppl[0].passport?'התקבל ✓':'עוד לא נשלח'):(allP?'התקבלו ✓':'');
+      const pass=sc(allP?'ok':'bad',IX.pass,'הדרכון',pv_||ppl.map(x=>`<span class="sc-pl">${esc(firstN(x.name))}: <u class="${x.passport?'y':'n'}">${x.passport?'התקבל ✓':'חסר'}</u></span>`).join(''),allP?'':'לחצו כדי לשלוח צילום',allP?'':'<span class="sc-go">‹</span>','button',allP?'':'data-gnav="gf"');
+      const nav=sc('nav',IX.nav,'חזרה למלון','ניווט','יצאתם ואבדתם? נחזיר אתכם','','a',`href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener"`);
+      const todo=sc(needs.length?'bad':'ok',needs.length?I.tasks:`<span style="font-size:26px">✓</span>`,'עוד מעט סיימנו',needs.length?`${needs.length===1?'דבר אחד':needs.length+' דברים'}`:'הכל מסודר',needs.length?needs.map(x=>x[1]).join(' · '):'אין לכם מה להשלים',needs.length?'<span class="sc-go">‹</span>':'','button',needs.length?'data-gnav="gf"':'');
+      return `<div class="gst">${pay}${pass}${nav}${todo}</div>`})();
+    return pv+`<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(ppl.map(x=>x.name).join(' ו')||'')}</b></div></div>
      ${banner}${passBlock}${extraOut}
-     <a class="hbtn" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener"><span class="gic">${IX.nav}</span><span class="gtx"><small>יצאתם מהמלון ולא בטוחים איך חוזרים?</small><b>ניווט חזרה למלון</b></span><span class="gch">‹</span></a>
-     <div class="gstat">${payCard(ppl)}${passCard(ppl)}</div>${todo}
-     <div class="gsech">מה רוצים לעשות?</div>
+     ${stat}
      <div class="gcb">
       ${cube('gl',I.sched,'לוח המסע','מה קורה בכל יום, ובאיזו שעה')}
       ${cube('gx',IX.food,'מסעדות ואטרקציות','איפה אוכלים כשר, ומה כדאי לראות')}
@@ -2703,7 +2785,7 @@ function guestHTML0(){
       ${cube('gm',I.chat,'הודעות','עדכונים מהמארגנים',un||'')}
       ${cube('gq',I.mic,'בקשה אישית','צריכים משהו? כתבו לנו')}
       ${cube('gf',SIL,'הפרופיל שלי','תמונה ודרכון')}
-      ${cube('gk',I.box,'כלי נוסע','שעון בודפשט, מטבע ורשימת ציוד')}
+      ${cube('gk',I.box,'מדריך כיס','שעון, מטבע, חשמל וביטויים')}
       ${open?`<a class="gc gtrv" href="../" target="_blank" rel="noopener" style="--i:${n++}"><span class="gc-i">${I.spark}</span><span class="gc-t">טריוויה</span><span class="gc-s">משחק לאוטובוס. פתוח עכשיו!</span></a>`:`<button class="gc gtrv locked" data-glock style="--i:${n++}"><span class="gc-i">🔒</span><span class="gc-t">טריוויה</span><span class="gc-s">נפתח כשנחתים בבודפשט</span></button>`}
      </div>
      ${flightGroups(ppl,'חזור').map(g=>guestFlightCard(g,ppl,'חזור')).join('')}`}
@@ -2766,27 +2848,34 @@ function guestHTML0(){
        <button class="btn" data-g-photo="${p._id}">${p.photo?'📷 החלפת תמונה':'📷 העלאת תמונה'}</button></div></div>
       <div class="passbox ${p.passport?'ok':''}"><div class="pb-h"><b>דרכון · ${esc(firstN(p.name))}</b><span class="pill ${p.passport?'p-ok':'p-warn'}">${p.passport?'התקבל ✓':'טרם התקבל'}</span></div>
        ${p.passport?'<p>הדרכון התקבל אצל המארגנים. תודה!</p>':`<p>צלמו את עמוד הפרטים בדרכון ושלחו לשלומי בוואטסאפ. אחרי שנקבל, יופיע כאן ✓</p><a class="btn primary" href="${wa(p)}" target="_blank" rel="noopener" style="width:100%;justify-content:center">📤 שליחת הדרכון בוואטסאפ</a>`}</div>`).join('')+
-      `<p class="note">התמונה תופיע ליד השם שלכם אצל כולם. עד שתעלו, יופיע סמל נעילה.</p>`}
+      `<p class="note">התמונה תופיע ליד השם שלכם אצל כולם. עד שתעלו, יופיע סמל נעילה.</p>`+(isPrevOrg()?'':`<button class="btn ghost gout2" id="gout">🚪 יציאה מהחשבון</button>`)}
   if(GTAB==='gk'){
     const rate=(()=>{try{return +localStorage.getItem('huf')||100}catch(e){return 100}})();
     let chk={};try{chk=JSON.parse(localStorage.getItem('chk')||'{}')}catch(e){}
     const items=['דרכון בתוקף','כרטיס אשראי ומעט מזומן','תפילין וציצית','בגדי שבת','מעיל חם ומטרייה (בנובמבר בבודפשט קר)','מטען לנייד ומתאם חשמל','תרופות אישיות','סידור או ספר'];
     const bud=new Date(Date.now()-3600*1000).toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Jerusalem'});
-    return head('כלי נוסע')+`<div class="tool"><small>השעה בבודפשט עכשיו</small><b class="num" id="gbud">${new Date().toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Budapest'})}</b><span>שעה אחורה מישראל</span></div>
+    return head('מדריך כיס')+`<div class="tool"><small>השעה בבודפשט עכשיו</small><b class="num" id="gbud">${new Date().toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Budapest'})}</b><span>שעה אחורה מישראל</span></div>
      <div class="tool"><small>ממיר מטבע · פורינט הונגרי</small>
       <div class="conv"><label>₪<input id="cvI" type="number" inputmode="decimal" value="100"></label><span>=</span><label>HUF<input id="cvH" type="text" inputmode="decimal" readonly></label></div>
       <label class="rate">שער (פורינט לשקל) <input id="cvR" type="number" inputmode="decimal" value="${rate}"></label><p class="note">השער בערך. כדאי לעדכן לפני הנסיעה.</p></div>
      <div class="tool"><small>רשימת מה לקחת</small><div class="chklist">${items.map((x,i)=>`<label class="chk"><input type="checkbox" data-chk="${i}" ${chk[i]?'checked':''}><span>${esc(x)}</span></label>`).join('')}</div></div>
+     <div class="tool"><small>חשמל ושקעים</small><p class="tp">בהונגריה המתח 230 וולט והשקעים עגולים, כמו בכל אירופה. מתאם פשוט מספיק, ושנאי לא צריך.</p></div>
+     <div class="tool"><small>מזג אוויר</small><p class="tp">בנובמבר בבודפשט קר, בערך 2 עד 8 מעלות, ולפעמים גשם. מומלץ ללבוש שכבות ולקחת מעיל חם.</p></div>
+     <div class="tool"><small>תשלום וטיפים</small><p class="tp">כרטיס אשראי מתקבל כמעט בכל מקום. במסעדות לרוב כבר מוסיפים שירות בחשבון, אז בדקו לפני שמוסיפים טיפ.</p></div>
+     <div class="tool"><small>מוניות והסעות</small><p class="tp">הכי נוח להזמין מונית באפליקציית Bolt. אפשר גם לבקש מהקבלה של המלון.</p></div>
+     <div class="tool"><small>ביטויים שימושיים בהונגרית</small><div class="phr">${[['שלום','Szia','סִיָה'],['שלום (מכובד)','Jó napot','יוֹ נָפּוֹט'],['תודה','Köszönöm','קֶסֶנֶם'],['בבקשה','Kérem','קֵרֶם'],['סליחה','Elnézést','אֶלנֶזֵשט'],['כמה זה עולה?','Mennyibe kerül?','מֶנְיִבֶּה קֶרוּל'],['כן','Igen','אִיגֶן'],['לא','Nem','נֶם']].map(p=>`<div><b>${p[0]}</b><span class="ltr">${p[1]}</span><small>${p[2]}</small></div>`).join('')}</div></div>
+     <a class="btn tnav" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener" style="width:100%;justify-content:center;margin:8px 0">${IX.nav}<span>ניווט חזרה למלון</span></a>
      <div class="tool"><small>חירום</small><a class="btn" href="tel:112" style="width:100%;justify-content:center">112 · מספר החירום באירופה</a></div>`}
   return head('')}
 const _renderBase=render;
 let _lastScr='',_lastDay='';
 render=function(anim){
-  if(!GUEST()){document.body.classList.remove('guest');_renderBase(anim);const v=document.getElementById('view');if(v)v.dataset.scr=(V.tab==='more'&&V.sub?V.sub:V.tab)||'';return}
+  if(!GUEST()){document.body.classList.remove('guest');{const mb=document.getElementById('meBtn');if(mb&&mb.dataset.g){delete mb.dataset.g;mb.onclick=()=>pickMe()}}_renderBase(anim);const v=document.getElementById('view');if(v)v.dataset.scr=(V.tab==='more'&&V.sub?V.sub:V.tab)||'';return}
   document.body.classList.add('guest');
   const p=ROLE.startsWith('guest:')?S.participants.find(p=>p._id===ROLE.slice(6)):1;
   if(!PREV&&loaded.has('participants')&&S.participants.length&&!p){logoutRole();return}
   const un=annUnread();
+  {const mb=document.getElementById('meBtn'),me_=meG();if(mb&&me_){mb.onclick=()=>{GTAB='gf';render(true);window.scrollTo({top:0,behavior:'smooth'})};const h=`<i>${me_.photo?`<img src="${me_.photo}" alt="">`:esc((famKey(me_.name).first||String(me_.name||'?'))[0])}</i><span>${esc(firstN(me_.name||''))}</span>`;if(mb.dataset.g!==h){mb.dataset.g=h;mb.innerHTML=h}}}
   document.getElementById('nav').innerHTML=GNAV.map(([k,l,ic])=>`<button data-gnav="${k}" ${GTAB===k?'aria-current="page"':''}>${gIco(ic)}<span>${l}</span>${k==='gh'&&un?`<span class="badge num">${un}</span>`:''}${k==='gt'&&pendOpen()?`<span class="badge num">${pendOpen()}</span>`:''}</button>`).join('');
   const v=document.getElementById('view'), a=document.activeElement, keep=a&&a.id&&v.contains(a)?{id:a.id,val:a.value,pos:a.selectionStart}:null;
   v.innerHTML=guestHTML();v.dataset.scr='g'+GTAB;
@@ -3137,7 +3226,7 @@ setInterval(pgate,4000);
 (()=>{try{
   if(!TRIP_KEY)return;
   const base=location.origin+location.pathname.replace(/[^/]*$/,'');
-  const m={name:'שבת גיבוש בודפשט',short_name:'בודפשט',lang:'he',dir:'rtl',id:base,scope:base,start_url:base+'#k='+TRIP_KEY,display:'standalone',background_color:'#050504',theme_color:'#050504',
+  const m={name:'מסע גיבוש הונגריה',short_name:'הונגריה',lang:'he',dir:'rtl',id:base,scope:base,start_url:base+'#k='+TRIP_KEY,display:'standalone',background_color:'#050504',theme_color:'#050504',
     icons:[{src:base+'icon-192.png',sizes:'192x192',type:'image/png',purpose:'any'},{src:base+'icon-512.png',sizes:'512x512',type:'image/png',purpose:'any'},{src:base+'icon-512.png',sizes:'512x512',type:'image/png',purpose:'maskable'}]};
   const url=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}));
   let l=document.querySelector('link[rel="manifest"]');if(!l){l=document.createElement('link');l.rel='manifest';document.head.appendChild(l)}l.href=url;
@@ -3160,7 +3249,7 @@ render(true);
 </script>
 
 <script>
-(function(){var B='b7e83dc794';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B='90c3a8b364';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
