@@ -84,12 +84,14 @@ test('KPI-1 the organizer home opens with the status strip; each number leads to
   await expect(strip.getByRole('button', { name: /נגבה ממשתתפים/ })).toContainText('50%');
   await expect(strip.getByRole('button', { name: /דרכונים/ })).toContainText('1/2');
   await expect(strip.getByRole('button', { name: /בקשה מחכה/ })).toContainText('1');
-  await expect(strip.getByRole('button', { name: /משימות באיחור/ })).toContainText('1');
+  // late tasks are on the big tasks card under the strip
+  await expect(page.getByRole('region', { name: 'עבודה שוטפת' }).getByRole('button', { name: /משימות/ })).toContainText('1 באיחור');
   await strip.getByRole('button', { name: /בקשה מחכה/ }).click();
   await expect(page.locator('.page-title')).toContainText('בקשות ואישורים');
   await page.evaluate("go('home')");
   await page.getByRole('region', { name: 'פעולות מהירות' }).getByRole('button', { name: 'הודעה לכולם' }).click();
-  await expect(page.locator('.page-title')).toContainText('הודעות לכולם');
+  await expect(page.locator('.page-title')).toContainText('הודעות');
+  await expect(page.locator('.seg').getByRole('button', { name: /באפליקציה/ })).toHaveAttribute('aria-pressed', 'true');
   expect(errors).toEqual([]);
 });
 
@@ -183,5 +185,22 @@ test('SYNC-1 the same numbers on every tab: collected %, waiting requests; the t
   await expect(lunch).toContainText('בתוכנית');
   await lunch.click();
   await expect(page.getByRole('dialog')).toContainText('שינוי בלוח המסע');
+  expect(errors).toEqual([]);
+});
+
+test('PASS-1 the passport button on a participant opens the card: name in English, expiry with a warning, the photo link', async ({ browser, db }) => {
+  await seed(db);
+  await db.put(`${T}/participants/p1`, { name: 'אבי כהן', amount: 1750, phone: '0501234567', status: 'שולם', passport: true, nameEn: 'COHEN AVI', passExp: '2027-01-10', order: 1 });
+  const { page, errors } = await openTrip(browser, db);
+  await page.evaluate("go('more',{sub:'people'})");
+  await page.getByRole('button', { name: 'הדרכון של אבי כהן' }).click();
+  const sh = page.getByRole('dialog');
+  await expect(sh).toContainText('COHEN AVI');
+  await expect(sh).toContainText('10.1.2027');
+  await expect(sh).toContainText('התוקף קצר מדי');
+  await page.evaluate(() => { window.prompt = () => 'https://drive.google.com/file/d/xyz'; });
+  await sh.getByRole('button', { name: 'הוספת קישור לצילום' }).click();
+  await expect.poll(async () => (await db.get(`${T}/participants/p1`))?.passUrl).toBe('https://drive.google.com/file/d/xyz');
+  await expect(page.getByRole('dialog').getByRole('link', { name: 'צפייה בצילום הדרכון' })).toHaveAttribute('href', 'https://drive.google.com/file/d/xyz');
   expect(errors).toEqual([]);
 });

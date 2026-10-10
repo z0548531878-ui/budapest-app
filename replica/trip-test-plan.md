@@ -25,11 +25,12 @@ B backup and export, S links and content safety, O offline. Tasks, schedule, Cla
 | A11Y-3 | all | touch targets | measure every button and link on 6 screens | none smaller than 24×24 (WCAG 2.5.8) | e2e | pass |
 | LIVE-1 | programme | happy: last-minute change | organizer moves Friday's lunch 13:00 → 13:30, then back | saved for everyone; participant sees 13:30 with "עודכן" and no edit button; a message to all; back to the original removes it | e2e | pass |
 | NOW-1 | home | happy: trip day | clock at Friday 12:40 Budapest; then a day outside the trip | "now" = free time, "next" = lunch in 20 min (highlighted); button opens the day; no card outside the trip | e2e | pass |
-| KPI-1 | organizer home | happy | open home | collected %, passports, waiting requests, overdue tasks; each opens its screen; quick action opens the announcement composer | e2e | pass |
+| KPI-1 | organizer home | happy | open home | collected %, passports and waiting requests in the strip, overdue tasks on the big tasks card; each opens its screen; quick action opens the messages screen | e2e | pass |
 | HELP-1 | participant home | happy | open home | call / WhatsApp the organizer and 112 | e2e | pass |
 | MOTION-1 | all | happy: motion | another phone marks a payment; then flick a task sheet down 40px | the collected % rolls 50→100 instead of jumping; the sheet closes | e2e | pass |
 | ZMAN-1 | programme | happy: zmanim | open Friday, then all zmanim, then Shabbat; then the taxi card | sunset 16:03, candles 18 minutes before it; Rabbeinu Tam 17:14; the Hungarian card opens | e2e | pass |
 | SYNC-1 | all | consistency | a partial payment, an exempt rabbi, one new and one in-progress request | home, the participants tab and the money summary agree on 64%; requests show 1 waiting everywhere; the team schedule includes the programme | e2e | pass |
+| PASS-1 | participants | happy: passport | tap the passport mark on a participant, add the photo link | name in English, expiry 10.1.2027 flagged as too short, the link saved and opens | e2e | pass |
 
 ## Manual pass (needs a real phone)
 
