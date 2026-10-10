@@ -208,6 +208,7 @@ test('PASS-1 the passport button on a participant opens the card: name in Englis
 test('PCHECK-1 passport check: paste names and expiry, a short or expired one is flagged, inline edit, and the hotel list in English', async ({ browser, db }) => {
   await seed(db);
   await db.put(`${T}/participants/p3`, { name: 'גדי לוי', amount: 1750, phone: '0503456789', status: 'שולם', passport: true, order: 3 });
+  await db.put(`${T}/participants/p4`, { name: 'שלמה זלמן ברסקי', amount: 1750, phone: '0504567890', status: 'שולם', passport: false, order: 4 });
   await db.put(`${T}/rooms/r1`, { occupants: 'אבי כהן, בני לוי', roomNumber: '401', floor: '4', order: 1 });
   const { page, errors } = await openTrip(browser, db);
   await page.evaluate("go('more',{sub:'passports'})");
@@ -219,9 +220,14 @@ test('PCHECK-1 passport check: paste names and expiry, a short or expired one is
   // the check runs on its own, before anything is pressed
   await expect(sh.locator('#imOut')).toContainText('3 נמצאו');
   await expect(sh.locator('#imOut')).toContainText('1 לא זוהו');
+  // an unrecognised line can be assigned by hand from a list (e.g. the app has Shlomo, the passport says Shlomo Zalman)
+  await sh.locator('.imsel').selectOption({ label: 'שלמה זלמן ברסקי' });
+  await expect(sh.locator('#imOut')).toContainText('4 נמצאו');
+  await sh.locator('.imsel').count().then(n => expect(n).toBe(0));
   await sh.getByRole('button', { name: 'בדיקה ועדכון' }).click();
   await expect.poll(async () => (await db.get(`${T}/participants/p1`))?.nameEn).toBe('COHEN AVI');
   await expect.poll(async () => (await db.get(`${T}/participants/p2`))?.passExp).toBe('2025-08-10');
+  await expect.poll(async () => (await db.get(`${T}/participants/p4`))?.nameEn).toBe('NOBODY');
   await page.evaluate("go('more',{sub:'passports'})");
   await expect(page.locator('.pcrow', { hasText: 'בני לוי' })).toContainText('פג תוקף');
   await expect(page.locator('.pcrow', { hasText: 'גדי לוי' })).toContainText('תוקף קצר');

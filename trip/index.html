@@ -1585,6 +1585,9 @@ button.pp{font-size:11px!important;padding:2px 5px!important;min-height:24px!imp
 .chip{padding:6px 12px!important;font-size:13px!important}
 .bulkbar{padding:9px 13px!important;font-size:14px!important;border-radius:14px!important}
 .search{min-height:40px!important;padding:8px 12px!important;font-size:15px!important}
+
+.imbad{display:grid;gap:4px;margin:8px 0 0;padding:8px 10px;border-radius:12px;border:1px dashed rgba(255,157,146,.5)}.imbad>span{font-size:12.5px;direction:ltr;text-align:left}
+.imsel{width:100%;min-height:38px;border-radius:10px;border:1px solid var(--edge);background:#17140f;color:var(--ink);font:inherit;font-size:14px;padding:4px 8px}
 /* ===== zmanim strip (inside the parchment), pocket-guide tools, taxi card ===== */
 .zst{margin:4px 0 14px;padding:10px 12px 12px;border:1px solid rgba(164,124,39,.45);border-radius:10px;background:linear-gradient(180deg,rgba(255,250,235,.55),rgba(236,220,180,.35))}
 .zst .zh{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:800;color:#4A3A12;letter-spacing:.3px}
@@ -2559,18 +2562,26 @@ function hotelSheet(){const t=hotelText(),miss=S.participants.filter(p=>!p.nameE
     download('rooming-list-silver-crown.xlsx',new Blob([X.write(wb,{bookType:'xlsx',type:'array'})],{type:'application/octet-stream'}))}}
 // paste lines "Hebrew name | ENGLISH NAME | YYYY-MM-DD" and the matching participants are filled in
 function passImportSheet(){
-  sheet(`<h3>הדבקת שמות ותוקפים</h3><p class="note" style="margin-top:0">שורה לכל משתתף: <span class="ltr">שם בעברית | ENGLISH NAME | 2030-12-31</span>. ההתאמה לפי השם בעברית, ולפני העדכון רואים מה נמצא.</p>
-   <textarea class="note-in" id="imTxt" style="min-height:180px;direction:rtl" placeholder="אבי כהן | COHEN AVI | 2031-05-14"></textarea><div id="imOut" class="note"></div>
+  sheet(`<h3>הדבקת שמות ותוקפים</h3><p class="note" style="margin-top:0">שורה לכל משתתף: <span class="ltr">שם בעברית | ENGLISH NAME | 2030-12-31</span>. ההתאמה לפי השם בעברית. שורה שלא זוהתה אפשר לשייך בעצמכם מהרשימה.</p>
+   <textarea class="note-in" id="imTxt" style="min-height:160px;direction:rtl" placeholder="אבי כהן | COHEN AVI | 2031-05-14"></textarea><div id="imOut" class="note"></div>
    <div class="sheet-acts"><span class="sp"></span><button class="btn primary" id="imGo">בדיקה ועדכון</button></div>`);
-  let plan=[];
+  let plan=[];const manual={};
+  const lastTok=n=>normName(n).split(' ').slice(-1)[0];
+  // a line that wasn't recognised: choose the person from a list, the ones with the same surname first
+  const pickList=raw=>{const ln=lastTok(raw.split(/\s*[|\t]\s*/)[0]),all=S.participants.slice().sort((x,y)=>(lastTok(y.name)===ln)-(lastTok(x.name)===ln)||x.name.localeCompare(y.name,'he'));
+    return `<select class="imsel" data-imraw="${esc(raw)}" aria-label="שיוך לשורה: ${esc(raw)}"><option value="">בחרו משתתף…</option>${all.map(p=>`<option value="${p._id}">${esc(p.name)}</option>`).join('')}</select>`};
   const parse=()=>{plan=[];const bad=[];
-    document.getElementById('imTxt').value.split(/\n/).map(l=>l.trim()).filter(Boolean).forEach(l=>{const c=l.split(/\s*[|\t]\s*/);if(c.length<2){bad.push(l);return}
-      const p=matchGuest(c[0]);const en=(c[1]||'').toUpperCase().replace(/\s+/g,' ').trim(),ex=(c[2]||'').trim();
-      if(!p||(ex&&!/^\d{4}-\d{2}-\d{2}$/.test(ex))){bad.push(l);return}plan.push({p,en,ex})});
-    const o=document.getElementById('imOut');o.innerHTML=`<b class="num">${plan.length}</b> נמצאו${bad.length?` · <span style="color:var(--bad)">${bad.length} לא זוהו:</span><br>${bad.map(esc).join('<br>')}`:''}`;document.getElementById('imGo').disabled=false};
-  // the check runs by itself as the text comes in, so the result is on screen before the button is pressed
+    document.getElementById('imTxt').value.split(/\n/).map(l=>l.trim()).filter(Boolean).forEach(l=>{const c=l.split(/\s*[|\t]\s*/);
+      const en=(c[1]||'').toUpperCase().replace(/\s+/g,' ').trim(),ex=(c[2]||'').trim();
+      if(c.length<2||(ex&&!/^\d{4}-\d{2}-\d{2}$/.test(ex))){bad.push({l,noFmt:1});return}
+      const p=(manual[l]&&find('participants',manual[l]))||matchGuest(c[0]);
+      if(!p){bad.push({l});return}plan.push({p,en,ex})});
+    const o=document.getElementById('imOut');
+    o.innerHTML=`<b class="num">${plan.length}</b> נמצאו`+(bad.length?` · <span style="color:var(--bad)">${bad.length} לא זוהו</span>`+bad.map(({l,noFmt})=>`<div class="imbad"><span class="ltr">${esc(l)}</span>${noFmt?'<small>הפורמט לא תקין</small>':pickList(l)}</div>`).join(''):'');
+    o.querySelectorAll('.imsel').forEach(sel=>sel.onchange=()=>{manual[sel.dataset.imraw]=sel.value;parse()})};
   const im=document.getElementById('imTxt');im.addEventListener('input',parse);im.addEventListener('paste',()=>setTimeout(parse,0));
-  document.getElementById('imGo').onclick=async()=>{parse();if(!plan.length){toast('לא זוהתה אף שורה. כל שורה: שם בעברית | ENGLISH NAME | תאריך');return}let n=0;for(const {p,en,ex} of plan){if(await save('participants',p._id,{...strip(find('participants',p._id)||p),nameEn:en,...(ex?{passExp:ex}:{})}))n++}closeSheet();toast(`עודכנו ${n} משתתפים`)}}
+  document.getElementById('imGo').onclick=async()=>{parse();if(!plan.length){toast('לא זוהתה אף שורה. כל שורה: שם בעברית | ENGLISH NAME | תאריך');return}
+    let n=0;for(const {p,en,ex} of plan){if(await save('participants',p._id,{...strip(find('participants',p._id)||p),nameEn:en,...(ex?{passExp:ex}:{})}))n++}closeSheet();toast(`עודכנו ${n} משתתפים`)}}
 function personSheet(id,focus){
   const p=find('participants',id);if(!p)return;const r=roomOf(p),ts=tasksOf(p),pu=passUrlOf(p);
   const expBad=p.passExp&&p.passExp<PASS_MIN;
