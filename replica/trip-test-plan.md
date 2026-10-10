@@ -32,6 +32,8 @@ B backup and export, S links and content safety, O offline. Tasks, schedule, Cla
 | SYNC-1 | all | consistency | a partial payment, an exempt rabbi, one new and one in-progress request | home, the participants tab and the money summary agree on 64%; requests show 1 waiting everywhere; the team schedule includes the programme | e2e | pass |
 | PASS-1 | participants | happy: passport | tap the passport mark on a participant, add the photo link | name in English, expiry 10.1.2027 flagged as too short, the link saved and opens | e2e | pass |
 | PCHECK-1 | participants | happy: passport check | paste names + expiry for 3 people (one valid, one expired, one too short), fix one inline, open the hotel list | the expired and short ones are flagged, the default view lists only problems, the inline date saves, the hotel list shows the room with the English names | e2e | pass |
+| SETS-1 | rooms | happy: the room kits | the person marked "arranges the rooms" opens his own screen (from 19.11) and taps room 401; someone not marked has no such card | the room gets kitReady and who did it; the rooms screen shows 1/2 with his name; the room kit shows the same progress | e2e | pass |
+| KERES-1 | participant | happy: Kerestir | open the Kerestir page from the trip-day home on Thursday | who he was, the tomb, today's programme taken from the schedule | e2e | pass |
 
 ## Manual pass (needs a real phone)
 

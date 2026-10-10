@@ -1588,6 +1588,33 @@ button.pp{font-size:11px!important;padding:2px 5px!important;min-height:24px!imp
 
 .imbad{display:grid;gap:4px;margin:8px 0 0;padding:8px 10px;border-radius:12px;border:1px dashed rgba(255,157,146,.5)}.imbad>span{font-size:12.5px;direction:ltr;text-align:left}
 .imsel{width:100%;min-height:38px;border-radius:10px;border:1px solid var(--edge);background:#17140f;color:var(--ink);font:inherit;font-size:14px;padding:4px 8px}
+
+/* ===== the room kits: participant screen + links ===== */
+.gsh{margin:10px 0 8px;padding:14px;border-radius:20px;border:1px solid var(--edge);background:linear-gradient(160deg,#1d1912,#0e0c09);display:grid;gap:10px}
+.gsh>div:first-child{display:flex;align-items:baseline;gap:8px}.gsh b{font-size:30px;font-weight:900;color:#f6dc93}.gsh span{font-size:14px;color:var(--muted);font-weight:700}
+.gsrooms{display:grid;gap:8px;margin-top:6px}
+.gsr{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;min-height:64px;padding:10px 12px;border-radius:18px;border:1px solid var(--edge);background:linear-gradient(160deg,#17140f,#0d0c09);color:var(--ink)}
+.gsr:focus-visible{outline:2px solid #f6dc93;outline-offset:2px}
+.gsn{display:grid;place-items:center;min-width:56px;padding:6px 8px;border-radius:14px;background:rgba(214,178,98,.14)}.gsn b{font-size:22px;font-weight:900;color:#f6dc93;line-height:1}.gsn small{font-size:11px;color:var(--muted)}
+.gsr .main b{display:block;font-size:15px;font-weight:800}.gsr .main small{font-size:12px;color:var(--muted)}
+.gsc{width:40px;height:40px;border-radius:50%;border:2px solid rgba(214,178,98,.45);display:grid;place-items:center;font-size:22px;font-weight:900;color:#15110a}
+.gsr.on{border-color:rgba(29,127,83,.6);background:linear-gradient(160deg,rgba(29,127,83,.18),#0d0c09)}.gsr.on .gsc{background:#2fb67a;border-color:#2fb67a}
+@media (prefers-reduced-motion:no-preference){.gsr{transition:transform .15s}.gsr:active{transform:scale(.97)}.gsc{transition:background .2s,border-color .2s}}
+.kroom{all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:flex!important;align-items:center;gap:12px;padding:12px 14px!important;border-radius:18px;border:1px solid rgba(224,178,90,.4);background:linear-gradient(160deg,rgba(224,178,90,.1),transparent);margin:10px 0}
+.kroom .kr-i{font-size:24px}.kroom .main{flex:1;min-width:0}.kroom b{display:block;font-size:15px}.kroom small{font-size:12px;color:var(--muted)}
+
+/* ===== Kerestir page ===== */
+.kzh{margin:8px 0 12px;padding:18px 16px;border-radius:22px;border:1px solid rgba(224,178,90,.45);background:radial-gradient(120% 140% at 100% 0%,rgba(224,178,90,.18),transparent 55%),linear-gradient(160deg,#1d1912,#0e0c09);text-align:center;display:grid;gap:4px}
+.kzh small{font-size:12px;letter-spacing:2px;color:var(--muted);font-weight:800}.kzh b{font-family:var(--display);font-size:24px;color:#f6dc93;line-height:1.2}.kzh span{font-size:13px;color:var(--muted);font-weight:700}
+.kzc{margin:0 0 10px;padding:14px 16px;border-radius:20px;border:1px solid var(--edge);background:linear-gradient(160deg,#17140f,#0d0c09)}
+.kzc h4{margin:0 0 8px;font-size:15px;color:#f0d28c}.kzc ul{margin:0;padding:0 18px 0 0;display:grid;gap:8px}.kzc li{font-size:14.5px;line-height:1.55;color:var(--ink)}
+.kzt{display:grid;gap:8px}.kzt>div{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;align-items:baseline;padding:8px 0;border-top:1px solid var(--edge)}.kzt>div:first-child{border-top:0}.kzt .num{grid-row:span 2;font-size:18px;font-weight:900;color:#f6dc93;min-width:48px}.kzt b{font-size:14.5px}.kzt small{color:var(--muted);font-size:12.5px}
+.kzs{margin:4px 2px 0;font-size:12px}
+
+.fold>summary{display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none;padding:12px 4px;min-height:44px}.fold>summary::-webkit-details-marker{display:none}
+.fold>summary h3{margin:0;font-size:16px;flex:1}.fold>summary .fc{background:rgba(214,178,98,.2);color:#f0d28c;border-radius:99px;padding:1px 9px;font-size:12.5px;font-weight:800}
+.fold>summary::after{content:'›';font-size:20px;color:#e0b25a;transition:transform .2s}.fold[open]>summary::after{transform:rotate(90deg)}
+.fold>summary .link{order:3;background:none;border:0;color:#e0b25a;font-weight:800;font-size:13px;padding:6px}
 /* ===== zmanim strip (inside the parchment), pocket-guide tools, taxi card ===== */
 .zst{margin:4px 0 14px;padding:10px 12px 12px;border:1px solid rgba(164,124,39,.45);border-radius:10px;background:linear-gradient(180deg,rgba(255,250,235,.55),rgba(236,220,180,.35))}
 .zst .zh{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:800;color:#4A3A12;letter-spacing:.3px}
@@ -1662,7 +1689,7 @@ const outGroups=()=>{const s=S.settings.find(x=>x._id==='trip');return (s&&s.out
 const F={
  tasks:{one:'משימה',g:1,fields:[{k:'title',l:'מה צריך לעשות',t:'textarea'},{k:'owner',l:'אחראי',t:'owner'},{k:'status',l:'סטטוס',t:'seg',o:['לביצוע','בתהליך','ממתין','בוצע']},{k:'open',l:'פתוח למשתתפים לקחת',t:'seg',o:['לא','כן']},{k:'priority',l:'עדיפות',t:'seg',o:['רגילה','גבוהה']},{k:'due',l:'עד מתי',t:'date'},{k:'category',l:'תחום',t:'chips',o:TASK_CATS},{k:'notes',l:'הערות',t:'textarea'}],def:{status:'לביצוע',priority:'רגילה',category:'אחר'}},
  expenses:{one:'הוצאה',g:1,fields:[{k:'name',l:'על מה',t:'text'},{k:'estimate',l:'סכום (₪)',t:'number',half:1},{k:'paid',l:'שולם בפועל (₪)',t:'number',half:1},{k:'final',l:'הסכום סופי',t:'toggle'},{k:'status',l:'מצב',t:'seg',o:['לא שולם','מקדמה','שולם']},{k:'receipt',l:'יש קבלה',t:'toggle'},{k:'paidBy',l:'מי שילם',t:'owner'},{k:'category',l:'תחום',t:'chips',o:EXP_CATS},{k:'notes',l:'הערות',t:'textarea'}],def:{status:'לא שולם',category:'אחר',estimate:0,paid:0,final:false}},
- participants:{one:'משתתף',fields:[{k:'name',l:'שם',t:'text'},{k:'amount',l:'סכום (₪)',t:'number',half:1},{k:'phone',l:'טלפון',t:'tel',half:1},{k:'status',l:'תשלום',t:'seg',o:['לא שולם','שולם חלקית','שולם','פטור']},{k:'paidAmt',l:'כמה שולם עד עכשיו (₪, בתשלום חלקי)',t:'number'},{k:'gender',l:'מין',t:'seg',o:['גבר','אישה']},{k:'method',l:'איך שילם',t:'chips',o:['אשראי','העברה לאיציק','מזומן לאיציק','העברה לשלומי','מזומן לשלומי']},{k:'holder',l:'אצל מי הכסף',t:'seg',o:['שלומי','איציק']},{k:'passport',l:'צילום דרכון התקבל',t:'toggle'},{k:'nameEn',l:'שם באנגלית, כמו בדרכון',t:'text',ph:'COHEN AVI'},{k:'passExp',l:'תוקף הדרכון',t:'date'},{k:'passUrl',l:'קישור לצילום הדרכון (בתיקיית הדרייב)',t:'text',ph:'https://drive.google.com/…'},{k:'carry',l:'מה סוחב (מזוודה/ציוד)',t:'text'},{k:'duties',l:'תפקידים ומשימות שלו',t:'text'},{k:'nusach',l:'נוסח',t:'seg',o:['אשכנז','ספרד','עדות המזרח']},{k:'outbound',l:'טיסת הלוך',t:'chips',o:()=>outGroups()},{k:'returnGroup',l:'טיסת חזור',t:'chips',o:RETURN_GROUPS},{k:'notes',l:'הערות',t:'textarea'}],def:{amount:1750,status:'לא שולם',outbound:'קבוצתי'}},
+ participants:{one:'משתתף',fields:[{k:'name',l:'שם',t:'text'},{k:'amount',l:'סכום (₪)',t:'number',half:1},{k:'phone',l:'טלפון',t:'tel',half:1},{k:'status',l:'תשלום',t:'seg',o:['לא שולם','שולם חלקית','שולם','פטור']},{k:'paidAmt',l:'כמה שולם עד עכשיו (₪, בתשלום חלקי)',t:'number'},{k:'gender',l:'מין',t:'seg',o:['גבר','אישה']},{k:'method',l:'איך שילם',t:'chips',o:['אשראי','העברה לאיציק','מזומן לאיציק','העברה לשלומי','מזומן לשלומי']},{k:'holder',l:'אצל מי הכסף',t:'seg',o:['שלומי','איציק']},{k:'passport',l:'צילום דרכון התקבל',t:'toggle'},{k:'kitter',l:'מסדר את הערכות בחדרים (יראה אצלו מסך לעדכון חדרים)',t:'toggle'},{k:'nameEn',l:'שם באנגלית, כמו בדרכון',t:'text',ph:'COHEN AVI'},{k:'passExp',l:'תוקף הדרכון',t:'date'},{k:'passUrl',l:'קישור לצילום הדרכון (בתיקיית הדרייב)',t:'text',ph:'https://drive.google.com/…'},{k:'carry',l:'מה סוחב (מזוודה/ציוד)',t:'text'},{k:'duties',l:'תפקידים ומשימות שלו',t:'text'},{k:'nusach',l:'נוסח',t:'seg',o:['אשכנז','ספרד','עדות המזרח']},{k:'outbound',l:'טיסת הלוך',t:'chips',o:()=>outGroups()},{k:'returnGroup',l:'טיסת חזור',t:'chips',o:RETURN_GROUPS},{k:'notes',l:'הערות',t:'textarea'}],def:{amount:1750,status:'לא שולם',outbound:'קבוצתי'}},
  donations:{one:'תרומה',g:1,fields:[{k:'donor',l:'תורם',t:'text'},{k:'amount',l:'סכום (₪)',t:'number'},{k:'purpose',l:'מיועד ל',t:'chips',o:['כללי','סידורים','זמירות','תהילים','הדפסות']},{k:'status',l:'מצב',t:'seg',o:['התחייב','התקבל']},{k:'method',l:'איך התקבל',t:'chips',o:['אשראי','העברה לאיציק','מזומן לאיציק','העברה לשלומי','מזומן לשלומי']},{k:'holder',l:'אצל מי הכסף',t:'seg',o:['שלומי','איציק']},{k:'notes',l:'הערות',t:'textarea'}],def:{status:'התחייב',purpose:'כללי',amount:0}},
  schedule:{one:'אירוע',fields:[{k:'day',l:'יום',t:'seg',o:TRIP_DAYS.map(d=>d.k)},{k:'time',l:'שעה',t:'text',half:1,ph:'18:00'},{k:'place',l:'מקום',t:'text',half:1},{k:'title',l:'מה קורה',t:'text'},{k:'owner',l:'אחראי',t:'owner'},{k:'notes',l:'הערות',t:'textarea'},{k:'menu',l:'תפריט',t:'textarea'}],def:{}},
  flights:{one:'טיסה',g:1,fields:[{k:'label',l:'שם',t:'text'},{k:'dir',l:'כיוון',t:'seg',o:['הלוך','חזור']},{k:'group',l:'קבוצה (כמו בכרטיס המשתתף)',t:'text'},{k:'flightNo',l:'מספר טיסה',t:'text',half:1},{k:'date',l:'תאריך',t:'date',half:1},{k:'dep',l:'המראה',t:'text',half:1},{k:'arr',l:'נחיתה',t:'text',half:1},{k:'notes',l:'הערות',t:'textarea'}],def:{dir:'חזור'}},
@@ -1902,6 +1929,7 @@ const VIEWS={
     <div class="days">${TRIP_DAYS.map((d,i)=>`<div class="${d.sh?'sh':''} ${i===idx?'now':''}"><b>${d.s}</b>${d.l}</div>`).join('')}</div></div>
     <div class="pass-stub">${depAt(out)>Date.now()?`<span class="big num" id="cdD">${cdParts(out).d}</span><small>ימים</small><div class="cdg num" id="cdT">${cdParts(out).t}</div>`:`<span class="big num">${big}</span><small>${lbl}</small>`}</div></section>
   ${nowCard(`data-go="more" data-opts='{"sub":"program"}'`)}${kpis}
+  ${attention}
   <section class="qact" aria-label="פעולות מהירות">${[['announce',I.chat,'הודעה לכולם'],['program',I.sched,'שינוי בלו״ז'],['people',I.phone,'חיפוש משתתף']].map(([k,ic,l])=>`<button data-go="more" data-opts='{"sub":"${k}"}'><span class="ic">${ic}</span><span>${l}</span></button>`).join('')}</section>
   ${bigCards()}
   ${homeTiles()}
@@ -1911,12 +1939,8 @@ const VIEWS={
    ${CAN_SEND()?'':'<!--'}<div class="sync ${pn?'has':''}"><span class="dot"></span><div class="main"><b>${pn?`${pn} חדשים ל-Claude`:'Claude מעודכן'}</b><small>${pn?'שולחים אליו, והוא מעדכן כאן לבד':'אין שינויים שהוא לא ראה'}</small></div>
     <div class="btns"><button class="btn ${pn?'primary':''}" data-send>שליחת עדכון ל-Claude</button></div></div>${CAN_SEND()?'':'-->'}
   </section>
-  ${attention}
-  <section class="sec"><div class="sec-h"><h3>${ME?'הבא בתור שלך':'המשימות שלי'}</h3>${ME?`<button class="link" data-go="tasks" data-opts='{"seg":"mine"}'>הכל ›</button>`:''}</div>
-    ${!ready('tasks')?skel(3):ME?card(my.map(taskRow).join(''),'<b>אין לך משימות פתוחות</b>כל הכבוד'):card('<button class="row" data-pickme><div class="main"><div class="t">בחרו מי אתם</div><div class="m">כדי לראות כאן את המשימות שלכם</div></div><span class="pill p-gold">בחירה</span></button>')}
-  </section>
   ${guideCard()}
-  ${na.length?`<section class="sec"><div class="sec-h"><h3>מה הצוות עשה</h3><button class="link" id="seeAct">הכל ›</button></div><div class="card feed">${na.slice(0,3).map(a=>`<button class="it new" ${find(a.col,a.rid)?`data-edit="${a.col}/${a.rid}"`:''}><span class="av">${esc((a.by||'?')[0])}</span><span class="main"><b>${esc(a.by||'מישהו')}</b> ${esc(actLine(a))}${a.change?`<small>${esc(a.change)}</small>`:''}</span></button>`).join('')}</div></section>`:''}
+  ${na.length?`<details class="sec fold"><summary><h3>מה הצוות עשה</h3><span class="num fc">${na.length}</span><button class="link" id="seeAct">הכל ›</button></summary><div class="card feed">${na.slice(0,3).map(a=>`<button class="it new" ${find(a.col,a.rid)?`data-edit="${a.col}/${a.rid}"`:''}><span class="av">${esc((a.by||'?')[0])}</span><span class="main"><b>${esc(a.by||'מישהו')}</b> ${esc(actLine(a))}${a.change?`<small>${esc(a.change)}</small>`:''}</span></button>`).join('')}</div></details>`:''}
 `;
  },
  tasks(){
@@ -2089,7 +2113,7 @@ const SUB={
  rooms(){
   const rows=S.rooms.slice().sort(byOrder), rk=rows.filter(r=>r.kitReady).length;
   return subHead('חדרים',`<span class="cnt num">${rk}/${rows.length} עם סט</span>`)+updBar('rooms')+`${KITLOCK()?'<div class="lockbar">🔒 סימון "הסט הונח בחדר" נפתח ביום המסע, 19.11. עד אז אפשר לצפות ולעדכן מספר חדר וקומה.</div>':'<p class="note">לחיצה על העיגול מסמנת שהסט הונח בחדר.</p>'}`+card(rows.map(r=>`<div class="row" data-edit="rooms/${r._id}" role="button" tabindex="0">${KITLOCK()?'<span class="check lock" aria-label="נעול">🔒</span>':`<button class="check ${r.kitReady?'on':''}" data-toggle="rooms/${r._id}" aria-label="סט הונח">${r.kitReady?CHECK:''}</button>`}
-   <div class="main"><div class="t">${esc(r.occupants)}</div><div class="m"><span>${esc(r.type)}</span>${r.notes?`<span>${esc(r.notes)}</span>`:''}</div></div>${r.roomNumber||r.floor?`<span class="pill p-mute num">${r.roomNumber?'חדר '+esc(r.roomNumber):''}${r.roomNumber&&r.floor?' · ':''}${r.floor?'קומה '+esc(r.floor):''}</span>`:'<span class="pill p-mute">ממתין למלון</span>'}</div>`).join(''));
+   <div class="main"><div class="t">${esc(r.occupants)}</div><div class="m"><span>${esc(r.type)}</span>${r.notes?`<span>${esc(r.notes)}</span>`:''}${r.kitReady&&r.kitBy?`<span class="who">📍 ${esc(firstN(r.kitBy))}${r.kitAt?' · '+esc(fmtWhen(r.kitAt)):''}</span>`:''}</div></div>${r.roomNumber||r.floor?`<span class="pill p-mute num">${r.roomNumber?'חדר '+esc(r.roomNumber):''}${r.roomNumber&&r.floor?' · ':''}${r.floor?'קומה '+esc(r.floor):''}</span>`:'<span class="pill p-mute">ממתין למלון</span>'}</div>`).join(''));
  },
  flights(){
   const rows=S.flights.slice().sort((a,b)=>((a.date||'')+(a.dep||'')).localeCompare((b.date||'')+(b.dep||'')));
@@ -2240,6 +2264,7 @@ function rolesMap(){
   S.participants.forEach(p=>{
     String(p.duties||'').split(/\s*·\s*/).filter(Boolean).forEach(d=>put(p.name,{k:'role',t:d,e:'participants/'+p._id}));
     if(p.carry)put(p.name,{k:'carry',t:'סוחב: '+p.carry,e:'participants/'+p._id});
+    if(p.kitter)put(p.name,{k:'role',t:'מסדר את הערכות בחדרים',e:'participants/'+p._id});
   });
   S.tasks.filter(t=>t.status!=='בוצע').forEach(t=>split(t.owner).forEach(n=>put(n,{k:'task',t:t.title,e:'tasks/'+t._id,due:t.due})));
   S.packing.filter(x=>!kst(x,'ordered')&&!x.sug&&x.buyer).forEach(x=>split(x.buyer).forEach(n=>put(n,{k:'buy',t:`קונה: ${x.qty?x.qty+' × ':''}${x.item}`,e:'packing/'+x._id})));
@@ -2760,7 +2785,7 @@ function tripDayBlock(ppl){const t=todayISO(),z=zmanim(t),rid=(ppl.find(p=>p.roo
   const box=(tag,at,l,v,sub)=>`<${tag} class="tdc" ${at}><small>${l}</small><b>${v}</b><span>${sub}</span></${tag}>`;
   return `<section class="tday" aria-label="היום במסע">
    ${box('button','data-gnav="gr"','החדר שלי',r&&r.roomNumber?'חדר <span class="num">'+esc(r.roomNumber)+'</span>':'טרם עודכן',r&&r.floor?'קומה '+esc(r.floor):'פרטי החדר והמלון')}
-   ${box('button',`data-zman="${t}"`,c[0],`<span class="num">${esc(c[1])}</span>`,'שקיעה <span class="num">'+hm(z.shk)+'</span> · כל הזמנים')}
+   ${t==='2026-11-19'?box('button','data-gnav="gz"','קרעסטיר','רבי ישעיה׳לה','על הצדיק, הציון והיום שלנו'):box('button',`data-zman="${t}"`,c[0],`<span class="num">${esc(c[1])}</span>`,'שקיעה <span class="num">'+hm(z.shk)+'</span> · כל הזמנים')}
    ${box('a',`href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener"`,'חזרה למלון','ניווט','לפי המיקום שלכם')}
    ${box('button','id="taxiBtn"','מונית','כרטיס לנהג','שם המלון בהונגרית')}</section>`}
 
@@ -2935,7 +2960,7 @@ function toggle(path,btn){const [c,id]=path.split('/'),d=find(c,id);if(!d)return
   const next=c==='tasks'?(prev==='בוצע'?'לביצוע':'בוצע'):!prev;
   if(btn){btn.classList.toggle('on');btn.innerHTML=btn.classList.contains('on')?CHECK:'';try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}}
   if(btn&&(next==='בוצע'||next===true))burst(btn);
-  save(c,id,{...strip(d),[key]:next}).then(ok=>{if(ok&&(next==='בוצע'||next===true))toast(c==='tasks'?'בוצע. כל הכבוד':'סומן',()=>save(c,id,strip(d)))})}
+  save(c,id,{...strip(d),[key]:next,...(c==='rooms'?{kitBy:next?(TEAM_FULL[ME]||ME||''):'',kitAt:next?new Date().toISOString():''}:{})}).then(ok=>{if(ok&&(next==='בוצע'||next===true))toast(c==='tasks'?'בוצע. כל הכבוד':'סומן',()=>save(c,id,strip(d)))})}
 let toastT;
 function toast(m,undo){document.querySelectorAll('.toast').forEach(x=>x.remove());clearTimeout(toastT);
   const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.innerHTML=`<span>${esc(m)}</span>${undo?'<button>ביטול</button>':''}`;document.body.appendChild(t);
@@ -3348,6 +3373,7 @@ const PLACES=[
 ];
 
 // a tapped notification opens the app on its screen (the service worker opens ./#tab=gl)
+let GKIT='todo';
 let GTAB=(()=>{try{const m=location.hash.match(/tab=(g[a-z])\b/);return m&&GNAV.concat([['gm'],['gk'],['gx'],['gp'],['gf']]).some(n=>n[0]===m[1])?m[1]:'gh'}catch(e){return 'gh'}})(), GSEG='open', GGEN='all', GQ='';
 const DRAFT={annTitle:'',annText:'',reqText:'',reqCat:'אחר'};
 const meG=()=>{if(PREV&&ROLE==='org'){const n=(typeof TEAM_FULL!=='undefined'&&TEAM_FULL[ME])||ME;return S.participants.find(p=>p.name===n)||S.participants.find(p=>p.name==='שלומי זינגר')||null}return S.participants.find(p=>p._id===ROLE.slice(6))||null};
@@ -3481,8 +3507,10 @@ function guestHTML0(){
      ${nowCard('data-gnav="gl"')}${banner}${TRIPDAY()?tripDayBlock(ppl):passBlock+extraOut+stat}
      <div class="gcb">
       ${cube('gl',I.sched,'לוח המסע','מה קורה בכל יום, ובאיזו שעה')}
+      ${cube('gz',IX.pin,'קרעסטיר','על רבי ישעיה׳לה ועל הציון')}
       ${cube('gx',IX.food,'מסעדות ואטרקציות','איפה אוכלים כשר, ומה כדאי לראות')}
       ${cube('gr',I.bed,'החדר שלי','מספר חדר, קומה ופרטי המלון')}
+      ${me&&me.kitter?cube('gs',I.box,'סידור ערכות בחדרים',(()=>{const rp=roomsPlaced();return rp.t?`הונחו ${rp.n} מתוך ${rp.t} חדרים`:'עדכון באיזה חדר סידרתם'})(),(()=>{const rp=roomsPlaced();return rp.t-rp.n||''})()):''}
       ${cube('gp',I.people,'משתתפים','מי בא איתנו, ואיך מתקשרים')}
       ${cube('gt',I.tasks,'משימות',openT?`יש ${openT} משימות שמחכות למתנדבים`:'לעזור ולקחת משימה',mineT||'')}
       ${cube('gm',I.chat,'הודעות','עדכונים מהמארגנים',un||'')}
@@ -3526,6 +3554,30 @@ function guestHTML0(){
     const line=(l,v)=>`<div class="rline"><small>${l}</small><b>${v?esc(v):'טרם עודכן'}</b></div>`;
     return head('החדר שלי')+(r&&(r.roomNumber||r.floor||r.entrance)?`<div class="roomcard"><div class="rc-h"><span class="bed">🛏</span> ${esc(r.occupants||'')}</div>${line('כניסה',r.entrance)}${line('קומה',r.floor)}${line('מספר חדר',r.roomNumber)}${r.notes?`<p class="note">${esc(r.notes)}</p>`:''}</div>`
       :`<div class="roomcard unassigned"><div class="rc-h"><span class="bed">🛏</span> טרם שובץ</div><p>עוד לא שובצתם לחדר. כשנעדכן, תראו כאן את הכניסה, הקומה ומספר החדר.</p></div>`)+hotelCard()}
+  if(GTAB==='gz'){
+    const thu=PROG.find(x=>x.k==='thu'),it=thu?progItems(thu).filter(x=>/קרעסטיר|ציון|סעודת הישועות|חזרה/.test(x.ti+' '+x.sub)):[];
+    return head('קרעסטיר')+`<div class="kzh"><small>החסידות והציון</small><b>רבי ישעיה׳לה מקרעסטיר זי״ע</b><span>ה׳תרי״א (1851) – ג׳ באייר ה׳תרפ״ה (1925)</span></div>
+     <div class="kzc"><h4>מי היה</h4><ul>
+      <li>רבי ישעיה שטיינר, ידוע בכינוי <b>״רבי ישעיה׳לה קערעסטירער״</b>, מייסד חסידות קרעסטיר.</li>
+      <li>כיהן כאדמו״ר בקרעסטיר (Bodrogkeresztúr), עיירה בצפון־מזרח הונגריה, סמוך לעיר מישקולץ.</li>
+      <li>נמנה עם תלמידי רבי מרדכי מנדבורנה, ובקרעסטיר התיישב וקבע את חצרו.</li>
+      <li>נודע כבעל מופת, כנדיב לב וכמכניס אורחים: על שולחנו הוגשו מאכלים בשפע, כדי שאיש לא יצא רעב, ורבים באו אליו לברכה ולישועה.</li></ul></div>
+     <div class="kzc"><h4>הציון</h4><ul>
+      <li>נפטר בג׳ באייר ה׳תרפ״ה ונקבר בבית העלמין היהודי בקרעסטיר, שם עומד היום אוהל על הציון.</li>
+      <li>בשנים האחרונות מגיעים לקרעסטיר מדי שנה, סביב יום ההילולא, עשרות אלפי יהודים.</li></ul></div>
+     ${it.length?`<div class="kzc"><h4>היום שלנו בקרעסטיר</h4><div class="kzt">${it.map(x=>`<div><span class="num">${esc(x.tm||'—')}</span><b>${esc(x.ti)}</b><small>${esc(x.sub||'')}</small></div>`).join('')}</div></div>`:''}
+     <div class="kzc"><h4>לקראת העלייה לציון</h4><ul>
+      <li>מנהג נפוץ בעלייה לציוני צדיקים: להביא ספר תהילים, ופתק (קוויטל) עם שם ושם האם של מי שמתפללים עליו.</li>
+      <li>הציון הוא בית קברות: לבוש צנוע, שקט וכבוד למקום ולאנשים שמתפללים שם.</li>
+      <li>נשארים עם הקבוצה ועם המארגנים, ושעת הנסיעה חזרה מתעדכנת בלוח המסע.</li></ul></div>
+     <p class="note kzs">מקורות: ויקיפדיה, אתר המכלול ועיתונות (JTA). לפרטי הציון ומנהגי המקום, מומלץ להתייעץ עם המארגנים.</p>`}
+  if(GTAB==='gs'&&me&&me.kitter){
+    const rp=roomsPlaced(),rooms=S.rooms.slice().sort((a,b)=>String(a.roomNumber||'zzz').localeCompare(String(b.roomNumber||'zzz'),undefined,{numeric:true})||byOrder(a,b)),
+      rows=GKIT==='todo'?rooms.filter(r=>!r.kitReady):GKIT==='done'?rooms.filter(r=>r.kitReady):rooms,pct=rp.t?Math.round(rp.n/rp.t*100):0;
+    return head('סידור ערכות בחדרים')+`<div class="gsh"><div><b class="num">${rp.n}</b><span>מתוך <span class="num">${rp.t}</span> חדרים</span></div><div class="prog"><i style="width:${pct}%"></i></div></div>
+     ${KITLOCK()?'<div class="lockbar">🔒 הסימון נפתח ביום המסע, 19.11. עד אז אפשר לראות את רשימת החדרים.</div>':'<p class="note">לוחצים על חדר כשהסט הונח בו. המארגנים רואים את העדכון מיד.</p>'}
+     <div class="seg">${[['todo','נשארו',rp.t-rp.n],['done','הונחו',rp.n],['all','הכל',rp.t]].map(([k,l,c])=>`<button data-gkit="${k}" aria-pressed="${GKIT===k}">${l}<span class="c num">${c}</span></button>`).join('')}</div>
+     <div class="gsrooms">${rows.map(r=>`<button class="gsr ${r.kitReady?'on':''}" data-g-kit="${r._id}" aria-pressed="${!!r.kitReady}" ${KITLOCK()?'aria-disabled="true"':''}><span class="gsn"><b class="num">${esc(r.roomNumber||'—')}</b><small>${r.floor?'קומה '+esc(r.floor):'קומה ?'}</small></span><span class="main"><b>${esc(r.occupants||'')}</b><small>${esc(r.type||'')}${r.kitReady&&r.kitBy?` · הונח ${esc(firstN(r.kitBy))}`:''}</small></span><span class="gsc" aria-hidden="true">${r.kitReady?'✓':''}</span></button>`).join('')||card('',GKIT==='todo'?'<b>כל החדרים מוכנים 🎉</b>':'<b>אין חדרים כאן</b>')}</div>`}
   if(GTAB==='gt'){
     const mine=myTasks(ppl), openL=S.tasks.filter(t=>t.open==='כן'&&t.status!=='בוצע'&&!t.owner&&(!t.claimBy||t.claimStatus==='ממתין לאישור')&&!(t.claimStatus==='ממתין לאישור'&&!ppl.some(p=>p.name===t.claimBy)));
     const showL=GSEG==='open'?openL:mine;
@@ -3623,6 +3675,10 @@ document.addEventListener('click',e=>{
   const me=meG(), ppl=coupleOf(me);
   const cl=T.closest('[data-g-claim]');if(cl){if(blockPrev())return;const t=find('tasks',cl.dataset.gClaim);if(!t||t.owner||(t.claimStatus==='ממתין לאישור')){toast('המשימה כבר נלקחה');return}
     gset('tasks/'+t._id,{claimBy:me.name,claimId:me._id,claimStatus:'ממתין לאישור'}).then(ok=>{if(ok)toast('נשלח לאישור המארגנים')});return}
+  const gkf=T.closest('[data-gkit]');if(gkf){GKIT=gkf.dataset.gkit;render();return}
+  const gk=T.closest('[data-g-kit]');if(gk){if(blockPrev())return;if(!me||!me.kitter)return;if(KITLOCK()){toast('הסימון נפתח ביום המסע, 19.11');return}
+    const r=find('rooms',gk.dataset.gKit);if(!r)return;const on=!r.kitReady;try{navigator.vibrate&&navigator.vibrate(12)}catch(x){}
+    gset('rooms/'+r._id,{kitReady:on,kitBy:on?me.name:'',kitAt:on?new Date().toISOString():''}).then(ok=>{if(ok)toast(on?`חדר ${r.roomNumber||''}: הסט הונח`:'הסימון בוטל')});return}
   const dn=T.closest('[data-g-done]');if(dn){if(blockPrev())return;gset('tasks/'+dn.dataset.gDone,{status:'בוצע'}).then(ok=>{if(ok)toast('נרשמה כבוצעה. כל הכבוד!')});return}
   const un=T.closest('[data-g-undo]');if(un){if(blockPrev())return;gset('tasks/'+un.dataset.gUndo,{status:'לביצוע'});return}
   const ph=T.closest('[data-g-photo]');if(ph){if(blockPrev())return;PHOTO_FOR=ph.dataset.gPhoto;document.getElementById('gfile').click();return}
@@ -3647,7 +3703,10 @@ const DEFKIT=(()=>{const m={};const a=(k,ids)=>ids.split(' ').forEach(i=>m[i]=k)
  a('ערכת חד פעמי','k006 k007 k008 s11');
  return m})();
 const kitOf=x=>x.kit||DEFKIT[x._id]||(x.list==='סט לכל חדר'?'ערכה לחדר':'כללי ומארגנים');
-const kst=(x,k)=>x[k]===undefined?((k==='ordered'||k==='arrived')?!!x.done:false):!!x[k];
+// the room kit is placed room by room (rooms.kitReady, set by the person who arranges them or by the team):
+// its 'placed' stage is not stored on the item, it follows the rooms
+const roomsPlaced=()=>({n:S.rooms.filter(r=>r.kitReady).length,t:S.rooms.length});
+const kst=(x,k)=>{if(k==='placed'&&kitOf(x)==='ערכה לחדר'){const r=roomsPlaced();return r.t>0&&r.n===r.t}return x[k]===undefined?((k==='ordered'||k==='arrived')?!!x.done:false):!!x[k]};
 const kitItems=()=>S.packing.filter(x=>x.item&&!(x.sug&&!x.done));
 const kwhere=x=>x.where||(/בודפשט/.test(x.list||'')?'בבודפשט':'בארץ');
 function normPack(d,p){
@@ -3662,7 +3721,9 @@ function normPack(d,p){
   O.forEach(k=>d[k]=v[k]);d.done=v.arrived;return d}
 const kmeta=()=>{const s=S.settings.find(x=>x._id==='kitmeta');return (s&&s.kits)||{}};
 const kown=(name,role)=>String((kmeta()[name]||{})[role]||'').split(/,\s*/).filter(Boolean);
-const kstat=a=>{const n=a.length,o={n,cost:a.reduce((s,x)=>s+(+x.cost||0),0)};KSTAGES.forEach(([k])=>o[k]=a.filter(x=>kst(x,k)).length);return o};
+const kstat=a=>{const n=a.length,o={n,cost:a.reduce((s,x)=>s+(+x.cost||0),0)};KSTAGES.forEach(([k])=>o[k]=a.filter(x=>kst(x,k)).length);
+  // room-kit items count as placed in proportion to the rooms that are done
+  const rk=a.filter(x=>kitOf(x)==='ערכה לחדר'),rp=roomsPlaced();if(rk.length&&rp.t)o.placed=a.filter(x=>kitOf(x)!=='ערכה לחדר'&&kst(x,'placed')).length+Math.round(rk.length*rp.n/rp.t);return o};
 const kdays=d=>Math.round((new Date(d)-new Date(todayISO()))/864e5);
 function kitStageBar(st){return `<div class="kbar">${KSTAGES.map(([k])=>`<i><b style="width:${st.n?Math.round(st[k]/st.n*100):0}%"></b></i>`).join('')}</div>`}
 SUB.kits=function(){
@@ -3687,13 +3748,14 @@ SUB.kits=function(){
   return `<div class="page-title"><button class="back" data-kitback aria-label="חזרה לכל הערכות">›</button><h2>${esc(cur)}</h2><span class="cnt num">${st.n}</span></div>
    <div class="khead" style="--a:${meta[2]}"><span class="kem big">${meta[1]}</span><div><b class="num">${ils(st.cost)}</b><small>עלות הערכה · ${st.n} פריטים</small></div></div>
    <div class="ksteps">${KSTAGES.map(([k,l,em])=>`<div><span>${em} ${l}</span><b class="num">${st[k]}/${st.n}</b><i><u style="width:${st.n?Math.round(st[k]/st.n*100):0}%"></u></i></div>`).join('')}</div>
+   ${cur==='ערכה לחדר'?(()=>{const rp=roomsPlaced(),who=S.participants.filter(p=>p.kitter).map(p=>firstN(p.name));return `<button class="kcard2 kroom" data-go="more" data-opts='{"sub":"rooms"}'><span class="kr-i">📍</span><span class="main"><b>הנחה בחדרים: <span class="num">${rp.n}</span> מתוך <span class="num">${rp.t}</span></b><small>${who.length?'מעדכן/ת: '+esc(who.join(', ')):'אפשר לסמן שאדם מסוים מסדר את החדרים: בכרטיס שלו במשתתפים'} · לחצו למסך החדרים</small></span><span aria-hidden="true">‹</span></button>`})():''}
    <div class="kcard2"><h4>מי אחראי</h4>${own('buyer','🛒 קנייה')}${own('packer','🧳 אריזה')}${own('placer','📍 הנחה במקום')}${mt[cur]?`<p class="note" style="margin:8px 0 0">${esc(mt[cur])}</p>`:''}</div>
    <div class="kcard2"><h4>תזכורות לבדיקה</h4><div class="krems">${rem}</div></div>
    <div class="chips">${[['all','הכול'],...KSTAGES.map(([k,l])=>[k,'לא '+l])].map(([k,l])=>`<button class="chip" data-kfilter="${k}" aria-pressed="${f===k}">${l}</button>`).join('')}</div>
    <div class="kitems">${rows.map((x,i)=>{const sh=x.shop?` · ${esc(x.shop)}`:'',w=kwhere(x);
      const o=(r,e)=>{const n=String(x[r]||'').trim()||kown(cur,r).join(', ');return n?`<span class="who">${e} ${esc(n)}</span>`:''};
      return `<div class="kit" style="--i:${Math.min(i,12)}"><button class="ktop" data-edit="packing/${x._id}"><span class="kq num">${esc(x.qty)}×</span><span class="main"><b>${esc(x.item)}</b><small>${+x.per?`<b class="kper">${esc(x.per)} לחדר · סה״כ ${esc(x.qty)}</b> · `:''}${w==='בבודפשט'?'🇭🇺 בבודפשט':'🇮🇱 בארץ'}${sh}${x.notes?` · ${esc(x.notes)}`:''}</small></span><span class="kc num">${+x.cost?ils(x.cost):'—'}</span></button>
-      <div class="kst">${KSTAGES.map(([k,l,em])=>`<button class="${kst(x,k)?'on':''}" data-kst="${x._id}|${k}" aria-pressed="${kst(x,k)}"><span>${kst(x,k)?'✓':em}</span>${l}</button>`).join('')}</div>
+      <div class="kst">${KSTAGES.map(([k,l,em])=>k==='placed'&&kitOf(x)==='ערכה לחדר'?(()=>{const rp=roomsPlaced();return `<button class="${kst(x,k)?'on':''}" data-go="more" data-opts='{"sub":"rooms"}' aria-label="הנחה בחדרים: ${rp.n} מתוך ${rp.t}. פתיחת מסך החדרים"><span>${kst(x,k)?'✓':em}</span><span class="num">${rp.n}/${rp.t}</span> חדרים</button>`})():`<button class="${kst(x,k)?'on':''}" data-kst="${x._id}|${k}" aria-pressed="${kst(x,k)}"><span>${kst(x,k)?'✓':em}</span>${l}</button>`).join('')}</div>
       <div class="kwho">${o('buyer','🛒')}${o('packer','🧳')}${o('placer','📍')}</div></div>`}).join('')||`<div class="card"><div class="empty"><b>${f==='all'?'אין פריטים בערכה':'הכול בוצע בשלב הזה 🎉'}</b></div></div>`}</div>
    <p class="note">כדי להוסיף מוצר לערכה לחצו על ה-+.</p>`;
 };

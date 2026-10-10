@@ -247,3 +247,53 @@ test('PCHECK-1 passport check: paste names and expiry, a short or expired one is
   await expect(page.getByRole('dialog').locator('#hotelTxt')).toHaveValue(/Room 401 \(floor 4\): COHEN AVI \/ LEVI BENI/);
   expect(errors).toEqual([]);
 });
+
+test('SETS-1 the person who arranges the rooms marks them from his own screen, and the rooms screen and the kits screen follow', async ({ browser, db }) => {
+  await seed(db);
+  await db.put(`${T}/participants/p1`, { name: 'אבי כהן', amount: 1750, phone: '0501234567', status: 'שולם', passport: true, kitter: true, order: 1 });
+  await db.put(`${T}/rooms/r1`, { occupants: 'בני לוי', roomNumber: '401', floor: '4', order: 1 });
+  await db.put(`${T}/rooms/r2`, { occupants: 'דני דן', roomNumber: '402', floor: '4', order: 2 });
+  await db.put(`${T}/packing/k1`, { item: 'כוס זכוכית', list: 'סט לכל חדר', qty: 2, per: 1, cost: 10, ordered: true, arrived: true, packed: true, placed: false, order: 1 });
+  const org = await openTrip(browser, db);
+  const day = new Date('2026-11-19T20:00:00+01:00');
+  await org.page.clock.setFixedTime(day);
+  await org.page.evaluate("go('more',{sub:'kits'});V.filter.kit='ערכה לחדר';render(true)");
+  await expect(org.page.locator('.kroom')).toContainText('0');
+  // the person who arranges the rooms (a participant) opens his own screen
+  const g = await openTrip(browser, db);
+  await g.page.clock.setFixedTime(day);
+  await asGuest(g.page, 'p1');
+  await g.page.evaluate("GTAB='gs';render(true)");
+  await expect(g.page.locator('.gsh')).toContainText('0');
+  await g.page.locator('.gsr', { hasText: '401' }).click();
+  await expect.poll(async () => (await db.get(`${T}/rooms/r1`))?.kitReady).toBe(true);
+  expect((await db.get(`${T}/rooms/r1`))?.kitBy).toBe('אבי כהן');
+  // someone who is not marked as arranging the rooms has no such card on his home
+  const o = await openTrip(browser, db);
+  await o.page.clock.setFixedTime(day);
+  await asGuest(o.page, 'p2');
+  await expect(o.page.locator('.gc', { hasText: 'סידור ערכות בחדרים' })).toHaveCount(0);
+  // the organizer's rooms screen and kits screen show the same progress
+  await org.page.evaluate("go('more',{sub:'rooms'})");
+  await expect(org.page.locator('#view')).toContainText('1/2 עם סט');
+  await expect(org.page.locator('.row', { hasText: 'בני לוי' })).toContainText('אבי');
+  await org.page.evaluate("go('more',{sub:'kits'});V.filter.kit='ערכה לחדר';render(true)");
+  await expect(org.page.locator('.kroom')).toContainText('1');
+  await expect(org.page.locator('.kroom')).toContainText('2');
+  expect(org.errors).toEqual([]); expect(g.errors).toEqual([]); expect(o.errors).toEqual([]);
+});
+
+test('KERES-1 the Kerestir page: who he was, the tomb, today\'s programme from the schedule; on Thursday the trip-day home leads to it', async ({ browser, db }) => {
+  await seed(db);
+  const { page, errors } = await openTrip(browser, db);
+  await page.clock.setFixedTime(new Date('2026-11-19T09:30:00+01:00'));
+  await asGuest(page);
+  await page.getByRole('region', { name: 'היום במסע' }).getByRole('button', { name: /קרעסטיר/ }).click();
+  const v = page.locator('#view');
+  await expect(v).toContainText('רבי ישעיה׳לה מקרעסטיר');
+  await expect(v).toContainText('ג׳ באייר ה׳תרפ״ה');
+  await expect(v.locator('.kzt')).toContainText('סעודת הישועות');
+  await page.getByRole('button', { name: /חזרה למסך הבית/ }).first().click();
+  await expect(page.getByRole('region', { name: 'היום במסע' })).toBeVisible();
+  expect(errors).toEqual([]);
+});

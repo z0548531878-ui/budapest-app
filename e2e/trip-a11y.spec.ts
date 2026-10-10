@@ -31,7 +31,7 @@ test('A11Y-1 every screen and sheet passes axe (WCAG 2.1 AA)', async ({ browser,
   test.setTimeout(240_000);
   await seed(db);
   const { page } = await openTrip(browser, db);
-  await expect(page.getByText('להזמין אוטובוס')).toBeVisible();
+  await expect(page.getByRole('region', { name: 'עבודה שוטפת' })).toBeVisible();
   const found: string[] = [];
   found.push(...await axe(page, 'home'));
   for (const tab of ['משימות', 'תקציב', 'לו״ז', 'תובנות']) {
@@ -79,7 +79,7 @@ test('A11Y-2 sheets take the keyboard focus and give it back when closed', async
 test('A11Y-3 buttons are big enough to tap (at least 24×24, WCAG 2.5.8)', async ({ browser, db }) => {
   await seed(db);
   const { page } = await openTrip(browser, db);
-  await expect(page.getByText('להזמין אוטובוס')).toBeVisible();
+  await expect(page.getByRole('region', { name: 'עבודה שוטפת' })).toBeVisible();
   const small: string[] = [];
   for (const [tab, sub] of [['home', null], ['tasks', null], ['money', null], ['more', 'people'], ['more', 'packing'], ['more', 'settings']] as const) {
     await page.evaluate(([t, s]) => { (window as any).go(t, s ? { sub: s } : {}); }, [tab, sub]);
