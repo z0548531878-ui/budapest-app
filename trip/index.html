@@ -1480,6 +1480,31 @@ button.sc,a.sc{cursor:pointer}.sc:active{transform:scale(.97)}
  #view.enter[data-scr="home"]>.sec,#view.enter[data-scr="home"]>.pass,#view.enter[data-scr="home"]>.hub{animation-name:kRise}
  #view.enter[data-scr="home"] .cubes>.cube{animation:cubeIn .5s var(--ease) both,hue 7s ease-in-out infinite;animation-delay:calc(var(--i)*35ms),0s}
 }
+
+
+/* organizer tiles: dark by default, gold only where something waits */
+.cubes.tiles>.cube:nth-child(n){background:linear-gradient(160deg,#1d1912,#0e0c09)!important;color:var(--ink)!important}
+.cubes.tiles>.cube:nth-child(n) small{color:var(--muted)!important;opacity:1!important}
+.cubes.tiles>.cube:nth-child(n) .ci{background:rgba(214,178,98,.16)!important;color:#f0d28c!important}
+.cubes.tiles>.cube.hot:nth-child(n){background:var(--goldbtn)!important;color:#15110a!important}
+.cubes.tiles>.cube.hot:nth-child(n) small{color:#3d2f12!important}
+.cubes.tiles>.cube.hot:nth-child(n) .ci{background:#15110a!important;color:#f0d28c!important}
+.sec-h .sec-k{margin-inline-start:auto;display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);font-weight:700}.sec-h .sec-k i{width:10px;height:10px;border-radius:3px;background:var(--goldbtn)}
+/* ===== zmanim strip (inside the parchment), pocket-guide tools, taxi card ===== */
+.zst{margin:4px 0 14px;padding:10px 12px 12px;border:1px solid rgba(164,124,39,.45);border-radius:10px;background:linear-gradient(180deg,rgba(255,250,235,.55),rgba(236,220,180,.35))}
+.zst .zh{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:800;color:#4A3A12;letter-spacing:.3px}
+.zst .zh button{all:unset;cursor:pointer;color:#7a5a12;font-weight:800;font-size:12.5px;padding:6px 2px;min-height:24px}
+.zst .zg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:6px;text-align:center}
+.zst .zg small{display:block;font-size:10.5px;color:#6b5420;font-weight:700;line-height:1.2}
+.zst .zg b{font-size:17px;color:#1A1A1A;font-weight:800}
+.zst .zn{margin:8px 0 0;font-size:12.5px;color:#4A3A12;text-align:center}.zst .zn b{color:#1A1A1A}
+.zt{padding:4px 14px}.zr{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--edge)}.zr:last-child{border-bottom:0}.zr b{font-size:17px;color:#f6dc93}
+button.tool{all:unset;box-sizing:border-box;display:grid;gap:8px;width:100%;cursor:pointer;border:1px solid rgba(214,178,98,.25);background:linear-gradient(160deg,#17140f,#0d0c09);border-radius:18px;padding:14px;margin:10px 0}
+button.tool:focus-visible{outline:2px solid #f6dc93;outline-offset:2px}
+.tool .zg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center}.tool .zg small{display:block;font-size:11.5px;color:#a69a7d}.tool .zg b{font-size:22px}
+.tool .more{color:#e0b25a;font-weight:800;font-size:13px}.ttool>span:not(.more){color:#cfc3a6;font-size:13.5px}
+.taxi{background:#fff;color:#111;border-radius:18px;padding:22px 18px;text-align:center;display:grid;gap:10px;margin:6px 0 10px}
+.taxi small{font-size:20px;font-weight:700;color:#333}.taxi b{font-size:30px;line-height:1.2;font-weight:900}.taxi span{font-size:20px;font-weight:700;color:#444}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -1771,9 +1796,9 @@ const VIEWS={
     <div class="pass-route"><div><b>TLV</b><span>${esc(out?out.dep:'')}</span></div><div class="path"><svg viewBox="0 0 150 22" fill="none"><path d="M4 11h142" stroke="currentColor" stroke-width="1.6" stroke-dasharray="3 5"/><g class="plane"><path fill="currentColor" d="M146 11l-13-5.4v3.7l-6.5.1-2.8-3.8h-2l1.6 3.9-4.3.1v2.8l4.3.1-1.6 3.9h2l2.8-3.8 6.5.1v3.7z"/></g></svg></div><div><b>BUD</b><span>${esc(out?out.arr:'')}</span></div></div>
     <div class="days">${TRIP_DAYS.map((d,i)=>`<div class="${d.sh?'sh':''} ${i===idx?'now':''}"><b>${d.s}</b>${d.l}</div>`).join('')}</div></div>
     <div class="pass-stub">${depAt(out)>Date.now()?`<span class="big num" id="cdD">${cdParts(out).d}</span><small>ימים</small><div class="cdg num" id="cdT">${cdParts(out).t}</div>`:`<span class="big num">${big}</span><small>${lbl}</small>`}</div></section>
-  ${homeTiles()}
   ${nowCard(`data-go="more" data-opts='{"sub":"program"}'`)}${kpis}
   <section class="qact" aria-label="פעולות מהירות">${[['announce',I.chat,'הודעה לכולם'],['program',I.sched,'שינוי בלו״ז'],['attendance',I.people,'ספירת נוכחות'],['people',I.phone,'חיפוש משתתף']].map(([k,ic,l])=>`<button data-go="more" data-opts='{"sub":"${k}"}'><span class="ic">${ic}</span><span>${l}</span></button>`).join('')}</section>
+  ${homeTiles()}
   
   <section class="hub">
    <button class="big" data-idea><span class="ic">${I.spark}</span><span class="main"><b>עדכון או רעיון</b><span>${CAN_SEND()?'כותבים או מכתיבים, וזה מגיע ל-Claude':'כותבים או מכתיבים, וזה נשמר לכל הצוות'}</span></span><span class="mic">${I.mic}</span></button>
@@ -1882,7 +1907,7 @@ const SUB={
    <div class="parch"><span class="cn tl"></span><span class="cn tr"></span><span class="cn bl"></span><span class="cn br"></span>
     <div class="ph"><div class="orn">${ORN}</div><div class="pt">${k==='thu'?'תוכנית המסע':'תוכניית השבת'}</div></div>
     <div class="dayh"><small>${d.over}</small><b>${d.title}</b><span>${d.date}</span><div class="rule"><i></i><em>◆</em><i></i></div></div>
-    ${progItems(d).map(({tm,ti,sub,q,src,i,key,fix,old})=>`<div class="pi ${fix?'fixed':''}" style="--i:${i}"><div class="ptm">${esc(tm)}${fix&&old[0]&&old[0]!==tm?`<s>${esc(old[0])}</s>`:''}</div><div class="pb"><b>${esc(ti)}${fix?' <span class="pupd">עודכן</span>':''}</b><span>${esc(sub)}</span>${q?`<q>${q} <small>· ${src}</small></q>`:''}</div>${GUEST()?'':`<button class="pedit" data-pfix="${key}" aria-label="שינוי: ${esc(ti)}">✎</button>`}</div>`).join('')}
+    ${zstrip(d)}${progItems(d).map(({tm,ti,sub,q,src,i,key,fix,old})=>`<div class="pi ${fix?'fixed':''}" style="--i:${i}"><div class="ptm">${esc(tm)}${fix&&old[0]&&old[0]!==tm?`<s>${esc(old[0])}</s>`:''}</div><div class="pb"><b>${esc(ti)}${fix?' <span class="pupd">עודכן</span>':''}</b><span>${esc(sub)}</span>${q?`<q>${q} <small>· ${src}</small></q>`:''}</div>${GUEST()?'':`<button class="pedit" data-pfix="${key}" aria-label="שינוי: ${esc(ti)}">✎</button>`}</div>`).join('')}
     ${k==='sat'?`<div class="dayh" style="margin-top:18px"><b>בדרך הביתה</b><span>טיסות חזרה באל על · שעות מקומיות</span><div class="rule"><i></i><em>◆</em><i></i></div></div>${FLIGHTS_HOME.map(f=>`<div class="pfl"><span class="pl">${f[0]}</span><div><b>${f[1]}</b><small>${f[2]} · ${f[3]}</small></div><div class="pr ltr">BUD ${f[4]} → TLV ${f[5]}${f[6]?' <small>+1</small>':''}</div><small class="pn">${f[7]}</small></div>`).join('')}`:''}
     <div class="pfoot">${k==='sat'?'שבת שלום ומבורכת!':k==='fri'?'שבת שלום!':'נסיעה טובה ובשעה טובה!'}</div>
    </div>`;
@@ -2433,7 +2458,9 @@ const TILE_DEFS=()=>{const pk=S.packing,pd=pk.filter(x=>kst(x,'ordered')).length
  ['roles','people','תפקידים',`${Object.keys(rolesMap()).length} עם תפקיד`,'c11'],
  ]};
 const TORD=['program','people','reqs','announce','roles','flights','kits','packing','rooms','passports','messages','claude','files','contacts','trivia'];
-const homeTiles=()=>`<section class="sec"><div class="sec-h"><h3>הכל במקום אחד</h3></div><div class="cubes">${TILE_DEFS().sort((a,b)=>TORD.indexOf(a[0])-TORD.indexOf(b[0])).map(([k,ic,l,s,c],i)=>(k==='trivia'?`<a class="cube ${c}" href="../" target="_blank" rel="noopener" style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></a>`:`<button class="cube ${c}" data-go="more" data-opts='{"sub":"${k}"}' style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></button>`)).join('')}</div></section>`;
+// gold = something there is waiting for you; the rest stay dark, so the eye goes straight to what's open
+const tileHot=k=>{try{return ({reqs:pendN()>0,claude:S.claude.some(x=>x.status==='פתוח'),passports:S.participants.some(p=>!p.passport),packing:S.packing.some(x=>!kst(x,'ordered')),messages:S.messages.some(m=>!m.sent)})[k]||false}catch(e){return false}};
+const homeTiles=()=>`<section class="sec"><div class="sec-h"><h3>הכל במקום אחד</h3><span class="sec-k"><i></i>מחכה לטיפול</span></div><div class="cubes tiles">${TILE_DEFS().sort((a,b)=>TORD.indexOf(a[0])-TORD.indexOf(b[0])).map(([k,ic,l,s,c],i)=>(k==='trivia'?`<a class="cube ${c}" href="../" target="_blank" rel="noopener" style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></a>`:`<button class="cube ${c}${tileHot(k)?' hot':''}" data-go="more" data-opts='{"sub":"${k}"}' style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></button>`)).join('')}</div></section>`;
 
 
 const PROG=[
@@ -2480,6 +2507,36 @@ function nowNext(){const n=budNow(),k=Object.keys(PROG_DATE).find(x=>PROG_DATE[x
   return (cur||nxt)?{k,d,cur,nxt,now:n.m}:null}
 const inMin=n=>n<1?'עכשיו':n<60?`בעוד ${n} דק׳`:`בעוד ${Math.floor(n/60)} שע׳${n%60?` ו־${n%60} דק׳`:''}`;
 // "now / next" on the home screen during the trip; go = the attributes of the "whole day" button
+/* ---- zmanim for Budapest: computed on the phone (NOAA solar formulas), so they work with no signal ---- */
+const ZLOC=[47.4979,19.0402], ZDAYS=[['2026-11-19','חמישי'],['2026-11-20','שישי'],['2026-11-21','שבת'],['2026-11-22','ראשון']];
+function sunMin(iso,zen,rise){const [y,m,d]=iso.split('-').map(Number),[lat,lng]=ZLOC,r=Math.PI/180;let t=720;
+  for(let i=0;i<3;i++){const T=(Date.UTC(y,m-1,d)/864e5+2440587.5+t/1440-2451545)/36525,L0=(280.46646+T*(36000.76983+T*.0003032))%360,M=357.52911+T*(35999.05029-.0001537*T),e=.016708634-T*(.000042037+.0000001267*T),
+    C=Math.sin(M*r)*(1.914602-T*(.004817+.000014*T))+Math.sin(2*M*r)*(.019993-.000101*T)+Math.sin(3*M*r)*.000289,om=125.04-1934.136*T,lam=L0+C-.00569-.00478*Math.sin(om*r),
+    eps=23+(26+(21.448-T*(46.815+T*(.00059-T*.001813)))/60)/60+.00256*Math.cos(om*r),dec=Math.asin(Math.sin(eps*r)*Math.sin(lam*r))/r,yv=Math.tan(eps/2*r)**2,
+    eq=4/r*(yv*Math.sin(2*L0*r)-2*e*Math.sin(M*r)+4*e*yv*Math.sin(M*r)*Math.cos(2*L0*r)-.5*yv*yv*Math.sin(4*L0*r)-1.25*e*e*Math.sin(2*M*r)),
+    ha=Math.acos(Math.cos(zen*r)/(Math.cos(lat*r)*Math.cos(dec*r))-Math.tan(lat*r)*Math.tan(dec*r))/r;t=720-4*(lng+(rise?ha:-ha))-eq}
+  // minutes after local midnight in Budapest
+  let off=60;try{const h=+new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Budapest',hour:'2-digit',hourCycle:'h23'}).format(new Date(Date.UTC(y,m-1,d,12)));off=(h-12)*60}catch(x){}
+  return t+off}
+const hm=m=>{m=Math.round(m);return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')};
+function zmanim(iso){const netz=sunMin(iso,90.833,1),shk=sunMin(iso,90.833,0),sh=(shk-netz)/12,a72=netz-72,shM=(shk+72-a72)/12,noon=(netz+shk)/2;
+  return {netz,shk,tz:sunMin(iso,98.5,0),list:[['עלות השחר',sunMin(iso,106.1,1)],['הנץ החמה',netz],['סוף זמן ק״ש · מג״א',a72+3*shM],['סוף זמן ק״ש · גר״א',netz+3*sh],['סוף זמן תפילה · גר״א',netz+4*sh],['חצות היום',noon],['מנחה גדולה',noon+sh/2],['פלג המנחה',shk-1.25*sh],['שקיעת החמה',shk],['צאת הכוכבים',sunMin(iso,98.5,0)]]}}
+const progIso=d=>{const m=String(d.date||'').match(/(\d+)\.(\d+)/);return m?`2026-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`:''};
+const candleTm=()=>{const f=PROG.find(x=>x.k==='fri');const it=f&&progItems(f).find(x=>/הדלקת נרות/.test(x.ti));return it&&it.tm||''};
+function zstrip(d){const iso=progIso(d);if(!iso)return '';const z=zmanim(iso),l=z.list,c=candleTm();
+  const cells=[['הנץ',z.netz],['סוף ק״ש (גר״א)',l[3][1]],['שקיעה',z.shk],[d.k==='sat'?'צאת השבת':'צאת הכוכבים',z.tz]];
+  return `<div class="zst"><div class="zh"><span>זמני היום בבודפשט</span><button data-zman="${iso}">כל הזמנים ›</button></div><div class="zg">${cells.map(([a,b])=>`<div><small>${a}</small><b class="num">${hm(b)}</b></div>`).join('')}</div>${d.k==='fri'&&c?`<p class="zn">🕯 הדלקת נרות לפי התוכנית: <b class="num">${esc(c)}</b> · ${Math.max(0,Math.round(z.shk-(toMin(c)??z.shk)))} דקות לפני השקיעה</p>`:''}${d.k==='sat'?`<p class="zn">צאת השבת לרבנו תם: <b class="num">${hm(z.shk+72)}</b></p>`:''}</div>`}
+function zmanSheet(iso){const day=(ZDAYS.find(x=>x[0]===iso)||['',''])[1],[,m,dd]=iso.split('-'),z=zmanim(iso);
+  sheet(`<h3>זמני היום · ${day} ${+dd}.${+m}</h3><p class="note" style="margin-top:0">לפי מיקום בודפשט. חישוב משוער (עד דקה), כדאי להוסיף מרווח ביטחון. לפסיקה מדויקת בודקים בלוח מוסמך.</p>
+   <div class="seg">${ZDAYS.map(([i,l])=>`<button data-zday="${i}" aria-pressed="${i===iso}">${l}</button>`).join('')}</div>
+   <div class="card zt">${z.list.map(([a,b])=>`<div class="zr"><span>${a}</span><b class="num">${hm(b)}</b></div>`).join('')}${iso==='2026-11-21'?`<div class="zr"><span>צאת השבת · רבנו תם</span><b class="num">${hm(z.shk+72)}</b></div>`:''}</div>
+   <div class="sheet-acts"><span class="sp"></span><button class="btn primary" data-close>סגירה</button></div>`);
+  document.querySelectorAll('[data-zday]').forEach(b=>b.onclick=()=>zmanSheet(b.dataset.zday))}
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target;if(!t)return;const z=t.closest('[data-zman]');if(z){e.stopPropagation();e.preventDefault();zmanSheet(z.dataset.zman);return}if(t.closest('#taxiBtn')){e.stopPropagation();taxiSheet()}},true);
+// a card to show the taxi driver: large, in Hungarian
+function taxiSheet(){sheet(`<h3>להראות לנהג המונית</h3><div class="taxi" lang="hu" dir="ltr"><small>Kérem, vigyen el ide:</small><b>${esc(HOTEL.en)}</b><span>Budapest</span></div>
+  <p class="note">הופכים את הטלפון לנהג. הפירוש: ״בבקשה, קח אותי לכאן״.</p><div class="sheet-acts"><a class="btn" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener">${IX.nav}<span>פתיחה במפות</span></a><span class="sp"></span><button class="btn primary" data-close>סגירה</button></div>`)}
+
 function nowCard(go){const z=nowNext();if(!z)return '';const nx=z.nxt,cu=z.cur,soon=nx&&nx.mi-z.now<=30;
   return `<section class="nowc" aria-live="polite"><div class="nc-h"><span class="live" aria-hidden="true"></span><b>${esc(z.d.title)} במסע</b><small>לפי שעון בודפשט</small></div>
    ${cu?`<div class="nc-row now"><small>עכשיו</small><b>${esc(cu.ti)}</b>${cu.sub?`<span>${esc(cu.sub)}</span>`:''}</div>`:''}
@@ -2497,7 +2554,7 @@ function progSheet(key){
    <div class="sheet-acts">${it.fix?'<button class="btn" id="pfReset">חזרה למקור</button>':''}<span class="sp"></span><button class="btn" data-close>ביטול</button><button class="btn primary" id="pfOk">עדכון לכולם</button></div>`);
   const put=async(f,annText)=>{const all={...progFix()};if(f)all[key]=f;else delete all[key];
     if(!await save('settings','prog',{...strip(find('settings','prog')||{}),fix:all}))return;
-    if(annText&&document.getElementById('pfAnn').checked&&db){const ts=Date.now();db.doc('settings/ann_'+ts).set({kind:'ann',title:'שינוי בלוח המסע',text:annText,ts}).catch(()=>toast('ההודעה למשתתפים לא נשלחה'))}
+    if(annText&&document.getElementById('pfAnn').checked&&db){const ts=Date.now();db.doc('settings/ann_'+ts).set({kind:'ann',title:'שינוי בלוח המסע',text:annText,ts,prog:key}).catch(()=>toast('ההודעה למשתתפים לא נשלחה'))}
     closeSheet();toast(f?'עודכן. כל המשתתפים רואים את השינוי':'חזר לתוכנית המקורית')};
   document.getElementById('pfOk').onclick=()=>{const tm=document.getElementById('pfTm').value.trim(),ti=document.getElementById('pfTi').value.trim(),sub=document.getElementById('pfSub').value.trim();
     if(!ti){toast('כתבו מה קורה');return}if(tm&&toMin(tm)==null&&!/[א-ת]/.test(tm)){toast('כתבו שעה כמו 16:30');return}
@@ -3063,7 +3120,8 @@ const PLACES=[
   ['מדרחוב ואצי','Váci utca','Váci utca, Budapest','15 דק׳ הליכה · 1.1 ק״מ','']]}
 ];
 
-let GTAB='gh', GSEG='open', GGEN='all', GQ='';
+// a tapped notification opens the app on its screen (the service worker opens ./#tab=gl)
+let GTAB=(()=>{try{const m=location.hash.match(/tab=(g[a-z])\b/);return m&&GNAV.concat([['gm'],['gk'],['gx'],['gp'],['gf']]).some(n=>n[0]===m[1])?m[1]:'gh'}catch(e){return 'gh'}})(), GSEG='open', GGEN='all', GQ='';
 const DRAFT={annTitle:'',annText:'',reqText:'',reqCat:'אחר'};
 const meG=()=>{if(PREV&&ROLE==='org'){const n=(typeof TEAM_FULL!=='undefined'&&TEAM_FULL[ME])||ME;return S.participants.find(p=>p.name===n)||S.participants.find(p=>p.name==='שלומי זינגר')||null}return S.participants.find(p=>p._id===ROLE.slice(6))||null};
 const isPrevOrg=()=>PREV&&ROLE==='org';
@@ -3275,6 +3333,8 @@ function guestHTML0(){
     const items=['דרכון בתוקף','כרטיס אשראי ומעט מזומן','תפילין וציצית','בגדי שבת','מעיל חם ומטרייה (בנובמבר בבודפשט קר)','מטען לנייד ומתאם חשמל','תרופות אישיות','סידור או ספר'];
     const bud=new Date(Date.now()-3600*1000).toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Jerusalem'});
     return head('מדריך כיס')+`<div class="tool"><small>השעה בבודפשט עכשיו</small><b class="num" id="gbud">${new Date().toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Budapest'})}</b><span>שעה אחורה מישראל</span></div>
+     ${(()=>{const t=todayISO(),iso=ZDAYS.some(x=>x[0]===t)?t:'2026-11-20',z=zmanim(iso);return `<button class="tool ztool" data-zman="${iso}"><small>זמני היום בבודפשט · ${(ZDAYS.find(x=>x[0]===iso)||[])[1]}</small><span class="zg">${[['הנץ',z.netz],['שקיעה',z.shk],['צאת הכוכבים',z.tz]].map(([a,b])=>`<span><small>${a}</small><b class="num">${hm(b)}</b></span>`).join('')}</span><span class="more">לכל זמני היום ושבת ›</span></button>`})()}
+     <button class="tool ttool" id="taxiBtn"><small>כרטיס למונית</small><span>מראים לנהג את שם המלון בהונגרית, באותיות גדולות</span><span class="more">פתיחת הכרטיס ›</span></button>
      <div class="tool"><small>ממיר מטבע · פורינט הונגרי</small>
       <div class="conv"><label>₪<input id="cvI" type="number" inputmode="decimal" value="100"></label><span>=</span><label>HUF<input id="cvH" type="text" inputmode="decimal" readonly></label></div>
       <label class="rate">שער (פורינט לשקל) <input id="cvR" type="number" inputmode="decimal" value="${rate}"></label><p class="note">השער בערך. כדאי לעדכן לפני הנסיעה.</p></div>

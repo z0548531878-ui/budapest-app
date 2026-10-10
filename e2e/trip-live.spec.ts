@@ -28,6 +28,8 @@ test('LIVE-1 an organizer moves an item in the programme; participants see the n
   await sheet.getByRole('button', { name: 'עדכון לכולם' }).click();
   await expect.poll(async () => (await db.get(`${T}/settings/prog`))?.fix?.fri_2?.tm).toBe('13:30');
   await expect.poll(async () => (await db.list(`${T}/settings`)).find((d: any) => d.data.kind === 'ann')?.data.text).toContain('במקום 13:00, עכשיו ב־13:30');
+  // marked as a programme change, so the server sends it as a phone notification that opens the programme
+  expect((await db.list(`${T}/settings`)).find((d: any) => d.data.kind === 'ann')?.data.prog).toBe('fri_2');
   const item = page.locator('.parch .pi', { hasText: 'טועמיה' });
   await expect(item).toContainText('עודכן');
   await expect(item.locator('s')).toHaveText('13:00');
@@ -130,5 +132,27 @@ test('MOTION-1 with motion on, numbers roll to a changed value and a quick flick
     sh.dispatchEvent(new TouchEvent('touchend', { touches: [], changedTouches: t(340) }));
   });
   await expect(page.locator('.scrim')).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+test('ZMAN-1 the programme shows the zmanim of the day for Budapest; the full list opens, and the pocket guide has the taxi card', async ({ browser, db }) => {
+  await seed(db);
+  const { page, errors } = await openTrip(browser, db);
+  await asGuest(page);
+  await page.evaluate("GTAB='gl';V.filter.pd='fri';render(true)");
+  const z = page.locator('.zst');
+  // sunset in Budapest on 20.11.2026 is 16:03; candles at 15:45 in the programme are 18 minutes before it
+  await expect(z).toContainText('16:03');
+  await expect(z).toContainText('18 דקות לפני השקיעה');
+  await z.getByRole('button', { name: /כל הזמנים/ }).click();
+  const sh = page.getByRole('dialog');
+  await expect(sh).toContainText('עלות השחר');
+  await sh.getByRole('button', { name: 'שבת' }).click();
+  await expect(sh).toContainText('צאת השבת · רבנו תם');
+  await expect(sh).toContainText('17:14');
+  await sh.getByRole('button', { name: 'סגירה' }).click();
+  await page.evaluate("GTAB='gk';render(true)");
+  await page.locator('#taxiBtn').click();
+  await expect(page.getByRole('dialog')).toContainText('Kérem, vigyen el ide:');
   expect(errors).toEqual([]);
 });

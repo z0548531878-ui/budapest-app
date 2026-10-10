@@ -36,6 +36,10 @@ exports.tripPush = functions.region('europe-west1').firestore.document('trips/{t
   if (!after) return;
 
   if (col === 'settings') {
+    // a change in the programme: to everyone, opens the programme; the same item replaces its earlier notice
+    if (after.kind === 'ann' && after.prog && !before) {
+      return send(trip, () => true, '⏰ שינוי בלוח המסע', trim(after.text, 140), 'gl', 'prog_' + after.prog);
+    }
     // new announcement for everyone
     if (after.kind === 'ann' && !after.hidden && !(before && before.kind === 'ann' && !before.hidden)) {
       return send(trip, guests, 'הודעה מהמארגנים' + (after.title ? ': ' + trim(after.title, 40) : ''), trim(after.text, 140), 'gm', 'ann_' + id);
