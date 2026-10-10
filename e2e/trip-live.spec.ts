@@ -297,3 +297,87 @@ test('KERES-1 the Kerestir page: who he was, the tomb, today\'s programme from t
   await expect(page.getByRole('region', { name: 'היום במסע' })).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test('SYNC-2 two organizers on two phones: a change on one shows on the other, and both compute the same numbers', async ({ browser, db }) => {
+  await seed(db);
+  await db.put(`${T}/expenses/e1`, { name: 'אוטובוס', estimate: 10000, paid: 0, category: 'תחבורה', status: 'לא שולם', final: true, receipt: false, order: 1 });
+  await db.put(`${T}/rooms/r1`, { roomNumber: '400', floor: '4', occupants: 'אבי כהן', order: 1 });
+  const A = await openTrip(browser, db, 'שלומי'), B = await openTrip(browser, db, 'איציק');
+  for (const p of [A.page, B.page]) await expect.poll(() => p.evaluate('COLS.every(c => loaded.has(c))')).toBe(true);
+  const act = (p: Page, js: string) => p.evaluate(js);
+  await act(A.page, "save('participants','p2',{...strip(find('participants','p2')),status:'שולם'})");
+  await act(A.page, "save('expenses','e1',{...strip(find('expenses','e1')),status:'מקדמה',paid:4000})");
+  await act(A.page, "save('rooms','r1',{...strip(find('rooms','r1')),kitReady:true,kitBy:'שלומי'})");
+  await act(A.page, "save('donations','d1',{donor:'משפחת לוי',amount:1000,status:'התקבל',purpose:'כללי',order:1})");
+  await act(A.page, "save('tasks','t2',{title:'לבדוק מיקרופון',owner:'איציק',status:'לביצוע',priority:'רגילה',category:'אחר',order:2})");
+  const snap = (p: Page) => p.evaluate("JSON.stringify({m:money(),tasks:S.tasks.length,kit:S.rooms.filter(r=>r.kitReady).length,paid:S.participants.filter(x=>x.status==='שולם').length,don:S.donations.length})");
+  await expect.poll(async () => JSON.parse(await snap(B.page)).paid).toBe(2);
+  await expect.poll(() => snap(B.page)).toBe(await snap(A.page));
+  const b = JSON.parse(await snap(B.page));
+  expect(b.kit).toBe(1); expect(b.tasks).toBe(2); expect(b.don).toBe(1);
+  // the screens agree too: the home strip and the money header read the same on both phones
+  for (const p of [A.page, B.page]) await p.evaluate("go('money',{seg:'sum'})");
+  await expect.poll(async () => (await B.page.locator('.money-top').innerText()).replace(/\s+/g, ' ')).toBe((await A.page.locator('.money-top').innerText()).replace(/\s+/g, ' '));
+  // and the other way: B edits, A follows
+  await act(B.page, "save('participants','p1',{...strip(find('participants','p1')),status:'לא שולם'})");
+  await expect.poll(() => A.page.evaluate("find('participants','p1').status")).toBe('לא שולם');
+  expect(A.errors).toEqual([]); expect(B.errors).toEqual([]);
+});
+
+test('MONEY-1 expenses and income: filters by status, topic and search; the same for donations and payments', async ({ browser, db }) => {
+  await seed(db);
+  const ex = (id: string, name: string, cat: string, status: string, paid: number, receipt: boolean, final = true) => db.put(`${T}/expenses/${id}`, { name, estimate: 1000, paid, category: cat, status, final, receipt, order: 1 });
+  await ex('e1', 'אוטובוס', 'תחבורה', 'לא שולם', 0, false);
+  await ex('e2', 'מלון', 'לינה', 'מקדמה', 400, false);
+  await ex('e3', 'ארוחת שבת', 'אוכל', 'שולם', 1000, true);
+  await ex('e4', 'נרות', 'אוכל', 'לא שולם', 0, false, false);
+  await db.put(`${T}/donations/d1`, { donor: 'משפחת לוי', amount: 500, status: 'התקבל', purpose: 'כללי', order: 1 });
+  await db.put(`${T}/donations/d2`, { donor: 'משפחת כהן', amount: 800, status: 'ממתין', purpose: 'סעודה', order: 2 });
+  const { page, errors } = await openTrip(browser, db);
+  await page.evaluate("go('money',{seg:'expenses'})");
+  const rows = page.locator('#view .erow');
+  await expect(rows).toHaveCount(4);
+  await page.getByRole('button', { name: /^מקדמה/ }).click();
+  await expect(rows).toHaveCount(1); await expect(rows).toContainText('מלון');
+  await page.getByRole('button', { name: /^בלי קבלה/ }).click();
+  await expect(rows).toHaveCount(1);
+  await page.getByRole('button', { name: /^הכל/ }).click();
+  await page.locator('.chips.own').getByRole('button', { name: 'אוכל' }).click();
+  await expect(rows).toHaveCount(2);
+  await page.getByRole('button', { name: /^בהערכה/ }).click();
+  await expect(rows).toHaveCount(1); await expect(rows).toContainText('נרות');
+  await page.locator('#q').fill('אוטו'); await expect(page.locator('#view')).toContainText('אין הוצאות בסינון הזה');
+  await page.evaluate("go('money',{seg:'donations'})");
+  await expect(page.locator('#view .row[data-edit^="donations"]')).toHaveCount(2);
+  await page.getByRole('button', { name: /^ממתינות/ }).click();
+  await expect(page.locator('#view .row[data-edit^="donations"]')).toHaveCount(1);
+  await page.getByRole('button', { name: /^הכל/ }).click();
+  await page.locator('.chips.own').getByRole('button', { name: 'סעודה' }).click();
+  await expect(page.locator('#view')).toContainText('משפחת כהן');
+  await expect(page.locator('#view')).not.toContainText('משפחת לוי');
+  await page.evaluate("go('money',{seg:'participants'})");
+  await expect(page.getByRole('button', { name: /^כולם/ })).toContainText('2');
+  expect(errors).toEqual([]);
+});
+
+test('ROWS-1 participants list: quick buttons on each row (payment, passport, call, WhatsApp), no duplicate chips', async ({ browser, db }) => {
+  await seed(db);
+  const { page, errors } = await openTrip(browser, db);
+  await page.evaluate("go('more',{sub:'people'})");
+  const row = page.locator('.prow', { hasText: 'בני לוי' });
+  await expect(row.getByRole('link', { name: /שיחה עם בני לוי/ })).toHaveAttribute('href', 'tel:0502345678');
+  await expect(row.getByRole('link', { name: /וואטסאפ/ })).toBeVisible();
+  await row.getByRole('button', { name: /תשלום של בני לוי/ }).click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await page.getByRole('button', { name: 'הדרכון של בני לוי' }).click();
+  await expect(page.getByRole('dialog')).toContainText('בני לוי');
+  await page.keyboard.press('Escape');
+  // each filter appears once, and the passport-check shortcut shows with the passport filter instead of as a second chip
+  const chips = await page.locator('.chips .chip').allInnerTexts();
+  expect(new Set(chips).size).toBe(chips.length);
+  expect(chips.join('|')).not.toContain('בדיקת דרכונים');
+  await page.getByRole('button', { name: /^דרכון לא תקין/ }).click();
+  await expect(page.getByRole('button', { name: /למסך בדיקת הדרכונים/ })).toBeVisible();
+  expect(errors).toEqual([]);
+});

@@ -41,3 +41,6 @@ B backup and export, S links and content safety, O offline. Tasks, schedule, Cla
 - Excel file opens in Excel and in Google Sheets on a phone, right to left, with ₪ formatting. Formulas recalculate when a number is changed.
 - "שחזור מגיבוי" from a backup saved in Google Drive on an iPhone (the file picker).
 - Dictation, the WhatsApp senders and the Claude bridge, unchanged by this round.
+| SYNC-2 | Two organizers on two phones: payments, expenses, donations, rooms and tasks converge, identical totals | auto |
+| MONEY-1 | Expenses/income filters: status, topic, search; donations; payments | auto |
+| ROWS-1 | Participants rows: pay/passport/call/WhatsApp buttons, no duplicate chips | auto |

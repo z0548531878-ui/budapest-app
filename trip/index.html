@@ -516,6 +516,12 @@ body::before{background:
 .prow .av,.ph-head .av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--gold-soft);color:var(--gold);font-weight:900;flex:0 0 auto}
 .prow .end{gap:4px}
 .pp{font-size:11.5px;font-weight:800;color:var(--warn)}.pp.ok{color:var(--ok)}
+.prow .acts{display:flex;gap:6px;flex:0 0 auto}.prow .main{min-height:40px;display:flex;flex-direction:column;justify-content:center}
+.ab{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);font-size:15px;font-weight:900;text-decoration:none;transition:transform .15s,background .2s,border-color .2s;animation:abIn .45s cubic-bezier(.2,.85,.25,1.2) both;animation-delay:calc(var(--i,0)*40ms + .2s)}
+.ab:active{transform:scale(.82)}
+.ab.ok{color:var(--ok);border-color:rgba(60,190,120,.5);background:rgba(60,190,120,.12)}.ab.bad{color:#ff8b7a;border-color:rgba(255,120,100,.5);background:rgba(255,120,100,.12)}.ab.warn{color:var(--warn);border-color:rgba(230,170,60,.5);background:rgba(230,170,60,.12)}.ab.wa{background:rgba(37,211,102,.14);border-color:rgba(37,211,102,.4)}
+@keyframes abIn{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.ab{animation:none!important}}
 .prow .wa{flex:0 0 auto;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:rgba(37,211,102,.14);text-decoration:none;font-size:18px}
 .ph-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .ph-head .av.big{width:54px;height:54px;font-size:22px;background:var(--goldbtn);color:var(--goldbtn-ink)}
@@ -1981,11 +1987,13 @@ const VIEWS={
   if(seg==='participants'){
    const f=V.filter.pay||'open';
    let rows=S.participants.filter(x=>!V.q||x.name.includes(V.q));
-   if(f==='open')rows=rows.filter(x=>x.status!=='שולם'&&x.status!=='פטור');if(f==='paid')rows=rows.filter(x=>x.status==='שולם'||x.status==='פטור');
+   const pc={open:S.participants.filter(x=>x.status!=='שולם'&&x.status!=='פטור').length,part:S.participants.filter(x=>x.status==='שולם חלקית').length,paid:S.participants.filter(x=>x.status==='שולם'||x.status==='פטור').length,all:S.participants.length},hold=V.filter.ph||'',holders=[...new Set(S.participants.map(holderOf).filter(Boolean))];
+   if(f==='open')rows=rows.filter(x=>x.status!=='שולם'&&x.status!=='פטור');if(f==='part')rows=rows.filter(x=>x.status==='שולם חלקית');if(f==='paid')rows=rows.filter(x=>x.status==='שולם'||x.status==='פטור');if(hold)rows=rows.filter(x=>holderOf(x)===hold);
    rows.sort((a,b)=>a.name.localeCompare(b.name,'he'));
    const paidN=S.participants.filter(x=>x.status==='שולם').length, payers=S.participants.filter(x=>x.status!=='פטור').length, pct=m.coll;
    return head+`<div class="card" style="padding:14px;margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-weight:800"><span>שילמו <span class="num">${paidN}</span> מתוך <span class="num">${payers}</span> · נגבה <span class="num">${m.coll}%</span></span><span class="num">${ils(m.pIn)} / ${ils(m.pDue)}</span></div><div class="prog"><i data-w="${pct}%" style="width:0"></i></div></div>
-    <div class="chips">${[['open',`עוד לא שילמו`],['paid','שילמו'],['all','כולם']].map(([k,l])=>`<button class="chip" data-filter="pay" data-val="${k}" aria-pressed="${f===k}">${l}</button>`).join('')}<button class="chip" data-remind style="border-color:var(--ok);color:var(--ok)">תזכורת בוואטסאפ</button></div>
+    <div class="chips">${[['open',`עוד לא שילמו`],['part','חלקי'],['paid','שילמו'],['all','כולם']].map(([k,l])=>`<button class="chip" data-filter="pay" data-val="${k}" aria-pressed="${f===k}">${l} <span class="num">${pc[k]}</span></button>`).join('')}<button class="chip" data-remind style="border-color:var(--ok);color:var(--ok)">תזכורת בוואטסאפ</button></div>
+    ${holders.length>1?`<div class="chips own"><span class="chl">הכסף אצל</span>${[['','כולם'],...holders.map(h=>[h,h])].map(([v,l])=>`<button class="chip" data-filter="ph" data-val="${esc(v)}" aria-pressed="${hold===v}">${esc(l)}</button>`).join('')}</div>`:''}
     <input class="search" id="q" type="search" placeholder="חיפוש שם" value="${esc(V.q)}">
     ${card(rows.map(p=>{const c=p.status==='שולם'?'p-ok':p.status==='פטור'?'p-mute':p.status==='שולם חלקית'?'p-warn':'p-bad';
      return `<div class="row" data-edit="participants/${p._id}" role="button" tabindex="0"><div class="main"><div class="t">${esc(p.name)}</div>${p.status!=='לא שולם'&&(p.method||holderOf(p))?`<div class="m">${p.method?`<span>${esc(p.method)}</span>`:''}${holderOf(p)?`<span class="who">אצל ${esc(holderOf(p))}</span>`:''}</div>`:''}</div>
@@ -1993,19 +2001,27 @@ const VIEWS={
   }
   if(seg==='expenses'){
    const out=m.out, left=m.left, finN=S.expenses.filter(isFinal).length, noRec=S.expenses.filter(e=>+e.paid&&!e.receipt).length;
-   const g={};S.expenses.slice().sort(byOrder).forEach(e=>{const k=e.category||'אחר';(g[k]=g[k]||[]).push(e)});
+   const xs=V.filter.exs||'all',xc=V.filter.exc||'',xq=(V.q||'').trim(),xm={all:()=>true,unpaid:e=>e.status!=='שולם'&&e.status!=='מקדמה',dep:e=>e.status==='מקדמה',paid:e=>e.status==='שולם',est:e=>!isFinal(e),norec:e=>+e.paid&&!e.receipt},xn=k=>S.expenses.filter(xm[k]).length;
+   const g={};S.expenses.slice().sort(byOrder).filter(e=>xm[xs](e)&&(!xc||(e.category||'אחר')===xc)&&(!xq||[e.name,e.category,e.paidBy,e.notes].join(' ').includes(xq))).forEach(e=>{const k=e.category||'אחר';(g[k]=g[k]||[]).push(e)});
    const st=e=>e.status==='שולם'?['ok','שולם ✓']:e.status==='מקדמה'?['w',`מקדמה ${ils(e.paid)} · נשאר ${ils(Math.max(0,(+e.estimate||0)-(+e.paid||0)))}`]:['m',isFinal(e)?'לא שולם · סכום סופי':'לא שולם · הערכה'];
    return head+`<div class="card" style="padding:14px;margin-bottom:6px"><div class="mt3" style="margin-top:0"><div><span>סה״כ</span><b class="num">${ils(m.est)}</b></div><div><span>שולם</span><b class="num pos">${ils(out)}</b></div><div><span>נשאר לשלם</span><b class="num">${ils(left)}</b></div></div>
     <p class="note" style="margin:10px 2px 0"><span class="num">${finN}</span> מתוך <span class="num">${S.expenses.length}</span> סכומים סופיים. השאר הערכה.${noRec?` · <b style="color:var(--warn)">${noRec} תשלומים בלי קבלה</b>`:''}</p></div>`
-    +`<div class="chips" style="margin:6px 0 4px">${[['topic','לפי נושאים'],['detail','פירוט מורחב']].map(([k,l])=>`<button class="chip" data-filter="exv" data-val="${k}" aria-pressed="${(V.filter.exv||'topic')===k}">${l}</button>`).join('')}</div>`
-    +[...EXP_CATS,...Object.keys(g).filter(c=>!EXP_CATS.includes(c))].filter(c=>g[c]).map(c=>`<div class="ghead"><span>${c}</span><span class="num">${ils(g[c].reduce((s,x)=>s+(+x.estimate||0),0))}</span></div>`+card(g[c].map(e=>{const [k,l]=st(e);
+    +`<div class="chips">${[['all','הכל'],['unpaid','לא שולם'],['dep','מקדמה'],['paid','שולם'],['est','בהערכה'],['norec','בלי קבלה']].filter(([k])=>k==='all'||xn(k)).map(([k,l])=>`<button class="chip" data-filter="exs" data-val="${k}" aria-pressed="${xs===k}">${l} <span class="num">${xn(k)}</span></button>`).join('')}</div>
+    <div class="chips own"><span class="chl">נושא</span>${[['','כולם'],...[...EXP_CATS,...[...new Set(S.expenses.map(e=>e.category||'אחר'))].filter(c=>!EXP_CATS.includes(c))].filter(c=>S.expenses.some(e=>(e.category||'אחר')===c)).map(c=>[c,c])].map(([v,l])=>`<button class="chip" data-filter="exc" data-val="${esc(v)}" aria-pressed="${xc===v}">${esc(l)}</button>`).join('')}</div>
+    <input class="search" id="q" type="search" placeholder="חיפוש הוצאה, ספק או הערה" value="${esc(V.q)}">
+    <div class="chips" style="margin:6px 0 4px">${[['topic','לפי נושאים'],['detail','פירוט מורחב']].map(([k,l])=>`<button class="chip" data-filter="exv" data-val="${k}" aria-pressed="${(V.filter.exv||'topic')===k}">${l}</button>`).join('')}</div>`
+    +(Object.keys(g).length?'':card('','<b>אין הוצאות בסינון הזה</b>'))+[...EXP_CATS,...Object.keys(g).filter(c=>!EXP_CATS.includes(c))].filter(c=>g[c]).map(c=>`<div class="ghead"><span>${c}</span><span class="num">${ils(g[c].reduce((s,x)=>s+(+x.estimate||0),0))}</span></div>`+card(g[c].map(e=>{const [k,l]=st(e);
      const subs=V.filter.exv==='detail'?(()=>{const it=S.packing.filter(x=>x.item&&x.exp===e._id);if(!it.length)return '';const sm=it.reduce((t,x)=>t+(+x.cost||0),0),rest=(+e.estimate||0)-sm,ln=(a,b)=>`<div class="row" data-edit="expenses/${e._id}" style="min-height:0;padding:5px 18px 5px 8px;opacity:.88"><div class="main"><div class="m" style="font-size:14px">${a}</div></div><div class="end"><span class="num" style="font-size:14px">${b}</span></div></div>`;
       return it.map(x=>ln('• '+esc(x.item)+(x.qty?' · '+esc(x.qty)+' יח׳':''),ils(+x.cost||0))).join('')+(Math.abs(rest)>=1?ln('• '+(rest>0?'יתרה לא מפורטת':'חריגה מההוצאה'),ils(Math.abs(rest))):'')})():'';
      return `<div class="row erow" data-edit="expenses/${e._id}" role="button" tabindex="0"><div class="main"><div class="t">${esc(e.name)}</div><div class="est ${k}">${l}${+e.paid&&!e.receipt?' · <span style="color:var(--warn)">חסרה קבלה</span>':''}</div></div>
      <div class="end"><span class="amt num">${+e.estimate?ils(e.estimate):'—'}</span></div></div>`+subs}).join(''))).join('');
   }
-  return head+`<div class="card" style="padding:14px;margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-weight:800"><span>התקבלו</span><span class="num">${ils(m.dIn)} / ${ils(m.dAll)}</span></div><div class="prog"><i data-w="${m.dAll?Math.round(m.dIn/m.dAll*100):0}%" style="width:0"></i></div></div>`+card(S.donations.map(d=>`<div class="row" data-edit="donations/${d._id}" role="button" tabindex="0"><div class="main"><div class="t">${esc(d.donor)}</div><div class="m"><span>${esc(d.purpose||'כללי')}</span></div></div>
-   <div class="end"><span class="amt num">${d.amount?ils(d.amount):'—'}</span><button class="pill ${d.status==='התקבל'?'p-ok':'p-warn'}" data-don="${d._id}">${d.status==='התקבל'?'התקבל ✓':'סימון שהתקבל'}</button></div></div>`).join(''));
+  return head+`<div class="card" style="padding:14px;margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-weight:800"><span>התקבלו</span><span class="num">${ils(m.dIn)} / ${ils(m.dAll)}</span></div><div class="prog"><i data-w="${m.dAll?Math.round(m.dIn/m.dAll*100):0}%" style="width:0"></i></div></div>` +(()=>{const dn=V.filter.dn||'all',dp=V.filter.dp||'',dq=(V.q||'').trim(),pur=[...new Set(S.donations.map(d=>d.purpose||'כללי'))],dm={all:()=>true,wait:d=>d.status!=='התקבל',got:d=>d.status==='התקבל'};
+   const list=S.donations.filter(d=>dm[dn](d)&&(!dp||(d.purpose||'כללי')===dp)&&(!dq||[d.donor,d.purpose,d.notes].join(' ').includes(dq)));
+   return `<div class="chips">${[['all','הכל'],['wait','ממתינות'],['got','התקבלו']].map(([k,l])=>`<button class="chip" data-filter="dn" data-val="${k}" aria-pressed="${dn===k}">${l} <span class="num">${S.donations.filter(dm[k]).length}</span></button>`).join('')}</div>
+   ${pur.length>1?`<div class="chips own"><span class="chl">ייעוד</span>${[['','כולם'],...pur.map(x=>[x,x])].map(([v,l])=>`<button class="chip" data-filter="dp" data-val="${esc(v)}" aria-pressed="${dp===v}">${esc(l)}</button>`).join('')}</div>`:''}
+   <input class="search" id="q" type="search" placeholder="חיפוש תורם או ייעוד" value="${esc(V.q)}">`+card(list.map(d=>`<div class="row" data-edit="donations/${d._id}" role="button" tabindex="0"><div class="main"><div class="t">${esc(d.donor)}</div><div class="m"><span>${esc(d.purpose||'כללי')}</span></div></div>
+   <div class="end"><span class="amt num">${d.amount?ils(d.amount):'—'}</span><button class="pill ${d.status==='התקבל'?'p-ok':'p-warn'}" data-don="${d._id}">${d.status==='התקבל'?'התקבל ✓':'סימון שהתקבל'}</button></div></div>`).join(''),'<b>אין תרומות בסינון הזה</b>')})();
  },
  sched(){
   const t=todayISO(), di=Math.max(0,TRIP_DAYS.findIndex(d=>d.d===t));
@@ -2057,10 +2073,10 @@ const SUB={
   if(f==='unpaid')rows=rows.filter(p=>p.status!=='שולם'&&p.status!=='פטור');if(f==='nopass')rows=rows.filter(p=>passState(p)[0]!=='ok'&&passState(p)[0]!=='warn');if(f==='nophone')rows=rows.filter(p=>!p.phone);
   rows.sort(famCmp);
   const chip=(k,l)=>`<button class="chip" data-filter="pf" data-val="${k}" aria-pressed="${f===k}">${l} <span class="num">${cnt[k]}</span></button>`;
-  return subHead('משתתפי המסע',`<span class="cnt num">${S.participants.length}</span>`)+updBar('people')+`
-   <div class="chips">${chip('all','כולם')}${chip('unpaid','לא שילמו')}${chip('nopass','דרכון לא תקין')}${cnt.nophone?chip('nophone','בלי טלפון'):''}<button class="chip" data-go="more" data-opts='{"sub":"passports"}'>🛂 בדיקת דרכונים ›</button></div>
+  return subHead('משתתפי המסע')+updBar('people')+`
+   <div class="chips">${chip('all','כולם')}${chip('unpaid','לא שילמו')}${chip('nopass','דרכון לא תקין')}${cnt.nophone?chip('nophone','בלי טלפון'):''}</div>
    <input class="search" id="q" type="search" placeholder="חיפוש שם, טלפון או הערה" value="${esc(V.q)}">
-   ${(()=>{const n=rows.filter(p=>p.phone).length;const l={all:'הודעה לכולם',unpaid:'הודעה לכל מי שלא שילם',nopass:'בקשת דרכון מכל מי שלא שלח'}[f];return n&&l?`<button class="bulkbar" data-bulk>💬 ${l}<span class="n num">${n}</span></button>`:''})()}
+   ${(()=>{const n=rows.filter(p=>p.phone).length;const l={all:'הודעה לכולם',unpaid:'הודעה לכל מי שלא שילם',nopass:'בקשת דרכון מכל מי שלא שלח'}[f];return (n&&l?`<button class="bulkbar" data-bulk>💬 ${l}<span class="n num">${n}</span></button>`:'')+(f==='nopass'?`<button class="bulkbar" data-go="more" data-opts='{"sub":"passports"}'>🛂 למסך בדיקת הדרכונים ›</button>`:'')})()}
    ${peopleList(rows)}`;
  },
  passports(){
@@ -2205,7 +2221,7 @@ view.addEventListener('click',e=>{
   const tg=t.closest('[data-toggle]');if(tg){e.stopPropagation();toggle(tg.dataset.toggle,tg);return}
   const pay=t.closest('[data-pay]');if(pay){e.stopPropagation();paySheet(pay.dataset.pay);return}
   const dn=t.closest('[data-don]');if(dn){e.stopPropagation();const d=find('donations',dn.dataset.don);if(d){const prev=d.status;save('donations',d._id,{...strip(d),status:prev==='התקבל'?'התחייב':'התקבל'}).then(ok=>ok&&toast(prev==='התקבל'?'סומן כהתחייבות':'סומן שהתקבל',()=>save('donations',d._id,strip(d))))}return}
-  const sg=t.closest('[data-seg]');if(sg){V.seg=sg.dataset.seg;V.filter={};render(true);return}
+  const sg=t.closest('[data-seg]');if(sg){V.seg=sg.dataset.seg;V.filter={};if(V.tab==='money')V.q='';render(true);return}
   const fl=t.closest('[data-filter]');if(fl){const k=fl.dataset.filter;V.filter[k]=k==='open'?!V.filter.open:fl.dataset.val;render(k!=='open');return}
   if(t.closest('[data-remind]')){reminder();return}
   if(t.id==='countBtn'){countSheet();return}
@@ -3774,9 +3790,8 @@ function peopleList(rows){
   let n=0;
   return groups.map((g,gi)=>`<div class="plh" style="--i:${Math.min(n,14)}"><span>${esc(g.L)}</span><i></i><small class="num">${g.r.length}</small></div>`+card(g.r.map(p=>{const i=Math.min(n++,14);
     return `<div class="row prow" style="--i:${i};--h:${PHUES[gi%PHUES.length]}" data-person="${p._id}" role="button" tabindex="0">${p.photo?`<span class="av ph"><img src="${p.photo}" alt=""></span>`:`<span class="av">${esc(famKey(p.name).last[0]||'?')}</span>`}
-     <div class="main"><div class="t"><span class="fn">${esc(famKey(p.name).first)}</span> <b class="ln">${esc(famKey(p.name).last)}</b></div><div class="m">${p.phone?`<span class="num ltr">${esc(fmtPhone(p.phone))}</span>`:'<span style="color:var(--warn)">אין טלפון</span>'}${p.carry?`<span class="who">🧳 ${esc(p.carry)}</span>`:''}${p.duties?`<span class="who">📌 ${esc(p.duties)}</span>`:''}${p.notes?`<span>${esc(p.notes)}</span>`:''}</div></div>
-     <div class="end"><span class="pill ${payCls(p)}">${p.status==='לא שולם'?'לא שילם':esc(p.status)}</span><button class="pp ${(()=>{const k=passState(p)[0];return k==='ok'||k==='warn'?'ok':k==='bad'?'bad':''})()}" data-ppass="${p._id}" aria-label="הדרכון של ${esc(p.name)}">🛂 ${(()=>{const k=passState(p)[0];return k==='ok'||k==='warn'?'✓':k==='bad'?'!':'—'})()}</button></div>
-     ${p.phone?`<a class="wa" href="${waLink(p.phone)}" target="_blank" rel="noopener" data-stop aria-label="וואטסאפ">💬</a>`:''}</div>`}).join('')),'').join('')}
+     <div class="main"><div class="t"><span class="fn">${esc(famKey(p.name).first)}</span> <b class="ln">${esc(famKey(p.name).last)}</b></div><div class="m">${p.phone?'':'<span style="color:var(--warn)">אין טלפון</span>'}${p.carry?`<span class="who">🧳 ${esc(p.carry)}</span>`:''}${p.duties?`<span class="who">📌 ${esc(p.duties)}</span>`:''}${p.notes?`<span>${esc(p.notes)}</span>`:''}${p.status!=='שולם'&&p.status!=='פטור'?`<span class="pill ${payCls(p)}">${p.status==='לא שולם'?'לא שילם':esc(p.status)}</span>`:''}</div></div>
+     <div class="acts">${(()=>{const k=passState(p)[0],pk=k==='ok'||k==='warn'?'ok':k==='bad'?'bad':'';return `<button class="ab ${payCls(p).slice(2)}" data-pay="${p._id}" aria-label="תשלום של ${esc(p.name)}: ${esc(p.status)}">₪</button><button class="ab ${pk}" data-ppass="${p._id}" aria-label="הדרכון של ${esc(p.name)}">🛂</button>${p.phone?`<a class="ab" href="tel:${esc(p.phone)}" data-stop aria-label="שיחה עם ${esc(p.name)}">📞</a><a class="ab wa" href="${waLink(p.phone)}" target="_blank" rel="noopener" data-stop aria-label="וואטסאפ ל${esc(p.name)}">💬</a>`:''}`})()}</div></div>`}).join('')),'').join('')}
 
 /* ===== handlers: kits ===== */
 document.addEventListener('click',e=>{
