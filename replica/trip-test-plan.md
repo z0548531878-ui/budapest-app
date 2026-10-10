@@ -31,6 +31,7 @@ B backup and export, S links and content safety, O offline. Tasks, schedule, Cla
 | ZMAN-1 | programme | happy: zmanim | open Friday, then all zmanim, then Shabbat; then the taxi card | sunset 16:03, candles 18 minutes before it; Rabbeinu Tam 17:14; the Hungarian card opens | e2e | pass |
 | SYNC-1 | all | consistency | a partial payment, an exempt rabbi, one new and one in-progress request | home, the participants tab and the money summary agree on 64%; requests show 1 waiting everywhere; the team schedule includes the programme | e2e | pass |
 | PASS-1 | participants | happy: passport | tap the passport mark on a participant, add the photo link | name in English, expiry 10.1.2027 flagged as too short, the link saved and opens | e2e | pass |
+| PCHECK-1 | participants | happy: passport check | paste names + expiry for 3 people (one valid, one expired, one too short), fix one inline, open the hotel list | the expired and short ones are flagged, the default view lists only problems, the inline date saves, the hotel list shows the room with the English names | e2e | pass |
 
 ## Manual pass (needs a real phone)
 

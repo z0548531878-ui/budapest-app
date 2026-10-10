@@ -204,3 +204,34 @@ test('PASS-1 the passport button on a participant opens the card: name in Englis
   await expect(page.getByRole('dialog').getByRole('link', { name: 'צפייה בצילום הדרכון' })).toHaveAttribute('href', 'https://drive.google.com/file/d/xyz');
   expect(errors).toEqual([]);
 });
+
+test('PCHECK-1 passport check: paste names and expiry, a short or expired one is flagged, inline edit, and the hotel list in English', async ({ browser, db }) => {
+  await seed(db);
+  await db.put(`${T}/participants/p3`, { name: 'גדי לוי', amount: 1750, phone: '0503456789', status: 'שולם', passport: true, order: 3 });
+  await db.put(`${T}/rooms/r1`, { occupants: 'אבי כהן, בני לוי', roomNumber: '401', floor: '4', order: 1 });
+  const { page, errors } = await openTrip(browser, db);
+  await page.evaluate("go('more',{sub:'passports'})");
+  await expect(page.locator('#view')).toContainText('בדיקת דרכונים');
+  // paste: one fine, one expired, one too short; one name that isn't in the trip
+  await page.getByRole('button', { name: /הדבקת נתונים/ }).click();
+  const sh = page.getByRole('dialog');
+  await sh.locator('#imTxt').fill('אבי כהן | cohen avi | 2031-05-14\nבני לוי | LEVI BENI | 2025-08-10\nגדי לוי | LEVI GADI | 2027-01-05\nמישהו שלא קיים | NOBODY | 2030-01-01');
+  await sh.getByRole('button', { name: 'בדיקה' }).click();
+  await expect(sh.locator('#imOut')).toContainText('3 נמצאו');
+  await expect(sh.locator('#imOut')).toContainText('1 לא זוהו');
+  await sh.getByRole('button', { name: 'עדכון' }).click();
+  await expect.poll(async () => (await db.get(`${T}/participants/p1`))?.nameEn).toBe('COHEN AVI');
+  await expect.poll(async () => (await db.get(`${T}/participants/p2`))?.passExp).toBe('2025-08-10');
+  await page.evaluate("go('more',{sub:'passports'})");
+  await expect(page.locator('.pcrow', { hasText: 'בני לוי' })).toContainText('פג תוקף');
+  await expect(page.locator('.pcrow', { hasText: 'גדי לוי' })).toContainText('תוקף קצר');
+  await expect(page.locator('.pcrow', { hasText: 'אבי כהן' })).toHaveCount(0); // the default filter shows only the problems
+  // fix one inline: the new date is valid, the flag goes away
+  await page.locator('.pcrow', { hasText: 'גדי לוי' }).locator('[data-pce="passExp"]').fill('2031-01-05');
+  await page.locator('.pcrow', { hasText: 'גדי לוי' }).locator('[data-pce="passExp"]').blur();
+  await expect.poll(async () => (await db.get(`${T}/participants/p3`))?.passExp).toBe('2031-01-05');
+  // the hotel list: the room with the English names as in the passports
+  await page.getByRole('button', { name: /רשימה למלון/ }).click();
+  await expect(page.getByRole('dialog').locator('#hotelTxt')).toHaveValue(/Room 401 \(floor 4\): COHEN AVI \/ LEVI BENI/);
+  expect(errors).toEqual([]);
+});

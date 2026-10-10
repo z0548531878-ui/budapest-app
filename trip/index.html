@@ -1552,6 +1552,39 @@ button.pp{background:none;border:0;font:inherit;cursor:pointer;padding:4px 6px;m
 .shsum{margin:10px 0 12px;padding:14px;border-radius:22px;border:1px solid var(--edge);background:linear-gradient(160deg,#1d1912,#0e0c09);display:grid;gap:10px}
 .shs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}.shs b{display:block;font-size:20px;font-weight:900;color:#f6dc93}.shs span{font-size:12px;color:var(--muted);font-weight:700}
 .shw{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted)}.shw b{color:var(--ink)}
+
+/* ===== passport check ===== */
+.pcsum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 8px}
+.pcs{padding:10px;border-radius:16px;border:1px solid var(--edge);background:linear-gradient(160deg,#1d1912,#0e0c09);text-align:center}
+.pcs b{display:block;font-size:24px;font-weight:900}.pcs span{font-size:12px;color:var(--muted);font-weight:700}
+.pcs.bad b{color:#ff9d92}.pcs.miss b{color:#f0d28c}.pcs.ok b{color:#7fe0b0}.pcs.zero{opacity:.5}
+.pcnote{margin:0 2px 10px;font-size:12.5px}
+.pcbar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}.pcbar .btn{text-decoration:none}
+.btn.sm{min-height:36px;padding:6px 12px;font-size:13.5px}
+.chip.cbad[aria-pressed="false"]{border-color:rgba(255,157,146,.45)}
+.pcrow{margin:0 0 10px;padding:12px;border-radius:18px;border:1px solid var(--edge);background:linear-gradient(160deg,#17140f,#0d0c09);display:grid;gap:10px}
+.pcrow.bad{border-color:rgba(255,157,146,.5);background:linear-gradient(160deg,rgba(212,74,58,.12),#0d0c09)}
+.pcrow.ok{border-color:rgba(29,127,83,.4)}
+.pc-top{display:flex;justify-content:space-between;align-items:center;gap:8px}.pc-top b{font-size:16px}
+.pc-fields{display:grid;grid-template-columns:1.5fr 1fr;gap:8px}
+.pc-fields label{display:grid;gap:3px;min-width:0}.pc-fields label span{font-size:11.5px;color:var(--muted);font-weight:700}
+.pin{width:100%;min-width:0;box-sizing:border-box;min-height:40px;padding:8px 10px;border-radius:12px;border:1px solid var(--edge);background:rgba(255,255,255,.04);color:var(--ink);font:inherit;font-size:15px;font-weight:700}
+.pin:focus{outline:2px solid #f6dc93;outline-offset:1px}
+.pc-bot{display:flex;flex-wrap:wrap;gap:6px}.pc-bot .pill{text-decoration:none;border:0;cursor:pointer;min-height:30px}
+
+/* ===== participants list: smaller ===== */
+.prow{padding:6px 12px!important;min-height:48px!important;gap:10px!important}
+.prow .end{display:flex!important;flex-direction:row!important;align-items:center!important;gap:6px!important;flex-wrap:nowrap}
+.prow .av,.ph-head .av:not(.big){width:32px!important;height:32px!important;font-size:14px}
+.prow .t{font-size:15px!important}.prow .m{font-size:12px!important;gap:6px!important}
+.prow .wa{width:30px!important;height:30px!important;font-size:15px!important}
+.prow .pill{font-size:11px!important;padding:2px 8px!important}
+button.pp{font-size:11px!important;padding:2px 5px!important;min-height:24px!important}
+.pp.bad{color:#ff9d92}
+.plh{margin:10px 4px 4px!important;font-size:17px!important}.plh span{width:28px!important;height:28px!important;border-radius:9px!important;font-size:16px!important}.plh small{font-size:12px!important}
+.chip{padding:6px 12px!important;font-size:13px!important}
+.bulkbar{padding:9px 13px!important;font-size:14px!important;border-radius:14px!important}
+.search{min-height:40px!important;padding:8px 12px!important;font-size:15px!important}
 /* ===== zmanim strip (inside the parchment), pocket-guide tools, taxi card ===== */
 .zst{margin:4px 0 14px;padding:10px 12px 12px;border:1px solid rgba(164,124,39,.45);border-radius:10px;background:linear-gradient(180deg,rgba(255,250,235,.55),rgba(236,220,180,.35))}
 .zst .zh{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:800;color:#4A3A12;letter-spacing:.3px}
@@ -1990,26 +2023,34 @@ const SUB={
  people(){
   const f=V.filter.pf||'all';
   let rows=S.participants.filter(x=>!V.q||[x.name,x.phone,x.notes,x.carry,x.duties].join(' ').includes(V.q));
-  const cnt={all:S.participants.length,unpaid:S.participants.filter(p=>p.status!=='שולם'&&p.status!=='פטור').length,nopass:S.participants.filter(p=>!p.passport).length,carry:S.participants.filter(p=>p.carry||p.duties).length,nophone:S.participants.filter(p=>!p.phone).length};
-  if(f==='unpaid')rows=rows.filter(p=>p.status!=='שולם'&&p.status!=='פטור');if(f==='nopass')rows=rows.filter(p=>!p.passport);if(f==='carry')rows=rows.filter(p=>p.carry||p.duties);if(f==='nophone')rows=rows.filter(p=>!p.phone);
+  const cnt={all:S.participants.length,unpaid:S.participants.filter(p=>p.status!=='שולם'&&p.status!=='פטור').length,nopass:S.participants.filter(p=>passState(p)[0]!=='ok'&&passState(p)[0]!=='warn').length,nophone:S.participants.filter(p=>!p.phone).length};
+  if(f==='unpaid')rows=rows.filter(p=>p.status!=='שולם'&&p.status!=='פטור');if(f==='nopass')rows=rows.filter(p=>passState(p)[0]!=='ok'&&passState(p)[0]!=='warn');if(f==='nophone')rows=rows.filter(p=>!p.phone);
   rows.sort(famCmp);
   const chip=(k,l)=>`<button class="chip" data-filter="pf" data-val="${k}" aria-pressed="${f===k}">${l} <span class="num">${cnt[k]}</span></button>`;
   return subHead('משתתפי המסע',`<span class="cnt num">${S.participants.length}</span>`)+updBar('people')+`
-   <div class="chips">${chip('all','כולם')}${chip('unpaid','לא שילמו')}${chip('nopass','בלי דרכון')}${chip('carry','עם תפקיד/מזוודה')}${cnt.nophone?chip('nophone','בלי טלפון'):''}</div>
+   <div class="chips">${chip('all','כולם')}${chip('unpaid','לא שילמו')}${chip('nopass','דרכון לא תקין')}${cnt.nophone?chip('nophone','בלי טלפון'):''}<button class="chip" data-go="more" data-opts='{"sub":"passports"}'>🛂 בדיקת דרכונים ›</button></div>
    <input class="search" id="q" type="search" placeholder="חיפוש שם, טלפון או הערה" value="${esc(V.q)}">
-   ${(()=>{const n=rows.filter(p=>p.phone).length;const l={all:'הודעה לכולם',unpaid:'הודעה לכל מי שלא שילם',nopass:'בקשת דרכון מכל מי שלא שלח',carry:'הודעה לכל מי שיש לו תפקיד'}[f];return n&&l?`<button class="bulkbar" data-bulk>💬 ${l}<span class="n num">${n}</span></button>`:''})()}
+   ${(()=>{const n=rows.filter(p=>p.phone).length;const l={all:'הודעה לכולם',unpaid:'הודעה לכל מי שלא שילם',nopass:'בקשת דרכון מכל מי שלא שלח'}[f];return n&&l?`<button class="bulkbar" data-bulk>💬 ${l}<span class="n num">${n}</span></button>`:''})()}
    ${peopleList(rows)}`;
  },
  passports(){
-  const ppl=S.participants.slice().sort((a,b)=>a.name.localeCompare(b.name,'he')), got=ppl.filter(p=>p.passport).length, pct=ppl.length?Math.round(got/ppl.length*100):0;
-  const f=V.filter.pp||'missing', q=(V.q||'').trim(), rows=ppl.filter(p=>(f==='missing'?!p.passport:f==='got'?p.passport:true)&&(!q||p.name.includes(q)));
-  return subHead('צילומי דרכונים',`<span class="cnt num">${got}/${ppl.length}</span>`)+`
-   <a class="passfolder" href="https://drive.google.com/drive/folders/1NV28JvhIoFQ4BMdF-S4dP9XWonw03anW" target="_blank" rel="noopener"><span class="ic">${I.file}</span><span class="main"><b>תיקיית הדרכונים בדרייב</b><span>משותפת רק לך, לאיציק וליעל. מעלים לשם את הצילומים.</span></span><span aria-hidden="true">‹</span></a>
-   <div class="card" style="padding:14px;margin:12px 0"><div style="display:flex;justify-content:space-between;font-weight:800"><span>התקבלו</span><span class="num">${got} מתוך ${ppl.length}</span></div><div class="prog"><i data-w="${pct}%" style="width:0"></i></div>
-    <p class="note" style="margin:10px 0 0">כדאי לשמור כל קובץ בשם של בעל הדרכון. אחרי ההעלאה מסמנים ✓ ליד השם.</p></div>
-   <div class="chips"><button class="chip" data-filter="pp" data-val="missing" aria-pressed="${f==='missing'}">עוד לא התקבל (${ppl.length-got})</button><button class="chip" data-filter="pp" data-val="got" aria-pressed="${f==='got'}">התקבלו (${got})</button><button class="chip" data-filter="pp" data-val="all" aria-pressed="${f==='all'}">כולם</button></div>
-   <input class="search" id="q" type="search" placeholder="חיפוש לפי שם" value="${esc(V.q)}">
-   ${card(rows.map(p=>`<div class="row pprow"><button class="check ${p.passport?'on':''}" data-pp="${p._id}" aria-label="התקבל">${p.passport?CHECK:''}</button><div class="main"><div class="t">${esc(p.name)}</div>${p.passport?`<div class="m"><span>${p.passportUrl?'שמור בדרייב':'סומן שהתקבל'}</span></div>`:''}</div>${p.passportUrl?`<a class="pill p-ok" href="${esc(p.passportUrl)}" target="_blank" rel="noopener">צפייה</a>`:''}${!p.passport&&p.phone?`<a class="pill p-mute" href="https://wa.me/${String(p.phone).replace(/\D/g,'').replace(/^0/,'972')}?text=${encodeURIComponent('שלום '+p.name.split(' ')[0]+', נשמח לצילום של הדרכון לקראת המסע לבודפשט (בשביל הצ׳ק אין במלון). אפשר לשלוח לי כאן. תודה!')}" target="_blank" rel="noopener">בקשה בוואטסאפ</a>`:''}</div>`).join(''),q?'<b>לא נמצא שם כזה</b>':f==='got'?'<b>עוד לא התקבלו דרכונים</b>':'<b>כל הדרכונים התקבלו 🎉</b>')}`;
+  const ppl=S.participants.slice().sort((x,y)=>x.name.localeCompare(y.name,'he')), q=(V.q||'').trim();
+  const st=ppl.map(p=>({p,s:passState(p)})), cnt={bad:st.filter(x=>x.s[0]==='bad').length,miss:st.filter(x=>x.s[0]==='miss').length,warn:st.filter(x=>x.s[0]==='warn').length,ok:st.filter(x=>x.s[0]==='ok').length};
+  const f=V.filter.pp||(cnt.bad?'bad':cnt.miss?'miss':'all');
+  const pick={bad:x=>x.s[0]==='bad',miss:x=>x.s[0]==='miss',ok:x=>x.s[0]==='ok'||x.s[0]==='warn',all:()=>true}[f]||(()=>true);
+  const rows=st.filter(x=>pick(x)&&(!q||x.p.name.includes(q)||String(x.p.nameEn||'').toUpperCase().includes(q.toUpperCase())));
+  const got=ppl.filter(p=>p.passport).length;
+  const chip=(k,l,n,c)=>`<button class="chip ${c||''}" data-filter="pp" data-val="${k}" aria-pressed="${f===k}">${l} <span class="num">${n}</span></button>`;
+  return subHead('בדיקת דרכונים',`<span class="cnt num">${cnt.ok+cnt.warn}/${ppl.length} תקינים</span>`)+`
+   <div class="pcsum"><div class="pcs bad${cnt.bad?'':' zero'}"><b class="num">${cnt.bad}</b><span>פג או קצר</span></div><div class="pcs miss${cnt.miss?'':' zero'}"><b class="num">${cnt.miss}</b><span>חסר מידע</span></div><div class="pcs ok"><b class="num">${cnt.ok+cnt.warn}</b><span>תקינים</span></div></div>
+   <p class="note pcnote">דרכון צריך להיות בתוקף לפחות עד <b class="num">22.02.2027</b> (שלושה חודשים אחרי החזרה) ולהיות מונפק ב־10 השנים האחרונות. השם באנגלית נרשם בדיוק כמו בדרכון, כי המלון מתאים אותו.</p>
+   <div class="pcbar"><button class="btn sm" data-pc-hotel>🏨 רשימה למלון באנגלית</button><button class="btn sm" data-pc-import>📋 הדבקת נתונים</button><a class="btn sm" href="https://drive.google.com/drive/folders/1NV28JvhIoFQ4BMdF-S4dP9XWonw03anW" target="_blank" rel="noopener">📁 תיקיית הדרייב</a></div>
+   <div class="chips">${chip('bad','פג או קצר',cnt.bad,'cbad')}${chip('miss','חסר מידע',cnt.miss)}${chip('ok','תקינים',cnt.ok+cnt.warn)}${chip('all','כולם',ppl.length)}</div>
+   <input class="search" id="q" type="search" placeholder="חיפוש לפי שם בעברית או באנגלית" value="${esc(V.q)}">
+   ${rows.length?rows.map(({p,s:ps})=>{const u=passUrlOf(p);return `<div class="pcrow ${ps[0]}" data-pid="${p._id}"><div class="pc-top"><b>${esc(p.name)}</b><span class="pill ${ps[0]==='ok'?'p-ok':ps[0]==='bad'?'p-bad':ps[0]==='warn'?'p-gold':'p-warn'}">${ps[1]}</span></div>
+     <div class="pc-fields"><label><span>שם באנגלית, כמו בדרכון</span><input class="pin ltr" data-pce="nameEn" value="${esc(p.nameEn||'')}" placeholder="COHEN AVI" autocapitalize="characters" autocomplete="off" spellcheck="false"></label>
+      <label><span>תוקף</span><input class="pin ltr" type="date" data-pce="passExp" value="${esc(p.passExp||'')}"></label></div>
+     <div class="pc-bot">${u?`<a class="pill p-ok" href="${esc(u)}" target="_blank" rel="noopener">🛂 צילום הדרכון</a>`:`<button class="pill p-mute" data-pclink="${p._id}">+ קישור לצילום</button>`}<button class="pill ${p.passport?'p-ok':'p-mute'}" data-pp="${p._id}" aria-pressed="${!!p.passport}">${p.passport?'התקבל ✓':'סימון: התקבל'}</button>${!p.passport&&p.phone?`<a class="pill p-mute" href="${waLink(p.phone,'שלום '+firstN(p.name)+', כדי להשלים את הרישום למסע לבודפשט נשמח לצילום של עמוד הפרטים בדרכון. תודה!')}" target="_blank" rel="noopener">בקשה בוואטסאפ</a>`:''}</div></div>`}).join(''):card('','<b>'+(q?'לא נמצא':'אין כאן אף אחד')+'</b>')}`;
  },
  packing(){
   const rest=S.packing.filter(x=>x.list!=='סט לכל חדר'), setItems=S.packing.filter(x=>x.list==='סט לכל חדר');
@@ -2151,7 +2192,10 @@ view.addEventListener('click',e=>{
   if(t.closest('[data-bulk]')){bulkSheet();return}
   const pps=t.closest('[data-ppass]');if(pps){e.stopPropagation();personSheet(pps.dataset.ppass,'pass');return}
   const pr=t.closest('[data-person]');if(pr&&!t.closest('a')){personSheet(pr.dataset.person);return}
-  const pp=t.closest('[data-pp]');if(pp){const p=find('participants',pp.dataset.pp);if(p){const on=!p.passport;pp.classList.toggle('on',on);pp.innerHTML=on?CHECK:'';if(on)burst(pp);save('participants',p._id,{...strip(p),passport:on})}return}
+  const pp=t.closest('[data-pp]');if(pp){const p=find('participants',pp.dataset.pp);if(p){const on=!p.passport;if(pp.classList.contains('pill')){pp.textContent=on?'התקבל ✓':'סימון: התקבל';pp.className='pill '+(on?'p-ok':'p-mute')}else{pp.classList.toggle('on',on);pp.innerHTML=on?CHECK:''}if(on)burst(pp);save('participants',p._id,{...strip(p),passport:on})}return}
+  if(t.closest('[data-pc-hotel]')){e.stopPropagation();hotelSheet();return}
+  if(t.closest('[data-pc-import]')){e.stopPropagation();passImportSheet();return}
+  const pcl=t.closest('[data-pclink]');if(pcl){e.stopPropagation();const p=find('participants',pcl.dataset.pclink);if(!p)return;const v=prompt('מדביקים כאן את הקישור לצילום הדרכון בתיקיית הדרייב','');if(v==null)return;const u=safeUrl(v.trim());if(!u){toast('זה לא נראה כמו קישור. מעתיקים אותו מהדרייב');return}save('participants',p._id,{...strip(p),passUrl:u});return}
   if(t.closest('[data-send]')){if(CAN_SEND())sendSheet();return}
   if(t.closest('[data-code]')){codeSheet();return}
   const ub=t.closest('[data-upd]');if(ub){updSheet(ub.dataset.upd);return}
@@ -2174,6 +2218,9 @@ const keyClick=e=>{if((e.key==='Enter'||e.key===' ')&&e.target.getAttribute('rol
 view.addEventListener('keydown',keyClick);
 view.addEventListener('input',e=>{if(e.target.id==='q'){V.q=e.target.value.trim();render()}});
 const rsFile=document.getElementById('rsFile');rsFile.onchange=()=>{if(rsFile.files[0]){restoreJson(rsFile.files[0]);rsFile.value=''}};
+view.addEventListener('change',e=>{const i=e.target.closest&&e.target.closest('[data-pce]');if(!i)return;const row=i.closest('[data-pid]'),p=row&&find('participants',row.dataset.pid);if(!p)return;
+  let v=i.value.trim();if(i.dataset.pce==='nameEn')v=v.toUpperCase().replace(/\s+/g,' ');if(i.dataset.pce==='nameEn')i.value=v;
+  if((p[i.dataset.pce]||'')===v)return;save('participants',p._id,{...strip(p),[i.dataset.pce]:v})});
 view.addEventListener('submit',e=>{if(e.target.id==='padd'){e.preventDefault();const i=document.getElementById('paddIn');const v=i.value.trim();if(!v)return;
   add('packing',{...F.packing.def,item:v,buyer:V.filter.by&&V.filter.by!=='__none'?V.filter.by:(ME||''),where:'בארץ'}).then(ok=>{if(ok){i.value='';toast('נוסף לרשימת הקניות')}});return}
   if(e.target.id==='qadd'){e.preventDefault();const i=document.getElementById('qaddIn');const v=i.value.trim();if(!v)return;
@@ -2482,8 +2529,49 @@ const roomOf=p=>{const first=p.name.replace(/^הרב(נית)? /,'').split(' ')[0
 const tasksOf=p=>{const first=p.name.replace(/^הרב(נית)? /,'').split(' ')[0];return S.tasks.filter(t=>t.status!=='בוצע'&&(String(t.owner||'').split(/,\s*/).includes(first)||(t.title+' '+(t.notes||'')).includes(p.name)))};
 // a passport must be valid 3 months after leaving the Schengen area (22.11.2026)
 const PASS_MIN='2027-02-22';
+const passUrlOf=p=>safeUrl(p.passUrl||p.passportUrl||'');
+// ok / warn (valid, but only just) / bad (expired or too short) / miss (still to be filled in)
+function passState(p){const t=todayISO();
+  if(p.passExp&&p.passExp<t)return ['bad','פג תוקף'];
+  if(p.passExp&&p.passExp<PASS_MIN)return ['bad','תוקף קצר'];
+  if(!p.passExp&&!p.nameEn)return ['miss','לא הוזן'];
+  if(!p.nameEn)return ['miss','חסר שם באנגלית'];
+  if(!p.passExp)return ['miss','חסר תוקף'];
+  return (Date.parse(p.passExp)-Date.parse(PASS_MIN))/864e5<=60?['warn','תקף, בקושי']:['ok','תקין']}
+// the hotel gets rooms with the names as they are in the passports
+function hotelRows(){const by=new Map(),none=[];
+  S.participants.forEach(p=>{const r=roomOf(p);if(!r){none.push(p);return}const k=r._id;if(!by.has(k))by.set(k,{r,ppl:[]});by.get(k).ppl.push(p)});
+  return {rooms:[...by.values()].sort((a,b)=>String(a.r.roomNumber||'zz').localeCompare(String(b.r.roomNumber||'zz'),undefined,{numeric:true})),none}}
+function hotelText(){const {rooms,none}=hotelRows(),nm=p=>p.nameEn||'(NAME MISSING: '+p.name+')';
+  const out=['Silver Crown Hotel & Residence, Palace Quarter','Group: Shabbat gathering, 19-22.11.2026','','ROOMING LIST',''];
+  rooms.forEach(({r,ppl})=>out.push(`Room ${r.roomNumber||'?'}${r.floor?' (floor '+r.floor+')':''}: ${ppl.map(nm).join(' / ')}`));
+  if(none.length){out.push('','NOT ASSIGNED TO A ROOM:');none.forEach(p=>out.push('  '+nm(p)))}
+  return out.join('\n')}
+function hotelSheet(){const t=hotelText(),miss=S.participants.filter(p=>!p.nameEn).length;
+  sheet(`<h3>רשימה למלון באנגלית</h3>${miss?`<p class="note" style="color:var(--warn);margin-top:0">חסר שם באנגלית ל־${miss} משתתפים. הם מסומנים NAME MISSING.</p>`:'<p class="note" style="margin-top:0">כל השמות באנגלית כמו בדרכונים.</p>'}
+   <textarea class="note-in ltr" id="hotelTxt" readonly style="min-height:260px;font-size:13px;direction:ltr;text-align:left">${esc(t)}</textarea>
+   <div class="sheet-acts"><button class="btn" id="hotelX">הורדה כאקסל</button><span class="sp"></span><button class="btn primary" id="hotelCopy">העתקה</button></div>`);
+  document.getElementById('hotelCopy').onclick=()=>copy(t);
+  document.getElementById('hotelX').onclick=async()=>{let X;try{X=await loadXlsx()}catch(e){toast('צריך אינטרנט כדי להכין אקסל');return}
+    const {rooms,none}=hotelRows(),rows=[['Room','Floor','Guest (as in passport)','Passport valid until']];
+    rooms.forEach(({r,ppl})=>ppl.forEach(p=>rows.push([r.roomNumber||'',r.floor||'',p.nameEn||'',p.passExp||''])));none.forEach(p=>rows.push(['','',p.nameEn||'',p.passExp||'']));
+    const wb=X.utils.book_new();X.utils.book_append_sheet(wb,X.utils.aoa_to_sheet(rows),'Rooming list');
+    download('rooming-list-silver-crown.xlsx',new Blob([X.write(wb,{bookType:'xlsx',type:'array'})],{type:'application/octet-stream'}))}}
+// paste lines "Hebrew name | ENGLISH NAME | YYYY-MM-DD" and the matching participants are filled in
+function passImportSheet(){
+  sheet(`<h3>הדבקת שמות ותוקפים</h3><p class="note" style="margin-top:0">שורה לכל משתתף: <span class="ltr">שם בעברית | ENGLISH NAME | 2030-12-31</span>. ההתאמה לפי השם בעברית, ולפני העדכון רואים מה נמצא.</p>
+   <textarea class="note-in" id="imTxt" style="min-height:180px;direction:rtl" placeholder="אבי כהן | COHEN AVI | 2031-05-14"></textarea><div id="imOut" class="note"></div>
+   <div class="sheet-acts"><button class="btn" id="imChk">בדיקה</button><span class="sp"></span><button class="btn primary" id="imGo" disabled>עדכון</button></div>`);
+  let plan=[];
+  const parse=()=>{plan=[];const bad=[];
+    document.getElementById('imTxt').value.split(/\n/).map(l=>l.trim()).filter(Boolean).forEach(l=>{const c=l.split(/\s*[|\t]\s*/);if(c.length<2){bad.push(l);return}
+      const p=matchGuest(c[0]);const en=(c[1]||'').toUpperCase().replace(/\s+/g,' ').trim(),ex=(c[2]||'').trim();
+      if(!p||(ex&&!/^\d{4}-\d{2}-\d{2}$/.test(ex))){bad.push(l);return}plan.push({p,en,ex})});
+    const o=document.getElementById('imOut');o.innerHTML=`<b class="num">${plan.length}</b> נמצאו${bad.length?` · <span style="color:var(--bad)">${bad.length} לא זוהו:</span><br>${bad.map(esc).join('<br>')}`:''}`;document.getElementById('imGo').disabled=!plan.length};
+  document.getElementById('imChk').onclick=parse;
+  document.getElementById('imGo').onclick=async()=>{let n=0;for(const {p,en,ex} of plan){if(await save('participants',p._id,{...strip(find('participants',p._id)||p),nameEn:en,...(ex?{passExp:ex}:{})}))n++}closeSheet();toast(`עודכנו ${n} משתתפים`)}}
 function personSheet(id,focus){
-  const p=find('participants',id);if(!p)return;const r=roomOf(p),ts=tasksOf(p),pu=safeUrl(p.passUrl);
+  const p=find('participants',id);if(!p)return;const r=roomOf(p),ts=tasksOf(p),pu=passUrlOf(p);
   const expBad=p.passExp&&p.passExp<PASS_MIN;
   const kv=(k,v)=>v?`<div class="kv"><span>${k}</span><b>${v}</b></div>`:'';
   sheet(`<div class="ph-head"><span class="av big">${esc(p.name.replace(/^הרב(נית)? /,'')[0])}</span><div><h3 style="margin:0">${esc(p.name)}</h3>${p.phone?`<a class="ltr phone" href="${telLink(p.phone)}">${esc(fmtPhone(p.phone))}</a>`:'<span class="note">אין טלפון</span>'}</div></div>
@@ -3610,7 +3698,7 @@ function peopleList(rows){
   return groups.map((g,gi)=>`<div class="plh" style="--i:${Math.min(n,14)}"><span>${esc(g.L)}</span><i></i><small class="num">${g.r.length}</small></div>`+card(g.r.map(p=>{const i=Math.min(n++,14);
     return `<div class="row prow" style="--i:${i};--h:${PHUES[gi%PHUES.length]}" data-person="${p._id}" role="button" tabindex="0">${p.photo?`<span class="av ph"><img src="${p.photo}" alt=""></span>`:`<span class="av">${esc(famKey(p.name).last[0]||'?')}</span>`}
      <div class="main"><div class="t"><span class="fn">${esc(famKey(p.name).first)}</span> <b class="ln">${esc(famKey(p.name).last)}</b></div><div class="m">${p.phone?`<span class="num ltr">${esc(fmtPhone(p.phone))}</span>`:'<span style="color:var(--warn)">אין טלפון</span>'}${p.carry?`<span class="who">🧳 ${esc(p.carry)}</span>`:''}${p.duties?`<span class="who">📌 ${esc(p.duties)}</span>`:''}${p.notes?`<span>${esc(p.notes)}</span>`:''}</div></div>
-     <div class="end"><span class="pill ${payCls(p)}">${p.status==='לא שולם'?'לא שילם':esc(p.status)}</span><button class="pp ${p.passport?'ok':''}" data-ppass="${p._id}" aria-label="הדרכון של ${esc(p.name)}">🛂 ${p.passport?'דרכון ✓':'חסר'}</button></div>
+     <div class="end"><span class="pill ${payCls(p)}">${p.status==='לא שולם'?'לא שילם':esc(p.status)}</span><button class="pp ${(()=>{const k=passState(p)[0];return k==='ok'||k==='warn'?'ok':k==='bad'?'bad':''})()}" data-ppass="${p._id}" aria-label="הדרכון של ${esc(p.name)}">🛂 ${(()=>{const k=passState(p)[0];return k==='ok'||k==='warn'?'✓':k==='bad'?'!':'—'})()}</button></div>
      ${p.phone?`<a class="wa" href="${waLink(p.phone)}" target="_blank" rel="noopener" data-stop aria-label="וואטסאפ">💬</a>`:''}</div>`}).join('')),'').join('')}
 
 /* ===== handlers: kits ===== */
