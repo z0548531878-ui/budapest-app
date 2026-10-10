@@ -2688,14 +2688,14 @@ function shopStat(){const rest=S.packing.filter(x=>x.list!=='סט לכל חדר'
 const TILE_DEFS=()=>{const pk=S.packing.filter(x=>x.list!=='סט לכל חדר'&&(!x.sug||kst(x,'ordered'))),pd=pk.filter(x=>kst(x,'ordered')).length,rk=S.rooms.filter(r=>r.kitReady).length;return [
  ['program','sched','לוח המסע','חמישי–שבת','c2'],
  ['people','people','משתתפים',`${S.participants.length} נוסעים`,'c1'],
- ['passports','people','דרכונים',`${S.participants.filter(p=>p.passport).length}/${S.participants.length}`,'c2'],
+ ['passports','file','דרכונים',`${S.participants.filter(p=>p.passport).length}/${S.participants.length}`,'c2'],
  ['kits','box','ערכות',`${kstat(kitItems()).placed}/${kitItems().length} הונחו`,'c5'],
  ['rooms','bed','חדרים',`${S.rooms.length} · ${rk} עם סט`,'c5'],
  ['flights','plane','טיסות',`${S.flights.length} טיסות`,'c6'],
- ['files','file','מסמכים ואנשי קשר',`${S.files.filter(f=>f._id!=='f00').length} מסמכים · ${S.contacts.length} אנשים`,'c8'],
+ ['files','file','מסמכים',`${S.files.filter(f=>f._id!=='f00').length} מסמכים · ${S.contacts.length} אנשים`,'c8'],
  ['attendance','people','ספירת נוכחות','לאוטובוס','c9'],
  ['reqs','tasks','בקשות ואישורים',`${pendN()} ממתינות`,'c12'], ['announce','chat','הודעות',`${annList().length} פורסמו · ${msgDue().length} לשלוח`,'c13'], ['trivia','spark','טריוויה','משחק לאוטובוס','c10'],
- ['roles','people','תפקידים',`${Object.keys(rolesMap()).length} עם תפקיד`,'c11'],
+ ['roles','spark','תפקידים',`${Object.keys(rolesMap()).length} עם תפקיד`,'c11'],
  ]};
 const TORD=['program','people','reqs','announce','passports','roles','flights','rooms','kits','files','attendance','trivia'];
 // gold = something there is waiting for you; the rest stay dark, so the eye goes straight to what's open
