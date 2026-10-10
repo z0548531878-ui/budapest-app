@@ -1584,7 +1584,7 @@ function insights(){
   const pl=S.donations.filter(d=>d.status!=='התקבל'); if(pl.length)add('warn','money',`${pl.length} תרומות שהובטחו ועוד לא התקבלו`,`${ils(pl.reduce((s,d)=>s+(+d.amount||0),0))} בסך הכול`,'money',{seg:'donations'});
   const noRoom=S.rooms.filter(r=>!r.roomNumber); if(noRoom.length&&D<=14)add('warn','bed',`${noRoom.length} חדרים בלי מספר`,'לבקש מהמלון את שיבוץ החדרים','more',{sub:'rooms'});
   const kit=S.rooms.filter(r=>!r.kitReady); if(kit.length&&D<=1)add('warn','bed',`${kit.length} חדרים בלי סט`,'לסדר את הסטים לפני שהנוסעים עולים לחדרים','more',{sub:'rooms'});
-  const buy=S.packing.filter(x=>!x.done); if(buy.length)add(D<=10?'warn':'info','box',`${buy.length} פריטים עוד לא נקנו או נארזו`,`${buy.filter(x=>(x.where||'בארץ')!=='בבודפשט').length} לקנות בארץ · ${buy.filter(x=>x.where==='בבודפשט').length} בבודפשט`,'more',{sub:'packing'});
+  const buy=S.packing.filter(x=>!kst(x,'ordered')&&!x.sug); if(buy.length)add(D<=10?'warn':'info','box',`${buy.length} פריטים עוד לא נקנו`,`${buy.filter(x=>(x.where||'בארץ')!=='בבודפשט').length} לקנות בארץ · ${buy.filter(x=>x.where==='בבודפשט').length} בבודפשט`,'more',{sub:'packing'});
   KITS.forEach(([kn])=>{const it=kitItems().filter(x=>kitOf(x)===kn);if(!it.length)return;for(const [k,l] of [['ordered','להזמין'],['arrived','לוודא שהגיע'],['packed','לארוז'],['placed','להניח']]){const miss=it.filter(x=>!kst(x,k)).length,dd=kdays(KDUE[k]);if(miss&&dd<0){add('bad','box',`${kn}: ${miss} פריטים שלא ${k==='ordered'?'הוזמנו':k==='arrived'?'הגיעו':k==='packed'?'נארזו':'הונחו'}`,`היה צריך ${l} עד ${fmtDate(KDUE[k])}`,'more',{sub:'kits',filter:{kit:kn,ks:k}});break}if(miss&&dd<=7){add('warn','box',`${kn}: ${l} עד ${fmtDate(KDUE[k])}`,`${miss} פריטים עוד לא`,'more',{sub:'kits',filter:{kit:kn,ks:k}});break}}});
   const nm=S.messages.filter(x=>!x.sent).sort((a,b)=>(a.date||'').localeCompare(b.date||''))[0];
   if(nm)add(nm.date&&nm.date<=t?'warn':'info','chat',nm.date&&nm.date<=t?`הגיע הזמן לשלוח: ${nm.title}`:`ההודעה הבאה לקבוצה: ${nm.title}`,nm.date?`מתוכננת ל-${fmtDate(nm.date)}`:'','more',{sub:'messages'});
@@ -1911,14 +1911,14 @@ const SUB={
   const where=x=>x.where||(/בודפשט/.test(x.list||'')?'בבודפשט':'בארץ');
   const seg=V.filter.sh||'todo', q=V.q;
   let rows=rest.filter(x=>!q||[x.item,x.notes,x.buyer].join(' ').includes(q));
-  const todo=rest.filter(x=>!x.done&&!x.sug), done=rest.filter(x=>x.done), sug=rest.filter(x=>x.sug&&!x.done);
-  if(seg==='todo')rows=rows.filter(x=>!x.done&&!x.sug);else if(seg==='done')rows=rows.filter(x=>x.done);else if(seg==='sug')rows=rows.filter(x=>x.sug&&!x.done);
+  const bt=x=>kst(x,'ordered'), todo=rest.filter(x=>!bt(x)&&!x.sug), done=rest.filter(x=>bt(x)), sug=rest.filter(x=>x.sug&&!bt(x));
+  if(seg==='todo')rows=rows.filter(x=>!bt(x)&&!x.sug);else if(seg==='done')rows=rows.filter(x=>bt(x));else if(seg==='sug')rows=rows.filter(x=>x.sug&&!bt(x));
   const cost=a=>a.reduce((s,x)=>s+(+x.cost||0),0), pct=(todo.length+done.length)?Math.round(done.length/(todo.length+done.length)*100):0;
   const sugRow=r=>`<div class="sugcard"><div class="sh"><b><span class="num">${esc(r.qty)}</span> × ${esc(r.item)}</b>${+r.cost?`<span class="num">${ils(r.cost)}</span>`:'<span class="mute">בלי מחיר</span>'}</div>${r.notes?`<p>${esc(r.notes)}</p>`:''}<div class="sm">${r.buyer?`<span class="who">${esc(r.buyer)}</span>`:''}<span>${where(r)==='בבודפשט'?'קונים בבודפשט':'קונים בארץ'}</span></div>
     <div class="sa"><button class="btn primary" data-sugok="${r._id}">✓ להכניס לרשימה</button><button class="btn" data-edit="packing/${r._id}">עריכה</button><button class="btn ghost" data-nr="${r._id}">לא רלוונטי</button></div></div>`;
-  const row=r=>r.sug&&!r.done?sugRow(r):`<div class="row ${r.done?'done':''}" data-edit="packing/${r._id}" role="button" tabindex="0"><button class="check ${r.done?'on':''}" data-toggle="packing/${r._id}" aria-label="נקנה">${r.done?CHECK:''}</button>
+  const row=r=>r.sug&&!bt(r)?sugRow(r):`<div class="row ${bt(r)?'done':''}" data-edit="packing/${r._id}" role="button" tabindex="0"><button class="check ${bt(r)?'on':''}" data-toggle="packing/${r._id}" aria-label="נקנה">${bt(r)?CHECK:''}</button>
     <div class="main"><div class="t"><span class="num">${esc(r.qty)}</span> × ${esc(r.item)} ${r.sug?'<span class="pill p-gold">💡 הצעה</span>':''}</div><div class="m">${r.buyer?`<span class="who">${esc(r.buyer)}</span>`:''}${r.notes?`<span>${esc(r.notes)}</span>`:''}</div></div>
-    <div class="end">${+r.cost?`<span class="num" style="font-weight:800">${ils(r.cost)}</span>`:''}${r.sug&&!r.done?`<button class="pill p-mute" data-nr="${r._id}">לא רלוונטי</button>`:''}</div></div>`;
+    <div class="end">${+r.cost?`<span class="num" style="font-weight:800">${ils(r.cost)}</span>`:''}${r.sug&&!bt(r)?`<button class="pill p-mute" data-nr="${r._id}">לא רלוונטי</button>`:''}</div></div>`;
   const groups=['בארץ','בבודפשט'].map(w=>{const g=rows.filter(x=>where(x)===w).sort(byOrder);return g.length?`<div class="ghead"><span>${w==='בארץ'?'🇮🇱 קונים בארץ':'🇭🇺 קונים בבודפשט'}</span><span class="num">${g.length} · ${ils(cost(g))}</span></div>`+(seg==='sug'?`<div class="suglist">${g.map(row).join('')}</div>`:card(g.map(row).join(''))):''}).join('');
   return subHead('רשימת קניות',`<span class="cnt num">${done.length}/${todo.length+done.length}</span>`)+updBar('packing')+`
    <div class="card" style="padding:14px;margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-weight:800"><span>נקנו <span class="num">${done.length}</span> מתוך <span class="num">${todo.length+done.length}</span></span><span class="num">נשאר ${ils(cost(todo))}</span></div><div class="prog"><i data-w="${pct}%" style="width:0"></i></div></div>
@@ -2073,7 +2073,7 @@ function rolesMap(){
     if(p.carry)put(p.name,{k:'carry',t:'סוחב: '+p.carry,e:'participants/'+p._id});
   });
   S.tasks.filter(t=>t.status!=='בוצע').forEach(t=>split(t.owner).forEach(n=>put(n,{k:'task',t:t.title,e:'tasks/'+t._id,due:t.due})));
-  S.packing.filter(x=>!x.done&&!x.sug&&x.buyer).forEach(x=>split(x.buyer).forEach(n=>put(n,{k:'buy',t:`קונה: ${x.qty?x.qty+' × ':''}${x.item}`,e:'packing/'+x._id})));
+  S.packing.filter(x=>!kst(x,'ordered')&&!x.sug&&x.buyer).forEach(x=>split(x.buyer).forEach(n=>put(n,{k:'buy',t:`קונה: ${x.qty?x.qty+' × ':''}${x.item}`,e:'packing/'+x._id})));
   S.schedule.filter(x=>x.owner).forEach(x=>split(x.owner).forEach(n=>put(n,{k:'sched',t:`${x.day||''} ${x.time||''} · ${x.title}`,e:'schedule/'+x._id})));
   const W=t=>new Set(String(t).replace(/[^\u0590-\u05FFa-z0-9 ]/gi,' ').split(/\s+/).filter(w=>w.length>=3));
   Object.keys(M).forEach(n=>{const tw=M[n].filter(o=>o.k==='task').map(o=>W(o.t));
@@ -2412,7 +2412,7 @@ function bulkSheet(){
 }
 
 
-const TILE_DEFS=()=>{const pk=S.packing,pd=pk.filter(x=>x.done).length,rk=S.rooms.filter(r=>r.kitReady).length;return [
+const TILE_DEFS=()=>{const pk=S.packing,pd=pk.filter(x=>kst(x,'ordered')).length,rk=S.rooms.filter(r=>r.kitReady).length;return [
  ['program','sched','לוח המסע','חמישי–שבת','c2'],
  ['people','people','משתתפים',`${S.participants.length} נוסעים`,'c1'],
  ['passports','people','דרכונים',`${S.participants.filter(p=>p.passport).length}/${S.participants.length}`,'c2'],
@@ -2639,7 +2639,7 @@ const find=(c,id)=>S[c].find(x=>x._id===id);
 const KIT_DAY='2026-11-19';const KITLOCK=()=>todayISO()<KIT_DAY;
 function toggle(path,btn){const [c,id]=path.split('/'),d=find(c,id);if(!d)return;
   if(c==='rooms'&&KITLOCK()){toast('סימון הסטים ייפתח ביום המסע, 19.11');return}
-  const key=c==='tasks'?'status':c==='rooms'?'kitReady':'done', prev=d[key];
+  const key=c==='tasks'?'status':c==='rooms'?'kitReady':c==='packing'?'ordered':'done', prev=c==='packing'?kst(d,'ordered'):d[key];
   const next=c==='tasks'?(prev==='בוצע'?'לביצוע':'בוצע'):!prev;
   if(btn){btn.classList.toggle('on');btn.innerHTML=btn.classList.contains('on')?CHECK:'';try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}}
   if(btn&&(next==='בוצע'||next===true))burst(btn);
