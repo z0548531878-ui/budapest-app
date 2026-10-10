@@ -24,7 +24,7 @@ async function seed(db: Db) {
 }
 
 // check the settled screen: colours mid-transition (a tab button fading out) aren't what anyone reads
-const settled = (page: Page) => page.waitForFunction(() => document.getAnimations().every(a => a.playState !== 'running' || a.effect?.getTiming().iterations === Infinity));
+const settled = (page: Page) => page.waitForFunction(() => document.getAnimations().every(a => a.playState !== 'running' || !(a.timeline instanceof DocumentTimeline) || a.effect?.getTiming().iterations === Infinity));
 const axe = async (page: Page, where: string) => (await settled(page), await a11y(page, ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'], TRIP_AXE_SKIP)).map(v => `${where}: ${v}`);
 
 test('A11Y-1 every screen and sheet passes axe (WCAG 2.1 AA)', async ({ browser, db }) => {
@@ -39,7 +39,7 @@ test('A11Y-1 every screen and sheet passes axe (WCAG 2.1 AA)', async ({ browser,
     found.push(...await axe(page, tab));
   }
   await page.locator('#nav').getByRole('button', { name: 'תקציב' }).click();
-  for (const seg of ['הוצאות', 'תרומות', 'קופות']) {
+  for (const seg of ['הוצאות', 'הכנסות', 'תרומות', 'קופות']) {
     await page.getByRole('button', { name: new RegExp('^' + seg) }).click();
     found.push(...await axe(page, 'כסף/' + seg));
   }

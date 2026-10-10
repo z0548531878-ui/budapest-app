@@ -82,11 +82,11 @@ test('KPI-1 the organizer home opens with the status strip; each number leads to
   await page.evaluate("go('home')");
   const strip = page.getByRole('region', { name: 'תמונת מצב' });
   await expect(strip.getByRole('button', { name: /נגבה ממשתתפים/ })).toContainText('50%');
-  await expect(strip.getByRole('button', { name: /דרכונים/ })).toContainText('1/2');
-  await expect(strip.getByRole('button', { name: /בקשה מחכה/ })).toContainText('1');
+  await expect(page.locator('.cubes.tiles').getByRole('button', { name: /דרכונים/ })).toContainText('1/2');
+  await expect(page.locator('.cubes.tiles').getByRole('button', { name: /בקשות ואישורים/ })).toContainText('1 ממתינות');
   // late tasks are on the big tasks card under the strip
   await expect(page.getByRole('region', { name: 'עבודה שוטפת' }).getByRole('button', { name: /משימות/ })).toContainText('1 באיחור');
-  await strip.getByRole('button', { name: /בקשה מחכה/ }).click();
+  await page.locator('.cubes.tiles').getByRole('button', { name: /בקשות ואישורים/ }).click();
   await expect(page.locator('.page-title')).toContainText('בקשות ואישורים');
   await page.evaluate("go('home')");
   await page.getByRole('region', { name: 'פעולות מהירות' }).getByRole('button', { name: 'הודעה לכולם' }).click();
@@ -119,7 +119,7 @@ test('MOTION-1 with motion on, numbers roll to a changed value and a quick flick
   // another phone marks the second participant as paid: the number rolls up instead of jumping
   await db.put(`${T}/participants/p2`, { name: 'בני לוי', amount: 1750, phone: '0502345678', status: 'שולם', passport: false, order: 2 });
   const seen = await page.evaluate(() => new Promise<string[]>(ok => {
-    const el = document.querySelector('.kpi .num')!, out: string[] = [];
+    const el = document.querySelector('.fin .fc:nth-child(2) .num')!, out: string[] = [];
     const mo = new MutationObserver(() => out.push(el.textContent || ''));
     mo.observe(el, { childList: true, characterData: true, subtree: true });
     setTimeout(() => { mo.disconnect(); ok(out) }, 1200);
@@ -173,7 +173,7 @@ test('SYNC-1 the same numbers on every tab: collected %, waiting requests; the t
   await page.evaluate("go('home')");
   const strip = page.getByRole('region', { name: 'תמונת מצב' });
   await expect(strip.getByRole('button', { name: /נגבה ממשתתפים/ })).toContainText('64%');
-  await expect(strip.getByRole('button', { name: /בקשה מחכה/ })).toContainText('1');
+  await expect(page.locator('.cubes.tiles').getByRole('button', { name: /בקשות ואישורים/ })).toContainText('1 ממתינות');
   await page.evaluate("go('money',{seg:'participants'})");
   await expect(page.locator('#view')).toContainText('נגבה 64%');
   await page.evaluate("go('more',{sub:'reqs'})");
@@ -238,9 +238,8 @@ test('PCHECK-1 passport check: paste names and expiry, a short or expired one is
   await expect.poll(async () => (await db.get(`${T}/participants/p3`))?.passExp).toBe('2031-01-05');
   // an expired passport shows on the home strip, and the strip opens the problems
   await page.evaluate("go('home')");
-  const pk = page.getByRole('region', { name: 'תמונת מצב' }).getByRole('button', { name: /דרכונים/ });
-  await expect(pk).toContainText('יש בעיית תוקף');
-  await pk.click();
+  await expect(page.locator('#view')).toContainText('דרכונים שפג תוקפם');
+  await page.locator('.cubes.tiles').getByRole('button', { name: /דרכונים/ }).click();
   await expect(page.locator('.pcrow', { hasText: 'בני לוי' })).toContainText('פג תוקף');
   // the hotel list: the room with the English names as in the passports
   await page.getByRole('button', { name: /רשימה למלון/ }).click();
@@ -378,5 +377,28 @@ test('ROWS-1 participants list: quick buttons on each row (payment, passport, ca
   expect(chips.join('|')).not.toContain('בדיקת דרכונים');
   await page.getByRole('button', { name: /^דרכון לא תקין/ }).click();
   await expect(page.getByRole('button', { name: /למסך בדיקת הדרכונים/ })).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test('SHOP-1 shopping: filter by country/Budapest and by urgent/last minute; room-set items show up too', async ({ browser, db }) => {
+  await seed(db);
+  const it = (id: string, d: object) => db.put(`${T}/packing/${id}`, { qty: 1, order: 1, ...d });
+  await it('k1', { item: 'נרות', where: 'בארץ', prio: 'דחוף' });
+  await it('k2', { item: 'מים', where: 'בבודפשט', prio: 'הרגע האחרון' });
+  await it('k3', { item: 'שוקולד', where: 'בבודפשט' });
+  await it('k4', { item: 'פחיות שתייה לחדרים', list: 'סט לכל חדר', kit: 'ערכה לחדר', prio: 'דחוף' });
+  const { page, errors } = await openTrip(browser, db);
+  await page.evaluate("go('more',{sub:'packing'})");
+  const rows = page.locator('#view .row[data-edit^="packing"]');
+  await expect(rows).toHaveCount(4);
+  await expect(page.locator('#view')).toContainText('פחיות שתייה לחדרים');
+  await page.getByRole('button', { name: /^🇭🇺 בבודפשט/ }).click();
+  await expect(rows).toHaveCount(2);
+  await page.getByRole('button', { name: /^⏳ הרגע האחרון/ }).click();
+  await expect(rows).toHaveCount(1); await expect(rows).toContainText('מים');
+  await page.getByRole('button', { name: /^🔥 דחוף/ }).click();
+  await expect(page.locator('#view')).toContainText('אין פריטים בסינון הזה');
+  await page.locator('.chips.own').filter({ hasText: 'איפה' }).getByRole('button', { name: /^הכל/ }).click(); // back to all places
+  await expect(rows).toHaveCount(2); // the urgent ones: candles, and the cans for the rooms
   expect(errors).toEqual([]);
 });

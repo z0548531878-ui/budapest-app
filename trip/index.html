@@ -1637,6 +1637,54 @@ button.tool:focus-visible{outline:2px solid #f6dc93;outline-offset:2px}
 .tool .more{color:#e0b25a;font-weight:800;font-size:13px}.ttool>span:not(.more){color:#cfc3a6;font-size:13.5px}
 .taxi{background:#fff;color:#111;border-radius:18px;padding:22px 18px;text-align:center;display:grid;gap:10px;margin:6px 0 10px}
 .taxi small{font-size:20px;font-weight:700;color:#333}.taxi b{font-size:30px;line-height:1.2;font-weight:900}.taxi span{font-size:20px;font-weight:700;color:#444}
+/* ===== participant home: night sky, readiness ring, scroll-in cards ===== */
+.ghome{position:relative;isolation:isolate}
+.gsky{position:absolute;z-index:-1;inset-inline:-16px;top:-150px;height:300px;pointer-events:none;overflow:hidden;background:radial-gradient(120% 90% at 50% 100%,rgba(214,170,80,.34),rgba(214,170,80,.08) 45%,transparent 70%);-webkit-mask-image:linear-gradient(#000 70%,transparent);mask-image:linear-gradient(#000 70%,transparent)}
+.gsky i{position:absolute;width:3px;height:3px;border-radius:50%;background:#ffe9a8;box-shadow:0 0 8px 2px rgba(255,226,150,.7);animation:twk 3.2s ease-in-out infinite}
+.gsky svg{position:absolute;inset-inline:0;bottom:0;width:100%;height:120px;animation:skyUp 1.4s cubic-bezier(.2,.8,.2,1) both}
+@keyframes twk{0%,100%{opacity:.15;transform:scale(.6)}50%{opacity:1;transform:scale(1.2)}}
+@keyframes skyUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+body.guest .ghome .greet b{font-size:36px;text-shadow:0 0 28px rgba(240,210,140,.5);animation:glowP 4.5s ease-in-out infinite}
+@keyframes glowP{50%{text-shadow:0 0 40px rgba(255,226,150,.85)}}
+.rdy{margin:14px 0 16px;border:1px solid rgba(214,178,98,.5);border-radius:30px;padding:18px 16px 14px;background:radial-gradient(120% 100% at 85% 0,rgba(214,170,80,.22),transparent 60%),linear-gradient(165deg,#1c1710,#0c0a07);box-shadow:0 18px 40px -18px rgba(214,170,80,.45),inset 0 1px 0 rgba(255,235,170,.18);animation:rdyIn .8s cubic-bezier(.2,.85,.25,1.1) both}
+.rdy.full{border-color:#7fd1a5;box-shadow:0 18px 44px -14px rgba(95,211,155,.5),inset 0 1px 0 rgba(255,255,255,.2)}
+@keyframes rdyIn{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:none}}
+.rdy-top{display:flex;align-items:center;gap:16px;margin-bottom:12px}
+.rdy-ring{position:relative;width:104px;height:104px;flex:0 0 auto;filter:drop-shadow(0 0 14px rgba(240,200,110,.45))}
+.rdy-ring svg{width:100%;height:100%}.rdy-ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:26px;font-weight:900;color:#ffe9a8}
+.rdy .rg{stroke-dashoffset:var(--c);animation:rdyDraw 1.8s .35s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes rdyDraw{to{stroke-dashoffset:var(--o)}}
+.rdy.full .rdy-ring{animation:pulseR 2.4s ease-in-out infinite}@keyframes pulseR{50%{transform:scale(1.06)}}
+.rdy-h small{display:block;font-size:13px;color:var(--muted);font-weight:800}.rdy-h b{display:block;font-size:24px;font-weight:900;color:#f6dc93;line-height:1.2;margin:2px 0}.rdy-h span{font-size:13.5px;color:#cbbd96}
+.rdy-l{display:grid;gap:8px}
+.ri{display:flex;align-items:center;gap:12px;width:100%;text-align:right;padding:10px 12px;border-radius:18px;border:1px solid rgba(214,178,98,.22);background:rgba(255,255,255,.035);color:var(--ink);text-decoration:none;font:inherit;animation:riIn .6s cubic-bezier(.2,.85,.25,1.1) both;animation-delay:calc(.5s + var(--i,0)*120ms);transition:transform .15s}
+.ri:active{transform:scale(.97)}
+@keyframes riIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+.ri-i{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:var(--goldbtn);color:#15110a;flex:0 0 auto}.ri-i svg{width:22px;height:22px}
+.ri-t{flex:1;min-width:0}.ri-t b{display:block;font-size:16px}.ri-t small{display:block;font-size:12.5px;color:var(--muted);margin-top:1px}
+.ri-c{font-size:20px;font-weight:900;color:var(--gold)}
+.ri.ok .ri-c{color:#0d2a1a;background:#7fd1a5;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:15px;animation:pop .5s cubic-bezier(.2,1.6,.4,1) both;animation-delay:calc(1s + var(--i,0)*150ms)}
+.ri.bad{border-color:rgba(255,160,120,.55);background:rgba(255,140,100,.08)}.ri.bad .ri-c{animation:nudge 1.4s ease-in-out infinite}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}@keyframes nudge{50%{transform:translateX(-5px)}}
+.ri.nav{background:transparent;border-style:dashed}
+@supports (animation-timeline:view()){
+ .gc{animation:gcScroll linear both;animation-timeline:view();animation-range:entry 0% entry 70%}
+ @keyframes gcScroll{from{opacity:0;transform:translateY(46px) scale(.88) rotateX(12deg)}to{opacity:1;transform:none}}
+}
+.gc:active{transform:perspective(600px) rotateX(7deg) scale(.95)!important}
+.gc .gc-i{animation:floatI 4s ease-in-out infinite;animation-delay:calc(var(--i,0)*-.4s)}
+@keyframes floatI{50%{transform:translateY(-4px)}}
+@media (prefers-reduced-motion:reduce){.gsky i,.gsky svg,.rdy,.ri,.ri-c,.rdy .rg,.gc .gc-i,body.guest .ghome .greet b,.rdy-ring{animation:none!important}.rdy .rg{stroke-dashoffset:var(--o)}}
+/* ===== organizer home: money strip right under the clock ===== */
+.fin{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 16px}
+.fc{position:relative;text-align:right;border:1px solid rgba(214,178,98,.3);border-radius:22px;padding:12px 14px;background:linear-gradient(160deg,#1d1912,#0e0c09);color:var(--ink);display:flex;flex-direction:column;gap:2px;min-height:84px;animation:rdyIn .6s cubic-bezier(.2,.85,.25,1.1) both}
+.fc:nth-child(2){animation-delay:.08s}.fc:nth-child(3){animation-delay:.16s}.fc:nth-child(4){animation-delay:.24s}.fc:nth-child(5){animation-delay:.32s}
+.fc span{font-size:12.5px;color:var(--muted);font-weight:800}.fc b{font-size:24px;font-weight:900;line-height:1.15}.fc small{font-size:12px;color:#a69a7d}
+.fc.big{grid-column:1/-1;background:radial-gradient(120% 120% at 90% 0,rgba(214,170,80,.28),transparent 60%),linear-gradient(160deg,#241d10,#0e0c09);border-color:rgba(214,178,98,.55)}.fc.big b{font-size:34px}
+.fc.ok b{color:#7fd1a5}.fc.bad b{color:#f08b82}.fc.mid b{color:#f0c46a}
+.fc:active{transform:scale(.97)}
+.fbar{display:block;height:6px;border-radius:99px;background:#221e17;overflow:hidden;margin-top:6px}.fbar u{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#b8862f,#f0d28c);text-decoration:none}
+@media (prefers-reduced-motion:reduce){.fc{animation:none!important}}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -1700,7 +1748,7 @@ const F={
  donations:{one:'תרומה',g:1,fields:[{k:'donor',l:'תורם',t:'text'},{k:'amount',l:'סכום (₪)',t:'number'},{k:'purpose',l:'מיועד ל',t:'chips',o:['כללי','סידורים','זמירות','תהילים','הדפסות']},{k:'status',l:'מצב',t:'seg',o:['התחייב','התקבל']},{k:'method',l:'איך התקבל',t:'chips',o:['אשראי','העברה לאיציק','מזומן לאיציק','העברה לשלומי','מזומן לשלומי']},{k:'holder',l:'אצל מי הכסף',t:'seg',o:['שלומי','איציק']},{k:'notes',l:'הערות',t:'textarea'}],def:{status:'התחייב',purpose:'כללי',amount:0}},
  schedule:{one:'אירוע',fields:[{k:'day',l:'יום',t:'seg',o:TRIP_DAYS.map(d=>d.k)},{k:'time',l:'שעה',t:'text',half:1,ph:'18:00'},{k:'place',l:'מקום',t:'text',half:1},{k:'title',l:'מה קורה',t:'text'},{k:'owner',l:'אחראי',t:'owner'},{k:'notes',l:'הערות',t:'textarea'},{k:'menu',l:'תפריט',t:'textarea'}],def:{}},
  flights:{one:'טיסה',g:1,fields:[{k:'label',l:'שם',t:'text'},{k:'dir',l:'כיוון',t:'seg',o:['הלוך','חזור']},{k:'group',l:'קבוצה (כמו בכרטיס המשתתף)',t:'text'},{k:'flightNo',l:'מספר טיסה',t:'text',half:1},{k:'date',l:'תאריך',t:'date',half:1},{k:'dep',l:'המראה',t:'text',half:1},{k:'arr',l:'נחיתה',t:'text',half:1},{k:'notes',l:'הערות',t:'textarea'}],def:{dir:'חזור'}},
- packing:{one:'פריט',fields:[{k:'item',l:'פריט',t:'text'},{k:'where',l:'קונים בארץ או בבודפשט',t:'seg',o:['בארץ','בבודפשט']},{k:'buyer',l:'מי קונה',t:'owner'},{k:'kit',l:'ערכה',t:'chips',o:()=>KIT_NAMES},{k:'shop',l:'באיזו חנות או אתר',t:'text',ph:'למשל: ויינר, עלי אקספרס'},{k:'per',l:'כמות לכל חדר (רק בערכה לחדר)',t:'number',half:1},{k:'qty',l:'כמות סה״כ',t:'number',half:1},{k:'cost',l:'עלות (₪)',t:'number',half:1},{k:'packer',l:'מי אחראי על האריזה',t:'owner'},{k:'placer',l:'מי אחראי על ההנחה במקום',t:'owner'},{k:'ordered',l:'🛒 הוזמן',t:'toggle',ks:1},{k:'arrived',l:'📦 הגיע',t:'toggle',ks:1},{k:'packed',l:'🧳 נארז',t:'toggle',ks:1},{k:'placed',l:'📍 הונח במקום',t:'toggle',ks:1},{k:'notes',l:'הערות',t:'text'}],def:{qty:1,cost:0,done:false}},
+ packing:{one:'פריט',fields:[{k:'item',l:'פריט',t:'text'},{k:'where',l:'קונים בארץ או בבודפשט',t:'seg',o:['בארץ','בבודפשט']},{k:'buyer',l:'מי קונה',t:'owner'},{k:'kit',l:'ערכה',t:'chips',o:()=>KIT_NAMES},{k:'prio',l:'מתי קונים',t:'seg',o:['דחוף','רגיל','הרגע האחרון']},{k:'shop',l:'באיזו חנות או אתר',t:'text',ph:'למשל: ויינר, עלי אקספרס'},{k:'per',l:'כמות לכל חדר (רק בערכה לחדר)',t:'number',half:1},{k:'qty',l:'כמות סה״כ',t:'number',half:1},{k:'cost',l:'עלות (₪)',t:'number',half:1},{k:'packer',l:'מי אחראי על האריזה',t:'owner'},{k:'placer',l:'מי אחראי על ההנחה במקום',t:'owner'},{k:'ordered',l:'🛒 הוזמן',t:'toggle',ks:1},{k:'arrived',l:'📦 הגיע',t:'toggle',ks:1},{k:'packed',l:'🧳 נארז',t:'toggle',ks:1},{k:'placed',l:'📍 הונח במקום',t:'toggle',ks:1},{k:'notes',l:'הערות',t:'text'}],def:{qty:1,cost:0,done:false}},
  rooms:{one:'חדר',fields:[{k:'occupants',l:'דיירים',t:'text'},{k:'entrance',l:'כניסה (במלון)',t:'text'},{k:'roomNumber',l:'מספר חדר',t:'text',half:1},{k:'floor',l:'קומה',t:'text',half:1},{k:'type',l:'סוג',t:'seg',o:['חדר לזוג','חדר ליחיד']},{k:'kitReady',l:'הסט הונח בחדר',t:'toggle'},{k:'notes',l:'הערות',t:'text'}],def:{type:'חדר לזוג',kitReady:false}},
  messages:{one:'הודעה',g:1,fields:[{k:'title',l:'נושא',t:'text'},{k:'date',l:'מתי לשלוח',t:'date'},{k:'text',l:'נוסח ההודעה',t:'textarea'},{k:'sent',l:'נשלחה',t:'toggle'}],def:{sent:false}},
  files:{one:'מסמך',fields:[{k:'name',l:'שם המסמך',t:'text'},{k:'category',l:'סוג',t:'chips',o:DOC_CATS},{k:'url',l:'קישור (גוגל דרייב, וואטסאפ או כל קישור)',t:'text'},{k:'notes',l:'הערות',t:'textarea'}],def:{}},
@@ -1746,7 +1794,7 @@ function insights(){
   const pl=S.donations.filter(d=>d.status!=='התקבל'); if(pl.length)add('warn','money',`${pl.length} תרומות שהובטחו ועוד לא התקבלו`,`${ils(pl.reduce((s,d)=>s+(+d.amount||0),0))} בסך הכול`,'money',{seg:'donations'});
   const noRoom=S.rooms.filter(r=>!r.roomNumber); if(noRoom.length&&D<=14)add('warn','bed',`${noRoom.length} חדרים בלי מספר`,'לבקש מהמלון את שיבוץ החדרים','more',{sub:'rooms'});
   const kit=S.rooms.filter(r=>!r.kitReady); if(kit.length&&D<=1)add('warn','bed',`${kit.length} חדרים בלי סט`,'לסדר את הסטים לפני שהנוסעים עולים לחדרים','more',{sub:'rooms'});
-  const buy=S.packing.filter(x=>!kst(x,'ordered')&&!x.sug&&x.list!=='סט לכל חדר'); if(buy.length)add(D<=10?'warn':'info','box',`${buy.length} פריטים עוד לא נקנו`,`${buy.filter(x=>(x.where||'בארץ')!=='בבודפשט').length} לקנות בארץ · ${buy.filter(x=>x.where==='בבודפשט').length} בבודפשט`,'more',{sub:'packing'});
+  const buy=S.packing.filter(x=>!kst(x,'ordered')&&!x.sug); if(buy.length)add(D<=10?'warn':'info','box',`${buy.length} פריטים עוד לא נקנו`,`${buy.filter(x=>(x.where||'בארץ')!=='בבודפשט').length} לקנות בארץ · ${buy.filter(x=>x.where==='בבודפשט').length} בבודפשט`,'more',{sub:'packing'});
   KITS.forEach(([kn])=>{const it=kitItems().filter(x=>kitOf(x)===kn);if(!it.length)return;for(const [k,l] of [['ordered','להזמין'],['arrived','לוודא שהגיע'],['packed','לארוז'],['placed','להניח']]){const miss=it.filter(x=>!kst(x,k)).length,dd=kdays(KDUE[k]);if(miss&&dd<0){add('bad','box',`${kn}: ${miss} פריטים שלא ${k==='ordered'?'הוזמנו':k==='arrived'?'הגיעו':k==='packed'?'נארזו':'הונחו'}`,`היה צריך ${l} עד ${fmtDate(KDUE[k])}`,'more',{sub:'kits',filter:{kit:kn,ks:k}});break}if(miss&&dd<=7){add('warn','box',`${kn}: ${l} עד ${fmtDate(KDUE[k])}`,`${miss} פריטים עוד לא`,'more',{sub:'kits',filter:{kit:kn,ks:k}});break}}});
   const nm=S.messages.filter(x=>!x.sent).sort((a,b)=>(a.date||'').localeCompare(b.date||''))[0];
   if(nm)add(nm.date&&nm.date<=t?'warn':'info','chat',nm.date&&nm.date<=t?`הגיע הזמן לשלוח: ${nm.title}`:`ההודעה הבאה לקבוצה: ${nm.title}`,nm.date?`מתוכננת ל-${fmtDate(nm.date)}`:'','more',{sub:'messages'});
@@ -1912,7 +1960,9 @@ const VIEWS={
   const nm=S.messages.filter(x=>!x.sent).sort((a,b)=>(a.date||'').localeCompare(b.date||''))[0], nmDue=nm&&nm.date&&nm.date<=t;
   const cq=S.claude.filter(x=>x.status==='פתוח');
   const pledged=S.donations.filter(d=>d.status!=='התקבל'), noRec=S.expenses.filter(e=>+e.paid&&!e.receipt);
+  const passBadN=S.participants.filter(x=>passState(x)[0]==='bad').length;
   const fires=[
+    passBadN&&['p-bad',`${passBadN} דרכונים שפג תוקפם או שהתוקף קצר מדי`,'more',{sub:'passports',filter:{pp:'bad'}}],
     urgentNoOwner.length&&['p-bad',`${urgentNoOwner.length} משימות דחופות בלי אחראי`,'tasks',{seg:'noowner'}],
     nmDue&&['p-warn',`הגיע הזמן לשלוח לקבוצה: ${nm.title}`,'more',{sub:'messages'}],
     m.unpaid.length&&['p-warn',`${m.unpaid.length} משתתפים עוד לא שילמו`,'money',{seg:'participants',filter:{pay:'open'}}],
@@ -1925,22 +1975,24 @@ const VIEWS={
   const today=new Date().toLocaleDateString('he-IL',{weekday:'long',day:'numeric',month:'numeric'});
   const ppN=S.participants.length, ppOk=S.participants.filter(x=>x.passport).length, rq=pendN();
   const kpi=(cls,v,l,to,o)=>`<button class="kpi ${cls}" data-go="${to}" data-opts='${esc(JSON.stringify(o||{}))}'><b class="num"${/^\d+%?$/.test(String(v))?` data-count="${parseInt(v)}"${String(v).endsWith('%')?' data-fmt="pct"':''}`:''}>${v}</b><span>${l}</span></button>`;
-  const kpis=ready('participants','tasks')?`<section class="kpis" aria-label="תמונת מצב">
-    ${kpi(pct>=90?'ok':pct>=60?'mid':'bad',pct+'%','נגבה ממשתתפים','money',{seg:'participants',filter:{pay:'open'}})}
-    ${kpi(S.participants.some(x=>passState(x)[0]==='bad')?'bad':ppOk===ppN?'ok':ppOk/Math.max(1,ppN)>=.7?'mid':'bad',`${ppOk}/${ppN}`,S.participants.some(x=>passState(x)[0]==='bad')?'דרכונים · יש בעיית תוקף':'דרכונים','more',{sub:'passports',filter:{pp:S.participants.some(x=>passState(x)[0]==='bad')?'bad':'miss'}})}
-    ${kpi(rq?'mid':'ok',rq,rq===1?'בקשה מחכה':'בקשות מחכות','more',{sub:'reqs'})}</section>`:`<div class="kpis">${'<div class="kpi skel shimmer"></div>'.repeat(3)}</div>`;
+  const fin=ready('participants','expenses','donations')?(()=>{const m=money(),go=(sg)=>`data-go="money" data-opts='{"seg":"${sg}"}'`;
+    return `<section class="fin" aria-label="תמונת מצב">
+    <button class="fc big ${m.gap<0?'bad':'ok'}" ${go('sum')}><span>מאזן צפוי</span><b class="num">${m.gap<0?'−':'+'}${ils(Math.abs(m.gap))}</b><small>${m.gap<0?'חסר כדי לכסות את כל ההוצאות':'יישאר עודף'}</small></button>
+    <button class="fc ${pct>=90?'ok':pct>=60?'mid':'bad'}" ${go('participants')}><span>נגבה ממשתתפים</span><b class="num" data-count="${pct}" data-fmt="pct">${pct}%</b><i class="fbar"><u style="width:${Math.min(100,pct)}%"></u></i></button>
+    <button class="fc" ${go('sum')}><span>נכנס לקופה</span><b class="num">${ils(m.pIn+m.dIn)}</b><small>מתוך ${ils(m.income)}</small></button>
+    <button class="fc" ${go('expenses')}><span>שולם לספקים</span><b class="num">${ils(m.out)}</b><small>מתוך ${ils(m.est)}</small></button>
+    <button class="fc ${m.left>0?'mid':'ok'}" ${go('expenses')}><span>נותר לשלם</span><b class="num">${ils(m.left)}</b><small>${S.expenses.filter(e=>e.status!=='שולם').length} הוצאות פתוחות</small></button></section>`})():`<div class="fin">${'<div class="fc skel shimmer"></div>'.repeat(4)}</div>`;
   const attention=fires.length?`<section class="sec"><div class="sec-h"><h3>דורש תשומת לב</h3><button class="link" data-go="more">כל התובנות ›</button></div>${card(fires.map(([c,l,to,o])=>`<button class="row" data-go="${to}" data-opts='${esc(JSON.stringify(o))}'><span class="pill ${c}">!</span><div class="main"><div class="t">${esc(l)}</div></div><span aria-hidden="true" style="color:var(--muted)">‹</span></button>`).join(''))}</section>`:'';
   return `<div class="hello"><div class="greet">${greeting()}<b>${ME?esc(ME):'ברוכים הבאים'}</b></div><span class="date">${today}</span></div>
   <section class="pass"><span class="shine"></span><div class="pass-main"><div class="pass-top"><span>${out?`אל על · <span class="ltr">${esc(out.flightNo)}</span>`:'טיסת הלוך'}</span><span>חמישי 19.11</span></div>
     <div class="pass-route"><div><b>TLV</b><span>${esc(out?out.dep:'')}</span></div><div class="path"><svg viewBox="0 0 150 22" fill="none"><path d="M4 11h142" stroke="currentColor" stroke-width="1.6" stroke-dasharray="3 5"/><g class="plane"><path fill="currentColor" d="M146 11l-13-5.4v3.7l-6.5.1-2.8-3.8h-2l1.6 3.9-4.3.1v2.8l4.3.1-1.6 3.9h2l2.8-3.8 6.5.1v3.7z"/></g></svg></div><div><b>BUD</b><span>${esc(out?out.arr:'')}</span></div></div>
     <div class="days">${TRIP_DAYS.map((d,i)=>`<div class="${d.sh?'sh':''} ${i===idx?'now':''}"><b>${d.s}</b>${d.l}</div>`).join('')}</div></div>
     <div class="pass-stub">${depAt(out)>Date.now()?`<span class="big num" id="cdD">${cdParts(out).d}</span><small>ימים</small><div class="cdg num" id="cdT">${cdParts(out).t}</div>`:`<span class="big num">${big}</span><small>${lbl}</small>`}</div></section>
-  ${nowCard(`data-go="more" data-opts='{"sub":"program"}'`)}${kpis}
+  ${nowCard(`data-go="more" data-opts='{"sub":"program"}'`)}${fin}
+  ${homeTiles()}
   ${attention}
   <section class="qact" aria-label="פעולות מהירות">${[['announce',I.chat,'הודעה לכולם'],['program',I.sched,'שינוי בלו״ז'],['people',I.phone,'חיפוש משתתף']].map(([k,ic,l])=>`<button data-go="more" data-opts='{"sub":"${k}"}'><span class="ic">${ic}</span><span>${l}</span></button>`).join('')}</section>
   ${bigCards()}
-  ${homeTiles()}
-  
   <section class="hub">
    <button class="big" data-idea><span class="ic">${I.spark}</span><span class="main"><b>עדכון או רעיון</b><span>${CAN_SEND()?'כותבים או מכתיבים, וזה מגיע ל-Claude':'כותבים או מכתיבים, וזה נשמר לכל הצוות'}</span></span><span class="mic">${I.mic}</span></button>
    ${CAN_SEND()?'':'<!--'}<div class="sync ${pn?'has':''}"><span class="dot"></span><div class="main"><b>${pn?`${pn} חדשים ל-Claude`:'Claude מעודכן'}</b><small>${pn?'שולחים אליו, והוא מעדכן כאן לבד':'אין שינויים שהוא לא ראה'}</small></div>
@@ -2098,20 +2150,22 @@ const SUB={
      <div class="pc-bot">${u?`<a class="pill p-ok" href="${esc(u)}" target="_blank" rel="noopener">🛂 צילום הדרכון</a>`:`<button class="pill p-mute" data-pclink="${p._id}">+ קישור לצילום</button>`}<button class="pill ${p.passport?'p-ok':'p-mute'}" data-pp="${p._id}" aria-pressed="${!!p.passport}">${p.passport?'התקבל ✓':'סימון: התקבל'}</button>${!p.passport&&p.phone?`<a class="pill p-mute" href="${waLink(p.phone,'שלום '+firstN(p.name)+', כדי להשלים את הרישום למסע לבודפשט נשמח לצילום של עמוד הפרטים בדרכון. תודה!')}" target="_blank" rel="noopener">בקשה בוואטסאפ</a>`:''}</div></div>`}).join(''):card('','<b>'+(q?'לא נמצא':'אין כאן אף אחד')+'</b>')}`;
  },
  packing(){
-  const rest=S.packing.filter(x=>x.list!=='סט לכל חדר'), setItems=S.packing.filter(x=>x.list==='סט לכל חדר');
+  const rest=S.packing.slice();
   const where=x=>x.where||(/בודפשט/.test(x.list||'')?'בבודפשט':'בארץ');
   const seg=V.filter.sh||'todo', q=V.q;
   let rows=rest.filter(x=>!q||[x.item,x.notes,x.buyer].join(' ').includes(q));
   // who buys what: a chip per buyer, counting what they still have to buy
   const by=V.filter.by||'', bc={};rest.filter(x=>!kst(x,'ordered')&&!x.sug).forEach(x=>{const k=x.buyer||'__none';bc[k]=(bc[k]||0)+1});
   if(by)rows=rows.filter(x=>by==='__none'?!x.buyer:String(x.buyer||'').split(/,\s*/).includes(by));
+  const wh=V.filter.wh||'',wn=V.filter.wn||'',pr=x=>x.prio||'רגיל',open_=rest.filter(x=>!kst(x,'ordered')&&!x.sug);
+  if(wh)rows=rows.filter(x=>where(x)===wh);if(wn)rows=rows.filter(x=>pr(x)===wn);
   const bt=x=>kst(x,'ordered'), todo=rest.filter(x=>!bt(x)&&!x.sug), done=rest.filter(x=>bt(x)), sug=rest.filter(x=>x.sug&&!bt(x));
   if(seg==='todo')rows=rows.filter(x=>!bt(x)&&!x.sug);else if(seg==='done')rows=rows.filter(x=>bt(x));else if(seg==='sug')rows=rows.filter(x=>x.sug&&!bt(x));
   const cost=a=>a.reduce((s,x)=>s+(+x.cost||0),0), pct=(todo.length+done.length)?Math.round(done.length/(todo.length+done.length)*100):0;
   const sugRow=r=>`<div class="sugcard"><div class="sh"><b><span class="num">${esc(r.qty)}</span> × ${esc(r.item)}</b>${+r.cost?`<span class="num">${ils(r.cost)}</span>`:'<span class="mute">בלי מחיר</span>'}</div>${r.notes?`<p>${esc(r.notes)}</p>`:''}<div class="sm">${r.buyer?`<span class="who">${esc(r.buyer)}</span>`:''}<span>${where(r)==='בבודפשט'?'קונים בבודפשט':'קונים בארץ'}</span></div>
     <div class="sa"><button class="btn primary" data-sugok="${r._id}">✓ להכניס לרשימה</button><button class="btn" data-edit="packing/${r._id}">עריכה</button><button class="btn ghost" data-nr="${r._id}">לא רלוונטי</button></div></div>`;
   const row=r=>r.sug&&!bt(r)?sugRow(r):`<div class="row ${bt(r)?'done':''}" data-edit="packing/${r._id}" role="button" tabindex="0"><button class="check ${bt(r)?'on':''}" data-toggle="packing/${r._id}" aria-label="נקנה">${bt(r)?CHECK:''}</button>
-    <div class="main"><div class="t"><span class="num">${esc(r.qty)}</span> × ${esc(r.item)} ${r.sug?'<span class="pill p-gold">💡 הצעה</span>':''}</div><div class="m">${r.buyer?`<span class="who">${esc(r.buyer)}</span>`:''}${r.notes?`<span>${esc(r.notes)}</span>`:''}</div></div>
+    <div class="main"><div class="t"><span class="num">${esc(r.qty)}</span> × ${esc(r.item)} ${r.sug?'<span class="pill p-gold">💡 הצעה</span>':''}</div><div class="m">${r.prio==='דחוף'?'<span class="pill p-bad">🔥 דחוף</span>':r.prio==='הרגע האחרון'?'<span class="pill p-gold">⏳ הרגע האחרון</span>':''}${r.buyer?`<span class="who">${esc(r.buyer)}</span>`:''}${r.notes?`<span>${esc(r.notes)}</span>`:''}</div></div>
     <div class="end">${+r.cost?`<span class="num" style="font-weight:800">${ils(r.cost)}</span>`:''}${r.sug&&!bt(r)?`<button class="pill p-mute" data-nr="${r._id}">לא רלוונטי</button>`:''}</div></div>`;
   const groups=['בארץ','בבודפשט'].map(w=>{const g=rows.filter(x=>where(x)===w).sort(byOrder);return g.length?`<div class="ghead"><span>${w==='בארץ'?'🇮🇱 קונים בארץ':'🇭🇺 קונים בבודפשט'}</span><span class="num">${g.length} · ${ils(cost(g))}</span></div>`+(seg==='sug'?`<div class="suglist">${g.map(row).join('')}</div>`:card(g.map(row).join(''))):''}).join('');
   return subHead('רשימת קניות',`<span class="cnt num">${done.length}/${todo.length+done.length}</span>`)+updBar('packing')+`
@@ -2119,11 +2173,13 @@ const SUB={
     <div class="shw"><span>🇮🇱 בארץ <b class="num">${todo.filter(x=>where(x)==='בארץ').length}</b></span><span>🇭🇺 בבודפשט <b class="num">${todo.filter(x=>where(x)==='בבודפשט').length}</b></span><span>מוכן <b class="num">${pct}%</b></span></div></section>
    <form class="quick" id="padd"><input id="paddIn" placeholder="הוספת פריט לקנייה…" autocomplete="off"><button>הוסף</button></form>
    ${seg==='sug'&&sug.length?'<p class="note">אלה הצעות שלי. "להכניס לרשימה" מעביר את הפריט לרשימת הקניות. אפשר קודם לערוך כמות, מחיר ומי קונה.</p>':''}<div class="seg">${[['todo','לקנות',todo.length],['done','נקנה',done.length],['sug','💡 הצעות',sug.length],['all','הכל',rest.length]].map(([k,l,c])=>`<button data-filter="sh" data-val="${k}" aria-pressed="${seg===k}">${l}<span class="c num">${c}</span></button>`).join('')}</div>
+   <div class="chips own"><span class="chl">איפה</span>${[['','הכל'],['בארץ','🇮🇱 בארץ'],['בבודפשט','🇭🇺 בבודפשט']].map(([v,l])=>`<button class="chip" data-filter="wh" data-val="${v}" aria-pressed="${wh===v}">${l}${v?` <span class="num">${open_.filter(x=>where(x)===v).length}</span>`:''}</button>`).join('')}</div>
+   <div class="chips own"><span class="chl">מתי</span>${[['','הכל'],['דחוף','🔥 דחוף'],['הרגע האחרון','⏳ הרגע האחרון']].map(([v,l])=>`<button class="chip" data-filter="wn" data-val="${v}" aria-pressed="${wn===v}">${l}${v?` <span class="num">${open_.filter(x=>pr(x)===v).length}</span>`:''}</button>`).join('')}</div>
    <div class="chips own"><span class="chl">מי קונה</span>${[['','כולם'],...Object.keys(bc).filter(k=>k!=='__none').sort((a,b)=>bc[b]-bc[a]).map(n=>[n,n]),...(bc.__none?[['__none','בלי קונה']]:[])].map(([v,l])=>`<button class="chip" data-filter="by" data-val="${esc(v)}" aria-pressed="${by===v}">${esc(l)}${v?` <span class="num">${bc[v]}</span>`:''}</button>`).join('')}</div>
    <input class="search" id="q" type="search" placeholder="חיפוש פריט" value="${esc(q)}">
    ${seg==='todo'&&sug.length?`<button class="sugnote" data-filter="sh" data-val="sug">💡 ${sug.length} הצעות מחכות להחלטה שלך: להכניס לרשימה או לא ›</button>`:''}
-   ${groups||card('','<b>'+(seg==='todo'?'הכל נקנה 🎉':'אין כאן פריטים')+'</b>')}
-   <p class="note" style="margin-top:16px">תכולת הסט לכל חדר (${setItems.length} פריטים) והחלוקה למזוודות יגיעו בשלב הבא.</p>`;
+   ${groups||card('','<b>'+(wh||wn||by?'אין פריטים בסינון הזה':seg==='todo'?'הכל נקנה 🎉':'אין כאן פריטים')+'</b>')}
+`;
  },
  rooms(){
   const rows=S.rooms.slice().sort(byOrder), rk=rows.filter(r=>r.kitReady).length;
@@ -2697,10 +2753,10 @@ function bigCards(){if(!ready('tasks','packing'))return '';const t=todayISO();
     <span class="bc-bar"><i data-w="${sh.pct}%" style="width:0"></i></span>
     <span class="bc-cs">${chip('',sh.il&&`🇮🇱 ${sh.il} בארץ`)}${chip('',sh.hu&&`🇭🇺 ${sh.hu} בבודפשט`)}${chip('warn',sh.left&&`נשאר ${ils(sh.left)}`)}${chip('gold',sh.sug.length&&`💡 ${sh.sug.length} הצעות`)}${!sh.todo.length?chip('ok','הכל נקנה ✓'):''}</span></button></section>`}
 // one shopping count for the home card, the tile and the shopping screen
-function shopStat(){const rest=S.packing.filter(x=>x.list!=='סט לכל חדר'),bt=x=>kst(x,'ordered'),where=x=>x.where||(/בודפשט/.test(x.list||'')?'בבודפשט':'בארץ');
+function shopStat(){const rest=S.packing.slice(),bt=x=>kst(x,'ordered'),where=x=>x.where||(/בודפשט/.test(x.list||'')?'בבודפשט':'בארץ');
   const todo=rest.filter(x=>!bt(x)&&!x.sug),done=rest.filter(bt),sug=rest.filter(x=>x.sug&&!bt(x));
   return {rest,todo,done,sug,where,pct:(todo.length+done.length)?Math.round(done.length/(todo.length+done.length)*100):0,il:todo.filter(x=>where(x)==='בארץ').length,hu:todo.filter(x=>where(x)==='בבודפשט').length,left:todo.reduce((s,x)=>s+(+x.cost||0),0)}}
-const TILE_DEFS=()=>{const pk=S.packing.filter(x=>x.list!=='סט לכל חדר'&&(!x.sug||kst(x,'ordered'))),pd=pk.filter(x=>kst(x,'ordered')).length,rk=S.rooms.filter(r=>r.kitReady).length;return [
+const TILE_DEFS=()=>{const pk=S.packing.filter(x=>!x.sug||kst(x,'ordered')),pd=pk.filter(x=>kst(x,'ordered')).length,rk=S.rooms.filter(r=>r.kitReady).length;return [
  ['program','sched','לוח המסע','חמישי–שבת','c2'],
  ['people','people','משתתפים',`${S.participants.length} נוסעים`,'c1'],
  ['passports','file','דרכונים',`${S.participants.filter(p=>p.passport).length}/${S.participants.length}`,'c2'],
@@ -3515,11 +3571,20 @@ function guestHTML0(){
       const nav=sc('nav',IX.nav,'חזרה למלון','ניווט','יצאתם ואבדתם? נחזיר אתכם','','a',`href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener"`);
       const todo=sc(needs.length?'bad':'ok',needs.length?I.tasks:`<span style="font-size:26px">✓</span>`,'עוד מעט סיימנו',needs.length?`${needs.length===1?'דבר אחד':needs.length+' דברים'}`:'הכל מסודר',needs.length?needs.map(x=>x[1]).join(' · '):'אין לכם מה להשלים',needs.length?'<span class="sc-go">‹</span>':'','button',needs.length?'data-gnav="gf"':'');
       return `<div class="gst">${pay}${pass}${nav}${todo}</div>`})();
+    const ready=(()=>{
+      const need=ppl.filter(x=>x.status!=='פטור'&&+x.amount>0),tot=need.reduce((a,x)=>a+(+x.amount||0),0),got=need.reduce((a,x)=>a+paidOf(x),0),payOk=!need.length||got>=tot,passOk=ppl.every(x=>x.passport),photoOk=ppl.every(x=>x.photo);
+      const items=[[payOk,'התשלום',!need.length?'פטור, אין מה לשלם':payOk?`שולם ${ils(got)}`:`נותר לתשלום ${ils(tot-got)}`,'',IX.coin],[passOk,'צילום דרכון',passOk?'התקבל, תודה':ppl.filter(x=>!x.passport).map(x=>esc(firstN(x.name))).join(' ו')+' · לחצו לשליחה','gf',IX.pass],[photoOk,'תמונה אישית',photoOk?'מעולה':'אפשר להעלות בפרופיל','gf',I.people]];
+      const ok=items.filter(x=>x[0]).length,pct=Math.round(ok/items.length*100),R=52,C=2*Math.PI*R;
+      return `<section class="rdy ${pct===100?'full':''}" aria-label="המוכנות שלכם למסע"><div class="rdy-top"><div class="rdy-ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="${R}" fill="none" stroke="rgba(214,178,98,.18)" stroke-width="8"/><circle class="rg" cx="60" cy="60" r="${R}" fill="none" stroke="url(#rdg)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" style="--c:${C};--o:${C*(1-pct/100)}" transform="rotate(-90 60 60)"/><defs><linearGradient id="rdg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b8862f"/><stop offset="1" stop-color="#ffe9a8"/></linearGradient></defs></svg><b class="num">${pct}%</b></div>
+       <div class="rdy-h"><small>המוכנות שלכם</small><b>${pct===100?'הכל מוכן ✈':ok+' מתוך '+items.length+' בוצעו'}</b><span>${pct===100?'נשאר רק לארוז ולבוא':'עוד רגע וסיימתם'}</span></div></div>
+       <div class="rdy-l">${items.map(([o,l,sb,g,ic],i)=>{const t=o?'div':'button';return `<${t} class="ri ${o?'ok':'bad'}" ${o?'':`data-gnav="${g}"`} style="--i:${i}"><span class="ri-i">${ic}</span><span class="ri-t"><b>${l}</b><small>${sb}</small></span><span class="ri-c">${o?'✓':'‹'}</span></${t}>`}).join('')}
+       <a class="ri nav" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener" style="--i:3"><span class="ri-i">${IX.nav}</span><span class="ri-t"><b>חזרה למלון</b><small>אבדתם? נחזיר אתכם</small></span><span class="ri-c">‹</span></a></div></section>`})();
+    const SKY='<div class="gsky" aria-hidden="true">'+[[8,14,0],[22,6,.8],[35,22,1.6],[48,9,.4],[61,18,2.1],[74,5,1.2],[86,16,.2],[93,8,1.9],[14,30,2.4],[67,34,.9]].map(([x,y,d])=>`<i style="inset-inline-start:${x}%;top:${y}%;animation-delay:${d}s"></i>`).join('')+'<svg viewBox="0 0 400 90" preserveAspectRatio="xMidYMax slice"><path d="M0 90V70h30v-8h14v8h22V58h10v12h18V64h8v-6h6v6h8v6h26V52c0-9 8-14 16-18v-8l3-9 3 9v8c8 4 16 9 16 18v18h26V60h12v10h22v-6h10v6h26V56h12v14h30v-8h16v8h30v20z" fill="#0b0905" stroke="#c99a3d" stroke-opacity=".28" stroke-width="1"/></svg></div>';
     const ph=orgPhone();
     const help=`<section class="ghelp" aria-label="עזרה"><div><b>צריכים עזרה?</b><small>שלומי, מארגן המסע · <span class="num ltr">${esc(fmtPhone(ph))}</span></small></div>
       <a class="btn" href="${telLink(ph)}" aria-label="שיחה לשלומי">${I.phone}<span>שיחה</span></a><a class="btn" href="${waLink(ph)}" target="_blank" rel="noopener" aria-label="וואטסאפ לשלומי">${IX.wa||'💬'}<span>וואטסאפ</span></a><a class="btn sos" href="tel:112" aria-label="חירום 112">112</a></section>`;
-    return pv+`<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(coupleLabel(ppl,me)||'')}</b></div></div>
-     ${nowCard('data-gnav="gl"')}${banner}${TRIPDAY()?tripDayBlock(ppl):passBlock+extraOut+stat}
+    return pv+`<div class="ghome">${SKY}<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(coupleLabel(ppl,me)||'')}</b></div></div>
+     ${nowCard('data-gnav="gl"')}${banner}${TRIPDAY()?tripDayBlock(ppl):passBlock+extraOut+ready}
      <div class="gcb">
       ${cube('gl',I.sched,'לוח המסע','מה קורה בכל יום, ובאיזו שעה')}
       ${cube('gz',IX.pin,'קרעסטיר','על רבי ישעיה׳לה ועל הציון')}
@@ -3535,7 +3600,7 @@ function guestHTML0(){
       ${open?`<a class="gc gtrv" href="../" target="_blank" rel="noopener" style="--i:${n++}"><span class="gc-i">${I.spark}</span><span class="gc-t">טריוויה</span><span class="gc-s">משחק לאוטובוס. פתוח עכשיו!</span></a>`:`<button class="gc gtrv locked" data-glock style="--i:${n++}"><span class="gc-i">🔒</span><span class="gc-t">טריוויה</span><span class="gc-s">נפתח כשנחתים בבודפשט</span></button>`}
      </div>
      ${flightGroups(ppl,'חזור').map(g=>guestFlightCard(g,ppl,'חזור')).join('')}
-     ${help}`}
+     ${help}</div>`}
   if(GTAB==='gx'){
     const hn=`<a class="hotelbar" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener">${IX.nav}<span>חזרה למלון · ניווט</span></a>`;
     return head('מסעדות ואטרקציות')+hn+`<p class="note">לחצו "במפה" כדי לראות את המקום, או "ניווט" כדי להגיע אליו בהליכה. המרחקים הם מהמלון, בערך. לפני שאוכלים, כדאי לבדוק תעודת כשרות.</p>`+
@@ -3789,7 +3854,7 @@ function peopleList(rows){
   let n=0;
   return groups.map((g,gi)=>`<div class="plh" style="--i:${Math.min(n,14)}"><span>${esc(g.L)}</span><i></i><small class="num">${g.r.length}</small></div>`+card(g.r.map(p=>{const i=Math.min(n++,14);
     return `<div class="row prow" style="--i:${i};--h:${PHUES[gi%PHUES.length]}" data-person="${p._id}" role="button" tabindex="0">${p.photo?`<span class="av ph"><img src="${p.photo}" alt=""></span>`:`<span class="av">${esc(famKey(p.name).last[0]||'?')}</span>`}
-     <div class="main"><div class="t"><span class="fn">${esc(famKey(p.name).first)}</span> <b class="ln">${esc(famKey(p.name).last)}</b></div><div class="m">${p.phone?'':'<span style="color:var(--warn)">אין טלפון</span>'}${p.carry?`<span class="who">🧳 ${esc(p.carry)}</span>`:''}${p.duties?`<span class="who">📌 ${esc(p.duties)}</span>`:''}${p.notes?`<span>${esc(p.notes)}</span>`:''}${p.status!=='שולם'&&p.status!=='פטור'?`<span class="pill ${payCls(p)}">${p.status==='לא שולם'?'לא שילם':esc(p.status)}</span>`:''}</div></div>
+     <div class="main"><div class="t"><span class="fn">${esc(famKey(p.name).first)}</span> <b class="ln">${esc(famKey(p.name).last)}</b></div><div class="m">${p.phone?'':'<span style="color:var(--warn)">אין טלפון</span>'}${p.notes?`<span>${esc(p.notes)}</span>`:''}</div></div>
      <div class="acts">${(()=>{const k=passState(p)[0],pk=k==='ok'||k==='warn'?'ok':k==='bad'?'bad':'';return `<button class="ab ${payCls(p).slice(2)}" data-pay="${p._id}" aria-label="תשלום של ${esc(p.name)}: ${esc(p.status)}">₪</button><button class="ab ${pk}" data-ppass="${p._id}" aria-label="הדרכון של ${esc(p.name)}">🛂</button>${p.phone?`<a class="ab" href="tel:${esc(p.phone)}" data-stop aria-label="שיחה עם ${esc(p.name)}">📞</a><a class="ab wa" href="${waLink(p.phone)}" target="_blank" rel="noopener" data-stop aria-label="וואטסאפ ל${esc(p.name)}">💬</a>`:''}`})()}</div></div>`}).join('')),'').join('')}
 
 /* ===== handlers: kits ===== */
