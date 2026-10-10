@@ -216,10 +216,10 @@ test('PCHECK-1 passport check: paste names and expiry, a short or expired one is
   await page.getByRole('button', { name: /הדבקת נתונים/ }).click();
   const sh = page.getByRole('dialog');
   await sh.locator('#imTxt').fill('אבי כהן | cohen avi | 2031-05-14\nבני לוי | LEVI BENI | 2025-08-10\nגדי לוי | LEVI GADI | 2027-01-05\nמישהו שלא קיים | NOBODY | 2030-01-01');
-  await sh.getByRole('button', { name: 'בדיקה' }).click();
+  // the check runs on its own, before anything is pressed
   await expect(sh.locator('#imOut')).toContainText('3 נמצאו');
   await expect(sh.locator('#imOut')).toContainText('1 לא זוהו');
-  await sh.getByRole('button', { name: 'עדכון' }).click();
+  await sh.getByRole('button', { name: 'בדיקה ועדכון' }).click();
   await expect.poll(async () => (await db.get(`${T}/participants/p1`))?.nameEn).toBe('COHEN AVI');
   await expect.poll(async () => (await db.get(`${T}/participants/p2`))?.passExp).toBe('2025-08-10');
   await page.evaluate("go('more',{sub:'passports'})");

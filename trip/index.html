@@ -2561,15 +2561,16 @@ function hotelSheet(){const t=hotelText(),miss=S.participants.filter(p=>!p.nameE
 function passImportSheet(){
   sheet(`<h3>הדבקת שמות ותוקפים</h3><p class="note" style="margin-top:0">שורה לכל משתתף: <span class="ltr">שם בעברית | ENGLISH NAME | 2030-12-31</span>. ההתאמה לפי השם בעברית, ולפני העדכון רואים מה נמצא.</p>
    <textarea class="note-in" id="imTxt" style="min-height:180px;direction:rtl" placeholder="אבי כהן | COHEN AVI | 2031-05-14"></textarea><div id="imOut" class="note"></div>
-   <div class="sheet-acts"><button class="btn" id="imChk">בדיקה</button><span class="sp"></span><button class="btn primary" id="imGo" disabled>עדכון</button></div>`);
+   <div class="sheet-acts"><span class="sp"></span><button class="btn primary" id="imGo">בדיקה ועדכון</button></div>`);
   let plan=[];
   const parse=()=>{plan=[];const bad=[];
     document.getElementById('imTxt').value.split(/\n/).map(l=>l.trim()).filter(Boolean).forEach(l=>{const c=l.split(/\s*[|\t]\s*/);if(c.length<2){bad.push(l);return}
       const p=matchGuest(c[0]);const en=(c[1]||'').toUpperCase().replace(/\s+/g,' ').trim(),ex=(c[2]||'').trim();
       if(!p||(ex&&!/^\d{4}-\d{2}-\d{2}$/.test(ex))){bad.push(l);return}plan.push({p,en,ex})});
-    const o=document.getElementById('imOut');o.innerHTML=`<b class="num">${plan.length}</b> נמצאו${bad.length?` · <span style="color:var(--bad)">${bad.length} לא זוהו:</span><br>${bad.map(esc).join('<br>')}`:''}`;document.getElementById('imGo').disabled=!plan.length};
-  document.getElementById('imChk').onclick=parse;
-  document.getElementById('imGo').onclick=async()=>{let n=0;for(const {p,en,ex} of plan){if(await save('participants',p._id,{...strip(find('participants',p._id)||p),nameEn:en,...(ex?{passExp:ex}:{})}))n++}closeSheet();toast(`עודכנו ${n} משתתפים`)}}
+    const o=document.getElementById('imOut');o.innerHTML=`<b class="num">${plan.length}</b> נמצאו${bad.length?` · <span style="color:var(--bad)">${bad.length} לא זוהו:</span><br>${bad.map(esc).join('<br>')}`:''}`;document.getElementById('imGo').disabled=false};
+  // the check runs by itself as the text comes in, so the result is on screen before the button is pressed
+  const im=document.getElementById('imTxt');im.addEventListener('input',parse);im.addEventListener('paste',()=>setTimeout(parse,0));
+  document.getElementById('imGo').onclick=async()=>{parse();if(!plan.length){toast('לא זוהתה אף שורה. כל שורה: שם בעברית | ENGLISH NAME | תאריך');return}let n=0;for(const {p,en,ex} of plan){if(await save('participants',p._id,{...strip(find('participants',p._id)||p),nameEn:en,...(ex?{passExp:ex}:{})}))n++}closeSheet();toast(`עודכנו ${n} משתתפים`)}}
 function personSheet(id,focus){
   const p=find('participants',id);if(!p)return;const r=roomOf(p),ts=tasksOf(p),pu=passUrlOf(p);
   const expBad=p.passExp&&p.passExp<PASS_MIN;
