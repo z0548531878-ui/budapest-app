@@ -236,6 +236,12 @@ test('PCHECK-1 passport check: paste names and expiry, a short or expired one is
   await page.locator('.pcrow', { hasText: 'גדי לוי' }).locator('[data-pce="passExp"]').fill('2031-01-05');
   await page.locator('.pcrow', { hasText: 'גדי לוי' }).locator('[data-pce="passExp"]').blur();
   await expect.poll(async () => (await db.get(`${T}/participants/p3`))?.passExp).toBe('2031-01-05');
+  // an expired passport shows on the home strip, and the strip opens the problems
+  await page.evaluate("go('home')");
+  const pk = page.getByRole('region', { name: 'תמונת מצב' }).getByRole('button', { name: /דרכונים/ });
+  await expect(pk).toContainText('יש בעיית תוקף');
+  await pk.click();
+  await expect(page.locator('.pcrow', { hasText: 'בני לוי' })).toContainText('פג תוקף');
   // the hotel list: the room with the English names as in the passports
   await page.getByRole('button', { name: /רשימה למלון/ }).click();
   await expect(page.getByRole('dialog').locator('#hotelTxt')).toHaveValue(/Room 401 \(floor 4\): COHEN AVI \/ LEVI BENI/);

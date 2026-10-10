@@ -1702,7 +1702,10 @@ function insights(){
   const noOwn=open.filter(x=>!x.owner&&x.priority!=='גבוהה'); if(noOwn.length)add('info','tasks',`${noOwn.length} משימות פתוחות בלי אחראי`,'כדאי לחלק לפני שזה מתגלגל לרגע האחרון','tasks',{seg:'all'});
   if(m.gap<0)add('bad','money',`חסרים ${ils(-m.gap)} כדי לסגור את התקציב`,`ההוצאות הצפויות ${ils(m.est)}, ההכנסות ${ils(m.income)}. אפשר לגייס תרומה, לקצץ או לעדכן מחיר`,'money',{seg:'sum'});
   if(m.unpaid.length){const owe=m.unpaid.reduce((s,x)=>s+owedOf(x),0);add(D<=21?'bad':'warn','money',`${m.unpaid.length} משתתפים עוד לא שילמו`,`בערך ${ils(owe)} בחוץ · אפשר לשלוח תזכורת בוואטסאפ מהמסך`,'money',{seg:'participants',filter:{pay:'open'}})}
-  const noPass=S.participants.filter(p=>!p.passport); if(noPass.length)add(D<=21?'bad':'warn','people',`${noPass.length} צילומי דרכון חסרים`,'צריך לפני הנפקת כרטיסים ורשימת המלון','more',{sub:'passports'});
+  const noPass=S.participants.filter(p=>!p.passport); if(noPass.length)add(D<=21?'bad':'warn','people',`${noPass.length} צילומי דרכון חסרים`,'צריך לפני הנפקת כרטיסים ורשימת המלון','more',{sub:'passports',filter:{pp:'miss'}});
+  // a passport that is expired or ends too early must be renewed: that one is never 'later'
+  const passBad=S.participants.filter(p=>passState(p)[0]==='bad'); if(passBad.length)add('bad','people',`${passBad.length} דרכונים שפג תוקפם או שהתוקף קצר מדי`,passBad.slice(0,3).map(p=>p.name+' ('+(p.passExp?p.passExp.split('-').reverse().join('.'):'')+')').join(' · ')+(passBad.length>3?' ועוד':''),'more',{sub:'passports',filter:{pp:'bad'}});
+  const passNoEn=S.participants.filter(p=>p.passport&&!p.nameEn); if(passNoEn.length)add('warn','people',`${passNoEn.length} משתתפים בלי שם באנגלית`,'צריך לשיבוץ המלון ולכרטיסי הטיסה','more',{sub:'passports',filter:{pp:'miss'}});
   const noPh=S.participants.filter(p=>!p.phone); if(noPh.length)add('info','phone',`${noPh.length} משתתפים בלי טלפון`,noPh.map(p=>p.name).join(' · '),'more',{sub:'people',filter:{pf:'nophone'}});
   const est=S.expenses.filter(e=>!isFinal(e)); if(est.length)add('warn','money',`${est.length} הוצאות עדיין בהערכה`,'לסגור מחיר סופי עם הספקים כדי שהמאזן יהיה אמיתי','money',{seg:'expenses'});
   const noRec=S.expenses.filter(e=>+e.paid&&!e.receipt); if(noRec.length)add('info','file',`${noRec.length} תשלומים בלי קבלה`,'לבקש קבלות עכשיו, לפני שזה נשכח','money',{seg:'expenses'});
@@ -1890,7 +1893,7 @@ const VIEWS={
   const kpi=(cls,v,l,to,o)=>`<button class="kpi ${cls}" data-go="${to}" data-opts='${esc(JSON.stringify(o||{}))}'><b class="num"${/^\d+%?$/.test(String(v))?` data-count="${parseInt(v)}"${String(v).endsWith('%')?' data-fmt="pct"':''}`:''}>${v}</b><span>${l}</span></button>`;
   const kpis=ready('participants','tasks')?`<section class="kpis" aria-label="תמונת מצב">
     ${kpi(pct>=90?'ok':pct>=60?'mid':'bad',pct+'%','נגבה ממשתתפים','money',{seg:'participants',filter:{pay:'open'}})}
-    ${kpi(ppOk===ppN?'ok':ppOk/Math.max(1,ppN)>=.7?'mid':'bad',`${ppOk}/${ppN}`,'דרכונים','more',{sub:'passports'})}
+    ${kpi(S.participants.some(x=>passState(x)[0]==='bad')?'bad':ppOk===ppN?'ok':ppOk/Math.max(1,ppN)>=.7?'mid':'bad',`${ppOk}/${ppN}`,S.participants.some(x=>passState(x)[0]==='bad')?'דרכונים · יש בעיית תוקף':'דרכונים','more',{sub:'passports',filter:{pp:S.participants.some(x=>passState(x)[0]==='bad')?'bad':'miss'}})}
     ${kpi(rq?'mid':'ok',rq,rq===1?'בקשה מחכה':'בקשות מחכות','more',{sub:'reqs'})}</section>`:`<div class="kpis">${'<div class="kpi skel shimmer"></div>'.repeat(3)}</div>`;
   const attention=fires.length?`<section class="sec"><div class="sec-h"><h3>דורש תשומת לב</h3><button class="link" data-go="more">כל התובנות ›</button></div>${card(fires.map(([c,l,to,o])=>`<button class="row" data-go="${to}" data-opts='${esc(JSON.stringify(o))}'><span class="pill ${c}">!</span><div class="main"><div class="t">${esc(l)}</div></div><span aria-hidden="true" style="color:var(--muted)">‹</span></button>`).join(''))}</section>`:'';
   return `<div class="hello"><div class="greet">${greeting()}<b>${ME?esc(ME):'ברוכים הבאים'}</b></div><span class="date">${today}</span></div>
