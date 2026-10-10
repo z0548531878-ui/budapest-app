@@ -25,7 +25,7 @@ const nav = (page: Page, name: string) => page.locator('#nav').getByRole('button
 const sheet = (page: Page) => page.getByRole('dialog');
 const sub = (page: Page, name: string) => page.evaluate(n => (window as any).go('more', { sub: n }), name);
 const settings = (page: Page) => sub(page, 'settings');
-const participants = async (page: Page) => { await nav(page, 'תקציב'); await page.locator('.seg').getByRole('button', { name: /^משתתפים/ }).click(); };
+const participants = async (page: Page) => { await nav(page, 'תקציב'); await page.locator('.seg.s4').getByRole('button', { name: /^הכנסות/ }).click(); };
 
 test.describe('trip app', () => {
   test.afterEach(async ({ db }) => {

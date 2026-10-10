@@ -324,7 +324,7 @@ test('SYNC-2 two organizers on two phones: a change on one shows on the other, a
   expect(A.errors).toEqual([]); expect(B.errors).toEqual([]);
 });
 
-test('MONEY-1 expenses and income: filters by status, topic and search; the same for donations and payments', async ({ browser, db }) => {
+test('MONEY-1 expenses and income: four tabs; income has payments and donations; one filter row each', async ({ browser, db }) => {
   await seed(db);
   const ex = (id: string, name: string, cat: string, status: string, paid: number, receipt: boolean, final = true) => db.put(`${T}/expenses/${id}`, { name, estimate: 1000, paid, category: cat, status, final, receipt, order: 1 });
   await ex('e1', 'אוטובוס', 'תחבורה', 'לא שולם', 0, false);
@@ -334,28 +334,27 @@ test('MONEY-1 expenses and income: filters by status, topic and search; the same
   await db.put(`${T}/donations/d1`, { donor: 'משפחת לוי', amount: 500, status: 'התקבל', purpose: 'כללי', order: 1 });
   await db.put(`${T}/donations/d2`, { donor: 'משפחת כהן', amount: 800, status: 'ממתין', purpose: 'סעודה', order: 2 });
   const { page, errors } = await openTrip(browser, db);
-  await page.evaluate("go('money',{seg:'expenses'})");
+  await page.evaluate("go('money',{seg:'sum'})");
+  await expect(page.locator('.seg.s4 button')).toHaveText([/סיכום/, /הכנסות/, /הוצאות/, /קופות/]);
+  await page.locator('.seg.s4').getByRole('button', { name: /^הוצאות/ }).click();
   const rows = page.locator('#view .erow');
   await expect(rows).toHaveCount(4);
-  await page.getByRole('button', { name: /^מקדמה/ }).click();
-  await expect(rows).toHaveCount(1); await expect(rows).toContainText('מלון');
-  await page.getByRole('button', { name: /^בלי קבלה/ }).click();
-  await expect(rows).toHaveCount(1);
-  await page.getByRole('button', { name: /^הכל/ }).click();
-  await page.locator('.chips.own').getByRole('button', { name: 'אוכל' }).click();
-  await expect(rows).toHaveCount(2);
-  await page.getByRole('button', { name: /^בהערכה/ }).click();
-  await expect(rows).toHaveCount(1); await expect(rows).toContainText('נרות');
-  await page.locator('#q').fill('אוטו'); await expect(page.locator('#view')).toContainText('אין הוצאות בסינון הזה');
-  await page.evaluate("go('money',{seg:'donations'})");
-  await expect(page.locator('#view .row[data-edit^="donations"]')).toHaveCount(2);
+  await page.getByRole('button', { name: /^לא שולם במלואו/ }).click();
+  await expect(rows).toHaveCount(3);
+  await page.getByRole('button', { name: /^שולם/ }).click();
+  await expect(rows).toHaveCount(1); await expect(rows).toContainText('ארוחת שבת');
+  await page.getByRole('button', { name: /^לטיפול/ }).click();
+  await expect(rows).toHaveCount(2); // an estimate, or paid without a receipt
+  // income: payments and donations under one tab
+  await page.locator('.seg.s4').getByRole('button', { name: /^הכנסות/ }).click();
+  await expect(page.locator('.seg.s4 button[aria-pressed="true"]')).toContainText('הכנסות');
+  await page.locator('.seg.sub').getByRole('button', { name: /^תרומות/ }).click();
+  await expect(page.locator('.seg.s4 button[aria-pressed="true"]')).toContainText('הכנסות');
+  const don = page.locator('#view .row[data-edit^="donations"]');
+  await expect(don).toHaveCount(2);
   await page.getByRole('button', { name: /^ממתינות/ }).click();
-  await expect(page.locator('#view .row[data-edit^="donations"]')).toHaveCount(1);
-  await page.getByRole('button', { name: /^הכל/ }).click();
-  await page.locator('.chips.own').getByRole('button', { name: 'סעודה' }).click();
-  await expect(page.locator('#view')).toContainText('משפחת כהן');
-  await expect(page.locator('#view')).not.toContainText('משפחת לוי');
-  await page.evaluate("go('money',{seg:'participants'})");
+  await expect(don).toHaveCount(1); await expect(don).toContainText('משפחת כהן');
+  await page.locator('.seg.sub').getByRole('button', { name: /^משתתפים/ }).click();
   await expect(page.getByRole('button', { name: /^כולם/ })).toContainText('2');
   expect(errors).toEqual([]);
 });
