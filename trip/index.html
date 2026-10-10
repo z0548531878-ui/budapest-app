@@ -1490,6 +1490,11 @@ button.sc,a.sc{cursor:pointer}.sc:active{transform:scale(.97)}
 .cubes.tiles>.cube.hot:nth-child(n) small{color:#3d2f12!important}
 .cubes.tiles>.cube.hot:nth-child(n) .ci{background:#15110a!important;color:#f0d28c!important}
 .sec-h .sec-k{margin-inline-start:auto;display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);font-weight:700}.sec-h .sec-k i{width:10px;height:10px;border-radius:3px;background:var(--goldbtn)}
+
+/* the team schedule shows the participants' programme too */
+.pk{display:inline-block;font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:99px;background:rgba(214,178,98,.16);color:#f0d28c;border:1px solid rgba(214,178,98,.4);vertical-align:2px}
+.row.prow-p{background:linear-gradient(90deg,rgba(214,178,98,.07),transparent 60%)}.row.prow-p .time{color:#f6dc93}
+.tl-key{margin:2px 2px 8px}
 /* ===== zmanim strip (inside the parchment), pocket-guide tools, taxi card ===== */
 .zst{margin:4px 0 14px;padding:10px 12px 12px;border:1px solid rgba(164,124,39,.45);border-radius:10px;background:linear-gradient(180deg,rgba(255,250,235,.55),rgba(236,220,180,.35))}
 .zst .zh{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:800;color:#4A3A12;letter-spacing:.3px}
@@ -1598,12 +1603,12 @@ function insights(){
   const open=S.tasks.filter(x=>x.status!=='בוצע'), m=money(), L=[];
   const add=(lvl,ic,tt,d,to,o)=>L.push({lvl,ic,t:tt,d,to,o:o||{}});
   const in7=d=>d&&d>=t&&(new Date(d)-new Date(t))/864e5<=7;
-  const late=open.filter(x=>x.due&&x.due<t); if(late.length)add('bad','tasks',`${late.length} משימות עברו את התאריך`,late.slice(0,3).map(x=>x.title).join(' · '),'tasks',{seg:'all'});
+  const late=open.filter(x=>x.due&&x.due<t&&x.status!=='ממתין'); if(late.length)add('bad','tasks',`${late.length} משימות עברו את התאריך`,late.slice(0,3).map(x=>x.title).join(' · '),'tasks',{seg:'all'});
   const urg=open.filter(x=>x.priority==='גבוהה'&&!x.owner); if(urg.length)add('bad','tasks',`${urg.length} משימות דחופות בלי אחראי`,'למנות אחראי לכל אחת','tasks',{seg:'all'});
   const soon=open.filter(x=>in7(x.due)); if(soon.length)add('warn','tasks',`${soon.length} משימות לשבוע הקרוב`,soon.slice(0,3).map(x=>x.title).join(' · '),'tasks',{seg:'all'});
   const noOwn=open.filter(x=>!x.owner&&x.priority!=='גבוהה'); if(noOwn.length)add('info','tasks',`${noOwn.length} משימות פתוחות בלי אחראי`,'כדאי לחלק לפני שזה מתגלגל לרגע האחרון','tasks',{seg:'all'});
   if(m.gap<0)add('bad','money',`חסרים ${ils(-m.gap)} כדי לסגור את התקציב`,`ההוצאות הצפויות ${ils(m.est)}, ההכנסות ${ils(m.income)}. אפשר לגייס תרומה, לקצץ או לעדכן מחיר`,'money',{seg:'sum'});
-  if(m.unpaid.length){const owe=m.unpaid.reduce((s,x)=>s+((+x.amount||0)-(x.status==='שולם חלקית'?(+x.paidSoFar||0):0)),0);add(D<=21?'bad':'warn','money',`${m.unpaid.length} משתתפים עוד לא שילמו`,`בערך ${ils(owe)} בחוץ · אפשר לשלוח תזכורת בוואטסאפ מהמסך`,'money',{seg:'participants',filter:{pay:'open'}})}
+  if(m.unpaid.length){const owe=m.unpaid.reduce((s,x)=>s+owedOf(x),0);add(D<=21?'bad':'warn','money',`${m.unpaid.length} משתתפים עוד לא שילמו`,`בערך ${ils(owe)} בחוץ · אפשר לשלוח תזכורת בוואטסאפ מהמסך`,'money',{seg:'participants',filter:{pay:'open'}})}
   const noPass=S.participants.filter(p=>!p.passport); if(noPass.length)add(D<=21?'bad':'warn','people',`${noPass.length} צילומי דרכון חסרים`,'צריך לפני הנפקת כרטיסים ורשימת המלון','more',{sub:'passports'});
   const noPh=S.participants.filter(p=>!p.phone); if(noPh.length)add('info','phone',`${noPh.length} משתתפים בלי טלפון`,noPh.map(p=>p.name).join(' · '),'more',{sub:'people',filter:{pf:'nophone'}});
   const est=S.expenses.filter(e=>!isFinal(e)); if(est.length)add('warn','money',`${est.length} הוצאות עדיין בהערכה`,'לסגור מחיר סופי עם הספקים כדי שהמאזן יהיה אמיתי','money',{seg:'expenses'});
@@ -1611,13 +1616,13 @@ function insights(){
   const pl=S.donations.filter(d=>d.status!=='התקבל'); if(pl.length)add('warn','money',`${pl.length} תרומות שהובטחו ועוד לא התקבלו`,`${ils(pl.reduce((s,d)=>s+(+d.amount||0),0))} בסך הכול`,'money',{seg:'donations'});
   const noRoom=S.rooms.filter(r=>!r.roomNumber); if(noRoom.length&&D<=14)add('warn','bed',`${noRoom.length} חדרים בלי מספר`,'לבקש מהמלון את שיבוץ החדרים','more',{sub:'rooms'});
   const kit=S.rooms.filter(r=>!r.kitReady); if(kit.length&&D<=1)add('warn','bed',`${kit.length} חדרים בלי סט`,'לסדר את הסטים לפני שהנוסעים עולים לחדרים','more',{sub:'rooms'});
-  const buy=S.packing.filter(x=>!kst(x,'ordered')&&!x.sug); if(buy.length)add(D<=10?'warn':'info','box',`${buy.length} פריטים עוד לא נקנו`,`${buy.filter(x=>(x.where||'בארץ')!=='בבודפשט').length} לקנות בארץ · ${buy.filter(x=>x.where==='בבודפשט').length} בבודפשט`,'more',{sub:'packing'});
+  const buy=S.packing.filter(x=>!kst(x,'ordered')&&!x.sug&&x.list!=='סט לכל חדר'); if(buy.length)add(D<=10?'warn':'info','box',`${buy.length} פריטים עוד לא נקנו`,`${buy.filter(x=>(x.where||'בארץ')!=='בבודפשט').length} לקנות בארץ · ${buy.filter(x=>x.where==='בבודפשט').length} בבודפשט`,'more',{sub:'packing'});
   KITS.forEach(([kn])=>{const it=kitItems().filter(x=>kitOf(x)===kn);if(!it.length)return;for(const [k,l] of [['ordered','להזמין'],['arrived','לוודא שהגיע'],['packed','לארוז'],['placed','להניח']]){const miss=it.filter(x=>!kst(x,k)).length,dd=kdays(KDUE[k]);if(miss&&dd<0){add('bad','box',`${kn}: ${miss} פריטים שלא ${k==='ordered'?'הוזמנו':k==='arrived'?'הגיעו':k==='packed'?'נארזו':'הונחו'}`,`היה צריך ${l} עד ${fmtDate(KDUE[k])}`,'more',{sub:'kits',filter:{kit:kn,ks:k}});break}if(miss&&dd<=7){add('warn','box',`${kn}: ${l} עד ${fmtDate(KDUE[k])}`,`${miss} פריטים עוד לא`,'more',{sub:'kits',filter:{kit:kn,ks:k}});break}}});
   const nm=S.messages.filter(x=>!x.sent).sort((a,b)=>(a.date||'').localeCompare(b.date||''))[0];
   if(nm)add(nm.date&&nm.date<=t?'warn':'info','chat',nm.date&&nm.date<=t?`הגיע הזמן לשלוח: ${nm.title}`:`ההודעה הבאה לקבוצה: ${nm.title}`,nm.date?`מתוכננת ל-${fmtDate(nm.date)}`:'','more',{sub:'messages'});
   const sNo=S.schedule.filter(x=>!x.owner); if(sNo.length)add('info','sched',`${sNo.length} פריטים בלו״ז בלי אחראי`,'מי מוביל כל רגע במסע?','sched');
   const nn=S.notes.filter(n=>n.status!=='סודר'); if(nn.length)add('info','bulb',`${nn.length} רעיונות שעוד לא סודרו`,'לעבור ולהפוך למשימות','more',{sub:'notes'});
-  const cq=S.claude.filter(x=>x.status==='פתוח'&&x.kind==='שאלה'); if(cq.length)add('gold','spark',`${cq.length} שאלות מ-Claude מחכות לתשובה`,cq.slice(0,2).map(x=>x.title).join(' · '),'more',{sub:'claude',seg:'שאלה'});
+  const cq=S.claude.filter(x=>x.status==='פתוח'); if(cq.length)add('gold','spark',`${cq.length} שאלות והצעות מ-Claude מחכות`,cq.slice(0,2).map(x=>x.title).join(' · '),'more',{sub:'claude',seg:'שאלה'});
   const ok=[];
   if(!m.unpaid.length&&S.participants.length)ok.push('כל המשתתפים שילמו');
   if(!noPass.length&&S.participants.length)ok.push('כל הדרכונים התקבלו');
@@ -1649,7 +1654,7 @@ function moneySum(head){
   return head+`<div class="msum"><div class="mh"><span>הכנסות</span><b class="num pos">${ils(m.income)}</b><small>נכנס כבר <span class="num">${ils(m.pIn+m.dIn)}</span> · <span class="num">${pct(m.pIn+m.dIn,m.income)}%</span></small></div>
    ${bar(m.pIn+m.dIn,m.income,'ok')}
    ${inc.map(([l,tot,got,sub,seg])=>`<button class="mline" data-seg="${seg}"><span class="main"><b>${l}</b><small>${sub}</small></span><span class="v"><b class="num">${ils(tot)}</b><small class="num">${pct(tot,m.income)}% מההכנסות · התקבל ${ils(got)}</small></span></button>${bar(got,tot,'ok thin')}`).join('')}</div>
-  <div class="msum"><div class="mh"><span>הוצאות</span><b class="num neg">${ils(m.est)}</b><small>שולם <span class="num">${ils(m.out)}</span> · נשאר לשלם <span class="num">${ils(Math.max(0,m.est-m.out))}</span></small></div>
+  <div class="msum"><div class="mh"><span>הוצאות</span><b class="num neg">${ils(m.est)}</b><small>שולם <span class="num">${ils(m.out)}</span> · נשאר לשלם <span class="num">${ils(m.left)}</span></small></div>
    ${bar(m.out,m.est,'bad')}
    ${cats.map(([c,v])=>`<button class="mline" data-seg="expenses"><span class="main"><b>${esc(c)}</b><small><span class="num">${v.n}</span> סעיפים · שולם <span class="num">${ils(v.paid)}</span></small></span><span class="v"><b class="num">${ils(v.est)}</b><small class="num">${pct(v.est,m.est)}% מההוצאות</small></span></button>${bar(v.est,m.est,'bad thin')}`).join('')}</div>
   <div class="msum mini"><div><span>עלות לנוסע</span><b class="num">${ils(pp)}</b></div><div><span>מחיר ממוצע ששילמו</span><b class="num">${ils(avg)}</b></div><div><span>${m.gap<0?'חסר':'עודף'}</span><b class="num ${m.gap<0?'neg':'pos'}">${ils(Math.abs(m.gap))}</b></div></div>
@@ -1697,7 +1702,7 @@ function hintScroll(){
 }
 
 function renderNav(){
-  const myOpen=S.tasks.filter(t=>t.status!=='בוצע'&&mine(t)).length, idx=NAV.findIndex(n=>n[0]===V.tab);
+  const myOpen=S.tasks.filter(t=>t.status!=='בוצע'&&t.status!=='ממתין'&&mine(t)).length, idx=NAV.findIndex(n=>n[0]===V.tab);
   document.getElementById('nav').innerHTML=`<span class="ind${idx===2?' h':''}" style="transform:translateX(calc(${-idx} * (100% + 8px)))"></span>`+NAV.map(([k,l])=>`<button data-nav="${k}" ${V.tab===k?'aria-current="page"':''}>${I[k]}${l}${k==='tasks'&&myOpen?`<span class="badge num">${myOpen}</span>`:''}${k==='more'?(n=>n?`<span class="badge num insb">${n}</span>`:'')(insights().L.filter(x=>x.lvl==='bad').length):''}</button>`).join('');
   document.getElementById('meBtn').innerHTML=`<i>${esc(ME?ME[0]:'?')}</i><span>${esc(ME||'מי אני?')}</span>`;
   const show=['tasks','money','sched'].includes(V.tab)||(V.tab==='more'&&V.sub&&!['settings','guide','flights','claude','passports','program'].includes(V.sub));
@@ -1715,7 +1720,10 @@ function money(){
   const pExp=sum(S.participants,x=>x.amount), pIn=sum(payers,paidOf);
   const unpaid=payers.filter(x=>x.status!=='שולם');
   const dAll=sum(S.donations,x=>x.amount), dIn=sum(S.donations.filter(x=>x.status==='התקבל'),x=>x.amount);
-  return {est,fin,out,pExp,pIn,unpaid,dAll,dIn,income:pExp+dAll,gap:pExp+dAll-est};
+  const pDue=sum(payers,x=>x.amount), coll=pDue?Math.min(100,Math.round(pIn/pDue*100)):100;
+  // still to pay on expenses: item by item, so one overpaid item can't hide what's open on the others
+  const left=S.expenses.reduce((s,x)=>s+Math.max(0,(+x.estimate||0)-(+x.paid||0)),0);
+  return {est,fin,out,pExp,pIn,pDue,coll,left,unpaid,dAll,dIn,income:pExp+dAll,gap:pExp+dAll-est};
 }
 
 function render(anim){
@@ -1765,13 +1773,12 @@ const VIEWS={
   const out=S.flights.find(f=>f._id==='f1')||S.flights.find(f=>f.dir==='הלוך');
   const open=S.tasks.filter(x=>x.status!=='בוצע'), done=S.tasks.length-open.length;
   const my=sortTasks(open.filter(x=>mine(x)&&x.status!=='ממתין')).slice(0,3);
-  const late=open.filter(x=>x.due&&x.due<t), urgentNoOwner=open.filter(x=>x.priority==='גבוהה'&&!x.owner);
-  const m=money(), pct=m.pExp?Math.round(m.pIn/m.pExp*100):0, tp=S.tasks.length?done/S.tasks.length:0;
+  const late=open.filter(x=>x.due&&x.due<t&&x.status!=='ממתין'), urgentNoOwner=open.filter(x=>x.priority==='גבוהה'&&!x.owner);
+  const m=money(), pct=m.coll, tp=S.tasks.length?done/S.tasks.length:0;
   const nm=S.messages.filter(x=>!x.sent).sort((a,b)=>(a.date||'').localeCompare(b.date||''))[0], nmDue=nm&&nm.date&&nm.date<=t;
   const cq=S.claude.filter(x=>x.status==='פתוח');
   const pledged=S.donations.filter(d=>d.status!=='התקבל'), noRec=S.expenses.filter(e=>+e.paid&&!e.receipt);
-  const fires=[pendN()&&['p-warn',`${pendN()} בקשות ואישורים ממתינים`,'more',{sub:'reqs'}],
-    late.length&&['p-bad',`${late.length} משימות באיחור`,'tasks',{seg:'all'}],
+  const fires=[
     urgentNoOwner.length&&['p-bad',`${urgentNoOwner.length} משימות דחופות בלי אחראי`,'tasks',{seg:'noowner'}],
     nmDue&&['p-warn',`הגיע הזמן לשלוח לקבוצה: ${nm.title}`,'more',{sub:'messages'}],
     cq.length&&['p-gold',`${cq.length} שאלות והצעות מ-Claude`,'more',{sub:'claude'}],
@@ -1838,7 +1845,7 @@ const VIEWS={
  money(){
   const seg=V.seg||'sum', m=money(), got=m.pIn+m.dIn;
   const head=`<div class="page-title"><button class="back" data-back aria-label="חזרה">›</button><h2>תקציב</h2></div>${updBar('money')}
-   <div class="money-top"><div class="mring" style="--p:${m.income?Math.min(100,Math.round(got/m.income*100)):0}"><b class="num">${m.income?Math.min(100,Math.round(got/m.income*100)):0}%</b><small>נגבה</small></div><span class="lbl">מאזן צפוי</span><div class="bal num ${m.gap<0?'neg':'pos'}" data-count="${Math.abs(m.gap)}" data-fmt="ils" data-pre="${m.gap<0?'−':'+'}">${m.gap<0?'−':'+'}${ils(Math.abs(m.gap))}</div><small>${m.gap<0?'חסר כדי לכסות את כל ההוצאות':'יישאר עודף'} · לפי הסכומים הידועים היום</small>
+   <div class="money-top"><div class="mring" style="--p:${m.income?Math.min(100,Math.round(got/m.income*100)):0}"><b class="num">${m.income?Math.min(100,Math.round(got/m.income*100)):0}%</b><small>מההכנסות</small></div><span class="lbl">מאזן צפוי</span><div class="bal num ${m.gap<0?'neg':'pos'}" data-count="${Math.abs(m.gap)}" data-fmt="ils" data-pre="${m.gap<0?'−':'+'}">${m.gap<0?'−':'+'}${ils(Math.abs(m.gap))}</div><small>${m.gap<0?'חסר כדי לכסות את כל ההוצאות':'יישאר עודף'} · לפי הסכומים הידועים היום</small>
     <div class="mt3"><div><span>ייכנס</span><b class="num pos" data-count="${m.income}" data-fmt="ils">${ils(m.income)}</b></div><div><span>ייצא</span><b class="num neg" data-count="${m.est}" data-fmt="ils">${ils(m.est)}</b></div><div><span>כבר בקופה</span><b class="num" data-count="${got}" data-fmt="ils">${ils(got)}</b></div></div></div>
    <div class="seg s5" style="margin-top:14px">${[['sum','סיכום',''],['participants','משתתפים',m.unpaid.length],['expenses','הוצאות',S.expenses.length],['donations','תרומות',S.donations.length],['cash','קופות',cashBook().rows.length]].map(([k,l,c])=>`<button data-seg="${k}" aria-pressed="${seg===k}">${l}${c!==''?`<span class="c num">${c}</span>`:''}</button>`).join('')}</div>`;
   if(!ready('participants','expenses','donations'))return head+skel(6);
@@ -1849,8 +1856,8 @@ const VIEWS={
    let rows=S.participants.filter(x=>!V.q||x.name.includes(V.q));
    if(f==='open')rows=rows.filter(x=>x.status!=='שולם'&&x.status!=='פטור');if(f==='paid')rows=rows.filter(x=>x.status==='שולם'||x.status==='פטור');
    rows.sort((a,b)=>a.name.localeCompare(b.name,'he'));
-   const paidN=S.participants.filter(x=>x.status==='שולם').length, payers=S.participants.filter(x=>x.status!=='פטור').length, pct=payers?Math.round(paidN/payers*100):0;
-   return head+`<div class="card" style="padding:14px;margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-weight:800"><span>שילמו <span class="num">${paidN}</span> מתוך <span class="num">${payers}</span></span><span class="num">${ils(m.pIn)} / ${ils(m.pExp)}</span></div><div class="prog"><i data-w="${pct}%" style="width:0"></i></div></div>
+   const paidN=S.participants.filter(x=>x.status==='שולם').length, payers=S.participants.filter(x=>x.status!=='פטור').length, pct=m.coll;
+   return head+`<div class="card" style="padding:14px;margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-weight:800"><span>שילמו <span class="num">${paidN}</span> מתוך <span class="num">${payers}</span> · נגבה <span class="num">${m.coll}%</span></span><span class="num">${ils(m.pIn)} / ${ils(m.pDue)}</span></div><div class="prog"><i data-w="${pct}%" style="width:0"></i></div></div>
     <div class="chips">${[['open',`עוד לא שילמו`],['paid','שילמו'],['all','כולם']].map(([k,l])=>`<button class="chip" data-filter="pay" data-val="${k}" aria-pressed="${f===k}">${l}</button>`).join('')}<button class="chip" data-remind style="border-color:var(--ok);color:var(--ok)">תזכורת בוואטסאפ</button></div>
     <input class="search" id="q" type="search" placeholder="חיפוש שם" value="${esc(V.q)}">
     ${card(rows.map(p=>{const c=p.status==='שולם'?'p-ok':p.status==='פטור'?'p-mute':p.status==='שולם חלקית'?'p-warn':'p-bad';
@@ -1858,7 +1865,7 @@ const VIEWS={
      <div class="end"><span class="amt num">${p.status==='פטור'?'—':p.status==='שולם חלקית'?`${ils(paidOf(p))} / ${ils(p.amount)}`:ils(p.amount)}</span><button class="pill ${c}" data-pay="${p._id}">${p.status==='לא שולם'?'רישום תשלום':esc(p.status)}</button></div></div>`}).join(''),f==='open'?'<b>כולם שילמו 🎉</b>':'<b>אין כאן אף אחד</b>')}`;
   }
   if(seg==='expenses'){
-   const out=m.out, left=Math.max(0,m.est-out), finN=S.expenses.filter(isFinal).length, noRec=S.expenses.filter(e=>+e.paid&&!e.receipt).length;
+   const out=m.out, left=m.left, finN=S.expenses.filter(isFinal).length, noRec=S.expenses.filter(e=>+e.paid&&!e.receipt).length;
    const g={};S.expenses.slice().sort(byOrder).forEach(e=>{const k=e.category||'אחר';(g[k]=g[k]||[]).push(e)});
    const st=e=>e.status==='שולם'?['ok','שולם ✓']:e.status==='מקדמה'?['w',`מקדמה ${ils(e.paid)} · נשאר ${ils(Math.max(0,(+e.estimate||0)-(+e.paid||0)))}`]:['m',isFinal(e)?'לא שולם · סכום סופי':'לא שולם · הערכה'];
    return head+`<div class="card" style="padding:14px;margin-bottom:6px"><div class="mt3" style="margin-top:0"><div><span>סה״כ</span><b class="num">${ils(m.est)}</b></div><div><span>שולם</span><b class="num pos">${ils(out)}</b></div><div><span>נשאר לשלם</span><b class="num">${ils(left)}</b></div></div>
@@ -1876,13 +1883,17 @@ const VIEWS={
  sched(){
   const t=todayISO(), di=Math.max(0,TRIP_DAYS.findIndex(d=>d.d===t));
   const day=V.seg||TRIP_DAYS[di].k, dd=TRIP_DAYS.find(d=>d.k===day)||TRIP_DAYS[0];
-  const key=x=>(x.time||'99').replace('~','');
-  const rows=S.schedule.filter(x=>x.day===day).sort((a,b)=>key(a).localeCompare(key(b))||byOrder(a,b));
+  const key=x=>{const t=(x.time||'99').replace('~','').trim();return /^\d:/.test(t)?'0'+t:t};
+  // one timeline per day: the participants' programme (what they see; editing it notifies them) and the team's own items, by time
+  const pd=PROG.find(x=>progIso(x)===dd.d), pit=pd?progItems(pd):[];
+  const rows=[...S.schedule.filter(x=>x.day===day).map(x=>({x,t:key(x)})),...(()=>{let pv='00:00';return pit.map(it=>{if(toMin(it.tm)!=null)pv=it.tm.padStart(5,'0');return {p:it,t:pv}})})()].sort((a,b)=>a.t.localeCompare(b.t)||(a.p?0:1)-(b.p?0:1)||(a.x&&b.x?byOrder(a.x,b.x):0));
   const fl=S.flights.filter(f=>f.date===dd.d||(dd.k==='יום ראשון'&&f.date>dd.d)).sort((a,b)=>((a.date||'')+(a.dep||'')).localeCompare((b.date||'')+(b.dep||'')));
   return `<div class="page-title"><button class="back" data-back aria-label="חזרה">›</button><h2>לו״ז</h2></div>${updBar('sched')}
    <div class="seg">${TRIP_DAYS.map(d=>`<button data-seg="${d.k}" aria-pressed="${d.k===day}">${d.s}</button>`).join('')}</div>
    ${fl.length?`<div class="flights">${fl.map(flightCard).join('')}</div>`:''}
-   <div class="tl ${dd.sh?'shabbat':''}">${!ready('schedule')?skel(5):card(rows.map(r=>`<div class="row" data-edit="schedule/${r._id}" role="button" tabindex="0"><span class="time num">${esc(r.time||'—')}</span>
+   ${pit.length?`<p class="note tl-key"><span class="pk">בתוכנית</span> גלוי למשתתפים, ושינוי בו שולח להם התראה · שאר השורות פנימיות לצוות</p>`:''}
+   <div class="tl ${dd.sh?'shabbat':''}">${!ready('schedule')?skel(5):card(rows.map(({x:r,p})=>p?`<div class="row prow-p" data-pfix="${p.key}" role="button" tabindex="0" aria-label="שינוי: ${esc(p.ti)}"><span class="time num">${esc(p.tm||'—')}</span>
+     <div class="main"><div class="t">${esc(p.ti)} <span class="pk">בתוכנית</span>${p.fix?' <span class="pill p-gold">עודכן</span>':''}</div><div class="m">${p.sub?`<span>${esc(p.sub)}</span>`:''}</div></div></div>`:`<div class="row" data-edit="schedule/${r._id}" role="button" tabindex="0"><span class="time num">${esc(r.time||'—')}</span>
      <div class="main"><div class="t">${esc(r.title)}</div><div class="m">${r.place?`<span>${esc(r.place)}</span>`:''}${r.owner?`<span class="who">${esc(r.owner)}</span>`:''}${r.menu?'<span class="pill p-gold">תפריט</span>':''}${r.notes?`<span>${esc(r.notes)}</span>`:''}</div></div></div>`).join(''),'<b>עוד אין אירועים ביום הזה</b>אפשר להוסיף עם ה-+')}</div>`;
  },
  more(){return insightsView()},
@@ -2442,7 +2453,7 @@ function bulkSheet(){
 }
 
 
-const TILE_DEFS=()=>{const pk=S.packing,pd=pk.filter(x=>kst(x,'ordered')).length,rk=S.rooms.filter(r=>r.kitReady).length;return [
+const TILE_DEFS=()=>{const pk=S.packing.filter(x=>x.list!=='סט לכל חדר'&&(!x.sug||kst(x,'ordered'))),pd=pk.filter(x=>kst(x,'ordered')).length,rk=S.rooms.filter(r=>r.kitReady).length;return [
  ['program','sched','לוח המסע','חמישי–שבת','c2'],
  ['people','people','משתתפים',`${S.participants.length} נוסעים`,'c1'],
  ['passports','people','דרכונים',`${S.participants.filter(p=>p.passport).length}/${S.participants.length}`,'c2'],
@@ -2459,7 +2470,7 @@ const TILE_DEFS=()=>{const pk=S.packing,pd=pk.filter(x=>kst(x,'ordered')).length
  ]};
 const TORD=['program','people','reqs','announce','roles','flights','kits','packing','rooms','passports','messages','claude','files','contacts','trivia'];
 // gold = something there is waiting for you; the rest stay dark, so the eye goes straight to what's open
-const tileHot=k=>{try{return ({reqs:pendN()>0,claude:S.claude.some(x=>x.status==='פתוח'),passports:S.participants.some(p=>!p.passport),packing:S.packing.some(x=>!kst(x,'ordered')),messages:S.messages.some(m=>!m.sent)})[k]||false}catch(e){return false}};
+const tileHot=k=>{try{return ({reqs:pendN()>0,claude:S.claude.some(x=>x.status==='פתוח'),passports:S.participants.some(p=>!p.passport),packing:S.packing.some(x=>!kst(x,'ordered')&&!x.sug&&x.list!=='סט לכל חדר'),messages:S.messages.some(m=>!m.sent)})[k]||false}catch(e){return false}};
 const homeTiles=()=>`<section class="sec"><div class="sec-h"><h3>הכל במקום אחד</h3><span class="sec-k"><i></i>מחכה לטיפול</span></div><div class="cubes tiles">${TILE_DEFS().sort((a,b)=>TORD.indexOf(a[0])-TORD.indexOf(b[0])).map(([k,ic,l,s,c],i)=>(k==='trivia'?`<a class="cube ${c}" href="../" target="_blank" rel="noopener" style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></a>`:`<button class="cube ${c}${tileHot(k)?' hot':''}" data-go="more" data-opts='{"sub":"${k}"}' style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></button>`)).join('')}</div></section>`;
 
 
@@ -3554,11 +3565,12 @@ SUB.reqs=function(){
   const reqCard=r=>`<div class="ann"><div class="ah"><b>${esc(r.byName||'')}</b><span class="pill ${r.status==='חדש'?'p-warn':r.status==='בטיפול'?'p-gold':r.status==='בוצע'?'p-ok':'p-bad'}">${esc(r.status)}</span></div>
     <div class="m"><span class="pill p-mute">${esc(r.cat||'אחר')}</span><small>${tsStr(r.ts)}</small></div><p>${esc(r.text||'').replace(/\n/g,'<br>')}</p>${r.note?`<div class="rnote">הערה: ${esc(r.note)}</div>`:''}
     <div class="gta wrap">${stB(r,'בטיפול','בטיפול')}${stB(r,'בוצע','בוצע ✓')}${stB(r,'לא אפשרי','לא אפשרי')}<button class="btn ghost" data-req-note="${r._id}">הערה למשתתף</button></div></div>`;
-  return subHead('בקשות ואישורים',`<span class="cnt num">${C.length+openR.length}</span>`)+`
+  // the header counts what waits for you (as on home); requests already in progress are shown separately
+  return subHead('בקשות ואישורים',`<span class="cnt num">${pendN()}</span>`)+`
    <div class="ghead"><span>משימות שמחכות לאישור</span><span class="num">${C.length}</span></div>
    ${C.length?`<div class="annlist">${C.map(t=>`<div class="ann"><div class="ah"><b>${esc(t.title)}</b></div><p>${esc(t.claimBy||'')} מבקש/ת לקחת את המשימה</p>
      <div class="gta"><button class="btn primary" data-claim-ok="${t._id}">✓ אישור</button><button class="btn ghost" data-claim-no="${t._id}">דחייה</button></div></div>`).join('')}</div>`:card('','<b>אין התנדבויות שמחכות לאישור</b>כשמשתתף ייקח משימה, תאשרו אותה כאן')}
-   <div class="ghead"><span>בקשות אישיות</span><span class="num">${openR.length}</span></div>
+   <div class="ghead"><span>בקשות אישיות</span><span class="num">${R.filter(r=>r.status==='חדש').length} חדשות · ${R.filter(r=>r.status==='בטיפול').length} בטיפול</span></div>
    ${openR.length?`<div class="annlist">${openR.map(reqCard).join('')}</div>`:card('','<b>אין בקשות פתוחות</b>כשמשתתף ישלח בקשה אישית, היא תופיע כאן')}
    ${doneR.length?`<div class="ghead"><span>טופלו</span><span class="num">${doneR.length}</span></div><div class="annlist">${doneR.map(reqCard).join('')}</div>`:''}
    <p class="note">משימות שמסומנות "פתוח למשתתפים" בכרטיס המשימה מופיעות אצל המשתתפים ברשימת "פתוחות לקחת".</p>`};
@@ -3631,7 +3643,17 @@ function morphInto(el,html){
     try{morphInto(el,h)}catch(e){d.set.call(el,h)}}})};
   hook(document.getElementById('view'),()=>(GUEST()?'g'+GTAB:V.tab+'|'+(V.sub||'')));
   hook(document.getElementById('nav'),null);
-  const _m=render;render=function(a){MORPH.full=!!a;try{_m(a)}finally{MORPH.full=false}};
+  // lists move instead of jumping: a row that changes place (done task drops down, a filter, a change from another phone)
+  // slides from where it was; a row that just appeared fades in. Same screen only, and only for a list of sane size.
+  const flipKeys=v=>{const m=new Map();v.querySelectorAll('[data-edit]').forEach(e=>{if(!m.has(e.dataset.edit))m.set(e.dataset.edit,e)});return m};
+  const _m=render;render=function(a){
+    const v=document.getElementById('view'),g=!a&&!reduce&&window.gsap&&v;let before=null;
+    if(g){const k=flipKeys(v);if(k.size&&k.size<=150){before=new Map();k.forEach((e,id)=>before.set(id,e.getBoundingClientRect().top))}}
+    MORPH.full=!!a;try{_m(a)}finally{MORPH.full=false}
+    if(!before)return;let born=0;
+    flipKeys(v).forEach((e,id)=>{const t=e.getBoundingClientRect().top;
+      if(before.has(id)){const d=before.get(id)-t;if(Math.abs(d)>2&&Math.abs(d)<1600)gsap.fromTo(e,{y:d},{y:0,duration:.45,ease:'power3.out',clearProps:'transform'})}
+      else if(born<12&&t<innerHeight+40)gsap.fromTo(e,{opacity:0,y:8},{opacity:1,y:0,duration:.3,delay:born++*.025,ease:'power2.out',clearProps:'opacity,transform'})})};
 })();
 
 /* ===== install-to-home-screen gate + push notifications (FCM) ===== */

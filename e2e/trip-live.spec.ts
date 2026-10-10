@@ -156,3 +156,28 @@ test('ZMAN-1 the programme shows the zmanim of the day for Budapest; the full li
   await expect(page.getByRole('dialog')).toContainText('Kérem, vigyen el ide:');
   expect(errors).toEqual([]);
 });
+
+test('SYNC-1 the same numbers on every tab: collected %, waiting requests; the team schedule shows the programme', async ({ browser, db }) => {
+  await seed(db);
+  // a partial payment and an exempt rabbi: collected = 1,750 + 500 out of 3,500 owed by payers = 64%
+  await db.put(`${T}/participants/p2`, { name: 'בני לוי', amount: 1750, phone: '0502345678', status: 'שולם חלקית', paidAmt: 500, passport: false, order: 2 });
+  await db.put(`${T}/participants/p3`, { name: 'הרב גדליה', amount: 2000, phone: '0503456789', status: 'פטור', passport: true, order: 3 });
+  await db.put(`${T}/settings/req_2`, { kind: 'req', by: 'p1', cat: 'חדר', text: 'קומה נמוכה', status: 'בטיפול', ts: 2 });
+  const { page, errors } = await openTrip(browser, db);
+  await page.evaluate("go('home')");
+  const strip = page.getByRole('region', { name: 'תמונת מצב' });
+  await expect(strip.getByRole('button', { name: /נגבה ממשתתפים/ })).toContainText('64%');
+  await expect(strip.getByRole('button', { name: /בקשה מחכה/ })).toContainText('1');
+  await page.evaluate("go('money',{seg:'participants'})");
+  await expect(page.locator('#view')).toContainText('נגבה 64%');
+  await page.evaluate("go('more',{sub:'reqs'})");
+  await expect(page.locator('.page-title .cnt')).toHaveText('1');
+  await expect(page.locator('#view')).toContainText('1 חדשות · 1 בטיפול');
+  // the team schedule on Friday includes the participants' lunch, marked as part of the programme
+  await page.evaluate("go('sched',{seg:'יום שישי'})");
+  const lunch = page.locator('.row.prow-p', { hasText: 'טועמיה' });
+  await expect(lunch).toContainText('בתוכנית');
+  await lunch.click();
+  await expect(page.getByRole('dialog')).toContainText('שינוי בלוח המסע');
+  expect(errors).toEqual([]);
+});

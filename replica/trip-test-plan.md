@@ -29,6 +29,7 @@ B backup and export, S links and content safety, O offline. Tasks, schedule, Cla
 | HELP-1 | participant home | happy | open home | call / WhatsApp the organizer and 112 | e2e | pass |
 | MOTION-1 | all | happy: motion | another phone marks a payment; then flick a task sheet down 40px | the collected % rolls 50→100 instead of jumping; the sheet closes | e2e | pass |
 | ZMAN-1 | programme | happy: zmanim | open Friday, then all zmanim, then Shabbat; then the taxi card | sunset 16:03, candles 18 minutes before it; Rabbeinu Tam 17:14; the Hungarian card opens | e2e | pass |
+| SYNC-1 | all | consistency | a partial payment, an exempt rabbi, one new and one in-progress request | home, the participants tab and the money summary agree on 64%; requests show 1 waiting everywhere; the team schedule includes the programme | e2e | pass |
 
 ## Manual pass (needs a real phone)
 
