@@ -15,7 +15,9 @@
 <link rel="manifest" href="manifest.json">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<style>html,body{margin:0;padding:0;background:#0b0a08}</style>
+<script defer src="vendor/gsap-3.15.0.min.js"></script>
+<script defer src="vendor/lenis-1.3.26.min.js"></script>
+<style>html,body{margin:0;padding:0;background:#0b0a08}html.lenis,html.lenis body{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!important}.lenis [data-lenis-prevent],.lenis .sheet{overscroll-behavior:contain}</style>
 </head>
 <body>
 <title>מסע גיבוש הונגריה</title>
@@ -1677,7 +1679,7 @@ function renderNav(){
   document.getElementById('fab').hidden=!show;
 }
 document.getElementById('nav').addEventListener('click',e=>{const b=e.target.closest('[data-nav]');if(b)go(b.dataset.nav)});
-function go(tab,opts={}){Object.assign(V,{tab,sub:null,seg:null,filter:{},q:''},opts);render(true);window.scrollTo({top:0,behavior:reduce?'auto':'smooth'})}
+function go(tab,opts={}){Object.assign(V,{tab,sub:null,seg:null,filter:{},q:''},opts);render(true);if(window.lenis)lenis.scrollTo(0,{duration:.6});else window.scrollTo({top:0,behavior:reduce?'auto':'smooth'})}
 try{const h=location.hash.slice(1);if(NAV.some(n=>n[0]===h))V.tab=h}catch(e){}
 
 function money(){
@@ -1698,7 +1700,7 @@ function render(anim){
   v.innerHTML=(V.tab==='more'&&V.sub?SUB[V.sub]:VIEWS[V.tab]||VIEWS.home)();
   v.classList.remove('enter'); if(anim&&!reduce){void v.offsetWidth;v.classList.add('enter')}
   if(keep){const el=document.getElementById(keep.id);if(el&&'value' in el){el.value=keep.val;el.focus();try{el.setSelectionRange(keep.pos,keep.pos)}catch(e){}}}
-  if(anim)countUp(v);
+  countUp(v,anim);
   unnest(v);
   const bars=[...v.querySelectorAll('[data-w]')];
   if(anim&&!reduce){requestAnimationFrame(()=>requestAnimationFrame(()=>bars.forEach(el=>el.style.width=el.dataset.w)))}else bars.forEach(el=>el.style.width=el.dataset.w);
@@ -1709,10 +1711,13 @@ function render(anim){
 // for screen readers: the row's text becomes the button, side by side with the others
 function unnest(root){root.querySelectorAll('[role="button"][tabindex]').forEach(r=>{const m=r.querySelector(':scope>.main');if(!m||!r.querySelector('button,a'))return;
   r.removeAttribute('role');r.removeAttribute('tabindex');m.setAttribute('role','button');m.tabIndex=0})}
-function countUp(root){
-  if(reduce)return;
-  root.querySelectorAll('[data-count]').forEach(el=>{const target=+el.dataset.count,f=el.dataset.fmt,pre=el.dataset.pre||'',t0=performance.now();
-    const step=t=>{const k=Math.min(1,(t-t0)/750),e=1-Math.pow(1-k,3),val=target*e;el.textContent=pre+(f==='ils'?ils(val):f==='pct'?Math.round(val)+'%':Math.round(val));if(k<1)requestAnimationFrame(step)};requestAnimationFrame(step)});
+// numbers count up when a screen opens, and roll from the old value to the new one when another phone changes them
+function countUp(root,anim){
+  root.querySelectorAll('[data-count]').forEach(el=>{const to=+el.dataset.count,f=el.dataset.fmt,pre=el.dataset.pre||'',from=anim?0:el.__cv;el.__cv=to;
+    if(reduce||from==null||from===to)return;
+    const show=v=>{el.textContent=pre+(f==='ils'?ils(v):f==='pct'?Math.round(v)+'%':Math.round(v))};
+    if(window.gsap){const o={v:from};if(el.__tw)el.__tw.kill();el.__tw=gsap.to(o,{v:to,duration:anim?.8:.6,ease:'power3.out',onUpdate:()=>show(o.v),onComplete:()=>show(to)});return}
+    const t0=performance.now(),step=t=>{const k=Math.min(1,(t-t0)/750),e=1-Math.pow(1-k,3);show(from+(to-from)*e);if(k<1)requestAnimationFrame(step)};requestAnimationFrame(step)});
 }
 const card=(inner,empty='אין כאן כלום כרגע')=>`<div class="card">${inner||`<div class="empty">${empty}</div>`}</div>`;
 const skel=n=>`<div class="card">${Array.from({length:n},()=>'<div class="skel shimmer"></div>').join('')}</div>`;
@@ -2632,7 +2637,10 @@ async function markNote(n,kind){sortedLog[n._id]=(sortedLog[n._id]||[]).concat(k
   await save('notes',n._id,{...strip(cur),status:'סודר',sorted:[...new Set(sortedLog[n._id])].join(', ')})}
 function burst(el){if(reduce||!el)return;const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,cols=['#f2cb7c','#e0b25a','#5fd39b','#f28ea2','#8fb2ff'];
   for(let i=0;i<22;i++){const c=document.createElement('i');c.className='confetti';c.style.background=cols[i%cols.length];c.style.left=cx+'px';c.style.top=cy+'px';document.body.appendChild(c);
-    const a=Math.random()*Math.PI*2,d=50+Math.random()*80;c.animate([{transform:'translate(0,0) rotate(0)',opacity:1},{transform:`translate(${Math.cos(a)*d}px,${Math.sin(a)*d-40}px) rotate(${Math.random()*540}deg)`,opacity:0}],{duration:700+Math.random()*400,easing:'cubic-bezier(.2,.8,.2,1)'}).onfinish=()=>c.remove()}}
+    const a=Math.random()*Math.PI*2,d=50+Math.random()*80;
+    // with GSAP the pieces fly out, then fall like real paper
+    if(window.gsap){gsap.timeline({onComplete:()=>c.remove()}).to(c,{x:Math.cos(a)*d,y:Math.sin(a)*d-45,rotation:Math.random()*540,duration:.45,ease:'power3.out'}).to(c,{y:'+=110',x:'+='+(Math.random()*30-15),rotation:'+=180',opacity:0,duration:.75,ease:'power1.in'});continue}
+    c.animate([{transform:'translate(0,0) rotate(0)',opacity:1},{transform:`translate(${Math.cos(a)*d}px,${Math.sin(a)*d-40}px) rotate(${Math.random()*540}deg)`,opacity:0}],{duration:700+Math.random()*400,easing:'cubic-bezier(.2,.8,.2,1)'}).onfinish=()=>c.remove()}}
 
 const strip=d=>{const o={...d};delete o._id;return o};
 const find=(c,id)=>S[c].find(x=>x._id===id);
@@ -2722,12 +2730,17 @@ function sheet(html){const r=document.getElementById('sheetRoot');
   sh.addEventListener('keydown',e=>{if(e.key!=='Tab')return;const f=[...sh.querySelectorAll('button:not([disabled]),a[href],input:not([type=hidden]),textarea,[tabindex="0"]')].filter(x=>x.offsetParent);if(!f.length)return;
     const first=f[0],last=f[f.length-1];if(e.shiftKey&&(document.activeElement===first||document.activeElement===sh)){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}});requestAnimationFrame(()=>requestAnimationFrame(()=>s.classList.add('open')));
   s.addEventListener('click',e=>{if(e.target===s||e.target.closest('[data-close]'))closeSheet()});
-  let y0=null;
-  sh.addEventListener('touchstart',e=>{y0=sh.scrollTop<=0?e.touches[0].clientY:null},{passive:true});
-  sh.addEventListener('touchmove',e=>{if(y0==null)return;const dy=e.touches[0].clientY-y0;if(dy>0){sh.style.transition='none';sh.style.transform=`translateY(${dy}px)`}},{passive:true});
-  sh.addEventListener('touchend',e=>{if(y0==null)return;const dy=e.changedTouches[0].clientY-y0;y0=null;sh.style.transition='';sh.style.transform='';if(dy>110)closeSheet()});
+  if(window.lenis)lenis.stop();
+  // pull down to close: a long pull or a quick flick closes it, a short one springs back
+  let y0=null,ly=0,lt=0,vy=0;const g=!reduce&&window.gsap;
+  const setY=y=>{if(g)gsap.set(sh,{y});else sh.style.transform=`translateY(${y}px)`};
+  sh.addEventListener('touchstart',e=>{y0=sh.scrollTop<=0?e.touches[0].clientY:null;ly=y0;lt=e.timeStamp;vy=0;if(g)gsap.killTweensOf(sh)},{passive:true});
+  sh.addEventListener('touchmove',e=>{if(y0==null)return;const y=e.touches[0].clientY,dy=y-y0;vy=(y-ly)/Math.max(1,e.timeStamp-lt);ly=y;lt=e.timeStamp;if(dy>0){sh.style.transition='none';setY(dy)}},{passive:true});
+  sh.addEventListener('touchend',e=>{if(y0==null)return;const dy=e.changedTouches[0].clientY-y0;y0=null;
+    if(dy>110||(dy>24&&vy>.55)){if(g){gsap.to(sh,{y:sh.offsetHeight,duration:.24,ease:'power2.in'})}else{sh.style.transition='';sh.style.transform=''}closeSheet();return}
+    if(g&&dy>0)gsap.to(sh,{y:0,duration:.55,ease:'elastic.out(1,.65)',clearProps:'transform',onComplete:()=>{sh.style.transition=''}});else{sh.style.transition='';sh.style.transform=''}});
 }
-function closeSheet(){const s=document.getElementById('scrim');if(!s)return;s.id='';s.classList.remove('open');setTimeout(()=>s.remove(),reduce?0:320);
+function closeSheet(){const s=document.getElementById('scrim');if(!s)return;if(window.lenis)lenis.start();s.id='';s.classList.remove('open');setTimeout(()=>s.remove(),reduce?0:320);
   const f=sheetFrom;sheetFrom=null;if(!f)return;
   // the screen may have been redrawn while the sheet was open: find the same row again
   let el=f.el.isConnected?f.el:f.key&&document.querySelector(f.key);if(el&&f.main&&!el.matches('.main'))el=el.querySelector(':scope>.main[role=button]')||el;
@@ -3669,6 +3682,9 @@ render(true);
 const netBanner=()=>{const b=document.getElementById('banner');if(!navigator.onLine)b.innerHTML='<p class="banner off">אין קליטה. רואים את המידע האחרון שנשמר בטלפון, ומה שתשנו יישלח לצוות כשתחזור הקליטה.</p>';else if(b.querySelector('.off'))b.innerHTML=''};
 addEventListener('offline',netBanner);addEventListener('online',()=>{netBanner();toast('הקליטה חזרה. השינויים נשלחים')});netBanner();
 // the app's files are kept on the phone too, so it opens with no signal at all
+// smooth wheel scrolling on computers (Lenis); phones keep their own native scrolling
+addEventListener('DOMContentLoaded',()=>{try{if(reduce||!window.Lenis||!matchMedia('(pointer:fine)').matches)return;
+  window.lenis=new Lenis({autoRaf:true,lerp:.12,allowNestedScroll:true,prevent:n=>!!(n.closest&&n.closest('.sheet,#pgate,[data-lenis-prevent]'))})}catch(e){}});
 try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claude)navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
 </script>
 

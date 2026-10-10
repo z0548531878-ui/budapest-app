@@ -25,7 +25,7 @@ const nav = (page: Page, name: string) => page.locator('#nav').getByRole('button
 const sheet = (page: Page) => page.getByRole('dialog');
 const sub = (page: Page, name: string) => page.evaluate(n => (window as any).go('more', { sub: n }), name);
 const settings = (page: Page) => sub(page, 'settings');
-const participants = async (page: Page) => { await nav(page, 'כסף'); await page.locator('.seg').getByRole('button', { name: /^משתתפים/ }).click(); };
+const participants = async (page: Page) => { await nav(page, 'תקציב'); await page.locator('.seg').getByRole('button', { name: /^משתתפים/ }).click(); };
 
 test.describe('trip app', () => {
   test.afterEach(async ({ db }) => {
@@ -48,7 +48,7 @@ test.describe('trip app', () => {
   test('M02-H1 cash boxes: who holds what, who paid from his own pocket, and a count that shows a gap', async ({ browser, db }) => {
     await seed(db);
     const { page, errors } = await openTrip(browser, db);
-    await nav(page, 'כסף');
+    await nav(page, 'תקציב');
     await page.getByRole('button', { name: /^קופות/ }).click();
     const shlomi = page.getByRole('button', { name: /^ש שלומי/ }), itzik = page.getByRole('button', { name: /^א איציק/ });
     await expect(shlomi).toContainText('נכנס 1,500 ₪ · יצא 0 ₪');
@@ -98,7 +98,7 @@ test.describe('trip app', () => {
   test('D01-H1 a deleted record goes to "deleted lately" and comes back with one tap', async ({ browser, db }) => {
     await seed(db);
     const { page, errors } = await openTrip(browser, db);
-    await nav(page, 'כסף');
+    await nav(page, 'תקציב');
     await page.getByRole('button', { name: /^הוצאות/ }).click();
     await page.getByRole('button', { name: /^מלון/ }).click();
     await sheet(page).getByRole('button', { name: 'מחיקה' }).click();

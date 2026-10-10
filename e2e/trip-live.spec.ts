@@ -97,3 +97,38 @@ test('HELP-1 participants can reach the organizer from the home screen', async (
   await expect(help.getByRole('link', { name: 'חירום 112' })).toHaveAttribute('href', 'tel:112');
   expect(errors).toEqual([]);
 });
+
+test('MOTION-1 with motion on, numbers roll to a changed value and a quick flick down closes a sheet', async ({ browser, db }) => {
+  await seed(db);
+  const { page, errors } = await openTrip(browser, db);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.reload();
+  await expect.poll(() => page.evaluate('COLS.every(c => loaded.has(c))')).toBe(true);
+  expect(await page.evaluate('typeof gsap')).toBe('object');
+  await page.evaluate("go('home')");
+  const paid = page.getByRole('region', { name: 'תמונת מצב' }).getByRole('button', { name: /נגבה ממשתתפים/ }).locator('.num');
+  await expect(paid).toHaveText('50%');
+  // another phone marks the second participant as paid: the number rolls up instead of jumping
+  await db.put(`${T}/participants/p2`, { name: 'בני לוי', amount: 1750, phone: '0502345678', status: 'שולם', passport: false, order: 2 });
+  const seen = await page.evaluate(() => new Promise<string[]>(ok => {
+    const el = document.querySelector('.kpi .num')!, out: string[] = [];
+    const mo = new MutationObserver(() => out.push(el.textContent || ''));
+    mo.observe(el, { childList: true, characterData: true, subtree: true });
+    setTimeout(() => { mo.disconnect(); ok(out) }, 1200);
+  }));
+  expect(seen.some(t => t !== '50%' && t !== '100%')).toBe(true);
+  await expect(paid).toHaveText('100%');
+  // open a task and flick it closed: 40px fast is enough
+  await page.evaluate("go('tasks')");
+  await page.locator('.row .main').first().click();
+  const sheet = page.locator('.sheet');
+  await expect(sheet).toBeVisible();
+  await sheet.evaluate(sh => {
+    const t = (y: number) => [new Touch({ identifier: 1, target: sh, clientY: y, clientX: 100 })];
+    sh.dispatchEvent(new TouchEvent('touchstart', { touches: t(300), changedTouches: t(300) }));
+    sh.dispatchEvent(new TouchEvent('touchmove', { touches: t(340), changedTouches: t(340) }));
+    sh.dispatchEvent(new TouchEvent('touchend', { touches: [], changedTouches: t(340) }));
+  });
+  await expect(page.locator('.scrim')).toHaveCount(0);
+  expect(errors).toEqual([]);
+});

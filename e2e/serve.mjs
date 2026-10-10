@@ -8,7 +8,7 @@ createServer(async (req, res) => {
   const path = normalize(decodeURIComponent(new URL(req.url, 'http://x').pathname)).replace(/^[/\\]+/, '') || 'index.html';
   try {
     const body = await readFile(join(root, path.includes('..') ? 'index.html' : path));
-    res.writeHead(200, { 'content-type': path.endsWith('.html') ? 'text/html; charset=utf-8' : 'application/octet-stream' });
+    res.writeHead(200, { 'content-type': path.endsWith('.html') ? 'text/html; charset=utf-8' : path.endsWith('.js') ? 'text/javascript' : 'application/octet-stream' });
     res.end(body);
   } catch { res.writeHead(404); res.end(); }
 }).listen(4173);

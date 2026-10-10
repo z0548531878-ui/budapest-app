@@ -27,6 +27,7 @@ B backup and export, S links and content safety, O offline. Tasks, schedule, Cla
 | NOW-1 | home | happy: trip day | clock at Friday 12:40 Budapest; then a day outside the trip | "now" = free time, "next" = lunch in 20 min (highlighted); button opens the day; no card outside the trip | e2e | pass |
 | KPI-1 | organizer home | happy | open home | collected %, passports, waiting requests, overdue tasks; each opens its screen; quick action opens the announcement composer | e2e | pass |
 | HELP-1 | participant home | happy | open home | call / WhatsApp the organizer and 112 | e2e | pass |
+| MOTION-1 | all | happy: motion | another phone marks a payment; then flick a task sheet down 40px | the collected % rolls 50→100 instead of jumping; the sheet closes | e2e | pass |
 
 ## Manual pass (needs a real phone)
 

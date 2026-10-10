@@ -4,7 +4,7 @@
 // as soon as there's signal; the versioned CDN files come straight from the phone once stored.
 const CACHE = 'trip-v1';
 // './' itself isn't stored: opening the folder falls back to index.html
-const SHELL = ['index.html', 'logo.webp', 'icon.png', 'manifest.json'];
+const SHELL = ['index.html', 'logo.webp', 'icon.png', 'manifest.json', 'vendor/gsap-3.15.0.min.js', 'vendor/lenis-1.3.26.min.js'];
 
 self.addEventListener('install', e => {
   self.skipWaiting();
