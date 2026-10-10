@@ -65,6 +65,10 @@ test('NOW-1 during the trip the home screens say what is happening now and next,
   // participant
   await asGuest(page);
   await expect(page.locator('.nowc .nc-row.next')).toContainText('טועמיה');
+  // on a trip day the participant's home shows today's essentials instead of payment and passport
+  const today = page.getByRole('region', { name: 'היום במסע' });
+  await expect(today).toContainText('הדלקת נרות');
+  await expect(today).toContainText('15:45');
   // a day that isn't a trip day: no card
   await page.clock.setFixedTime(new Date('2026-11-10T12:00:00+01:00'));
   await page.evaluate('render(true)');

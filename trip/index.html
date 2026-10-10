@@ -1495,6 +1495,14 @@ button.sc,a.sc{cursor:pointer}.sc:active{transform:scale(.97)}
 .pk{display:inline-block;font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:99px;background:rgba(214,178,98,.16);color:#f0d28c;border:1px solid rgba(214,178,98,.4);vertical-align:2px}
 .row.prow-p{background:linear-gradient(90deg,rgba(214,178,98,.07),transparent 60%)}.row.prow-p .time{color:#f6dc93}
 .tl-key{margin:2px 2px 8px}
+
+/* participant home during the trip */
+.tday{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.tdc{all:unset;box-sizing:border-box;cursor:pointer;display:grid;gap:3px;align-content:start;min-height:96px;padding:14px;border-radius:20px;border:1px solid rgba(214,178,98,.3);background:linear-gradient(160deg,#1d1912,#0e0c09);color:var(--ink);text-decoration:none}
+.tdc:first-child{background:var(--goldbtn);color:#15110a}.tdc:first-child>small,.tdc:first-child>span{color:#3d2f12}
+.tdc>small{font-size:12px;font-weight:800;color:var(--muted)}.tdc>b{font-size:22px;font-weight:900;line-height:1.15}.tdc>b .num{font-size:inherit;font-weight:inherit}.tdc>span{font-size:12px;color:var(--muted)}
+.tdc:focus-visible{outline:2px solid #f6dc93;outline-offset:2px}
+@media (prefers-reduced-motion:no-preference){.tdc{transition:transform .18s cubic-bezier(.2,.8,.2,1)}.tdc:active{transform:scale(.96)}}
 /* ===== zmanim strip (inside the parchment), pocket-guide tools, taxi card ===== */
 .zst{margin:4px 0 14px;padding:10px 12px 12px;border:1px solid rgba(164,124,39,.45);border-radius:10px;background:linear-gradient(180deg,rgba(255,250,235,.55),rgba(236,220,180,.35))}
 .zst .zh{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:800;color:#4A3A12;letter-spacing:.3px}
@@ -2043,7 +2051,7 @@ const SUB={
    <div class="card" style="padding:16px;margin-top:12px"><b>שיתוף עם הצוות</b><p class="note" style="margin:6px 0 0">שולחים לאיציק וליעל את הקישור הזה (הוא כולל את המפתח של הצוות). מי שאין לו את הקישור לא יכול לראות את הנתונים, אז לא לשתף אותו בקבוצה הכללית.</p><div style="display:flex;gap:8px;margin-top:10px"><button class="btn primary" id="cpTeam">העתקת קישור לצוות</button></div></div>
    <div class="card" style="padding:16px;margin-top:12px"><b>גיבוי וייצוא</b><p class="note" style="margin:6px 0 0">${(()=>{const b=find('settings','backup');return b&&b.at?`גיבוי אחרון: ${esc(fmtWhen(b.at))}${b.by?' · '+esc(b.by):''}`:'עוד לא נשמר גיבוי.'})()} כדאי פעם בשבוע, ולפני הטיסה, לשמור גיבוי מלא בדרייב.</p>
     <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn primary" data-export>ייצוא לאקסל</button><button class="btn" id="bkJson">גיבוי מלא (קובץ)</button><button class="btn" id="rsBtn">שחזור מגיבוי</button></div></div>
-   <div class="card" style="padding:16px;margin-top:12px"><b>נמחקו לאחרונה</b><p class="note" style="margin:6px 0 0">כל מה שנמחק נשמר כאן, ואפשר להחזיר אותו בלחיצה.</p></div>
+   <div class="sec-h" style="margin:22px 2px 4px"><h3>נמחקו לאחרונה</h3></div><p class="note" style="margin:0 2px 8px">כל מה שנמחק נשמר כאן, ואפשר להחזיר אותו בלחיצה.</p>
    ${card(trashed().slice(0,40).map(t=>`<div class="row"><div class="main"><div class="t">${esc(ttl(t.data)||'(בלי שם)')}</div><div class="m"><span>${esc(LBL(t.col))}</span>${t.by?`<span class="who">${esc(t.by)}</span>`:''}<span class="num">${esc(fmtWhen(t.at))}</span></div></div><button class="pill p-gold" data-untrash="${t._id}">שחזור</button></div>`).join(''),'<b>לא נמחק כלום</b>')}`;
  },
 };
@@ -2547,6 +2555,17 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target;if(!t)r
 // a card to show the taxi driver: large, in Hungarian
 function taxiSheet(){sheet(`<h3>להראות לנהג המונית</h3><div class="taxi" lang="hu" dir="ltr"><small>Kérem, vigyen el ide:</small><b>${esc(HOTEL.en)}</b><span>Budapest</span></div>
   <p class="note">הופכים את הטלפון לנהג. הפירוש: ״בבקשה, קח אותי לכאן״.</p><div class="sheet-acts"><a class="btn" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener">${IX.nav}<span>פתיחה במפות</span></a><span class="sp"></span><button class="btn primary" data-close>סגירה</button></div>`)}
+
+// during the trip (19–22.11) the participant's home shows what matters that day instead of payment and passport
+const TRIPDAY=()=>ZDAYS.some(x=>x[0]===todayISO());
+function tripDayBlock(ppl){const t=todayISO(),z=zmanim(t),rid=(ppl.find(p=>p.roomId)||{}).roomId,r=rid&&S.rooms.find(x=>x._id===rid);
+  const c=t==='2026-11-20'?['הדלקת נרות',candleTm()||hm(z.shk-18)]:t==='2026-11-21'?['צאת השבת',hm(z.tz)]:['צאת הכוכבים',hm(z.tz)];
+  const box=(tag,at,l,v,sub)=>`<${tag} class="tdc" ${at}><small>${l}</small><b>${v}</b><span>${sub}</span></${tag}>`;
+  return `<section class="tday" aria-label="היום במסע">
+   ${box('button','data-gnav="gr"','החדר שלי',r&&r.roomNumber?'חדר <span class="num">'+esc(r.roomNumber)+'</span>':'טרם עודכן',r&&r.floor?'קומה '+esc(r.floor):'פרטי החדר והמלון')}
+   ${box('button',`data-zman="${t}"`,c[0],`<span class="num">${esc(c[1])}</span>`,'שקיעה <span class="num">'+hm(z.shk)+'</span> · כל הזמנים')}
+   ${box('a',`href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener"`,'חזרה למלון','ניווט','לפי המיקום שלכם')}
+   ${box('button','id="taxiBtn"','מונית','כרטיס לנהג','שם המלון בהונגרית')}</section>`}
 
 function nowCard(go){const z=nowNext();if(!z)return '';const nx=z.nxt,cu=z.cur,soon=nx&&nx.mi-z.now<=30;
   return `<section class="nowc" aria-live="polite"><div class="nc-h"><span class="live" aria-hidden="true"></span><b>${esc(z.d.title)} במסע</b><small>לפי שעון בודפשט</small></div>
@@ -3262,8 +3281,7 @@ function guestHTML0(){
     const help=`<section class="ghelp" aria-label="עזרה"><div><b>צריכים עזרה?</b><small>שלומי, מארגן המסע · <span class="num ltr">${esc(fmtPhone(ph))}</span></small></div>
       <a class="btn" href="${telLink(ph)}" aria-label="שיחה לשלומי">${I.phone}<span>שיחה</span></a><a class="btn" href="${waLink(ph)}" target="_blank" rel="noopener" aria-label="וואטסאפ לשלומי">${IX.wa||'💬'}<span>וואטסאפ</span></a><a class="btn sos" href="tel:112" aria-label="חירום 112">112</a></section>`;
     return pv+`<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(coupleLabel(ppl,me)||'')}</b></div></div>
-     ${nowCard('data-gnav="gl"')}${banner}${passBlock}${extraOut}
-     ${stat}
+     ${nowCard('data-gnav="gl"')}${banner}${TRIPDAY()?tripDayBlock(ppl):passBlock+extraOut+stat}
      <div class="gcb">
       ${cube('gl',I.sched,'לוח המסע','מה קורה בכל יום, ובאיזו שעה')}
       ${cube('gx',IX.food,'מסעדות ואטרקציות','איפה אוכלים כשר, ומה כדאי לראות')}
