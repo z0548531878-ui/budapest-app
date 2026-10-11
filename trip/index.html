@@ -2556,6 +2556,24 @@ function rolesMap(){
   return M;
 }
 const ROLE_TAG={role:['תפקיד','rt-role'],task:['משימה','rt-task'],buy:['קנייה','rt-buy'],sched:['לו״ז','rt-sched'],carry:['סוחב','rt-carry']};
+/* who already has the app: entered, installed to the home screen, notifications on (a couple counts once) */
+function appGroups(){const seen={},G=[];S.participants.slice().sort(famCmp).forEach(p=>{if(seen[p._id])return;const c=coupleOf(p);c.forEach(x=>seen[x._id]=1);G.push(c)});return G}
+function appStat(){const tok=new Set(S.settings.filter(x=>x.kind==='tok'&&x.role==='guest').flatMap(x=>x.pids||[]));
+  const G=appGroups().map(c=>{const ids=c.map(x=>x._id);return {c,seen:c.some(x=>x.seenAt),inst:c.some(x=>x.inst),push:ids.some(i=>tok.has(i))||c.some(x=>x.notif==='granted'),denied:c.some(x=>x.notif==='denied'),last:c.map(x=>x.lastAt||x.seenAt||'').sort().pop()}});
+  return {G,n:G.length,seen:G.filter(g=>g.seen).length,inst:G.filter(g=>g.inst).length,push:G.filter(g=>g.push).length}}
+SUB.appusers=function(){const a=appStat(),f=V.filter.au||'not';
+  const pick={not:g=>!g.seen,noinst:g=>g.seen&&!g.inst,nopush:g=>g.seen&&!g.push,ok:g=>g.inst&&g.push,all:()=>true}[f]||(()=>true), rows=a.G.filter(pick);
+  const cnt={not:a.G.filter(g=>!g.seen).length,noinst:a.G.filter(g=>g.seen&&!g.inst).length,nopush:a.G.filter(g=>g.seen&&!g.push).length,ok:a.G.filter(g=>g.inst&&g.push).length,all:a.n};
+  const chip=(k,l)=>`<button class="chip" data-filter="au" data-val="${k}" aria-pressed="${f===k}">${l} <span class="num">${cnt[k]}</span></button>`;
+  const ic=(on,y,n)=>`<span class="pill ${on?'p-ok':'p-mute'}">${on?y:n}</span>`;
+  const link=location.origin+location.pathname.replace(/trip\/[^/]*$/,'go/')+(TRIP_KEY?'#k='+TRIP_KEY:'');
+  const msg={not:`שלום! זה הקישור לאפליקציית המסע להונגריה, יש בה את כל הפרטים: הטיסות, החדר, הלו״ז ועדכונים. נכנסים, כותבים את השם המלא, ומוסיפים למסך הבית:\n${link}`,noinst:`שלום! כדאי להוסיף את אפליקציית המסע למסך הבית, כדי שתקבלו עדכונים בזמן. פותחים את הקישור ולוחצים "הוספה למסך הבית":\n${link}`,nopush:`שלום! כדי לקבל עדכונים חשובים מהמסע (שינויים בלו״ז, תזכורות), פתחו את האפליקציה ואשרו התראות:\n${link}`}[f];
+  const rowH=g=>{const ph=g.c.find(x=>x.phone);return `<div class="row"><div class="main"><div class="t">${esc(coupleLabel(g.c,g.c[0]))}</div><div class="m">${ic(g.seen,'נכנסו ✓','לא נכנסו')}${ic(g.inst,'📲 התקינו','לא התקינו')}${ic(g.push,'🔔 התראות','בלי התראות')}${g.last?`<span class="num">${esc(fmtWhen(g.last))}</span>`:''}</div></div>${msg&&ph?`<a class="pill p-gold" href="${waLink(ph.phone,msg)}" target="_blank" rel="noopener">💬 שליחה</a>`:''}</div>`};
+  return subHead('מי באפליקציה',`<span class="cnt num">${a.seen}/${a.n} זוגות</span>`)+`
+   <div class="pcsum"><div class="pcs ok"><b class="num">${a.seen}</b><span>נכנסו</span></div><div class="pcs miss"><b class="num">${a.inst}</b><span>📲 התקינו</span></div><div class="pcs ok"><b class="num">${a.push}</b><span>🔔 התראות</span></div></div>
+   <p class="note">כל זוג נספר פעם אחת. "התקינו" = פתחו את האפליקציה מהאייקון במסך הבית. ההתקנה וההתראות נרשמות מהכניסה הבאה שלהם, כך שמי שנכנס לפני העדכון הזה יופיע כ"לא התקינו" עד שייכנס שוב.</p>
+   <div class="chips">${chip('not','לא נכנסו')}${chip('noinst','לא התקינו')}${chip('nopush','בלי התראות')}${chip('ok','הכל מוכן')}${chip('all','כולם')}</div>
+   ${card(rows.map(rowH).join(''),'<b>אין כאן אף אחד</b>')}`};
 SUB.roles=function(){
   const M=rolesMap(), q=(V.q||'').trim(), team=Object.values(TEAM_FULL);
   let names=Object.keys(M).sort((a,b)=>(team.includes(b)-team.includes(a))||(M[b].length-M[a].length)||a.localeCompare(b,'he'));
@@ -2969,6 +2987,7 @@ function shopStat(){const rest=S.packing.slice(),bt=x=>kst(x,'ordered'),where=x=
 const TILE_DEFS=()=>{const pk=S.packing.filter(x=>!x.sug||kst(x,'ordered')),pd=pk.filter(x=>kst(x,'ordered')).length,rk=S.rooms.filter(r=>r.kitReady).length;return [
  ['program','sched','לוח המסע','חמישי–שבת','c2'],
  ['people','people','משתתפים',`${S.participants.length} נוסעים`,'c1'],
+ ['appusers','phone','מי באפליקציה',(()=>{const a=appStat();return `${a.inst} התקינו · ${a.push} עם התראות`})(),'c3'],
  ['passports','file','דרכונים',`${S.participants.filter(p=>p.passport).length}/${S.participants.length}`,'c2'],
  ['kits','box','ערכות',`${kstat(kitItems()).placed}/${kitItems().length} הונחו`,'c5'],
  ['rooms','bed','חדרים',`${S.rooms.length} · ${rk} עם סט`,'c5'],
@@ -2978,7 +2997,7 @@ const TILE_DEFS=()=>{const pk=S.packing.filter(x=>!x.sug||kst(x,'ordered')),pd=p
  ['reqs','tasks','בקשות ואישורים',`${pendN()} ממתינות`,'c12'], ['announce','chat','הודעות',`${annList().length} פורסמו · ${msgDue().length} לשלוח`,'c13'], ['trivia','spark','טריוויה','משחק לאוטובוס','c10'],['tasks','tasks','משימות',`${S.tasks.filter(t=>t.status!=='בוצע').length} פתוחות`,'c3'],['photos','cam','תמונות מהמסע',PHL?`${PH.length} תמונות · העלאה`:'צפייה והעלאה','c7'],['rides','car','נסיעות לשדה',`${S.settings.filter(x=>x.kind==='ride'&&!x.hidden).length} נסיעות`,'c4'],
  ['roles','spark','תפקידים',`${Object.keys(rolesMap()).length} עם תפקיד`,'c11'],
  ]};
-const TORD=['passports','people','tasks','photos','rides','program','reqs','announce','roles','flights','rooms','kits','files','attendance','trivia'];
+const TORD=['passports','people','appusers','tasks','photos','rides','program','reqs','announce','roles','flights','rooms','kits','files','attendance','trivia'];
 // gold = something there is waiting for you; the rest stay dark, so the eye goes straight to what's open
 const tileHot=k=>{try{return ({reqs:pendN()>0,passports:S.participants.some(p=>!p.passport),announce:msgDue().length>0})[k]||false}catch(e){return false}};
 const msgDue=()=>{const t=todayISO();return S.messages.filter(m=>!m.sent&&m.date&&m.date<=t)};
@@ -3696,7 +3715,7 @@ const PLACES=[
 let GKIT='todo';
 let GTAB=(()=>{try{const m=location.hash.match(/tab=(g[a-z])\b/);return m&&GNAV.concat([['gm'],['gk'],['gx'],['gp'],['gf']]).some(n=>n[0]===m[1])?m[1]:'gh'}catch(e){return 'gh'}})(), GSEG='open', GGEN='all', GQ='';
 const DRAFT={annTitle:'',annText:'',reqText:'',reqCat:'אחר'};
-const meG=()=>{if(PREV&&ROLE==='org'){const n=(typeof TEAM_FULL!=='undefined'&&TEAM_FULL[ME])||ME;return S.participants.find(p=>p.name===n)||S.participants.find(p=>p.name==='שלומי זינגר')||null}return S.participants.find(p=>p._id===ROLE.slice(6))||null};
+const meG=()=>{if(PREV&&ROLE==='org'){return S.participants.find(p=>p.name==='חיים פולק')||S.participants.find(p=>p.name==='שלומי זינגר')||null}return S.participants.find(p=>p._id===ROLE.slice(6))||null};
 const isPrevOrg=()=>PREV&&ROLE==='org';
 const landingMs=()=>{const f=S.flights.find(f=>f._id==='f1')||S.flights.find(f=>f.dir==='הלוך');if(!f)return 0;const a=(f.arr||'12:00').replace(/[^\d:]/g,'').padStart(5,'0');return new Date(`${f.date||'2026-11-19'}T${a}:00+01:00`).getTime()};
 const triviaOpen=()=>Date.now()>=landingMs();
@@ -4571,7 +4590,9 @@ setInterval(pgate,4000);
 
 const _pickMeBase=pickMe;pickMe=function(){if(GUEST()||!ROLE)return;_pickMeBase();const sh=document.querySelector('#scrim .sheet');if(sh&&ROLE==='org'){const b=document.createElement('button');b.className='btn';b.style.cssText='margin-top:14px;width:100%';b.textContent='👁 תצוגת משתתף (כך זה נראה להם)';b.onclick=()=>{closeSheet();setPrev(true)};sh.appendChild(b);const o=document.createElement('button');o.className='btn ghost';o.style.cssText='margin-top:10px;width:100%';o.textContent='🚪 יציאה וכניסה מחדש כמשתתף';o.onclick=()=>{closeSheet();logoutRole()};sh.appendChild(o)}};
 document.body.classList.toggle('guest',GUEST());if(!ROLE)showGate();
-let SEEN_MARKED=false;const _r2=render;render=function(a){_r2(a);if(!SEEN_MARKED&&ROLE.startsWith('guest:')&&!PREV&&db&&loaded.has('participants')){SEEN_MARKED=true;let done=false;try{done=sessionStorage.getItem('seenMark')==='1'}catch(e){}if(!done){try{sessionStorage.setItem('seenMark','1')}catch(e){}gset('participants/'+ROLE.slice(6),{seenAt:new Date().toISOString()})}}};
+let SEEN_MARKED=false;const _r2=render;render=function(a){_r2(a);if(!SEEN_MARKED&&ROLE.startsWith('guest:')&&!PREV&&db&&loaded.has('participants')){SEEN_MARKED=true;let done=false;try{done=sessionStorage.getItem('seenMark')==='1'}catch(e){}if(!done){try{sessionStorage.setItem('seenMark','1')}catch(e){}const now=new Date().toISOString(),inst=isStandalone(),nt=('Notification' in window)?Notification.permission:'none',me=meG();
+   gset('participants/'+ROLE.slice(6),{seenAt:now,lastAt:now,notif:nt,...(inst?{inst:true}:{})});
+   (me?coupleOf(me):[]).filter(x=>x._id!==ROLE.slice(6)).forEach(x=>{if(db)db.doc('participants/'+x._id).set({...(inst?{inst:true}:{}),notif:nt,viaSpouse:true},{merge:true}).catch(()=>{})})}}};
 
 render(true);
 (()=>{const sp=document.getElementById('splash');let seen=false;try{seen=sessionStorage.getItem('splash')==='1';sessionStorage.setItem('splash','1')}catch(e){}
