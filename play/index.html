@@ -99,6 +99,38 @@
     window.addEventListener('beforeinstallprompt',function(e){ e.preventDefault(); ev=e; render(); });
     window.addEventListener('appinstalled',function(){ ev=null; if(veil.classList.contains('on')) done(); });
   }
+  // ---- התראות טריוויה: המשחק (בתוך המסגרת) קורא לפונקציות האלה בלחיצה על "🔔" ----
+  var FB_CFG={apiKey:"AIzaSyBTEdbmsFx2Qa6Z_CDAMuQu14NkuSb24jY",authDomain:"budapest-983e4.firebaseapp.com",projectId:"budapest-983e4",storageBucket:"budapest-983e4.firebasestorage.app",messagingSenderId:"452602339599",appId:"1:452602339599:web:f2b3eb059730c4948a1e7a"};
+  var VAPID='BCFzmpUFcRY80zfS71ZGJh-EqXpEQCXng-AdjJJgACt1IurjUMtwa3evHPgSZBJUsk-ZZpEFVNBobgsEvqoLPkY', FBV='https://www.gstatic.com/firebasejs/10.12.2/';
+  function load(src){ return new Promise(function(ok,no){ var s=document.createElement('script'); s.src=src; s.onload=ok; s.onerror=no; document.head.appendChild(s); }); }
+  var fbP=null;
+  function fb(){ if(!fbP) fbP=load(FBV+'firebase-app-compat.js').then(function(){ return Promise.all([load(FBV+'firebase-firestore-compat.js'), load(FBV+'firebase-messaging-compat.js')]); })
+    .then(function(){ if(!firebase.apps.length) firebase.initializeApp(FB_CFG); return firebase; }); return fbP; }
+  function tokId(t){ var h=5381; for(var i=0;i<t.length;i++) h=((h<<5)+h+t.charCodeAt(i))>>>0; return 'tok_'+h.toString(36)+t.length; }
+  function supported(){ return 'Notification' in window && 'serviceWorker' in navigator && 'PushManager' in window; }
+  function saved(){ try{ return localStorage.getItem('trivia_push_tok'); }catch(e){ return null; } }
+  window.trvPushState=function(){ if(!supported()) return (ios && !standalone) ? 'install' : 'unsupported'; if(Notification.permission==='denied') return 'denied'; return (saved() && Notification.permission==='granted') ? 'on' : 'off'; };
+  window.trvPushOn=function(name){
+    if(!supported()) return Promise.resolve((ios && !standalone) ? 'install' : 'unsupported');
+    var ask; try{ ask=Notification.requestPermission(); }catch(e){ ask=new Promise(function(ok){ Notification.requestPermission(ok); }); } // מיד בתוך הלחיצה
+    return Promise.resolve(ask).then(function(perm){
+      if(perm!=='granted') return 'denied';
+      return fb().then(function(){ return firebase.messaging.isSupported(); }).then(function(ok){
+        if(!ok) return 'unsupported';
+        return navigator.serviceWorker.register('sw.js').then(function(){ return navigator.serviceWorker.ready; })
+          .then(function(reg){ return firebase.messaging().getToken({vapidKey:VAPID, serviceWorkerRegistration:reg}); })
+          .then(function(token){
+            if(!token) return 'error';
+            var id=tokId(token);
+            return firebase.firestore().collection('trivia_push').doc(id).set({token:token, name:String(name||'').slice(0,60), at:Date.now(), on:true})
+              .then(function(){ try{ localStorage.setItem('trivia_push_tok', id); }catch(e){} return 'on'; });
+          });
+      });
+    }).catch(function(e){ try{ console.warn('push',e); }catch(x){} return 'error'; });
+  };
+  window.trvPushOff=function(){ var id=saved(); try{ localStorage.removeItem('trivia_push_tok'); }catch(e){} if(!id) return Promise.resolve('off');
+    return fb().then(function(){ return firebase.firestore().collection('trivia_push').doc(id).delete(); }).then(function(){ return 'off'; }, function(){ return 'off'; }); };
+  window.trvPushName=function(name){ var id=saved(); if(!id || !name) return; fb().then(function(){ return firebase.firestore().collection('trivia_push').doc(id).update({name:String(name).slice(0,60)}); }).catch(function(){}); };
   // service worker משלה — כך הדפדפן מציע "התקנת אפליקציה" (ולא רק קיצור דרך)
   try{ if('serviceWorker' in navigator && location.protocol==='https:') navigator.serviceWorker.register('sw.js').catch(function(){}); }catch(e){}
 })();

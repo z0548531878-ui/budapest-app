@@ -29,6 +29,13 @@ service cloud.firestore {
         && request.resource.data.get('games', 0) >= resource.data.get('games', 0);
     }
 
+    // ---- Trivia notifications: each phone saves its own push token (read only by the Cloud Function) ----
+    match /trivia_push/{id} {
+      allow create, update: if request.resource.data.token is string && request.resource.data.token.size() < 500
+        && request.resource.data.keys().hasOnly(['token', 'name', 'at', 'on']);
+      allow delete: if true;
+    }
+
     // ---- Rooms: group lobbies and games, duels, the duel lobby, and the game's bookkeeping docs ----
     match /rooms/{room} {
       allow read: if true;
