@@ -226,7 +226,8 @@ test('PCHECK-1 passport check: paste names and expiry, a short or expired one is
   await sh.locator('.imsel').selectOption({ label: 'שלמה זלמן ברסקי' });
   await expect(sh.locator('#imOut')).toContainText('4 נמצאו');
   await sh.locator('.imsel').count().then(n => expect(n).toBe(0));
-  await sh.getByRole('button', { name: 'בדיקה ועדכון' }).click();
+  // the button says how many people it will update
+  await sh.getByRole('button', { name: 'עדכון 4 משתתפים' }).click();
   await expect.poll(async () => (await db.get(`${T}/participants/p1`))?.nameEn).toBe('COHEN AVI');
   await expect.poll(async () => (await db.get(`${T}/participants/p2`))?.passExp).toBe('2025-08-10');
   await expect.poll(async () => (await db.get(`${T}/participants/p4`))?.nameEn).toBe('NOBODY');

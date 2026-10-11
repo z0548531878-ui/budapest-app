@@ -2060,6 +2060,66 @@ body:not(.guest) #view [role=button].main{min-height:40px}
 .nav-in button[aria-current="page"]:not([data-nav="home"]):not([data-gnav="gh"]){background:rgba(214,178,98,.1);border-radius:14px}
 .rc-two .rline{display:grid!important;gap:2px;justify-items:center;text-align:center;padding:8px 6px;border:1px solid rgba(214,178,98,.18);border-radius:14px}
 .rc-two .rline small{font-size:12.5px}.rc-two .rline b{font-size:20px}
+/* long forms: sections that fold, with a summary line; the save bar stays in reach */
+.esec{border:1px solid rgba(214,178,98,.25);border-radius:16px;background:#13110c;margin:4px 0}
+.esec>summary{list-style:none;display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;padding:12px 14px;min-height:52px;cursor:pointer}
+.esec>summary::-webkit-details-marker{display:none}
+.esec>summary b{font-size:16px;color:#f0d28c}.esec>summary small{grid-column:1;font-size:13px;color:var(--muted);line-height:1.4}
+.esec>summary i{grid-row:1/span 2;grid-column:2;font-style:normal;color:#e9c46f;font-size:20px;transition:transform .2s}
+.esec[open]>summary i{transform:rotate(-90deg)}
+.esec-b{display:grid;gap:12px;padding:0 14px 14px}
+@media (prefers-reduced-motion:no-preference){.esec[open] .esec-b{animation:r2In .25s both}}
+.fhint{display:block;font-size:12.5px;font-weight:500;color:var(--muted);margin-top:2px;line-height:1.45}
+.sheet-acts.stk{position:sticky;bottom:calc(-22px - env(safe-area-inset-bottom,0px));z-index:3;margin:12px -16px calc(-22px - env(safe-area-inset-bottom,0px));padding:10px 16px calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,rgba(15,13,10,.85),#0f0d0a 30%);border-top:1px solid rgba(214,178,98,.2)}
+/* personal area: grouped, what's left on top, what's done stays quiet */
+.pa-h{margin:18px 4px 8px;font-size:15px;font-weight:800;color:#e9c46f;letter-spacing:.2px}
+.pa-t.ok{border-color:rgba(214,178,98,.2)!important;background:#12100b!important}
+.pa-t.ok b{color:#d9ccae}
+.pa-a.hot{box-shadow:none!important}
+.pa-grid .pa-t{grid-column:1/-1}
+/* insights: by urgency, one subject per row */
+.ins-more{margin:0}
+.ins-more>summary{list-style:none;cursor:pointer;padding:8px 16px;font-size:13px;font-weight:700;color:#e9c46f}
+.ins-more>summary::-webkit-details-marker{display:none}
+.ins-more>summary::before{content:"‹ ";display:inline-block;transition:transform .2s}
+.ins-more[open]>summary::before{transform:rotate(-90deg)}
+.ghead.ins-urg span:first-child{color:#ffb09e}
+.okline{opacity:.8}
+/* passports: three separate checks, a field shows it was saved */
+.pc-chk{display:flex;flex-wrap:wrap;gap:6px 12px;margin:4px 0 8px;font-size:12.5px;font-weight:700}
+.pc-chk .y{color:#7fd1a5}.pc-chk .n{color:#ffb09e}.pc-chk .u{color:var(--muted)}
+.pc-fields label{position:relative}
+.pc-fields label.saved>span::after{content:" · נשמר ✓";color:#7fd1a5;font-weight:700}
+.pcnote>summary{cursor:pointer;list-style:none}.pcnote>summary::-webkit-details-marker{display:none}
+/* passport import preview and the hotel list's missing names */
+.imtab{width:100%;border-collapse:collapse;margin:8px 0;font-size:13px}
+.imtab th{text-align:start;font-size:12px;color:var(--muted);font-weight:700;padding:4px 6px;border-bottom:1px solid rgba(214,178,98,.25)}
+.imtab td{padding:6px;border-bottom:1px solid rgba(214,178,98,.1);vertical-align:top}.imtab td small{display:block;color:var(--muted);font-size:11.5px}
+.hmiss{display:grid;gap:6px;margin:0 0 10px;padding:12px;border-radius:14px;border:1px solid rgba(240,180,80,.5);background:rgba(240,180,80,.1);font-size:13.5px}
+.hmiss b{color:#f0c46f;font-size:15px}.hmiss div{display:flex;flex-wrap:wrap;gap:5px}.hmiss div span{padding:2px 9px;border-radius:99px;background:rgba(240,180,80,.16)}
+/* roles: name and a summary first; tags all one size; overdue stands out */
+.rh-n{flex:1;display:grid;min-width:0}.rh-n small{font-size:12.5px;color:var(--muted)}
+.rh-n .late,.rl .dd.late{color:#ffb09e;font-style:normal;font-weight:800}
+.rl .rt{display:inline-grid;place-items:center;min-width:52px;font-size:11.5px;padding:2px 6px;border-radius:99px}
+.nonebox{margin-top:16px}.nonebox>summary{list-style:none;display:flex;justify-content:space-between;cursor:pointer;padding:10px 4px;font-weight:800;color:var(--muted)}
+.nonebox>summary::-webkit-details-marker{display:none}.nonebox>summary span:first-child::after{content:" ›"}
+/* kits: the next missing stage first; the four stage buttons wrap to two rows on narrow phones */
+.knext{display:block;margin:2px 0 4px;font-size:13px;font-weight:800;color:#f0d28c}
+.knext.warn{color:#f0c46f}.knext.bad{color:#ffb09e}.knext.ok{color:#7fd1a5}
+@media (max-width:400px){.kst{display:grid!important;grid-template-columns:1fr 1fr;gap:6px}}
+/* guide steps with a way in; who-am-I sections; the participant preview bar stays on screen */
+.step .btn.sm{margin-top:6px}
+.pm-h{margin-top:20px;padding-top:14px;border-top:1px solid rgba(214,178,98,.2)}
+.prevbar{position:sticky;top:calc(6px + env(safe-area-inset-top,0px));z-index:6;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);background:rgba(40,32,16,.92)!important}
+/* team activity: money changes stand apart, rows that open say so */
+.feed .it.cash .av{background:rgba(127,209,165,.16);color:#7fd1a5;font-weight:900}
+.it-open{color:#e9c46f;font-weight:700}
+@media (prefers-reduced-motion:no-preference){.feed .it.new{animation:pChg 2s ease}}
+/* Claude code: deletions stand out before applying */
+.prop.pdel{border-color:rgba(255,140,120,.45)!important;background:rgba(255,120,100,.06)!important}
+.delwarn{margin:10px 0 0;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,140,120,.45);background:rgba(255,120,100,.08);color:#ffcfc5;font-size:13.5px;font-weight:700}
+.cg-del span:first-child{color:#ffb09e}
+.repwhat{margin-top:12px}.repwhat>summary{cursor:pointer;list-style:none;font-weight:800;color:#e9c46f;padding:6px 2px}.repwhat>summary::-webkit-details-marker{display:none}
 /* end polish */
 </style>
 
@@ -2118,9 +2178,19 @@ const EXP_CATS=['לינה','אוכל','הסעות','מזכרות ודפוס','ה
 
 const outGroups=()=>{const s=S.settings.find(x=>x._id==='trip');return (s&&s.outboundGroups)||['קבוצתי','נפרד']};
 const F={
- tasks:{one:'משימה',g:1,fields:[{k:'title',l:'מה צריך לעשות',t:'textarea'},{k:'owner',l:'אחראי',t:'owner'},{k:'status',l:'סטטוס',t:'seg',o:['לביצוע','בתהליך','ממתין','בוצע']},{k:'open',l:'להציע למשתתפים לקחת (בלי אחראי, יופיע אצלם ב"פתוחות")',t:'seg',o:['לא','כן']},{k:'priority',l:'עדיפות',t:'seg',o:['רגילה','גבוהה']},{k:'due',l:'עד מתי',t:'date'},{k:'category',l:'תחום',t:'chips',o:TASK_CATS},{k:'notes',l:'הערות',t:'textarea'}],def:{status:'לביצוע',priority:'רגילה',category:'אחר'}},
+ tasks:{one:'משימה',g:1,fields:[{k:'title',l:'מה צריך לעשות',t:'textarea'},{k:'owner',l:'אחראי',t:'owner'},{k:'due',l:'עד מתי',t:'date'},{k:'status',l:'סטטוס',t:'seg',o:['לביצוע','בתהליך','ממתין','בוצע']},
+   {k:'category',l:'תחום',t:'chips',o:TASK_CATS,sec:'more',secL:'פרטים נוספים'},{k:'priority',l:'עדיפות',t:'seg',o:['רגילה','גבוהה']},{k:'notes',l:'הערות',t:'textarea'},
+   {k:'open',l:'להציע למשתתפים לקחת',h:'המשימה תופיע אצל המשתתפים בלשונית "פתוחות" עם כפתור "אני לוקח/ת". מי שלוקח ממתין לאישור שלכם. משאירים בלי אחראי.',t:'seg',o:['לא','כן']}],def:{status:'לביצוע',priority:'רגילה',category:'אחר'},
+   sum:{more:d=>[d.category&&d.category!=='אחר'?d.category:'',d.priority==='גבוהה'?'עדיפות גבוהה':'',d.open==='כן'?'פתוחה למשתתפים':'',d.notes?'יש הערות':''].filter(Boolean).join(' · ')}},
  expenses:{one:'הוצאה',g:1,fields:[{k:'name',l:'על מה',t:'text'},{k:'estimate',l:'סכום (₪)',t:'number',half:1},{k:'paid',l:'שולם בפועל (₪)',t:'number',half:1},{k:'final',l:'הסכום סופי',t:'toggle'},{k:'status',l:'מצב',t:'seg',o:['לא שולם','מקדמה','שולם']},{k:'receipt',l:'יש קבלה',t:'toggle'},{k:'paidBy',l:'מי שילם',t:'owner'},{k:'category',l:'תחום',t:'chips',o:EXP_CATS},{k:'notes',l:'הערות',t:'textarea'}],def:{status:'לא שולם',category:'אחר',estimate:0,paid:0,final:false}},
- participants:{one:'משתתף',fields:[{k:'name',l:'שם',t:'text'},{k:'amount',l:'סכום (₪)',t:'number',half:1},{k:'phone',l:'טלפון',t:'tel',half:1},{k:'status',l:'תשלום',t:'seg',o:['לא שולם','שולם חלקית','שולם','פטור']},{k:'paidAmt',l:'כמה שולם עד עכשיו (₪, בתשלום חלקי)',t:'number'},{k:'gender',l:'מין',t:'seg',o:['גבר','אישה']},{k:'method',l:'איך שילם',t:'chips',o:['אשראי','העברה לאיציק','מזומן לאיציק','העברה לשלומי','מזומן לשלומי']},{k:'holder',l:'אצל מי הכסף',t:'seg',o:['שלומי','איציק']},{k:'passport',l:'צילום דרכון התקבל',t:'toggle'},{k:'kitter',l:'מסדר את הערכות בחדרים (יראה אצלו מסך לעדכון חדרים)',t:'toggle'},{k:'nameEn',l:'שם באנגלית, כמו בדרכון',t:'text',ph:'COHEN AVI'},{k:'passExp',l:'תוקף הדרכון',t:'date'},{k:'passUrl',l:'קישור לצילום הדרכון (בתיקיית הדרייב)',t:'text',ph:'https://drive.google.com/…'},{k:'carry',l:'מה סוחב (מזוודה/ציוד)',t:'text'},{k:'duties',l:'תפקידים ומשימות שלו',t:'text'},{k:'nusach',l:'נוסח',t:'seg',o:['אשכנז','ספרד','עדות המזרח']},{k:'baby',l:'👶 מגיעים עם תינוק/ת',t:'toggle'},{k:'babyNote',l:'פרטים על התינוק (גיל, עגלה, עריסה בחדר…)',t:'text'},{k:'outbound',l:'טיסת הלוך',t:'chips',o:()=>outGroups()},{k:'returnGroup',l:'טיסת חזור',t:'chips',o:RETURN_GROUPS},{k:'notes',l:'הערות',t:'textarea'}],def:{amount:1750,status:'לא שולם',outbound:'קבוצתי'}},
+ participants:{one:'משתתף',fields:[{k:'name',l:'שם',t:'text'},{k:'phone',l:'טלפון',t:'tel'},{k:'gender',l:'מין',t:'seg',o:['גבר','אישה']},{k:'notes',l:'הערות',t:'textarea'},
+   {k:'amount',l:'סכום (₪)',t:'number',sec:'pay',secL:'תשלום'},{k:'status',l:'מצב התשלום',t:'seg',o:['לא שולם','שולם חלקית','שולם','פטור']},{k:'paidAmt',l:'כמה שולם עד עכשיו (₪)',t:'number',when:['status','שולם חלקית']},{k:'method',l:'איך שילם',t:'chips',o:['אשראי','העברה לאיציק','מזומן לאיציק','העברה לשלומי','מזומן לשלומי'],when:['status',['שולם','שולם חלקית']]},{k:'holder',l:'אצל מי הכסף',t:'seg',o:['שלומי','איציק'],when:['status',['שולם','שולם חלקית']]},
+   {k:'passport',l:'צילום דרכון התקבל',t:'toggle',sec:'pass',secL:'דרכון'},{k:'nameEn',l:'שם באנגלית, כמו בדרכון',t:'text',ph:'COHEN AVI'},{k:'passExp',l:'תוקף הדרכון',t:'date'},{k:'passUrl',l:'קישור לצילום הדרכון (בתיקיית הדרייב)',t:'text',ph:'https://drive.google.com/…'},
+   {k:'outbound',l:'טיסת הלוך',t:'chips',o:()=>outGroups(),sec:'fly',secL:'טיסות'},{k:'returnGroup',l:'טיסת חזור',t:'chips',o:RETURN_GROUPS},
+   {k:'nusach',l:'נוסח',t:'seg',o:['אשכנז','ספרד','עדות המזרח'],sec:'fam',secL:'משפחה וצרכים'},{k:'baby',l:'👶 מגיעים עם תינוק/ת',t:'toggle'},{k:'babyNote',l:'פרטים על התינוק (גיל, עגלה, עריסה בחדר…)',t:'text',when:['baby',true]},
+   {k:'kitter',l:'מסדר את הערכות בחדרים',h:'יראה אצלו מסך לעדכון חדרים',t:'toggle',sec:'roles',secL:'תפקידים'},{k:'carry',l:'מה סוחב (מזוודה/ציוד)',t:'text'},{k:'duties',l:'תפקידים ומשימות שלו',t:'text'}],def:{amount:1750,status:'לא שולם',outbound:'קבוצתי'},secClosed:1,
+   sum:{pay:d=>`${d.status||'לא שולם'}${d.status==='שולם חלקית'?` · ${ils(+d.paidAmt||0)} מתוך ${ils(+d.amount||0)}`:d.status!=='פטור'&&+d.amount?' · '+ils(+d.amount):''}`,pass:d=>[d.passport?'התקבל ✓':'עוד לא התקבל',d.passExp?'בתוקף עד '+d.passExp.split('-').reverse().map(Number).join('.'):''].filter(Boolean).join(' · '),
+     fly:d=>[d.outbound&&'הלוך: '+d.outbound,d.returnGroup&&'חזור: '+d.returnGroup].filter(Boolean).join(' · '),fam:d=>[d.nusach,d.baby?'עם תינוק/ת':''].filter(Boolean).join(' · '),roles:d=>[d.kitter?'ערכות בחדרים':'',d.carry,d.duties].filter(Boolean).join(' · ')}},
  donations:{one:'תרומה',g:1,fields:[{k:'donor',l:'תורם (שם מלא כמו ברשימת המשתתפים, כדי שיופיע אצלו באפליקציה)',t:'text'},{k:'amount',l:'סכום (₪)',t:'number'},{k:'purpose',l:'מיועד ל',t:'chips',o:['כללי','סידורים','זמירות','תהילים','הדפסות']},{k:'status',l:'מצב',t:'seg',o:['התחייב','התקבל']},{k:'method',l:'איך התקבל',t:'chips',o:['אשראי','העברה לאיציק','מזומן לאיציק','העברה לשלומי','מזומן לשלומי']},{k:'holder',l:'אצל מי הכסף',t:'seg',o:['שלומי','איציק']},{k:'notes',l:'הערות',t:'textarea'}],def:{status:'התחייב',purpose:'כללי',amount:0}},
  schedule:{one:'אירוע',fields:[{k:'day',l:'יום',t:'seg',o:TRIP_DAYS.map(d=>d.k)},{k:'time',l:'שעה',t:'text',half:1,ph:'18:00'},{k:'place',l:'מקום',t:'text',half:1},{k:'title',l:'מה קורה',t:'text'},{k:'owner',l:'אחראי',t:'owner'},{k:'notes',l:'הערות',t:'textarea'},{k:'menu',l:'תפריט',t:'textarea'}],def:{}},
  flights:{one:'טיסה',g:1,fields:[{k:'label',l:'שם',t:'text'},{k:'dir',l:'כיוון',t:'seg',o:['הלוך','חזור']},{k:'group',l:'קבוצה (כמו בכרטיס המשתתף)',t:'text'},{k:'flightNo',l:'מספר טיסה',t:'text',half:1},{k:'date',l:'תאריך',t:'date',half:1},{k:'dep',l:'המראה',t:'text',half:1},{k:'arr',l:'נחיתה',t:'text',half:1},{k:'notes',l:'הערות',t:'textarea'}],def:{dir:'חזור'}},
@@ -2190,12 +2260,16 @@ function insights(){
 const insRow=x=>`<button class="ins ${x.lvl}" data-go="${x.to}" data-opts='${esc(JSON.stringify(x.o))}'><span class="ii">${I[x.ic]||I.spark}</span><span class="main"><b>${esc(x.t)}</b>${x.d?`<small>${esc(x.d)}</small>`:''}</span><span class="go" aria-hidden="true">‹</span></button>`;
 function insightsView(){
   const {L,ok,D}=insights(), sug=S.claude.filter(x=>x.status==='פתוח'&&x.kind==='הצעה').sort(byOrder);
-  const hot=L.filter(x=>x.lvl==='bad'||x.lvl==='gold'||x.lvl==='warn'), rest=L.filter(x=>x.lvl==='info');
+  const hot=L.filter(x=>x.lvl==='bad'||x.lvl==='gold'||x.lvl==='warn'), urgent=L.filter(x=>x.lvl==='bad'), week=L.filter(x=>x.lvl==='gold'||x.lvl==='warn'), rest=L.filter(x=>x.lvl==='info');
+  // rows on the same subject fold under the first one, so the list reads as subjects, not as a wall
+  const grp=rows=>{const by={},ord=[];rows.forEach(x=>{if(!by[x.ic]){by[x.ic]=[];ord.push(x.ic)}by[x.ic].push(x)});
+    return ord.map(k=>{const [a,...more]=by[k];return insRow(a)+(more.length?`<details class="ins-more"><summary>עוד ${more.length} בנושא הזה</summary>${more.map(insRow).join('')}</details>`:'')}).join('')};
+  const sec=(h,rows,cls)=>rows.length?`<div class="ghead ${cls||''}"><span>${h}</span><span class="num">${rows.length}</span></div><div class="inslist">${grp(rows)}</div>`:'';
   return `<div class="page-title"><button class="back" data-back aria-label="חזרה">›</button><h2>תובנות</h2><span class="cnt num">${hot.length} לטיפול</span></div>
   <div class="ins-hero"><b class="num">${D>0?D:0}</b><div><span>${D>0?'ימים עד הטיסה':'המסע כאן'}</span><small>אני בודק כל הזמן מה פתוח, מה חסר ומה כדאי לסגור. כל שורה פותחת את המקום שבו מטפלים בזה.</small></div></div>
-  ${hot.length?`<div class="ghead"><span>לסגור עכשיו</span><span class="num">${hot.length}</span></div><div class="inslist">${hot.map(insRow).join('')}</div>`:''}
+  ${sec('דחוף',urgent,'ins-urg')}${sec('לשבוע הקרוב',week)}
   ${sug.length?`<div class="ghead"><span>רעיונות של מפיק</span><span class="num">${sug.length}</span></div><div class="inslist">${sug.slice(0,6).map(x=>`<button class="ins idea" data-go="more" data-opts='{"sub":"claude","seg":"הצעה"}'><span class="ii">${I.spark}</span><span class="main"><b>${esc(x.title)}</b>${x.text?`<small>${esc(x.text)}</small>`:''}</span><span class="go" aria-hidden="true">‹</span></button>`).join('')}</div>${sug.length>6?`<button class="btn" data-go="more" data-opts='{"sub":"claude","seg":"הצעה"}' style="margin-top:10px;width:100%">עוד ${sug.length-6} רעיונות ›</button>`:''}`:''}
-  ${rest.length?`<div class="ghead"><span>כדאי לזכור</span><span class="num">${rest.length}</span></div><div class="inslist">${rest.map(insRow).join('')}</div>`:''}
+  ${sec('כדאי להשלים',rest)}
   ${ok.length?`<div class="okline">${ok.map(o=>`<span>✓ ${esc(o)}</span>`).join('')}</div>`:''}
   <div class="ghead"><span>כלים</span></div><div class="minilinks"><button data-sub="settings"><span>${I.gear}</span>הגדרות</button><button data-sub="guide"><span>${I.spark}</span>איך זה עובד</button><button data-idea><span>${I.mic}</span>עדכון ל-Claude</button></div>`;
 }
@@ -2517,11 +2591,12 @@ const SUB={
   const chip=(k,l,n,c)=>`<button class="chip ${c||''}" data-filter="pp" data-val="${k}" aria-pressed="${f===k}">${l} <span class="num">${n}</span></button>`;
   return subHead('בדיקת דרכונים',`<span class="cnt num">${cnt.ok+cnt.warn}/${ppl.length} תקינים</span>`)+`
    <div class="pcsum"><div class="pcs bad${cnt.bad?'':' zero'}"><b class="num">${cnt.bad}</b><span>פג או קצר</span></div><div class="pcs miss${cnt.miss?'':' zero'}"><b class="num">${cnt.miss}</b><span>חסר מידע</span></div><div class="pcs ok"><b class="num">${cnt.ok+cnt.warn}</b><span>תקינים</span></div></div>
-   <p class="note pcnote">דרכון צריך להיות בתוקף לפחות עד <b class="num">22.02.2027</b> (שלושה חודשים אחרי החזרה) ולהיות מונפק ב־10 השנים האחרונות. השם באנגלית נרשם בדיוק כמו בדרכון, כי המלון מתאים אותו.</p>
+   <details class="note pcnote"><summary>תוקף נדרש: עד <b class="num">22.02.2027</b> לפחות ›</summary>שלושה חודשים אחרי החזרה, והדרכון מונפק ב־10 השנים האחרונות. השם באנגלית נרשם בדיוק כמו בדרכון, כי המלון מתאים אותו.</details>
    <div class="pcbar"><button class="btn sm" data-pc-hotel>🏨 רשימה למלון באנגלית</button><button class="btn sm" data-pc-import>📋 הדבקת נתונים</button><a class="btn sm" href="https://drive.google.com/drive/folders/1NV28JvhIoFQ4BMdF-S4dP9XWonw03anW" target="_blank" rel="noopener">📁 תיקיית הדרייב</a></div>
    <div class="chips">${chip('bad','פג או קצר',cnt.bad,'cbad')}${chip('miss','חסר מידע',cnt.miss)}${chip('ok','תקינים',cnt.ok+cnt.warn)}${chip('all','כולם',ppl.length)}</div>
    <input class="search" id="q" type="search" placeholder="חיפוש לפי שם בעברית או באנגלית" value="${esc(V.q)}">
    ${rows.length?rows.map(({p,s:ps})=>{const u=passUrlOf(p);return `<div class="pcrow ${ps[0]}" data-pid="${p._id}"><div class="pc-top"><b>${esc(p.name)}</b><span class="pill ${ps[0]==='ok'?'p-ok':ps[0]==='bad'?'p-bad':ps[0]==='warn'?'p-gold':'p-warn'}">${ps[1]}</span></div>
+     <div class="pc-chk" aria-label="מצב הדרכון">${[[p.passport,'צילום התקבל','צילום לא התקבל'],[p.nameEn&&p.passExp,'פרטים מלאים','חסרים פרטים'],[p.passExp?ps[0]!=='bad':null,'תוקף מתאים',p.passExp?'תוקף לא מתאים':'תוקף לא ידוע']].map(([ok,y,n])=>`<span class="${ok?'y':ok===false?'n':'u'}">${ok?'✓':ok===false?'✕':'?'} ${ok?y:n}</span>`).join('')}</div>
      <div class="pc-fields"><label><span>שם באנגלית, כמו בדרכון</span><input class="pin ltr" data-pce="nameEn" value="${esc(p.nameEn||'')}" placeholder="COHEN AVI" autocapitalize="characters" autocomplete="off" spellcheck="false"></label>
       <label><span>תוקף</span><input class="pin ltr" type="date" data-pce="passExp" value="${esc(p.passExp||'')}"></label></div>
      <div class="pc-bot">${u?`<a class="pill p-ok" href="${esc(u)}" target="_blank" rel="noopener">🛂 צילום הדרכון</a>`:`<button class="pill p-mute" data-pclink="${p._id}">+ קישור לצילום</button>`}<button class="pill ${p.passport?'p-ok':'p-mute'}" data-pp="${p._id}" aria-pressed="${!!p.passport}">${p.passport?'התקבל ✓':'סימון: התקבל'}</button>${!p.passport&&p.phone?`<a class="pill p-mute" href="${waLink(p.phone,'שלום '+firstN(p.name)+', כדי להשלים את הרישום למסע לבודפשט נשמח לצילום של עמוד הפרטים בדרכון. תודה!')}" target="_blank" rel="noopener">בקשה בוואטסאפ</a>`:''}</div></div>`}).join(''):card('','<b>'+(q?'לא נמצא':'אין כאן אף אחד')+'</b>')}`;
@@ -2603,7 +2678,7 @@ const SUB={
    <p class="note">כתבו כאן הכל, בלי לסדר. Claude מציע לאן כל פתק הולך (משימה, הוצאה, ציוד, לו״ז), ואתם מאשרים בלחיצה.</p>
    ${fresh.length?`<button class="btn primary" id="sortAll" style="width:100%;justify-content:center;margin-bottom:6px">${I.spark} לסדר ${fresh.length} פתקים חדשים עם Claude</button><div id="sortBox"></div>`:''}
    ${fresh.length?`<div class="ghead"><span>חדשים</span><span class="num">${fresh.length}</span></div>`+card(fresh.map(row).join('')):''}
-   ${old.length?`<div class="ghead"><span>סודרו</span><span class="num">${old.length}</span></div>`+card(old.map(row).join('')):''}
+   ${old.length?`<details class="nonebox"><summary><span>סודרו</span><span class="num">${old.length}</span></summary>${card(old.map(row).join(''))}</details>`:''}
    ${!rows.length?card('','<b>עוד אין פתקים</b>לחצו על הנורה למעלה בכל מסך'):''}`;
  },
  claude(){
@@ -2615,11 +2690,13 @@ const SUB={
    <div class="seg"><button data-seg="שאלה" aria-pressed="${seg==='שאלה'}">שאלות<span class="c num">${open('שאלה')}</span></button><button data-seg="הצעה" aria-pressed="${seg==='הצעה'}">הצעות<span class="c num">${open('הצעה')}</span></button></div><div class="chips"><button class="chip" data-filter="cl" data-val="open" aria-pressed="${cl==='open'}">מחכות לך</button><button class="chip" data-filter="cl" data-val="done" aria-pressed="${cl==='done'}">טופלו</button></div>
    ${rows.map(x=>{const done=x.status!=='פתוח';
     return `<div class="qcard ${done?'done':''}"><h4>${esc(x.title)}</h4>${x.text?`<p>${esc(x.text)}</p>`:''}
-     ${seg==='שאלה'?`${x.pick?`<div class="opts" style="margin-bottom:8px">${['שלומי','איציק','יעל','צריך למנות מישהו','לא רלוונטי'].map(n=>`<button class="opt" data-pick="${x._id}" data-v="${esc(n)}" aria-pressed="${x.answer===n}">${esc(n)}</button>`).join('')}</div>`:''}<textarea id="ans_${x._id}" placeholder="${x.pick?'או לכתוב שם אחר / פירוט':'התשובה שלך'}">${esc(x.answer||'')}</textarea><div class="acts"><button class="btn primary" data-answer="${x._id}">שמירת תשובה</button>${done?'<span class="pill p-ok">נענה</span>':''}</div>`
+     ${seg==='שאלה'?`${x.pick?`<div class="opts" style="margin-bottom:8px">${['שלומי','איציק','יעל','צריך למנות מישהו','לא רלוונטי'].map(n=>`<button class="opt" data-pick="${x._id}" data-v="${esc(n)}" aria-pressed="${x.answer===n}">${esc(n)}</button>`).join('')}</div>`:''}<textarea id="ans_${x._id}" placeholder="${x.pick?'או לכתוב שם אחר / פירוט':'התשובה שלך'}">${esc(x.answer||'')}</textarea><div class="acts"><button class="btn primary" data-answer="${x._id}">שמירת תשובה</button>${done?'<span class="pill p-ok">✓ התשובה נשמרה</span>':'<span class="pill p-wait">⏳ מחכה לתשובה</span>'}</div>`
      :`<div class="acts">${done?`<span class="pill ${x.status==='התקבל'?'p-ok':'p-mute'}">${esc(x.status)}</span>`:`<button class="btn primary" data-accept="${x._id}">מעולה, להוסיף כמשימה</button><button class="btn" data-reject="${x._id}">לא רלוונטי</button>`}</div>`}</div>`}).join('')||card('',cl==='open'?'<b>הכול מטופל ✓</b>כשיהיו שאלות או רעיונות חדשים הם יופיעו כאן, וגם במסך התובנות':'<b>עוד לא טופל כלום</b>')}`;
  },
  guide(){
-  return subHead('איך זה עובד')+`<div class="steps">${GUIDE.map(([ic,b,p])=>`<div class="step"><span class="n">${gic(ic)}</span><div><b>${b}</b><p>${p}</p></div></div>`).join('')}</div>
+  const st=a=>a.map(([ic,b,p,act])=>`<div class="step"><span class="n">${gic(ic)}</span><div><b>${b}</b><p>${p}</p>${act||''}</div></div>`).join('');
+  return subHead('איך זה עובד')+`<div class="ghead"><span>הבסיס</span></div><div class="steps">${st(GUIDE.filter(g=>!g[4]))}</div>
+   <div class="ghead"><span>עדכונים דרך Claude</span></div><div class="steps">${st(GUIDE.filter(g=>g[4]))}</div>
    <div style="display:flex;gap:8px;margin-top:16px"><button class="btn primary" data-idea>לנסות עכשיו</button><button class="btn" data-actfeed>מה הצוות עשה</button></div>`;
  },
  contacts(){
@@ -2628,15 +2705,21 @@ const SUB={
    ${c.phone?`<div class="end cacts"><a class="pill p-ok" href="${telLink(c.phone)}" data-stop aria-label="שיחה ל${esc(c.name)}">📞</a><a class="pill p-ok" href="${waLink(c.phone)}" target="_blank" rel="noopener" data-stop aria-label="וואטסאפ ל${esc(c.name)}">💬</a></div>`:'<span class="pill p-warn">חסר טלפון</span>'}</div>`).join(''),'<b>עוד אין אנשי קשר</b>ספקים, מסעדות, נהג האוטובוס. מוסיפים עם ה-+');
  },
  settings(){
-  return subHead('הגדרות')+`<div class="card" style="padding:16px"><div class="form">
-   <div class="field">מי אני (נשמר במכשיר הזה)<div class="opts">${team().map(n=>`<button class="opt" data-setme="${esc(n)}" aria-pressed="${ME===n}">${esc(n)}</button>`).join('')}</div></div>
-   <label class="field">צוות המארגנים (מופרד בפסיקים)<input id="teamIn" value="${esc(team().join(', '))}"></label>
+  // what belongs to this phone apart from what changes things for the whole team
+  const tr=trashed();
+  return subHead('הגדרות')+`<div class="ghead"><span>במכשיר הזה</span></div><div class="card" style="padding:16px"><div class="form">
+   <div class="field">מי אני<small class="fhint">נשמר רק בטלפון הזה, כדי להציג לכם את המשימות שלכם</small><div class="opts">${team().map(n=>`<button class="opt" data-setme="${esc(n)}" aria-pressed="${ME===n}">${esc(n)}</button>`).join('')}</div></div></div></div>
+   <div class="ghead"><span>לכל הצוות</span></div>
+   <div class="card" style="padding:16px"><div class="form"><label class="field">צוות המארגנים (מופרד בפסיקים)<small class="fhint">משתנה אצל כולם</small><input id="teamIn" value="${esc(team().join(', '))}"></label>
    <div><button class="btn primary" id="saveTeam">שמירת הצוות</button></div></div></div>
    <div class="card" style="padding:16px;margin-top:12px"><b>שיתוף עם הצוות</b><p class="note" style="margin:6px 0 0">שולחים לאיציק וליעל את הקישור הזה (הוא כולל את המפתח של הצוות). מי שאין לו את הקישור לא יכול לראות את הנתונים, אז לא לשתף אותו בקבוצה הכללית.</p><div style="display:flex;gap:8px;margin-top:10px"><button class="btn primary" id="cpTeam">העתקת קישור לצוות</button></div></div>
-   <div class="card" style="padding:16px;margin-top:12px"><b>גיבוי וייצוא</b><p class="note" style="margin:6px 0 0">${(()=>{const b=find('settings','backup');return b&&b.at?`גיבוי אחרון: ${esc(fmtWhen(b.at))}${b.by?' · '+esc(b.by):''}`:'עוד לא נשמר גיבוי.'})()} כדאי פעם בשבוע, ולפני הטיסה, לשמור גיבוי מלא בדרייב.</p>
-    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn primary" data-export>ייצוא לאקסל</button><button class="btn" id="bkJson">גיבוי מלא (קובץ)</button><button class="btn" id="rsBtn">שחזור מגיבוי</button></div></div>
-   <div class="sec-h" style="margin:22px 2px 4px"><h3>נמחקו לאחרונה</h3></div><p class="note" style="margin:0 2px 8px">כל מה שנמחק נשמר כאן, ואפשר להחזיר אותו בלחיצה.</p>
-   ${card(trashed().slice(0,40).map(t=>`<div class="row"><div class="main"><div class="t">${esc(ttl(t.data)||'(בלי שם)')}</div><div class="m"><span>${esc(LBL(t.col))}</span>${t.by?`<span class="who">${esc(t.by)}</span>`:''}<span class="num">${esc(fmtWhen(t.at))}</span></div></div><button class="pill p-gold" data-untrash="${t._id}">שחזור</button></div>`).join(''),'<b>לא נמחק כלום</b>')}`;
+   <div class="card" style="padding:16px;margin-top:12px"><b>ייצוא</b><p class="note" style="margin:6px 0 0">קובץ אקסל לקריאה ולסגירת חשבונות. לא משמש לשחזור.</p>
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn" data-export>ייצוא לאקסל</button></div></div>
+   <div class="card" style="padding:16px;margin-top:12px"><b>גיבוי ושחזור</b><p class="note" style="margin:6px 0 0">${(()=>{const b=find('settings','backup');return b&&b.at?`גיבוי אחרון: ${esc(fmtWhen(b.at))}${b.by?' · '+esc(b.by):''}`:'עוד לא נשמר גיבוי.'})()} כדאי פעם בשבוע, ולפני הטיסה, לשמור גיבוי מלא בדרייב.</p>
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn primary" id="bkJson">גיבוי מלא (קובץ)</button><span class="sp" style="flex:1"></span><button class="btn ghost" id="rsBtn">שחזור מגיבוי…</button></div></div>
+   <details class="nonebox trbox" ${tr.length&&tr.length<=8?'open':''}><summary><span>נמחקו לאחרונה</span><span class="num">${tr.length}</span></summary><p class="note" style="margin:0 2px 8px">כל מה שנמחק נשמר כאן, ואפשר להחזיר אותו בלחיצה.</p>
+   ${tr.length>8?'<input class="search" id="trQ" type="search" placeholder="חיפוש בנמחקים" aria-label="חיפוש בנמחקים" data-nodirty>':''}
+   ${card(tr.slice(0,40).map(t=>`<div class="row trrow"><div class="main"><div class="t">${esc(ttl(t.data)||'(בלי שם)')}</div><div class="m"><span>${esc(LBL(t.col))}</span>${t.by?`<span class="who">${esc(t.by)}</span>`:''}<span class="num">${esc(fmtWhen(t.at))}</span></div></div><button class="pill p-gold" data-untrash="${t._id}">שחזור</button></div>`).join(''),'<b>לא נמחק כלום</b>')}</details>`;
  },
 };
 
@@ -2699,7 +2782,7 @@ view.addEventListener('input',e=>{if(e.target.id==='q'){V.q=e.target.value.trim(
 const rsFile=document.getElementById('rsFile');rsFile.onchange=()=>{if(rsFile.files[0]){restoreJson(rsFile.files[0]);rsFile.value=''}};
 view.addEventListener('change',e=>{const i=e.target.closest&&e.target.closest('[data-pce]');if(!i)return;const row=i.closest('[data-pid]'),p=row&&find('participants',row.dataset.pid);if(!p)return;
   let v=i.value.trim();if(i.dataset.pce==='nameEn')v=v.toUpperCase().replace(/\s+/g,' ');if(i.dataset.pce==='nameEn')i.value=v;
-  if((p[i.dataset.pce]||'')===v)return;save('participants',p._id,{...strip(p),[i.dataset.pce]:v})});
+  if((p[i.dataset.pce]||'')===v)return;const lab=i.closest('label');save('participants',p._id,{...strip(p),[i.dataset.pce]:v}).then(ok=>{if(!ok||!lab)return;const l2=document.querySelector(`[data-pid="${p._id}"] [data-pce="${i.dataset.pce}"]`);const L=(l2&&l2.closest('label'))||lab;L.classList.add('saved');setTimeout(()=>L.classList.remove('saved'),1800)})});
 view.addEventListener('submit',e=>{if(e.target.id==='padd'){e.preventDefault();const i=document.getElementById('paddIn');const v=i.value.trim();if(!v)return;
   add('packing',{...F.packing.def,item:v,buyer:V.filter.by&&V.filter.by!=='__none'?V.filter.by:(ME||''),where:'בארץ'}).then(ok=>{if(ok){i.value='';toast('נוסף לרשימת הקניות')}});return}
   if(e.target.id==='qadd'){e.preventDefault();const i=document.getElementById('qaddIn');const v=i.value.trim();if(!v)return;
@@ -2749,9 +2832,12 @@ SUB.roles=function(){
    <p class="note">כל מי שיש לו תפקיד, משימה פתוחה, קנייה או אחריות בלו״ז. לחיצה על שורה פותחת אותה לעריכה.</p>
    <input class="search" id="q" type="search" placeholder="חיפוש שם או תפקיד" value="${esc(V.q)}">
    <div class="rolelist">${names.map(n=>{const it=M[n].slice().sort((a,b)=>'role carry task buy sched'.indexOf(a.k)-'role carry task buy sched'.indexOf(b.k)),p=pc(n);
-    return `<div class="rolecard ${team.includes(n)?'team':''}"><div class="rh"><span class="av">${esc(n[0])}</span><b>${esc(n)}</b><span class="num cnt">${it.length}</span>${p&&p.phone?`<a class="pill p-mute" href="https://wa.me/${String(p.phone).replace(/\D/g,'').replace(/^0/,'972')}" target="_blank" rel="noopener">וואטסאפ</a>`:''}</div>
-     ${(L=>it.length>5&&!q?L(it.slice(0,4))+`<details><summary>עוד ${it.length-4} ›</summary>${L(it.slice(4))}</details>`:L(it))(a=>a.map(o=>`<button class="rl" data-edit="${o.e}"><span class="rt ${ROLE_TAG[o.k][1]}">${ROLE_TAG[o.k][0]}</span><span class="tx">${esc(o.t)}</span>${o.due?`<span class="num dd">${fmtDate(o.due)}</span>`:''}</button>`).join(''))}</div>`}).join('')||card('','<b>לא נמצא</b>')}</div>
-   ${!q&&none.length?`<div class="ghead"><span>עוד בלי תפקיד</span><span class="num">${none.length}</span></div><div class="nonelist">${none.map(n=>`<span>${esc(n)}</span>`).join('')}</div><p class="note">כדי לתת למישהו תפקיד, פותחים את הכרטיס שלו במסך המשתתפים וכותבים בשדה "תפקידים", או ממנים אותו כאחראי על משימה.</p>`:''}`;
+    // a one-line summary of what this person carries, and what's overdue
+    const tdy=todayISO(),late=it.filter(o=>o.k==='task'&&o.due&&o.due<tdy).length,cn={};it.forEach(o=>cn[o.k]=(cn[o.k]||0)+1);
+    const PL={role:['תפקיד אחד','תפקידים'],task:['משימה אחת','משימות'],buy:['קנייה אחת','קניות'],sched:['אחריות בלו״ז','אחריות בלו״ז'],carry:['סוחב','סוחב']},sumL=Object.entries(cn).map(([k,c])=>c===1||k==='carry'?PL[k][0]:`${c} ${PL[k][1]}`).join(' · ');
+    return `<div class="rolecard ${team.includes(n)?'team':''}"><div class="rh"><span class="av">${esc(n[0])}</span><span class="rh-n"><b>${esc(n)}</b><small>${esc(sumL)}${late?` · <em class="late">${late} באיחור</em>`:''}</small></span>${p&&p.phone?`<a class="pill p-mute" href="https://wa.me/${String(p.phone).replace(/\D/g,'').replace(/^0/,'972')}" target="_blank" rel="noopener">וואטסאפ</a>`:''}</div>
+     ${(L=>it.length>5&&!q?L(it.slice(0,4))+`<details><summary>עוד ${it.length-4} ›</summary>${L(it.slice(4))}</details>`:L(it))(a=>a.map(o=>`<button class="rl" data-edit="${o.e}"><span class="rt ${ROLE_TAG[o.k][1]}">${ROLE_TAG[o.k][0]}</span><span class="tx">${esc(o.t)}</span>${o.due?`<span class="num dd ${o.k==='task'&&o.due<todayISO()?'late':''}">${fmtDate(o.due)}</span>`:''}</button>`).join(''))}</div>`}).join('')||card('','<b>לא נמצא</b>')}</div>
+   ${!q&&none.length?`<details class="nonebox"><summary><span>עוד בלי תפקיד</span><span class="num">${none.length}</span></summary><div class="nonelist">${none.map(n=>`<span>${esc(n)}</span>`).join('')}</div><p class="note">כדי לתת למישהו תפקיד, פותחים את הכרטיס שלו במסך המשתתפים וכותבים בשדה "תפקידים", או ממנים אותו כאחראי על משימה.</p></details>`:''}`;
 };
 
 const dayHe=d=>{try{return new Date(d+'T12:00:00').toLocaleDateString('he-IL',{weekday:'long'})}catch(e){return ''}};
@@ -2797,14 +2883,15 @@ const UPD={
  files:{cols:['files'],ex:'למשל: "העלון הסופי בקישור הזה …"'},
  messages:{cols:['messages'],ex:'למשל: "לשלוח ביום שלישי הודעה על הדרכונים"'},
 };
+// [icon, title, text, button to where it happens, advanced?]
 const GUIDE=[
- ['spark','קרה משהו? עלה רעיון?','לוחצים על הכוכב הזהוב למעלה, או על "עדכון או רעיון" בכל מסך. כותבים או מקליטים במילים שלכם, בלי לחשוב איפה זה שייך.'],
- ['check','שולחים ל-Claude','"שליחת עדכון ל-Claude" מעתיק את כל מה שנכתב והשתנה, ופותח את השיחה איתו. מדביקים ושולחים.'],
- ['edit','Claude מעדכן לבד','אחרי שקיבל את העדכון, Claude מכניס את השינויים לאפליקציה בעצמו תוך כמה דקות. תופיע הודעה "Claude עדכן", והשינויים יופיעו בפעמון.'],
- ['bell','רואים מה הצוות עשה','הפעמון מראה כל שינוי של איציק, יעל ושלך. מספר אדום אומר שיש משהו חדש שעוד לא ראית.'],
- ['chat','תזכורת כל כמה שעות','מקבלים התראה מ-Claude שהגיע הזמן לשלוח עדכון. גם בדף הבית רואים כמה דברים חדשים מחכים.'],
- ['tasks','משימות: לעשות, ממתין, בוצעו','משימה שתלויה בספק או באדם אחר מסמנים "ממתין", כך היא לא נשכחת ולא מעמיסה על "לעשות".'],
- ['edit','עריכה ידנית','לחיצה על כל שורה פותחת אותה לעריכה. כפתור + מוסיף פריט חדש במסך שבו אתם נמצאים.'],
+ ['edit','עריכה ידנית','לחיצה על כל שורה פותחת אותה לעריכה. כפתור + מוסיף פריט חדש במסך שבו אתם נמצאים.','<button class="btn sm" data-go="tasks">למשימות</button>'],
+ ['tasks','משימות: לעשות, ממתין, בוצעו','משימה שתלויה בספק או באדם אחר מסמנים "ממתין", כך היא לא נשכחת ולא מעמיסה על "לעשות".','<button class="btn sm" data-go="tasks">למשימות</button>'],
+ ['bell','רואים מה הצוות עשה','הפעמון מראה כל שינוי של איציק, יעל ושלך. מספר אדום אומר שיש משהו חדש שעוד לא ראית.','<button class="btn sm" data-actfeed>מה חדש</button>'],
+ ['spark','קרה משהו? עלה רעיון?','לוחצים על הכוכב הזהוב למעלה, או על "עדכון או רעיון" בכל מסך. כותבים או מקליטים במילים שלכם, בלי לחשוב איפה זה שייך.','<button class="btn sm" data-idea>לכתוב עדכון</button>',1],
+ ['check','שולחים ל-Claude','"שליחת עדכון ל-Claude" מעתיק את כל מה שנכתב והשתנה, ופותח את השיחה איתו. מדביקים ושולחים.','',1],
+ ['edit','Claude מעדכן לבד','אחרי שקיבל את העדכון, Claude מכניס את השינויים לאפליקציה בעצמו תוך כמה דקות. תופיע הודעה "Claude עדכן", והשינויים יופיעו בפעמון.','',1],
+ ['chat','תזכורת כל כמה שעות','מקבלים התראה מ-Claude שהגיע הזמן לשלוח עדכון. גם בדף הבית רואים כמה דברים חדשים מחכים.','',1],
 ];
 const GI={check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h4L19 9l-4-4L4 16v4z"/></svg>'};
 const gic=k=>GI[k]||I[k]||'';
@@ -2913,9 +3000,9 @@ function sendSheet(extra){
     <div class="step"><span class="n">1</span><div><b>מעתיקים</b><p>כל השינויים והרעיונות מאז הפעם הקודמת כבר מוכנים כאן.</p></div></div>
     <div class="step"><span class="n">2</span><div><b>מדביקים ושולחים ל-Claude</b><p>הכפתור פותח את השיחה. לחיצה ארוכה בתיבת ההודעה ← הדבקה ← שליחה.</p></div></div>
     <div class="step"><span class="n">3</span><div><b>זהו</b><p>Claude מעדכן את האפליקציה בעצמו תוך כמה דקות, ותופיע הודעה "Claude עדכן".</p></div></div></div>
-   <textarea class="note-in" id="repTxt" style="min-height:120px;font-size:13.5px;margin-top:12px" readonly>${esc(txt)}</textarea>
-   <div class="sheet-acts"><span class="sp"></span><button class="btn primary" id="cpGo">העתקה ופתיחת Claude</button></div>`);
-  document.getElementById('cpGo').onclick=async()=>{let ok=false;try{await navigator.clipboard.writeText(txt);ok=true}catch(e){const ta=document.getElementById('repTxt');ta.select();try{ok=document.execCommand('copy')}catch(_){}}
+   <details class="repwhat"><summary>מה נשלח ›</summary><textarea class="note-in" id="repTxt" style="min-height:120px;font-size:13.5px;margin-top:8px" readonly>${esc(txt)}</textarea></details>
+   <div class="sheet-acts"><span class="sp"></span><button class="btn primary" id="cpGo">העתקה ופתיחת Claude</button></div><p class="note" style="margin:6px 2px 0">אחרי הפתיחה עוד צריך להדביק את הטקסט בשיחה ולשלוח.</p>`);
+  document.getElementById('cpGo').onclick=async()=>{let ok=false;try{await navigator.clipboard.writeText(txt);ok=true}catch(e){const ta=document.getElementById('repTxt');ta.closest('details').open=true;ta.select();try{ok=document.execCommand('copy')}catch(_){}}
     toast(ok?'הועתק. עכשיו מדביקים אצל Claude':'סמנו את הטקסט והעתיקו');try{localStorage.setItem('lastSent',new Date().toISOString())}catch(e){}
     setTimeout(()=>window.open(CHAT_URL,'_blank'),ok?500:1500)};
 }
@@ -2929,14 +3016,19 @@ function codeSheet(){
   document.getElementById('chkBtn').onclick=()=>{let j;try{j=parseCode(ta.value)}catch(e){out.innerHTML='<p class="note" style="color:var(--bad)">לא מצאתי קוד תקין. ודאו שהעתקתם את כל הקוד מ-Claude, מהסוגר { הראשון ועד } האחרון.</p>';return}
     const ok=j.ops.filter(opOk);
     const line=o=>{const cur=find(o.c,o.id);const t=ttl(o.d||cur||{})||o.id;return `${o.op==='delete'?'מחיקת':cur?'עדכון':'הוספת'} ${LBL(o.c)}: ${t}`};
-    out.innerHTML=(j.note?`<p class="note" style="margin-top:12px">${esc(j.note)}</p>`:'')+`<div class="ghead"><span>${ok.length} שינויים</span></div>`+ok.map(o=>`<div class="prop"><span class="pill p-gold">${o.op==='delete'?'מחיקה':'עדכון'}</span><div class="main"><b>${esc(line(o))}</b></div></div>`).join('')+`<div class="sheet-acts"><span class="sp"></span><button class="btn primary" id="applyCode">להכניס הכל לאפליקציה</button></div>`;
-    document.getElementById('applyCode').onclick=async e=>{e.target.disabled=true;let n=0;
+    // additions, updates and deletions apart; deletions are spelled out before "apply all"
+    const kind=o=>o.op==='delete'?'del':find(o.c,o.id)?'upd':'add',K={add:['הוספות','p-ok'],upd:['עדכונים','p-gold'],del:['מחיקות','p-bad']},nDel=ok.filter(o=>kind(o)==='del').length;
+    out.innerHTML=(j.note?`<p class="note" style="margin-top:12px">${esc(j.note)}</p>`:'')+`<div class="ghead"><span>${ok.length} שינויים</span></div>`
+      +['add','upd','del'].map(k=>{const L=ok.filter(o=>kind(o)===k);return L.length?`<div class="ghead cg-${k}"><span>${K[k][0]}</span><span class="num">${L.length}</span></div>`+L.map(o=>`<div class="prop ${k==='del'?'pdel':''}"><span class="pill ${K[k][1]}">${k==='del'?'מחיקה':k==='upd'?'עדכון':'הוספה'}</span><div class="main"><b>${esc(line(o))}</b></div></div>`).join(''):''}).join('')
+      +(nDel?`<p class="delwarn" role="alert">שימו לב: ${nDel===1?'פריט אחד יימחק':nDel+' פריטים יימחקו'}. אפשר לשחזר מ״הגדרות ← נמחקו לאחרונה״.</p>`:'')
+      +`<div class="sheet-acts"><span class="sp"></span><button class="btn primary" id="applyCode">${nDel?`להכניס הכל (כולל ${nDel} מחיקות)`:'להכניס הכל לאפליקציה'}</button></div>`;
+    document.getElementById('applyCode').onclick=async e=>{e.target.disabled=true;e.target.setAttribute('aria-busy','true');e.target.innerHTML='<span class="gspin" aria-hidden="true"></span>מכניסים…';let n=0;
       try{n=await applyOps(ok);
         const now=new Date().toISOString();
         await db.collection('settings').doc('claude').set({seenAt:j.seen||now,appliedAt:now},{merge:true});
         db.collection('activity').add({by:'Claude',at:now,act:'edit',col:'claude',rid:'',title:`הכניס ${n} עדכונים`,change:j.note||''}).catch(()=>{});
         closeSheet();toast(`${n} עדכונים נכנסו`);burst(document.getElementById('actBtn'))}
-      catch(err){e.target.disabled=false;toast(err&&err.code==='permission-denied'?'אין הרשאת כתיבה':'ההכנסה נכשלה, נסו שוב')}};
+      catch(err){e.target.disabled=false;e.target.removeAttribute('aria-busy');e.target.textContent='לנסות שוב';toast(err&&err.code==='permission-denied'?'אין הרשאת כתיבה':'ההכנסה נכשלה, נסו שוב')}};
   };
 }
 const claudeCard=()=>{const p=pendingForClaude(),n=p.acts.length+p.notes.length+p.answers.length;let last='';try{last=localStorage.getItem('lastSent')||''}catch(e){}
@@ -3043,7 +3135,8 @@ function hotelText(){const {rooms,none}=hotelRows(),nm=p=>p.nameEn||'(NAME MISSI
   if(none.length){out.push('','NOT ASSIGNED TO A ROOM:');none.forEach(p=>out.push('  '+nm(p)))}
   return out.join('\n')}
 function hotelSheet(){const t=hotelText(),miss=S.participants.filter(p=>!p.nameEn).length;
-  sheet(`<h3>רשימה למלון באנגלית</h3>${miss?`<p class="note" style="color:var(--warn);margin-top:0">חסר שם באנגלית ל־${miss} משתתפים. הם מסומנים NAME MISSING.</p>`:'<p class="note" style="margin-top:0">כל השמות באנגלית כמו בדרכונים.</p>'}
+  const missL=S.participants.filter(p=>!p.nameEn);
+  sheet(`<h3>רשימה למלון באנגלית</h3>${miss?`<div class="hmiss" role="alert"><b>חסר שם באנגלית ל־${miss} משתתפים</b><span>ברשימה הם מסומנים NAME MISSING. כדאי להשלים לפני ששולחים למלון:</span><div>${missL.map(p=>`<span>${esc(p.name)}</span>`).join('')}</div></div>`:'<p class="note" style="margin-top:0">כל השמות באנגלית כמו בדרכונים.</p>'}
    <textarea class="note-in ltr" id="hotelTxt" readonly style="min-height:260px;font-size:13px;direction:ltr;text-align:left">${esc(t)}</textarea>
    <div class="sheet-acts"><button class="btn" id="hotelX">הורדה כאקסל</button><span class="sp"></span><button class="btn primary" id="hotelCopy">העתקה</button></div>`);
   document.getElementById('hotelCopy').onclick=()=>copy(t);
@@ -3069,7 +3162,9 @@ function passImportSheet(){
       const p=(manual[l]&&find('participants',manual[l]))||matchGuest(c[0]);
       if(!p){bad.push({l});return}plan.push({p,en,ex})});
     const o=document.getElementById('imOut');
-    o.innerHTML=`<b class="num">${plan.length}</b> נמצאו`+(bad.length?` · <span style="color:var(--bad)">${bad.length} לא זוהו</span>`+bad.map(({l,noFmt})=>`<div class="imbad"><span class="ltr">${esc(l)}</span>${noFmt?'<small>הפורמט לא תקין</small>':pickList(l)}</div>`).join(''):'');
+    // a preview of what will change, and the button says how many people it updates
+    const gb=document.getElementById('imGo');gb.textContent=plan.length?`עדכון ${plan.length} משתתפים`:'בדיקה ועדכון';
+    o.innerHTML=(plan.length?`<table class="imtab"><thead><tr><th>משתתף</th><th>שם באנגלית</th><th>תוקף</th></tr></thead><tbody>${plan.map(({p,en,ex})=>`<tr><td>${esc(p.name)}</td><td class="ltr">${esc(en)}${p.nameEn&&p.nameEn!==en?`<small>במקום ${esc(p.nameEn)}</small>`:''}</td><td class="num">${ex?esc(ex.split('-').reverse().join('.')):'—'}</td></tr>`).join('')}</tbody></table>`:'')+`<b class="num">${plan.length}</b> נמצאו`+(bad.length?` · <span style="color:var(--bad)">${bad.length} לא זוהו</span>`+bad.map(({l,noFmt})=>`<div class="imbad"><span class="ltr">${esc(l)}</span>${noFmt?'<small>הפורמט לא תקין</small>':pickList(l)}</div>`).join(''):'');
     o.querySelectorAll('.imsel').forEach(sel=>sel.onchange=()=>{manual[sel.dataset.imraw]=sel.value;parse()})};
   const im=document.getElementById('imTxt');im.addEventListener('input',parse);im.addEventListener('paste',()=>setTimeout(parse,0));
   document.getElementById('imGo').onclick=async()=>{parse();if(!plan.length){toast('לא זוהתה אף שורה. כל שורה: שם בעברית | ENGLISH NAME | תאריך');return}
@@ -3084,13 +3179,15 @@ function personSheet(id,focus){
    <div class="passcard ${p.passport?'ok':''}" id="phPassBox"><div class="pc-h"><b>🛂 דרכון</b><span class="pill ${p.passport?'p-ok':'p-warn'}">${p.passport?'התקבל ✓':'עוד לא התקבל'}</span></div>
     <div class="pc-kv"><div><small>שם באנגלית</small><b class="ltr">${p.nameEn?esc(p.nameEn):'—'}</b></div><div><small>תוקף</small><b class="num ${expBad?'bad':''}">${p.passExp?esc(p.passExp.split('-').reverse().map(Number).join('.')):'—'}</b></div></div>
     ${expBad?'<p class="pc-warn">⚠ התוקף קצר מדי: הדרכון צריך להיות בתוקף לפחות עד 22.02.2027 (שלושה חודשים אחרי החזרה)</p>':''}
-    <div class="pc-acts">${pu?`<a class="btn primary" href="${esc(pu)}" target="_blank" rel="noopener">צפייה בצילום הדרכון</a>`:`<button class="btn" id="phPassLink">הוספת קישור לצילום</button>`}<button class="btn" id="phPass">${p.passport?'ביטול סימון':'סימון שהתקבל ✓'}</button>
+    <div class="pc-acts">${pu?`<a class="btn primary" href="${esc(pu)}" target="_blank" rel="noopener">צפייה בצילום הדרכון</a>`:`<button class="btn" id="phPassLink">הוספת קישור לצילום</button>`}<button class="btn" id="phPass">${p.passport?'ביטול סימון':'סימון שהתקבל ✓'}</button><button class="btn ghost" data-esec="pass">עריכת שם ותוקף</button>
     ${!p.passport&&p.phone?`<a class="btn ghost" href="${waLink(p.phone,`שלום ${firstN(p.name)}, כדי להשלים את הרישום למסע לבודפשט נשמח לצילום של עמוד הפרטים בדרכון. תודה!`)}" target="_blank" rel="noopener">בקשה בוואטסאפ</a>`:''}</div>
     <p class="note" style="margin:6px 0 0">הצילום עצמו נשמר בתיקיית הדרייב של המסע, לא באפליקציה, כדי שרק הצוות יוכל לפתוח אותו.</p></div>
    ${(()=>{const k=`${kv('איך שילם',esc(p.method||''))}${kv('הכסף אצל',esc(holderOf(p)))}${kv('חדר',r?esc([r.roomNumber&&'חדר '+r.roomNumber,r.floor&&'קומה '+r.floor].filter(Boolean).join(' · ')||'עוד אין מספר')+' · '+esc(r.occupants):'')}${kv('טיסת הלוך',esc(p.outbound||''))}${kv('טיסת חזור',esc(p.returnGroup||''))}${kv('👶 תינוק',p.baby?esc(p.babyNote||'מגיעים עם תינוק/ת'):'')}${kv('נוסח',esc(p.nusach||''))}${kv('סוחב',esc(p.carry||''))}${kv('תפקידים',esc(p.duties||''))}${kv('הערות',esc(p.notes||''))}`;return k?`<div class="card kvs">${k}</div>`:''})()}
    <div class="sheet-acts" style="margin-top:12px">${p.status!=='שולם'&&p.status!=='פטור'?`<button class="btn" id="phPay">רישום תשלום</button>`:''}<span class="sp"></span><button class="btn primary" id="phEdit">עריכה</button></div>
    ${ts.length?`<div class="ghead"><span>משימות שקשורות אליו</span><span class="num">${ts.length}</span></div>`+card(ts.map(taskRow).join('')):''}`);
   const pe=document.getElementById('phEdit');pe.onclick=()=>editor('participants',id);
+  // editing from inside a part of the card opens the form at that part
+  document.querySelectorAll('#scrim [data-esec]').forEach(b=>b.onclick=()=>editor('participants',id,b.dataset.esec));
   const pa=document.getElementById('phPay');if(pa)pa.onclick=()=>paySheet(id);
   document.getElementById('phPass').onclick=async e=>{const on=!p.passport;if(await save('participants',id,{...strip(p),passport:on})){if(on)burst(e.target);setTimeout(()=>personSheet(id,'pass'),250)}};
   const pl=document.getElementById('phPassLink');if(pl)pl.onclick=async()=>{const v=prompt('מדביקים כאן את הקישור לצילום הדרכון בתיקיית הדרייב','');if(v==null)return;const u=safeUrl(v.trim());if(!u){toast('זה לא נראה כמו קישור. מעתיקים את הקישור מהדרייב, שמתחיל ב־https://');return}
@@ -3306,7 +3403,9 @@ function actSheet(){
   const tm=iso=>{const d=new Date(iso);return isNaN(d)?'':d.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'})};
   let last='';
   const list=rows.map(a=>{const d=day(a.at),h=d!==last?`<div class="ghead" style="margin:14px 4px 6px"><span>${d}</span></div>`:'';last=d;
-    return h+`<button class="it ${others(a)&&(a.at||'')>actSeen?'new':''}" ${find(a.col,a.rid)?`data-open="${a.col}/${a.rid}"`:''}><span class="av">${esc((a.by||'?')[0])}</span><span class="main"><b>${esc(a.by||'מישהו')}</b> ${esc(actLine(a))}${a.change?`<small>${esc(a.change)}</small>`:''}<small class="num">${tm(a.at)}</small></span></button>`}).join('');
+    // money changes are marked apart; a row that opens a record says so
+    const cash=['expenses','donations'].includes(a.col)||(a.col==='participants'&&/תשלום|סכום|שולם|₪/.test(a.change||'')),op=!!find(a.col,a.rid);
+    return h+`<button class="it ${others(a)&&(a.at||'')>actSeen?'new':''} ${cash?'cash':''}" ${op?`data-open="${a.col}/${a.rid}"`:''}><span class="av">${cash?'₪':esc((a.by||'?')[0])}</span><span class="main"><b>${esc(a.by||'מישהו')}</b> ${esc(actLine(a))}${a.change?`<small>${esc(a.change)}</small>`:''}<small class="num">${tm(a.at)}${op?' · <span class="it-open">פתיחה לעריכה ›</span>':''}</small></span></button>`}).join('');
   sheet(`<h3>מה חדש</h3>
    ${CAN_SEND()?'':'<!--'}<div style="display:flex;gap:8px;margin-bottom:8px"><button class="btn primary" id="sendNow" style="flex:1">שליחת עדכון ל-Claude${forClaude?` (${forClaude})`:''}</button></div>${CAN_SEND()?'':'-->'}
    <div class="card feed">${list||'<div class="empty"><b>עוד אין פעולות</b>מעכשיו כל שינוי של כל אחד בצוות יופיע כאן</div>'}</div>`);
@@ -3513,7 +3612,7 @@ async function rollReset(){
 // where the focus was before a sheet opened, to give it back when it closes (keyboard and screen-reader users)
 let sheetFrom=null;
 const FKEYS=['data-edit','data-person','data-msg','data-pay','data-nav'];
-const focusKey=el=>{const r=el&&el.closest(FKEYS.map(a=>`[${a}]`).join(',')+',[id]');if(!r)return null;const a=FKEYS.find(a=>r.hasAttribute(a));return a?`[${a}="${CSS.escape(r.getAttribute(a))}"]`:'#'+CSS.escape(r.id)};
+const focusKey=el=>{const r=el&&el.closest(FKEYS.map(a=>`[${a}]`).join(',')+',[id]:not([id=""])');if(!r)return null;const a=FKEYS.find(a=>r.hasAttribute(a));return a?`[${a}="${CSS.escape(r.getAttribute(a))}"]`:'#'+CSS.escape(r.id)};
 function sheet(html){const r=document.getElementById('sheetRoot');
   if(!document.getElementById('scrim')){const a=document.activeElement;sheetFrom=a&&a!==document.body?{el:a,key:focusKey(a),main:!!a.closest('.main')}:null}
   r.innerHTML=`<div class="scrim" id="scrim"><div class="sheet" role="dialog" aria-modal="true" tabindex="-1"><div class="grip"></div><div class="sh-bar"><button type="button" class="sh-x" data-dismiss aria-label="סגירת החלון"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>${html}</div></div>`;
@@ -3585,25 +3684,38 @@ function msgSheet(id){
 }
 const expBreak=(c,id)=>{if(c!=='expenses'||!id)return '';const it=S.packing.filter(x=>x.item&&x.exp===id);if(!it.length)return '';const sum=it.reduce((t,x)=>t+(+x.cost||0),0),e=find('expenses',id)||{},rest=(+e.estimate||0)-sum;
   return `<div class="card" style="margin:12px 0"><div class="ghead"><span>מה כלול בהוצאה</span><span class="num">${ils(sum)}</span></div>${it.map(x=>`<div class="row"><div class="main"><div class="t">${esc(x.item)}</div><div class="m">${x.qty?`<span class="num">${esc(x.qty)} יח׳</span>`:''}<span>${esc(x.kit||x.list||'')}</span></div></div><div class="num">${ils(+x.cost||0)}</div></div>`).join('')}${Math.abs(rest)>=1?`<div class="row"><div class="main"><div class="t">${rest>0?'יתרה לא מפורטת':'חריגה מההוצאה'}</div></div><div class="num">${ils(Math.abs(rest))}</div></div>`:''}</div>`};
-function editor(c,id){
+function editor(c,id,openSec){
   const sc=F[c]; if(!sc)return;
   const d=id?find(c,id):{...sc.def,...(c==='tasks'?{owner:ME||'',category:V.filter.cat||'אחר'}:{}),...(c==='schedule'&&V.seg?{day:V.seg}:{}),...(c==='packing'&&V.filter.list?{list:V.filter.list}:{}),...(c==='packing'&&V.filter.kit?{kit:V.filter.kit}:{})};
   if(!d)return;
   const lists=[...new Set(S.packing.map(x=>x.list))];
-  const fld=f=>{const v=f.k==='kit'?(d.item?kitOf(d):(d.kit||'')):(f.ks?kst(d,f.k):(d[f.k]??'')),iid='e_'+f.k,o=(typeof f.o==='function'?f.o():f.o)||[];
+  const fld=f=>{const h=fld0(f);if(!f.when)return h;const [wk,wv]=f.when;return `<div class="ewhen" data-wk="${wk}" data-wv="${esc(JSON.stringify(wv))}">${h}</div>`};
+  const fld0=f=>{const v=f.k==='kit'?(d.item?kitOf(d):(d.kit||'')):(f.ks?kst(d,f.k):(d[f.k]??'')),iid='e_'+f.k,o=(typeof f.o==='function'?f.o():f.o)||[];
+    f={...f,l:f.l+(f.h?`<small class="fhint">${f.h}</small>`:'')};
     if(f.t==='seg'||f.t==='chips'){const all=[...new Set([...o,...(v&&!o.includes(v)?[v]:[])])];return `<div class="field">${f.l}<div class="opts" data-k="${f.k}">${all.map(x=>`<button type="button" class="opt" data-v="${esc(x)}" aria-pressed="${v===x}">${esc(x)}</button>`).join('')}</div></div>`}
     if(f.t==='owner'){const cur=String(v).split(/,\s*/).filter(Boolean);const people=[...new Set([...team(),...cur])];const pn=[...new Set(S.participants.map(p=>p.name).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'he'));return `<div class="field">${f.l}<div class="opts" data-k="${f.k}" data-multi="1">${people.map(x=>`<button type="button" class="opt" data-v="${esc(x)}" aria-pressed="${cur.includes(x)}">${esc(x)}</button>`).join('')}</div><input id="${iid}" class="ownin" data-k="${f.k}" list="dl_${f.k}" placeholder="➕ להוסיף משתתף: מקלידים שם ובוחרים" autocomplete="off"><datalist id="dl_${f.k}">${pn.map(n=>`<option value="${esc(n)}">`).join('')}</datalist></div>`}
     if(f.t==='toggle')return f.k==='kitReady'&&KITLOCK()?`<label class="toggle" style="opacity:.55">${f.l} · 🔒 נפתח ב-19.11<input type="checkbox" id="${iid}" ${v?'checked':''} disabled></label>`:`<label class="toggle">${f.l}<input type="checkbox" id="${iid}" ${v?'checked':''}></label>`;
     if(f.t==='textarea')return `<label class="field">${f.l}<textarea id="${iid}">${esc(v)}</textarea></label>`;
     if(f.t==='list')return `<label class="field">${f.l}<input id="${iid}" list="dl" value="${esc(v)}"><datalist id="dl">${lists.map(l=>`<option value="${esc(l)}">`).join('')}</datalist></label>`;
     return `<label class="field">${f.l}<input id="${iid}" type="${f.t==='number'?'number':f.t}" ${f.t==='number'?'inputmode="decimal" step="any"':''} ${f.ph?`placeholder="${f.ph}"`:''} value="${esc(v)}"></label>`};
-  let html='',buf=[];const flush=()=>{if(buf.length){html+=buf.length===2?`<div class="two">${buf.join('')}</div>`:buf[0];buf=[]}};
-  sc.fields.forEach(f=>{if(f.half){buf.push(fld(f));if(buf.length===2)flush()}else{flush();html+=fld(f)}});flush();
+  let html='',buf=[],inSec=false;const flush=()=>{if(buf.length){html+=buf.length===2?`<div class="two">${buf.join('')}</div>`:buf[0];buf=[]}};
+  // a long form folds into sections: the basics stay open, each section shows a one-line summary;
+  // a section opens when asked for (openSec), or, in the task form, when something in it is already filled in
+  const secs={};let cur=null;sc.fields.forEach(f=>{if(f.sec)cur=f.sec;if(cur)(secs[cur]=secs[cur]||[]).push(f)});
+  const filled=f=>{const v=d[f.k];return v!=null&&v!==''&&v!==false&&v!==(sc.def||{})[f.k]&&!(f.t==='seg'&&Array.isArray(f.o)&&v===f.o[0])};
+  sc.fields.forEach(f=>{if(f.sec){flush();if(inSec)html+='</div></details>';const sm=sc.sum&&sc.sum[f.sec]?sc.sum[f.sec](d):'',op=openSec===f.sec||(!sc.secClosed&&!!id&&secs[f.sec].some(filled));
+      html+=`<details class="esec" data-sec="${f.sec}" ${op?'open':''}><summary><b>${f.secL}</b>${sm?`<small>${esc(sm)}</small>`:''}<i aria-hidden="true">‹</i></summary><div class="esec-b">`;inSec=true}
+    if(f.half){buf.push(fld(f));if(buf.length===2)flush()}else{flush();html+=fld(f)}});flush();if(inSec)html+='</div></details>';
   const waT=c==='tasks'&&id?String(d.owner||'').split(/,\s*/).map(n=>S.participants.find(p=>p.name===n.trim())).filter(p=>p&&p.phone):[];
   const waH=waT.length?`<div class="wabox"><b>לשלוח את המשימה בוואטסאפ</b>${waT.map(p=>`<a class="btn ghost" target="_blank" rel="noopener" href="https://wa.me/${String(p.phone).replace(/\D/g,'').replace(/^0/,'972')}?text=${encodeURIComponent('שלום '+firstN(p.name)+', נשמח אם תיקח/י על עצמך משימה לקראת המסע להונגריה:\n«'+(d.title||'')+'»'+(d.due?'\nעד '+fmtDate(d.due):'')+'\nהמשימה מופיעה אצלך באפליקציה, בלשונית משימות. כשמסיימים לוחצים "סיימתי". תודה!')}">💬 ${esc(firstN(p.name))}</a>`).join('')}</div>`:'';
   sheet(`<h3>${id?'עריכת '+sc.one:sc.one+' '+(sc.g?'חדשה':'חדש')}</h3><div class="form" id="ef">${html}</div>${waH}${expBreak(c,id)}
-   <div class="sheet-acts">${id?'<button class="btn danger" id="del">מחיקה</button>':''}<span class="sp"></span><button class="btn" data-close>ביטול</button><button class="btn primary" id="sv">שמירה</button></div>`);
+   <div class="sheet-acts stk">${id?'<button class="btn danger" id="del">מחיקה</button>':''}<span class="sp"></span><button class="btn" data-close>ביטול</button><button class="btn primary" id="sv">שמירה</button></div>`);
   const ef=document.getElementById('ef');
+  // fields that only matter for some answers (partial payment amount, the baby's details) show only then
+  const whenUpd=()=>ef.querySelectorAll('.ewhen').forEach(w=>{const k=w.dataset.wk,want=JSON.parse(w.dataset.wv),cb=document.getElementById('e_'+k);
+    const val=cb&&cb.type==='checkbox'?cb.checked:((ef.querySelector(`.opts[data-k="${k}"] .opt[aria-pressed="true"]`)||{}).dataset||{}).v;w.hidden=!(Array.isArray(want)?want.includes(val):want===val)});
+  whenUpd();ef.addEventListener('change',whenUpd);ef.addEventListener('click',()=>setTimeout(whenUpd,0));
+  if(openSec){const sx=ef.querySelector(`.esec[data-sec="${openSec}"]`);if(sx)setTimeout(()=>sx.scrollIntoView({block:'start',behavior:reduce?'auto':'smooth'}),reduce?0:280)}
   ef.querySelectorAll('.ownin').forEach(inp=>{const addName=()=>{const n=inp.value.trim();if(!n||!S.participants.some(p=>p.name===n))return;const box=ef.querySelector(`.opts[data-k="${inp.dataset.k}"]`);let b=[...box.querySelectorAll('.opt')].find(x=>x.dataset.v===n);if(!b){b=document.createElement('button');b.type='button';b.className='opt';b.dataset.v=n;b.textContent=n;box.appendChild(b)}b.setAttribute('aria-pressed','true');inp.value=''};inp.addEventListener('change',addName);inp.addEventListener('input',()=>{if(S.participants.some(p=>p.name===inp.value.trim()))addName()})});
   ef.addEventListener('click',e=>{const b=e.target.closest('.opt');if(!b)return;const box=b.parentElement;
     if(box.dataset.multi){b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')!=='true')}else{const on=b.getAttribute('aria-pressed')==='true';box.querySelectorAll('.opt').forEach(x=>x.setAttribute('aria-pressed','false'));if(!on)b.setAttribute('aria-pressed','true')}});
@@ -3716,9 +3828,9 @@ async function restoreJson(file){
   const n=ops.length,when=new Date(j.at).toLocaleString('he-IL');
   sheet(`<h3>שחזור מגיבוי</h3><p class="note" style="margin-top:0">הגיבוי מ-${esc(when)}${j.by?` (${esc(j.by)})`:''}, <span class="num">${n}</span> רשומות. כל רשומה מהקובץ תחזור למצב שהיה בגיבוי. רשומות שנוספו אחרי הגיבוי נשארות.</p>
    <div class="sheet-acts"><span class="sp"></span><button class="btn" data-close>ביטול</button><button class="btn danger" id="rsOk">לשחזר ${n} רשומות</button></div>`);
-  document.getElementById('rsOk').onclick=async e=>{e.target.disabled=true;
+  document.getElementById('rsOk').onclick=async e=>{e.target.disabled=true;e.target.setAttribute('aria-busy','true');e.target.innerHTML='<span class="gspin" aria-hidden="true"></span>משחזרים…';
     try{await applyOps(ops);db.collection('activity').add({by:ME||'',at:new Date().toISOString(),act:'edit',col:'settings',rid:'',title:`שחזור מגיבוי (${n} רשומות)`,change:when}).catch(()=>{});closeSheet();toast('השחזור הסתיים')}
-    catch(err){e.target.disabled=false;toast(err&&err.code==='permission-denied'?failMsg(err):'השחזור לא הצליח. בדקו שיש אינטרנט ונסו שוב')}};
+    catch(err){e.target.disabled=false;e.target.removeAttribute('aria-busy');e.target.textContent='לנסות שוב';toast(err&&err.code==='permission-denied'?failMsg(err):'השחזור לא הצליח. בדקו שיש אינטרנט ונסו שוב')}};
 }
 const trashed=()=>S.trash.filter(t=>F[t.col]&&!find(t.col,t.rid)).sort((a,b)=>(b.at||'').localeCompare(a.at||''));
 async function restoreTrash(id){const t=find('trash',id);if(!t)return;if(await save(t.col,t.rid,t.data||{}))toast('שוחזר: '+(ttl(t.data)||LBL(t.col)))}
@@ -4276,21 +4388,25 @@ function guestHTML0(){
     const payWa=waLink(sh,`שלום שלומי, כאן ${coupleLabel(ppl,me)}. רציתי לעדכן על תשלום למסע לבודפשט${!payAll&&tot-got>0?` (נותר ${ils(tot-got)})`:''}${dOpen?` ועל התרומה (${ils(dOpen)})`:''}. מצרף/ת אישור תשלום.`);
     return head('האזור האישי')+`<section class="pa">
      <div class="pa-hero" style="--i:${k++}"><div class="pa-av">${ppl.map(p=>`<span class="av mono">${esc(initialOf(p))}</span>`).join('')}</div><div><small>${greeting()}</small><b>${esc(coupleLabel(ppl,me)||'')}</b><span>כל מה שאנחנו יודעים עליכם, במקום אחד</span></div></div>
+     ${missP.length||(need.length&&!payAll)?`<h3 class="pa-h">מה נשאר לעשות</h3><div class="pa-acts">
+      ${missP.length?`<a class="pa-a hot" href="${passWa}" target="_blank" rel="noopener">${IX.pass}<span><b>שליחת צילום דרכון</b><small>מצלמים את עמוד הפרטים ושולחים לשלומי</small></span></a>`:''}
+      ${need.length&&!payAll?`<a class="pa-a" href="${payWa}" target="_blank" rel="noopener">${IX.coin}<span><b>דיווח על תשלום</b><small>שולחים לשלומי צילום של אישור ההעברה</small></span></a>`:''}</div>`:''}
+     <h3 class="pa-h">תשלומים ומסמכים</h3>
      <div class="pa-grid">
-      ${tile(IX.coin,'תשלום למסע'+(ppl.length>1?' (לזוג)':''),payV,payAll?'ok':got?'mid':'bad')}
+      ${tile(IX.coin,'תשלום למסע'+(ppl.length>1?' (משותף לזוג)':''),payV,payAll?'ok':got?'mid':'bad')}
       ${dn.length?tile('🙏','תרומה',donV,dOpen?'mid':'ok',1):''}
       ${(!payAll||dOpen)&&(tot-got>0||dOpen)?tile('Σ','סה״כ לתשלום',`${ils(Math.max(0,tot-got)+dOpen)}${dOpen&&tot-got>0?` <small>(מסע ${ils(tot-got)} + תרומה ${ils(dOpen)})</small>`:''}`,'bad',1):''}
-      ${tile(IX.pass,'דרכון',ppl.every(p=>p.passport)?'התקבל ✓':missP.map(p=>esc(firstN(p.name))).join(' ו')+' · חסר',ppl.every(p=>p.passport)?'ok':'bad')}
+      ${tile(IX.pass,'דרכון'+(ppl.length>1?' (לכל אחד)':''),ppl.every(p=>p.passport)?'התקבל ✓':missP.map(p=>esc(firstN(p.name))).join(' ו')+' · חסר',ppl.every(p=>p.passport)?'ok':'bad')}
+     </div>
+     <h3 class="pa-h">נסיעה ולינה</h3>
+     <div class="pa-grid">
       ${tile(I.bed,'החדר שלי',roomV,'',1)}
       ${tile(I.plane,'טיסת הלוך',fl('הלוך'),'',1)}
       ${tile(I.plane,'טיסת חזור',fl('חזור'),'ret',1)}
      </div>
-     <div class="pa-acts" style="--i:${k++}">
-      ${missP.length?`<a class="pa-a hot" href="${passWa}" target="_blank" rel="noopener">${IX.pass}<span><b>שליחת צילום דרכון</b><small>מצלמים את עמוד הפרטים ושולחים לשלומי</small></span></a>`:''}
-      ${need.length&&!payAll?`<a class="pa-a" href="${payWa}" target="_blank" rel="noopener">${IX.coin}<span><b>דיווח על תשלום</b><small>שולחים לשלומי צילום של אישור ההעברה</small></span></a>`:''}
-      <a class="pa-a soft" href="${waLink(sh)}" target="_blank" rel="noopener">${IX.wa}<span><b>שאלה לשלומי</b><small>וואטסאפ למארגן המסע</small></span></a>
-     </div>
+     <h3 class="pa-h">פרטים אישיים</h3>
      ${ppl.map(person).join('')}
+     <div class="pa-acts"><a class="pa-a soft" href="${waLink(sh)}" target="_blank" rel="noopener">${IX.wa}<span><b>שאלה לשלומי</b><small>וואטסאפ למארגן המסע</small></span></a></div>
      ${isPrevOrg()?'':`<button class="btn ghost gout2" id="gout">🚪 יציאה מהחשבון</button>`}</section>`}
   if(GTAB==='gd')return head('נסיעה משותפת לשדה')+`<p class="note">מתאמים ביחד את הדרך לשדה: מי שיש לו מקום ברכב, מי שמחפש טרמפ, ומי שרוצה לחלוק מונית.</p>`+ridesHTML(ppl,me);
   if(GTAB==='gi')return head('תמונות מהמסע')+photosHTML();
@@ -4356,6 +4472,7 @@ document.addEventListener('input',e=>{
   const d=e.target.closest('[data-draft]');if(d){DRAFT[d.dataset.draft]=d.value}
   if(e.target.id==='gq'){GQ=e.target.value;render()}
   if(e.target.id==='cvI'||e.target.id==='cvR')convUpd();
+  if(e.target.id==='trQ'){const q=e.target.value.trim();document.querySelectorAll('.trrow').forEach(r=>r.hidden=!!q&&!r.textContent.includes(q))}
   if(/^rd(From|Time|Seats)$/.test(e.target.id)){const el=document.getElementById('rdSum');if(el)el.innerHTML=rdSumTxt(RFORM,rideDir()==='out')}
 });
 document.addEventListener('change',e=>{const c=e.target.closest('[data-chk]');if(c){let o={};try{o=JSON.parse(localStorage.getItem('chk')||'{}')}catch(x){}o[c.dataset.chk]=c.checked;try{localStorage.setItem('chk',JSON.stringify(o))}catch(x){}
@@ -4448,8 +4565,10 @@ SUB.kits=function(){
      <div class="khero"><div><b class="num">${ils(tot.cost)}</b><span>עלות כל הערכות</span></div><div><b class="num">${tot.placed}/${tot.n}</b><span>פריטים שהונחו</span></div></div>
      <p class="note">לחצו על ערכה כדי לראות כל מוצר, כמות, עלות ומי אחראי. כל סימון מתעדכן גם ב"רשימת קניות".</p>
      <div class="kgrid">${KITS.filter(k=>by[k[0]].length).map(([name,em,hue],i)=>{const st=kstat(by[name]);
-       return `<button class="kcard" data-kit="${esc(name)}" style="--i:${i};--a:${hue}"><span class="kem">${em}</span><span class="main"><b>${esc(name)}</b><small><span class="num">${st.n}</span> פריטים · <span class="num">${ils(st.cost)}</span></small>${kitStageBar(st)}
-        <small class="kl">${KSTAGES.map(([k,l])=>`${l} <span class="num">${st[k]}</span>`).join(' · ')}</small></span><span class="go" aria-hidden="true">‹</span></button>`}).join('')}</div>`}
+       // the next stage still missing leads; the cost and item count come after
+       const nx=KSTAGES.find(([k])=>st[k]<st.n),dd=nx?kdays(KDUE[nx[0]]):0;
+       return `<button class="kcard" data-kit="${esc(name)}" style="--i:${i};--a:${hue}"><span class="kem">${em}</span><span class="main"><b>${esc(name)}</b><span class="knext ${!nx?'ok':dd<0?'bad':dd<=7?'warn':''}">${nx?`השלב הבא: ${({ordered:'להזמין',arrived:'לוודא שהגיע',packed:'לארוז',placed:'להניח'})[nx[0]]} · חסרים <span class="num">${st.n-st[nx[0]]}</span>${dd<0?' · באיחור':KDUE[nx[0]]?` · עד ${fmtDate(KDUE[nx[0]])}`:''}`:'כל השלבים הושלמו ✓'}</span>${kitStageBar(st)}
+        <small><span class="num">${st.n}</span> פריטים · <span class="num">${ils(st.cost)}</span></small></span><span class="go" aria-hidden="true">‹</span></button>`}).join('')}</div>`}
   const all=(items.filter(x=>kitOf(x)===cur)).sort(byOrder), st=kstat(all), meta=KITS.find(k=>k[0]===cur)||[cur,'🧰','#cfc3a6'];
   const f=V.filter.ks||'all', rows=f==='all'?all:all.filter(x=>!kst(x,f));
   const team_=[...new Set([...team()])];
@@ -4462,8 +4581,8 @@ SUB.kits=function(){
    <div class="khead" style="--a:${meta[2]}"><span class="kem big">${meta[1]}</span><div><b class="num">${ils(st.cost)}</b><small>עלות הערכה · ${st.n} פריטים</small></div></div>
    <div class="ksteps">${KSTAGES.map(([k,l,em])=>`<div><span>${em} ${l}</span><b class="num">${st[k]}/${st.n}</b><i><u style="width:${st.n?Math.round(st[k]/st.n*100):0}%"></u></i></div>`).join('')}</div>
    ${cur==='ערכה לחדר'?(()=>{const rp=roomsPlaced(),who=S.participants.filter(p=>p.kitter).map(p=>firstN(p.name));return `<button class="kcard2 kroom" data-go="more" data-opts='{"sub":"rooms"}'><span class="kr-i">📍</span><span class="main"><b>הנחה בחדרים: <span class="num">${rp.n}</span> מתוך <span class="num">${rp.t}</span></b><small>${who.length?'מעדכן/ת: '+esc(who.join(', ')):'אפשר לסמן שאדם מסוים מסדר את החדרים: בכרטיס שלו במשתתפים'} · לחצו למסך החדרים</small></span><span aria-hidden="true">‹</span></button>`})():''}
-   <div class="kcard2"><h4>מי אחראי</h4>${own('buyer','🛒 קנייה')}${own('packer','🧳 אריזה')}${own('placer','📍 הנחה במקום')}${mt[cur]?`<p class="note" style="margin:8px 0 0">${esc(mt[cur])}</p>`:''}</div>
-   <div class="kcard2"><h4>תזכורות לבדיקה</h4><div class="krems">${rem}</div></div>
+   <div class="kcard2"><h4>מה צריך לעשות עכשיו</h4><div class="krems">${rem}</div></div>
+   <div class="kcard2"><h4>מי אחראי על כל הערכה</h4><p class="note" style="margin:0 0 8px">אחראי לפריט מסוים אפשר לקבוע בעריכת הפריט, והוא גובר על האחראי של הערכה.</p>${own('buyer','🛒 קנייה')}${own('packer','🧳 אריזה')}${own('placer','📍 הנחה במקום')}${mt[cur]?`<p class="note" style="margin:8px 0 0">${esc(mt[cur])}</p>`:''}</div>
    <div class="chips">${[['all','הכול'],...KSTAGES.map(([k,l])=>[k,'לא '+l])].map(([k,l])=>`<button class="chip" data-kfilter="${k}" aria-pressed="${f===k}">${l}</button>`).join('')}</div>
    <div class="kitems">${rows.map((x,i)=>{const sh=x.shop?` · ${esc(x.shop)}`:'',w=kwhere(x);
      const o=(r,e)=>{const n=String(x[r]||'').trim()||kown(cur,r).join(', ');return n?`<span class="who">${e} ${esc(n)}</span>`:''};
@@ -4552,18 +4671,21 @@ function guestPop(e){
 SUB.reqs=function(){
   const C=claims(), R=reqList(), openR=R.filter(r=>r.status==='חדש'||r.status==='בטיפול'), doneR=R.filter(r=>r.status==='בוצע'||r.status==='לא אפשרי');
   const stB=(r,s,l)=>`<button class="btn ${r.status===s?(s==='לא אפשרי'?'on-mute':'primary'):''}" data-req-st="${r._id}|${s}" aria-pressed="${r.status===s}">${l}</button>`;
-  const reqCard=r=>`<div class="ann"><div class="ah"><b>${esc(r.byName||'')}</b><span class="pill ${r.status==='חדש'?'p-warn':r.status==='בטיפול'?'p-gold':r.status==='בוצע'?'p-ok':'p-bad'}">${esc(r.status)}</span></div>
+  const reqCard=r=>`<div class="ann"><div class="ah"><b>${esc(r.byName||'')}</b><span class="pill ${r.status==='חדש'?'p-warn':r.status==='בטיפול'?'p-gold':r.status==='בוצע'?'p-ok':'p-mute'}">${esc(r.status)}</span></div>
     <div class="m"><span class="pill p-mute">${esc(r.cat||'אחר')}</span><small>${tsStr(r.ts)}</small></div><p>${esc(r.text||'').replace(/\n/g,'<br>')}</p>${r.note?`<div class="rnote"><small>התשובה למשתתף</small>${esc(r.note)}</div>`:''}
     <div class="gta wrap">${stB(r,'בטיפול','בטיפול')}${stB(r,'בוצע','בוצע ✓')}${stB(r,'לא אפשרי','לא אפשרי')}<button class="btn ghost" data-req-note="${r._id}">הערה למשתתף</button></div></div>`;
   // the header counts what waits for you (as on home); requests already in progress are shown separately
+  // two kinds of work, two tabs: approving volunteers, and handling personal requests
+  const nNew=R.filter(r=>r.status==='חדש').length, tab=V.seg==='claims'||V.seg==='reqs'?V.seg:(C.length||!openR.length?'claims':'reqs');
   return subHead('בקשות ואישורים',`<span class="cnt num">${pendN()}</span>`)+`
-   <div class="ghead"><span>משימות שמחכות לאישור</span><span class="num">${C.length}</span></div>
+   <div class="seg"><button data-seg="claims" aria-pressed="${tab==='claims'}">אישור התנדבות<span class="c num">${C.length}</span></button><button data-seg="reqs" aria-pressed="${tab==='reqs'}">בקשות אישיות<span class="c num">${openR.length}</span></button></div>
+   ${tab==='claims'?`<div class="ghead"><span>משימות שמחכות לאישור</span><span class="num">${C.length}</span></div>
    ${C.length?`<div class="annlist">${C.map(t=>`<div class="ann"><div class="ah"><b>${esc(t.title)}</b></div><p>${esc(t.claimBy||'')} מבקש/ת לקחת את המשימה</p>
      <div class="gta"><button class="btn primary" data-claim-ok="${t._id}">✓ אישור</button><button class="btn ghost" data-claim-no="${t._id}">דחייה</button></div></div>`).join('')}</div>`:card('','<b>אין התנדבויות שמחכות לאישור</b>כשמשתתף ייקח משימה, תאשרו אותה כאן')}
+   <p class="note">משימות שמסומנות "פתוח למשתתפים" בכרטיס המשימה מופיעות אצל המשתתפים ברשימת "פתוחות".</p>`:`
    <div class="ghead"><span>בקשות אישיות</span><span class="num">${R.filter(r=>r.status==='חדש').length} חדשות · ${R.filter(r=>r.status==='בטיפול').length} בטיפול</span></div>
    ${openR.length?`<div class="annlist">${openR.map(reqCard).join('')}</div>`:card('','<b>אין בקשות פתוחות</b>כשמשתתף ישלח בקשה אישית, היא תופיע כאן')}
-   ${doneR.length?`<div class="ghead"><span>טופלו</span><span class="num">${doneR.length}</span></div><div class="annlist">${doneR.map(reqCard).join('')}</div>`:''}
-   <p class="note">משימות שמסומנות "פתוח למשתתפים" בכרטיס המשימה מופיעות אצל המשתתפים ברשימת "פתוחות לקחת".</p>`};
+   ${doneR.length?`<details class="nonebox"><summary><span>טופלו</span><span class="num">${doneR.length}</span></summary><div class="annlist">${doneR.map(reqCard).join('')}</div></details>`:''}`}`};
 // one screen for every message: announcements in the app (with a phone notification) and the ready texts for the WhatsApp group
 SUB.announce=function(){
   const seg=V.seg==='wa'?'wa':'app', L=annList(), joined=S.participants.filter(p=>p.seenAt), not=S.participants.filter(p=>!p.seenAt);
@@ -4806,7 +4928,7 @@ setInterval(pgate,4000);
   let l=document.querySelector('link[rel="manifest"]');if(!l){l=document.createElement('link');l.rel='manifest';document.head.appendChild(l)}l.href=url;
 }catch(e){}})();
 
-const _pickMeBase=pickMe;pickMe=function(){if(GUEST()||!ROLE)return;_pickMeBase();const sh=document.querySelector('#scrim .sheet');if(sh&&ROLE==='org'){const b=document.createElement('button');b.className='btn';b.style.cssText='margin-top:14px;width:100%';b.textContent='👁 תצוגת משתתף (כך זה נראה להם)';b.onclick=()=>{closeSheet();setPrev(true)};sh.appendChild(b);const o=document.createElement('button');o.className='btn ghost';o.style.cssText='margin-top:10px;width:100%';o.textContent='🚪 יציאה וכניסה מחדש כמשתתף';o.onclick=()=>{closeSheet();logoutRole()};sh.appendChild(o)}};
+const _pickMeBase=pickMe;pickMe=function(){if(GUEST()||!ROLE)return;_pickMeBase();const sh=document.querySelector('#scrim .sheet');if(sh&&ROLE==='org'){const hd=document.createElement('div');hd.className='ghead pm-h';hd.innerHTML='<span>תצוגה ויציאה</span>';sh.appendChild(hd);const b=document.createElement('button');b.className='btn';b.style.cssText='width:100%';b.textContent='👁 תצוגת משתתף (כך זה נראה להם)';b.onclick=()=>{closeSheet();setPrev(true)};sh.appendChild(b);const o=document.createElement('button');o.className='btn ghost';o.style.cssText='margin-top:10px;width:100%';o.textContent='🚪 יציאה וכניסה מחדש כמשתתף';o.onclick=()=>{closeSheet();logoutRole()};sh.appendChild(o)}};
 document.body.classList.toggle('guest',GUEST());if(!ROLE)showGate();
 let SEEN_MARKED=false;const _r2=render;render=function(a){_r2(a);if(!SEEN_MARKED&&ROLE.startsWith('guest:')&&!PREV&&db&&loaded.has('participants')){SEEN_MARKED=true;let done=false;try{done=sessionStorage.getItem('seenMark')==='1'}catch(e){}if(!done){try{sessionStorage.setItem('seenMark','1')}catch(e){}const now=new Date().toISOString(),inst=isStandalone(),nt=('Notification' in window)?Notification.permission:'none',me=meG();
    gset('participants/'+ROLE.slice(6),{seenAt:now,lastAt:now,notif:nt,viaSpouse:false,...(inst?{inst:true}:{})});
@@ -4836,7 +4958,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B='a67c167ded';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B='ccd779e0f3';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
