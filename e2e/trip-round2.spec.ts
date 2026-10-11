@@ -1,4 +1,4 @@
-// Participant and organizer features: check-in task, personal messages, tasks for everyone, shared rides, photos, organizer tabs.
+// Participant and organizer features: check-in task, personal messages, tasks for everyone, shared rides, photos, the organizer's tile order.
 import { test, expect, openTrip, TRIP as T, type Db } from './helpers';
 import type { Browser, Page } from '@playwright/test';
 
@@ -61,9 +61,12 @@ test('organizers: personal message and a task for everyone from the messages scr
   await page.evaluate(() => { localStorage.setItem('role', 'org'); });
   await page.reload();
   await expect.poll(() => page.evaluate('COLS.every(c => loaded.has(c))')).toBe(true);
-  // the tabs on top
-  await page.locator('#otabs [data-ot="passports"]').click();
-  await expect(page.locator('#otabs [data-ot="passports"]')).toHaveAttribute('aria-current', 'page');
+  // the home tiles start with passports, participants and tasks
+  await expect(page.locator('.cubes.tiles .cube b').nth(0)).toHaveText('דרכונים');
+  await expect(page.locator('.cubes.tiles .cube b').nth(1)).toHaveText('משתתפים');
+  await expect(page.locator('.cubes.tiles .cube b').nth(2)).toHaveText('משימות');
+  await page.locator('.cubes.tiles .cube').nth(2).click();
+  await expect.poll(() => page.evaluate('V.tab')).toBe('tasks');
   await page.evaluate(`go('more',{sub:'announce'})`);
   await page.locator('[data-ann-mode="one"]').click();
   await page.locator('#annTo').selectOption('p3');
