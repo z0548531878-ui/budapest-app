@@ -81,7 +81,7 @@ test('KPI-1 the organizer home opens with the status strip; each number leads to
   const { page, errors } = await openTrip(browser, db);
   await page.evaluate("go('home')");
   const strip = page.getByRole('region', { name: 'תמונת מצב' });
-  await expect(strip.getByRole('button', { name: /נגבה ממשתתפים/ })).toContainText('50%');
+  await expect(strip.getByRole('button', { name: /נכנס לקופה/ })).toContainText('50%');
   await expect(page.locator('.cubes.tiles').getByRole('button', { name: /דרכונים/ })).toContainText('1/2');
   await expect(page.locator('.cubes.tiles').getByRole('button', { name: /בקשות ואישורים/ })).toContainText('1 ממתינות');
   // late tasks are on the big tasks card under the strip
@@ -114,7 +114,7 @@ test('MOTION-1 with motion on, numbers roll to a changed value and a quick flick
   await expect.poll(() => page.evaluate('COLS.every(c => loaded.has(c))')).toBe(true);
   expect(await page.evaluate('typeof gsap')).toBe('object');
   await page.evaluate("go('home')");
-  const paid = page.getByRole('region', { name: 'תמונת מצב' }).getByRole('button', { name: /נגבה ממשתתפים/ }).locator('.fd .num');
+  const paid = page.getByRole('region', { name: 'תמונת מצב' }).getByRole('button', { name: /נכנס לקופה/ }).locator('.fd .num');
   await expect(paid).toHaveText('50%');
   // another phone marks the second participant as paid: the number rolls up instead of jumping
   await db.put(`${T}/participants/p2`, { name: 'בני לוי', amount: 1750, phone: '0502345678', status: 'שולם', passport: false, order: 2 });
@@ -172,7 +172,7 @@ test('SYNC-1 the same numbers on every tab: collected %, waiting requests; the t
   const { page, errors } = await openTrip(browser, db);
   await page.evaluate("go('home')");
   const strip = page.getByRole('region', { name: 'תמונת מצב' });
-  await expect(strip.getByRole('button', { name: /נגבה ממשתתפים/ })).toContainText('64%');
+  await expect(strip.getByRole('button', { name: /נכנס לקופה/ })).toContainText('2,250');
   await expect(page.locator('.cubes.tiles').getByRole('button', { name: /בקשות ואישורים/ })).toContainText('1 ממתינות');
   await page.evaluate("go('money',{seg:'participants'})");
   await expect(page.locator('#view')).toContainText('נגבה 64%');
@@ -206,6 +206,7 @@ test('PASS-1 the passport button on a participant opens the card: name in Englis
 });
 
 test('PCHECK-1 passport check: paste names and expiry, a short or expired one is flagged, inline edit, and the hotel list in English', async ({ browser, db }) => {
+  test.setTimeout(60_000); // many inline edits; slow when the whole suite runs in parallel
   await seed(db);
   await db.put(`${T}/participants/p3`, { name: 'גדי לוי', amount: 1750, phone: '0503456789', status: 'שולם', passport: true, order: 3 });
   await db.put(`${T}/participants/p4`, { name: 'שלמה זלמן ברסקי', amount: 1750, phone: '0504567890', status: 'שולם', passport: false, order: 4 });

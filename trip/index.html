@@ -1697,6 +1697,21 @@ body.guest .ghome .greet b{font-size:36px;text-shadow:0 0 28px rgba(240,210,140,
 .gcb>.gc::before{content:'‹';grid-column:3;grid-row:1/3;font-size:22px;font-weight:900;color:var(--gold);position:static}
 .gcb>.gc .gc-b{top:50%!important;transform:translateY(-50%);inset-inline-end:40px!important;inset-inline-start:auto!important}
 .gcb>.gc .gc-t,.gcb>.gc .gc-s{justify-self:stretch!important;text-align:right!important;width:auto!important}
+.fin{grid-template-columns:repeat(3,1fr)!important}
+.fbal{align-items:flex-end!important;justify-content:space-between;flex-wrap:nowrap!important;gap:6px!important}
+.fbal .ft{display:flex;flex-direction:column;gap:1px;font-size:inherit;color:inherit}.fbal .ft i{font-style:normal;font-size:11.5px;color:var(--muted);font-weight:800}.fbal .ft u{text-decoration:none;font-size:15px;font-weight:900}
+.fbal .ft.fm{text-align:left}.fbal .ft.fm b{font-size:21px}
+/* participants: a little smaller everywhere */
+body.guest #view{zoom:.9}
+.gcb>.gc,.gcb>.gc.gtrv,.gcb>.gc:nth-child(n){min-height:62px!important;padding:9px 12px!important;grid-template-columns:42px 1fr 16px}
+.gcb>.gc .gc-i{width:42px!important;height:42px!important;border-radius:13px}.gcb>.gc .gc-t{font-size:16px!important}.gcb>.gc .gc-s{font-size:12.5px!important}
+.gway{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 14px}
+.gw{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:18px;border:1px solid rgba(214,178,98,.4);background:linear-gradient(160deg,#211b10,#0e0c09);color:var(--ink);text-decoration:none;animation:rdyIn .6s .2s cubic-bezier(.2,.85,.25,1.1) both}
+.gw:active{transform:scale(.96)}
+.gw-i{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:var(--goldbtn);color:#15110a;font-size:20px;flex:0 0 auto}.gw-i svg{width:20px;height:20px}
+.gw b{display:block;font-size:15px}.gw small{display:block;font-size:12px;color:var(--muted)}
+.gw.taxi .gw-i{background:linear-gradient(150deg,#34d186,#1a9c5c);color:#fff}
+@media (prefers-reduced-motion:reduce){.gw{animation:none!important}}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -1989,8 +2004,8 @@ const VIEWS={
   const kpi=(cls,v,l,to,o)=>`<button class="kpi ${cls}" data-go="${to}" data-opts='${esc(JSON.stringify(o||{}))}'><b class="num"${/^\d+%?$/.test(String(v))?` data-count="${parseInt(v)}"${String(v).endsWith('%')?' data-fmt="pct"':''}`:''}>${v}</b><span>${l}</span></button>`;
   const fin=ready('participants','expenses','donations')?(()=>{const m=money(),go=sg=>`data-go="money" data-opts='{"seg":"${sg}"}'`,pc=(a,b)=>b?Math.max(0,Math.min(100,Math.round(a/b*100))):0,R=26,C=2*Math.PI*R;
     const dial=(cls,p,lbl,v,sg,cnt)=>`<button class="fc ${cls}" ${go(sg)}><span class="fd"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="${R}" fill="none" stroke="rgba(214,178,98,.16)" stroke-width="6"/><circle class="rg" cx="32" cy="32" r="${R}" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-dasharray="${C}" style="--c:${C};--o:${C*(1-p/100)}" transform="rotate(-90 32 32)"/></svg><b class="num"${cnt?` data-count="${p}" data-fmt="pct"`:''}>${p}%</b></span><span class="fl">${lbl}</span><small class="num">${v}</small></button>`;
-    return `<section class="fin" aria-label="תמונת מצב"><button class="fbal ${m.gap<0?'bad':'ok'}" ${go('sum')}><span>מאזן צפוי</span><b class="num">${m.gap<0?'−':'+'}${ils(Math.abs(m.gap))}</b><small>${m.gap<0?'חסר לכיסוי ההוצאות':'יישאר עודף'}</small></button>
-    ${dial(pct>=90?'ok':pct>=60?'mid':'bad',pct,'נגבה ממשתתפים',ils(m.pIn),'participants',1)}${dial('ok',pc(m.pIn+m.dIn,m.income),'נכנס לקופה',ils(m.pIn+m.dIn),'sum')}${dial('mid',pc(m.out,m.est),'שולם לספקים',ils(m.out),'expenses')}${dial('bad',pc(m.left,m.est),'נותר לשלם',ils(m.left),'expenses')}</section>`})():`<div class="fin">${'<div class="fc skel shimmer"></div>'.repeat(4)}</div>`;
+    return `<section class="fin" aria-label="תמונת מצב"><button class="fbal ${m.gap<0?'bad':'ok'}" ${go('sum')}><span class="ft"><i>הכנסות</i><u class="num pos">${ils(m.income)}</u></span><span class="ft"><i>הוצאות</i><u class="num neg">${ils(m.est)}</u></span><span class="ft fm"><i>מאזן צפוי</i><b class="num">${m.gap<0?'−':'+'}${ils(Math.abs(m.gap))}</b></span></button>
+    ${dial(pc(m.pIn+m.dIn,m.income)>=90?'ok':pc(m.pIn+m.dIn,m.income)>=60?'mid':'bad',pc(m.pIn+m.dIn,m.income),'נכנס לקופה',ils(m.pIn+m.dIn),'participants',1)}${dial('mid',pc(m.out,m.est),'שולם לספקים',ils(m.out),'expenses')}${dial('bad',pc(m.left,m.est),'נותר לשלם',ils(m.left),'expenses')}</section>`})():`<div class="fin">${'<div class="fc skel shimmer"></div>'.repeat(4)}</div>`;
   const attention=fires.length?`<section class="sec"><div class="sec-h"><h3>דורש תשומת לב</h3><button class="link" data-go="more">כל התובנות ›</button></div>${card(fires.map(([c,l,to,o])=>`<button class="row" data-go="${to}" data-opts='${esc(JSON.stringify(o))}'><span class="pill ${c}">!</span><div class="main"><div class="t">${esc(l)}</div></div><span aria-hidden="true" style="color:var(--muted)">‹</span></button>`).join(''))}</section>`:'';
   return `<div class="hello"><div class="greet">${greeting()}<b>${ME?esc(ME):'ברוכים הבאים'}</b></div><span class="date">${today}</span></div>
   <section class="pass"><span class="shine"></span><div class="pass-main"><div class="pass-top"><span>${out?`אל על · <span class="ltr">${esc(out.flightNo)}</span>`:'טיסת הלוך'}</span><span>חמישי 19.11</span></div>
@@ -3587,13 +3602,15 @@ function guestHTML0(){
       return `<section class="rdy ${pct===100?'full':''}" aria-label="המוכנות שלכם למסע"><div class="rdy-top"><div class="rdy-ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="${R}" fill="none" stroke="rgba(214,178,98,.18)" stroke-width="8"/><circle class="rg" cx="60" cy="60" r="${R}" fill="none" stroke="url(#rdg)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" style="--c:${C};--o:${C*(1-pct/100)}" transform="rotate(-90 60 60)"/><defs><linearGradient id="rdg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b8862f"/><stop offset="1" stop-color="#ffe9a8"/></linearGradient></defs></svg><b class="num">${pct}%</b></div>
        <div class="rdy-h"><small>המוכנות שלכם</small><b>${pct===100?'הכל מוכן ✈':ok+' מתוך '+items.length+' בוצעו'}</b><span>${pct===100?'נשאר רק לארוז ולבוא':'עוד רגע וסיימתם'}</span></div></div>
        <div class="rdy-l">${items.map(([o,l,sb,g,ic],i)=>{const t=o?'div':'button';return `<${t} class="ri ${o?'ok':'bad'}" ${o?'':`data-gnav="${g}"`} style="--i:${i}"><span class="ri-i">${ic}</span><span class="ri-t"><b>${l}</b><small>${sb}</small></span><span class="ri-c">${o?'✓':'‹'}</span></${t}>`}).join('')}
-       <a class="ri rnav" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener" style="--i:3"><span class="ri-i">${IX.nav}</span><span class="ri-t"><b>חזרה למלון</b><small>אבדתם? נחזיר אתכם</small></span><span class="ri-c">‹</span></a></div></section>`})();
+</div></section>`})();
+    const BOLT=/Android/i.test(navigator.userAgent)?'intent://#Intent;package=ee.mtakso.client;S.browser_fallback_url='+encodeURIComponent('https://play.google.com/store/apps/details?id=ee.mtakso.client')+';end':'https://bolt.eu/';
+    const way=`<section class="gway" aria-label="בדרכים"><a class="gw" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener"><span class="gw-i">${IX.nav}</span><span><b>ניווט למלון</b><small>הליכה במפות</small></span></a><a class="gw taxi" href="${BOLT}" data-bolt rel="noopener"><span class="gw-i">🚕</span><span><b>הזמנת מונית</b><small>פותח את Bolt</small></span></a></section>`;
     const SKY='<div class="gsky" aria-hidden="true">'+[[8,14,0],[22,6,.8],[35,22,1.6],[48,9,.4],[61,18,2.1],[74,5,1.2],[86,16,.2],[93,8,1.9],[14,30,2.4],[67,34,.9]].map(([x,y,d])=>`<i style="inset-inline-start:${x}%;top:${y}%;animation-delay:${d}s"></i>`).join('')+'<svg viewBox="0 0 400 90" preserveAspectRatio="xMidYMax slice"><path d="M0 90V70h30v-8h14v8h22V58h10v12h18V64h8v-6h6v6h8v6h26V52c0-9 8-14 16-18v-8l3-9 3 9v8c8 4 16 9 16 18v18h26V60h12v10h22v-6h10v6h26V56h12v14h30v-8h16v8h30v20z" fill="#0b0905" stroke="#c99a3d" stroke-opacity=".28" stroke-width="1"/></svg></div>';
     const ph=orgPhone();
     const help=`<section class="ghelp" aria-label="עזרה"><div><b>צריכים עזרה?</b><small>שלומי, מארגן המסע · <span class="num ltr">${esc(fmtPhone(ph))}</span></small></div>
       <a class="btn" href="${telLink(ph)}" aria-label="שיחה לשלומי">${I.phone}<span>שיחה</span></a><a class="btn" href="${waLink(ph)}" target="_blank" rel="noopener" aria-label="וואטסאפ לשלומי">${IX.wa||'💬'}<span>וואטסאפ</span></a><a class="btn sos" href="tel:112" aria-label="חירום 112">112</a></section>`;
     return pv+`<div class="ghome">${SKY}<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(coupleLabel(ppl,me)||'')}</b></div></div>
-     ${nowCard('data-gnav="gl"')}${banner}${TRIPDAY()?tripDayBlock(ppl):passBlock+extraOut+ready}
+     ${nowCard('data-gnav="gl"')}${banner}${TRIPDAY()?tripDayBlock(ppl):passBlock+extraOut+ready}${way}
      <div class="gcb">
       ${cube('gz',IX.pin,'קרעסטיר','על רבי ישעיה׳לה ועל הציון')}
       ${cube('gx',IX.food,'מסעדות ואטרקציות','איפה אוכלים כשר, ומה כדאי לראות')}
@@ -3862,6 +3879,7 @@ function peopleList(rows){
      <div class="main"><div class="t"><span class="fn">${esc(famKey(p.name).first)}</span> <b class="ln">${esc(famKey(p.name).last)}</b></div><div class="m">${p.phone?'':'<span style="color:var(--warn)">אין טלפון</span>'}${p.notes?`<span>${esc(p.notes)}</span>`:''}</div></div>
      <div class="acts">${(()=>{const k=passState(p)[0],pk=k==='ok'||k==='warn'?'ok':k==='bad'?'bad':'';return `<button class="ab ${payCls(p).slice(2)}" data-pay="${p._id}" aria-label="תשלום של ${esc(p.name)}: ${esc(p.status)}">₪</button><button class="ab ${pk}" data-ppass="${p._id}" aria-label="הדרכון של ${esc(p.name)}">🛂</button>${p.phone?`<a class="ab" href="tel:${esc(p.phone)}" data-stop aria-label="שיחה עם ${esc(p.name)}">📞</a><a class="ab wa" href="${waLink(p.phone)}" target="_blank" rel="noopener" data-stop aria-label="וואטסאפ ל${esc(p.name)}">💬</a>`:''}`})()}</div></div>`}).join('')),'').join('')}
 
+document.addEventListener('click',e=>{if(e.target.closest('[data-bolt]')){try{navigator.clipboard.writeText(HOTEL.en)}catch(x){}toast('כתובת המלון הועתקה. הדביקו אותה ב־Bolt כיעד')}});
 /* ===== handlers: kits ===== */
 document.addEventListener('click',e=>{
   if(GUEST())return;const T=e.target;
