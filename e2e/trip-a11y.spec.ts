@@ -98,7 +98,7 @@ test('A11Y-4 the participant app: every screen opens without errors and passes a
   await expect.poll(() => page.evaluate('COLS.every(c => loaded.has(c))')).toBe(true);
   await expect(page.locator('body.guest')).toHaveCount(1);
   const found: string[] = [];
-  for (const t of ['gh', 'gx', 'gl', 'gp', 'gr', 'gt', 'gm', 'gq', 'gf']) {
+  for (const t of ['gh', 'gx', 'gl', 'gp', 'gr', 'gt', 'gm', 'gq', 'gf', 'gk', 'gd', 'gi']) {
     await page.evaluate(`GTAB='${t}';render(true);scrollTo(0,0)`);
     await expect(page.locator('#view')).not.toBeEmpty();
     found.push(...await axe(page, 'guest ' + t));

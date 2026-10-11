@@ -40,9 +40,24 @@ exports.tripPush = functions.region('europe-west1').firestore.document('trips/{t
     if (after.kind === 'ann' && after.prog && !before) {
       return send(trip, () => true, '⏰ שינוי בלוח המסע', trim(after.text, 140), 'gl', 'prog_' + after.prog);
     }
-    // new announcement for everyone
+    // new announcement: for everyone, or (with 'to') only for that participant and their spouse
     if (after.kind === 'ann' && !after.hidden && !(before && before.kind === 'ann' && !before.hidden)) {
-      return send(trip, guests, 'הודעה מהמארגנים' + (after.title ? ': ' + trim(after.title, 40) : ''), trim(after.text, 140), 'gm', 'ann_' + id);
+      const to = Array.isArray(after.to) ? after.to : [];
+      const who = to.length ? r => guests(r) && (r.pids || []).some(p => to.includes(p)) : guests;
+      return send(trip, who, (to.length ? 'הודעה אישית מהמארגנים' : 'הודעה מהמארגנים') + (after.title ? ': ' + trim(after.title, 40) : ''), trim(after.text, 140), 'gm', 'ann_' + id);
+    }
+    // a task for every participant
+    if (after.kind === 'gtask' && !after.hidden && !before) {
+      return send(trip, guests, 'משימה חדשה לכל המשתתפים', trim(after.title, 100), 'gt', 'gt_' + id);
+    }
+    // someone joined a shared ride: tell the person who posted it
+    if (after.kind === 'ride' && before && !after.hidden) {
+      const was = before.join || [], added = (after.join || []).filter(p => !was.includes(p));
+      if (added.length) {
+        const ps = await Promise.all(added.map(p => db.doc(`trips/${trip}/participants/${p}`).get()));
+        const names = ps.map(d => (d.exists && d.data().name) || '').filter(Boolean).join(', ');
+        return send(trip, r => guests(r) && (r.pids || []).includes(after.by), 'מצטרפים לנסיעה שלך לשדה', trim((names || 'משתתף') + ' הצטרף/ה לנסיעה' + (after.time ? ' של ' + after.time : ''), 120), 'gd', 'ride_' + id);
+      }
     }
     // personal request: new one goes to organizers, a status change goes to the requester
     if (after.kind === 'req') {
@@ -69,5 +84,28 @@ exports.tripPush = functions.region('europe-west1').firestore.document('trips/{t
     if (newly.length) {
       return send(trip, r => guests(r) && (r.names || []).some(n => newly.includes(n)), 'משימה חדשה בשבילך', trim(after.title, 100), 'gt', 'ow_' + id);
     }
+  }
+});
+
+// Check-in reminder: 24 hours before each flight, everyone on it gets a notification (once per flight).
+// Flight times are local: outbound leaves Israel (UTC+2 in November), the return leaves Budapest (UTC+1).
+const flightAt = f => {
+  const t = String(f.dep || '').replace(/[^\d:]/g, '');
+  if (!f.date || !t) return 0;
+  return new Date(`${f.date}T${t.padStart(5, '0')}:00${f.dir === 'חזור' ? '+01:00' : '+02:00'}`).getTime();
+};
+exports.checkinReminder = functions.region('europe-west1').pubsub.schedule('every 15 minutes').onRun(async () => {
+  const now = Date.now();
+  const flights = await db.collectionGroup('flights').get();
+  for (const doc of flights.docs) {
+    const f = doc.data(), at = flightAt(f), trip = doc.ref.parent.parent && doc.ref.parent.parent.id;
+    if (!trip || trip.length < 24 || f.ciSent || !at || now < at - 864e5 || now >= at) continue;
+    const ps = await db.collection(`trips/${trip}/participants`).get();
+    const pax = ps.docs.filter(d => {
+      const p = d.data();
+      return f.dir === 'הלוך' ? (p.outbound || 'קבוצתי') === (f.group || 'קבוצתי') : p.returnGroup === f.group;
+    }).map(d => d.id);
+    await doc.ref.set({ ciSent: true }, { merge: true });
+    if (pax.length) await send(trip, r => guests(r) && (r.pids || []).some(p => pax.includes(p)), '✈ הצ׳ק־אין לטיסה נפתח', 'עשו צ׳ק־אין לטיסה ' + trim(f.flightNo, 12) + ' ושמרו את כרטיס העלייה בטלפון', 'gt', 'ci_' + doc.id);
   }
 });
