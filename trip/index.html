@@ -3266,15 +3266,27 @@ function toast(m,undo){document.querySelectorAll('.toast').forEach(x=>x.remove()
   requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));toastT=setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300)},undo?4000:2200)}
 async function copy(s){try{await navigator.clipboard.writeText(s);toast('הועתק')}catch(e){toast('סמנו את הטקסט והעתיקו')}}
 function setMe(n){ME=n;try{localStorage.setItem('me',n)}catch(e){}closeSheet();render(true);toast('שלום '+n)}
-const failMsg=(err,del)=>err&&err.code==='permission-denied'?`${del?'המחיקה':'השמירה'} לא אושרה. כנראה זו גרסה ישנה של האפליקציה: סגרו אותה לגמרי ופתחו מחדש`:`${del?'המחיקה':'השמירה'} לא הצליחה. נסו שוב`;
+const failMsg=(err,del)=>err&&err.code==='permission-denied'?`${del?'המחיקה':'השמירה'} נדחתה: אין הרשאה לעשות את זה. אם זה חוזר, סגרו את האפליקציה ופתחו שוב, ואם זה לא עוזר ספרו לשלומי`:`${del?'המחיקה':'השמירה'} לא הצליחה. נסו שוב`;
 // Firestore shows a write on screen at once and keeps it on the phone until it reaches the server, but its promise
 // only settles then, which with a weak signal can take minutes; so we never wait for it, and a refusal shows up as a toast
-function commit(p,del){p.catch(err=>toast(failMsg(err,del)))}  // (a write the SDK refuses outright, e.g. an undefined field, throws at once: callers catch that)
+let PEND=0,PENDSHOWN=false,PENDT;
+function pendUI(){let el=document.getElementById('syncpill');if(!el){el=document.createElement('div');el.id='syncpill';el.setAttribute('role','status');el.style.cssText='position:fixed;inset-inline:0;bottom:calc(84px + env(safe-area-inset-bottom));margin:auto;width:max-content;max-width:90vw;z-index:60;padding:6px 14px;border-radius:99px;font-size:13px;background:#1b1710;color:#e0b25a;border:1px solid rgba(224,178,90,.45);display:none;pointer-events:none';document.body.appendChild(el)}
+  if(PEND>0){el.style.display='block';el.textContent=navigator.onLine?`⏳ ${PEND} שינויים בדרך לשרת`:`📵 ${PEND} שינויים נשמרו בטלפון, יישלחו כשתחזור הקליטה`;PENDSHOWN=true}
+  else if(PENDSHOWN){PENDSHOWN=false;el.style.display='block';el.textContent='✓ הכל נשמר בשרת';clearTimeout(PENDT);PENDT=setTimeout(()=>{if(!PEND)el.style.display='none'},1800)}}
+addEventListener('online',pendUI);addEventListener('offline',pendUI);
+function commit(p,del){PEND++;const t=setTimeout(pendUI,1500);const done=()=>{PEND--;clearTimeout(t);pendUI()};p.then(done,err=>{done();toast(failMsg(err,del))})}  // (a write the SDK refuses outright, e.g. an undefined field, throws at once: callers catch that)
 async function save(c,id,data){
   if(c==='packing')data=normPack(data,find(c,id));
   if(!db){toast('אין עדיין חיבור לנתוני המסע. פתחו את האפליקציה מהקישור של הצוות');return false}
   const prev=find(c,id);
-  try{commit(db.doc(c+'/'+id).set(data))}catch(err){toast(failMsg(err));return false}
+  try{
+    if(prev){ // only the fields this save changed go to the server, so a parallel edit of another field by someone else is not overwritten
+      const d={};for(const k of Object.keys(data)){if(k!=='_id'&&JSON.stringify(data[k])!==JSON.stringify(prev[k]))d[k]=data[k]}
+      const FV=window.firebase&&firebase.firestore&&firebase.firestore.FieldValue;
+      if(FV)for(const k of Object.keys(prev)){if(k!=='_id'&&!(k in data)&&prev[k]!==undefined)d[k]=FV.delete()}
+      if(Object.keys(d).length)commit(db.doc(c+'/'+id).set(d,{merge:true}))}
+    else commit(db.doc(c+'/'+id).set(data))
+  }catch(err){toast(failMsg(err));return false}
   try{linkSync(c,id,data,prev)}catch(e){}
   logAct(prev?'edit':'set',c,id,data,prev);return true
 }
@@ -4518,7 +4530,7 @@ function pgate(){
       ${DEFER?'<button class="gbtn" id="pinst">הוספה למסך הבית</button>':''}
       <ol class="pst">${steps.map(s=>`<li>${s}</li>`).join('')}</ol>
       ${isIOS()?'<p class="gsub">לא רואים "הוסף למסך הבית"? גללו למטה ברשימה, או לחצו "ערוך פעולות".</p>':''}
-      <button class="glink" id="pskip">אני מארגן, להמשיך בלי התקנה</button>`}
+      <button class="glink" id="pskip">להמשיך כרגע בדפדפן</button>`}
   else if(st==='inapp'){
     const and=!isIOS(), u=new URL(appLink());
     // Android: an intent link opens the same address straight in Chrome; the key rides in ?k= because the intent syntax takes the #
@@ -4527,15 +4539,15 @@ function pgate(){
       ${and?`<a class="gbtn" id="pchrome" href="${esc(intent)}" style="display:grid;place-items:center;text-decoration:none">פתיחה ב־Chrome</a>`:''}
       <ol class="pst">${(and?['אם הכפתור לא עבד: לחצו על <b>⋮</b> בפינה','בחרו <b>"פתיחה ב־Chrome"</b> או <b>"פתיחה בדפדפן"</b>']:['לחצו על <b>⋯</b> או על <b>⬆︎</b> בפינת המסך','בחרו <b>"פתיחה ב־Safari"</b> או <b>"פתיחה בדפדפן"</b>','לא מופיע? העתיקו את הקישור והדביקו ב־Safari']).map(s=>`<li>${s}</li>`).join('')}</ol>
       <button class="gbtn alt" id="pcopy">העתקת הקישור</button>
-      <button class="glink" id="pskip">אני מארגן, להמשיך בכל זאת</button>`}
+      <button class="glink" id="pskip">להמשיך כרגע בדפדפן</button>`}
   else if(st==='old'){
-    h=`${logo}<h1>צריך לעדכן את האייפון</h1><p>התראות לאפליקציה עובדות רק מגרסה 16.4 ומעלה של iOS.</p><ol class="pst">${['פתחו <b>הגדרות</b>, <b>כללי</b>, <b>עדכון תוכנה</b>','התקינו את העדכון','פתחו שוב את הקישור'].map(s=>`<li>${s}</li>`).join('')}</ol><button class="glink" id="pskip">אני מארגן, להמשיך בכל זאת</button>`}
+    h=`${logo}<h1>צריך לעדכן את האייפון</h1><p>התראות לאפליקציה עובדות רק מגרסה 16.4 ומעלה של iOS.</p><ol class="pst">${['פתחו <b>הגדרות</b>, <b>כללי</b>, <b>עדכון תוכנה</b>','התקינו את העדכון','פתחו שוב את הקישור'].map(s=>`<li>${s}</li>`).join('')}</ol><button class="glink" id="pskip">להמשיך כרגע בדפדפן</button>`}
   else if(st==='ask'){
-    h=`${logo}<h1>הפעלת התראות</h1><p>נשלח לכם התראה בכל הודעה מהמארגנים ובכל משימה חדשה. בלי זה אפשר לפספס שינויים בלוז.</p><button class="gbtn" id="pask">הפעלת התראות</button><p class="gsub">בחלון שייפתח לחצו על "אפשר".</p><button class="glink" id="pskip">אני מארגן, להמשיך בלי התראות</button>`}
+    h=`${logo}<h1>הפעלת התראות</h1><p>נשלח לכם התראה בכל הודעה מהמארגנים ובכל משימה חדשה. בלי זה אפשר לפספס שינויים בלוז.</p><button class="gbtn" id="pask">הפעלת התראות</button><p class="gsub">בחלון שייפתח לחצו על "אפשר".</p><button class="glink" id="pskip">להמשיך כרגע בלי התראות</button>`}
   else if(st==='denied'){
-    h=`${logo}<h1>ההתראות חסומות</h1><p>כדי להמשיך צריך לאפשר התראות לאפליקציה.</p><ol class="pst">${(isIOS()?['פתחו <b>הגדרות</b> בטלפון','גללו אל האפליקציה "בודפשט"','בחרו <b>התראות</b> והפעילו "אפשר התראות"']:['לחצו לחיצה ארוכה על אייקון האפליקציה','בחרו <b>מידע על האפליקציה</b>, ואז <b>התראות</b>','הפעילו את ההתראות']).map(s=>`<li>${s}</li>`).join('')}</ol><button class="gbtn" id="pchk">הפעלתי, בדיקה מחדש</button>`}
+    h=`${logo}<h1>ההתראות חסומות</h1><p>כדי להמשיך צריך לאפשר התראות לאפליקציה.</p><ol class="pst">${(isIOS()?['פתחו <b>הגדרות</b> בטלפון','גללו אל האפליקציה "בודפשט"','בחרו <b>התראות</b> והפעילו "אפשר התראות"']:['לחצו לחיצה ארוכה על אייקון האפליקציה','בחרו <b>מידע על האפליקציה</b>, ואז <b>התראות</b>','הפעילו את ההתראות']).map(s=>`<li>${s}</li>`).join('')}</ol><button class="gbtn" id="pchk">הפעלתי, בדיקה מחדש</button><button class="glink" id="pskip">להמשיך כרגע בלי התראות</button>`}
   else{
-    h=`${logo}<h1>המכשיר לא נתמך</h1><p>הדפדפן הזה לא תומך בהתראות. עדכנו את מערכת ההפעלה או פתחו בטלפון אחר.</p><button class="glink" id="pchk">בדיקה מחדש</button>`}
+    h=`${logo}<h1>המכשיר לא נתמך</h1><p>הדפדפן הזה לא תומך בהתראות. עדכנו את מערכת ההפעלה או פתחו בטלפון אחר.</p><button class="glink" id="pchk">בדיקה מחדש</button><button class="glink" id="pskip">להמשיך כרגע בדפדפן</button>`}
   el.innerHTML=`<div class="gbox">${h}</div>`}
 async function loadMsg(){
   if(window.firebase&&firebase.messaging)return;
@@ -4572,7 +4584,9 @@ document.addEventListener('click',e=>{
   if(T.closest('#pskip')){try{sessionStorage.setItem('skipInst','1')}catch(x){}pgate();return}
   if(T.closest('#pinst')&&DEFER){DEFER.prompt();DEFER.userChoice.finally(()=>{DEFER=null;pgate()});return}
 },true);
-if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>{const t=e.data&&e.data.tab;if(t&&GUEST()){GTAB=t;render(true)}});
+const openTab=t=>{if(!t)return;if(GUEST()){if(GNAV.concat([['gm'],['gk'],['gx'],['gp'],['gf']]).some(n=>n[0]===t)){GTAB=t;render(true)}}else if(ROLE==='org'&&NAV.some(n=>n[0]===t))go(t)};
+if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>openTab(e.data&&e.data.tab));
+addEventListener('hashchange',()=>{const m=location.hash.match(/tab=([a-z]+)/);if(m)openTab(m[1])});
 const _rp=render;render=function(a){_rp(a);pgate()};
 setInterval(pgate,4000);
 
