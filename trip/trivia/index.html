@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>טריוויה על גלגלים</title>
+<meta name="description" content="משחק הטריוויה של מסע הגיבוש להונגריה · עצמאי, ראש בראש וקבוצתי">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="שיעור מבקשי ה׳">
+<meta property="og:title" content="טריוויה על גלגלים · משחק הטריוויה של המסע">
+<meta property="og:description" content="עצמאי, ראש בראש וקבוצתי · אלפי שאלות · נכנסים ומשחקים">
+<meta property="og:url" content="https://z0548531878-ui.github.io/budapest-app/">
+<meta property="og:image" content="https://z0548531878-ui.github.io/budapest-app/play/og.jpg">
+<meta property="og:image:secure_url" content="https://z0548531878-ui.github.io/budapest-app/play/og.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="he_IL">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://z0548531878-ui.github.io/budapest-app/play/og.jpg">
+<meta name="theme-color" content="#0b0a07">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="טריוויה">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<style>
+  html,body{margin:0;height:100%;background:#0b0a07;overflow:hidden;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;}
+  /* המשחק עצמו (הדף הראשי) מוצג על כל המסך */
+  #game{position:fixed;left:env(safe-area-inset-left,0px);right:env(safe-area-inset-right,0px);top:env(safe-area-inset-top,0px);bottom:env(safe-area-inset-bottom,0px);
+    width:calc(100% - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px));height:calc(100% - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));border:0;background:#0b0a07;}
+  /* חלון ההתקנה — מופיע מיד כשנכנסים מהדפדפן */
+  #veil{position:fixed;inset:0;z-index:10;background:rgba(5,4,2,.72);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:none;align-items:flex-end;justify-content:center;}
+  #veil.on{display:flex;animation:fade .3s ease-out both;}
+  .sheet{width:100%;max-width:480px;box-sizing:border-box;background:linear-gradient(180deg,#26200f,#14110a);color:#f2ead3;border:1px solid rgba(212,175,55,.6);border-bottom:0;
+    border-radius:24px 24px 0 0;padding:22px 20px calc(18px + env(safe-area-inset-bottom,0px));text-align:center;box-shadow:0 -12px 40px rgba(0,0,0,.6);animation:up .45s cubic-bezier(.2,1.2,.4,1) both;}
+  .sheet img{width:84px;height:84px;border-radius:20px;box-shadow:0 6px 20px rgba(0,0,0,.5),0 0 0 2px rgba(212,175,55,.5);animation:bob 2.6s ease-in-out infinite;}
+  .sheet h2{margin:12px 0 4px;font-size:23px;color:#F3D98B;font-weight:900;}
+  .sheet p{margin:0 0 14px;font-size:15.5px;line-height:1.55;color:#d8cfb5;}
+  .steps{list-style:none;margin:0 0 14px;padding:0;text-align:right;display:flex;flex-direction:column;gap:8px;}
+  .steps li{background:rgba(212,175,55,.09);border:1px solid rgba(212,175,55,.3);border-radius:14px;padding:10px 12px;font-size:16px;font-weight:700;display:flex;align-items:center;gap:10px;}
+  .steps li i{font-style:normal;flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#D4AF37;color:#1B1706;display:flex;align-items:center;justify-content:center;font-weight:900;}
+  .steps b{color:#F3D98B;}
+  .go{display:block;width:100%;border:0;border-radius:16px;padding:15px;font:900 18px/1.2 system-ui,Arial,sans-serif;color:#1B1706;cursor:pointer;text-decoration:none;box-sizing:border-box;
+    background:linear-gradient(180deg,#F3D98B,#D4AF37);box-shadow:0 5px 0 #8A6E1E,0 10px 24px rgba(0,0,0,.45);}
+  .go:active{transform:translateY(3px);box-shadow:0 2px 0 #8A6E1E;}
+  .later{display:block;width:100%;margin-top:10px;background:transparent;border:1px solid rgba(255,255,255,.18);border-radius:14px;color:#bdb39a;padding:12px;font:700 15px system-ui,Arial,sans-serif;cursor:pointer;}
+  .ok{font-size:18px;font-weight:900;color:#8FE3A6;margin:6px 0 12px;}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  @keyframes up{from{transform:translateY(60px);opacity:0}to{transform:none;opacity:1}}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+</style>
+</head>
+<body>
+<iframe id="game" title="טריוויה על גלגלים" allow="autoplay; screen-wake-lock; fullscreen; clipboard-write"></iframe>
+<div id="veil" role="dialog" aria-modal="true" aria-label="התקנת הטריוויה כאפליקציה"><div class="sheet" id="sheet"></div></div>
+<script>
+(function(){
+  // המשחק נמצא בדף הראשי של האתר (שתי תיקיות למעלה). ?app=1 אומר לו לא לחזור לכאן.
+  var f=document.getElementById('game'), q=location.search?location.search+'&app=1':'?app=1';
+  f.src='../../'+q+location.hash;
+
+  var ua=navigator.userAgent, ios=/iPhone|iPad|iPod/i.test(ua) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1), android=/Android/i.test(ua);
+  var inApp=/FBAN|FBAV|FB_IAB|Instagram|WhatsApp|Telegram|Line\/|MicroMessenger|Snapchat|TikTok|; wv\)/i.test(ua) || (ios && !/Safari\//.test(ua));
+  var standalone=(window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone===true;
+  var veil=document.getElementById('veil'), sheet=document.getElementById('sheet'), ev=null, KEY='trivia_inst_later';
+  var HEAD='<img src="icon-192.png" alt=""><h2>טריוויה על גלגלים</h2><p>מתקינים פעם אחת כאפליקציה — ומאז נכנסים ישר מהאייקון במסך הבית, על כל המסך, בלי דפדפן.</p>';
+  function li(n,t){ return '<li><i>'+n+'</i><span>'+t+'</span></li>'; }
+  function later(){ veil.classList.remove('on'); try{ sessionStorage.setItem(KEY,'1'); }catch(e){} }
+  function render(){
+    var body;
+    if(ev){
+      body='<button class="go" id="do">📲 התקנה עכשיו</button>';
+    } else if(inApp && android){
+      var url=location.href.replace(/^https?:\/\//,'');
+      body='<ul class="steps">'+li(1,'הקישור נפתח בתוך וואטסאפ — שם אי אפשר להתקין')+li(2,'לוחצים על הכפתור, והמשחק ייפתח ב<b>כרום</b> עם כפתור התקנה')+'</ul>'
+        +'<a class="go" href="intent://'+url+'#Intent;scheme=https;package=com.android.chrome;end">פתיחה בכרום</a>';
+    } else if(inApp && ios){
+      body='<ul class="steps">'+li(1,'הקישור נפתח בתוך אפליקציה אחרת — שם אי אפשר להתקין')+li(2,'לוחצים על <b>⋯</b> או על סמל המצפן, ובוחרים <b>"פתיחה בספארי"</b>')+li(3,'בספארי יופיעו הוראות ההתקנה')+'</ul>';
+    } else if(ios){
+      body='<ul class="steps">'+li(1,'לוחצים על כפתור <b>השיתוף</b> ⬆️ בשורה התחתונה')+li(2,'גוללים ובוחרים <b>"הוספה למסך הבית"</b> ➕')+li(3,'לוחצים <b>"הוספה"</b> — והאייקון מופיע במסך הבית')+'</ul>';
+    } else {
+      body='<ul class="steps">'+li(1,'לוחצים על <b>⋮</b> (שלוש הנקודות) למעלה')+li(2,'בוחרים <b>"התקנת אפליקציה"</b> (או "הוספה למסך הבית" ← <b>"התקנה"</b>)')+li(3,'מאשרים — והטריוויה מופיעה כאפליקציה במסך הבית')+'</ul>';
+    }
+    sheet.innerHTML=HEAD+body+'<button class="later" id="later">המשך בינתיים בדפדפן</button>';
+    document.getElementById('later').onclick=later;
+    var d=document.getElementById('do');
+    if(d) d.onclick=function(){ var e=ev; ev=null; e.prompt(); e.userChoice.then(function(c){ if(c && c.outcome==='accepted') done(); else render(); }).catch(render); };
+  }
+  function done(){ sheet.innerHTML=HEAD+'<div class="ok">✓ הותקן! מעכשיו נכנסים מהאייקון "טריוויה" במסך הבית</div><button class="later" id="later">המשך לשחק</button>'; document.getElementById('later').onclick=later; }
+  var skip=false; try{ skip=sessionStorage.getItem(KEY)==='1'; }catch(e){}
+  if(false){ // בתוך אפליקציית המסע לא מציעים התקנה
+    render(); setTimeout(function(){ veil.classList.add('on'); }, 500);
+    window.addEventListener('beforeinstallprompt',function(e){ e.preventDefault(); ev=e; render(); });
+    window.addEventListener('appinstalled',function(){ ev=null; if(veil.classList.contains('on')) done(); });
+  }
+  // אפליקציית המסע רושמת service worker לתיקייה שלה — הוא מחזיק גם את הדף הזה בטלפון
+  try{ if('serviceWorker' in navigator && location.protocol==='https:') navigator.serviceWorker.register('../sw.js').catch(function(){}); }catch(e){}
+})();
+</script>
+</body>
+</html>
