@@ -17,10 +17,25 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script defer src="vendor/gsap-3.15.0.min.js"></script>
 <script defer src="vendor/lenis-1.3.26.min.js"></script>
-<style>html,body{margin:0;padding:0;background:#0b0a08}html.lenis,html.lenis body{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!important}.lenis [data-lenis-prevent],.lenis .sheet{overscroll-behavior:contain}</style>
+<style>html,body{margin:0;padding:0;background:#0b0a08}html.lenis,html.lenis body{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!important}.lenis [data-lenis-prevent],.lenis .sheet{overscroll-behavior:contain}
+.wabox{margin:14px 0 4px;padding:12px;border:1px solid rgba(224,178,90,.25);border-radius:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}.wabox b{width:100%;font-size:14px;color:var(--gold)}
+</style>
 </head>
 <body>
 <title>מסע גיבוש הונגריה</title>
+<meta name="description" content="ט׳–י״ב כסלו תשפ״ז · 19–22.11 · כל מה שצריך למסע, באפליקציה אחת">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="שיעור מבקשי ה׳">
+<meta property="og:title" content="מסע גיבוש הונגריה · שיעור מבקשי ה׳">
+<meta property="og:description" content="ט׳–י״ב כסלו תשפ״ז · 19–22.11 · כל מה שצריך למסע, באפליקציה אחת">
+<meta property="og:url" content="https://z0548531878-ui.github.io/budapest-app/trip/">
+<meta property="og:image" content="https://z0548531878-ui.github.io/budapest-app/trip/og.jpg">
+<meta property="og:image:secure_url" content="https://z0548531878-ui.github.io/budapest-app/trip/og.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="he_IL">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=Frank+Ruhl+Libre:wght@500;700;900&family=Suez+One&display=swap">
 <style>
@@ -1938,7 +1953,7 @@ const EXP_CATS=['לינה','אוכל','הסעות','מזכרות ודפוס','ה
 
 const outGroups=()=>{const s=S.settings.find(x=>x._id==='trip');return (s&&s.outboundGroups)||['קבוצתי','נפרד']};
 const F={
- tasks:{one:'משימה',g:1,fields:[{k:'title',l:'מה צריך לעשות',t:'textarea'},{k:'owner',l:'אחראי',t:'owner'},{k:'status',l:'סטטוס',t:'seg',o:['לביצוע','בתהליך','ממתין','בוצע']},{k:'open',l:'פתוח למשתתפים לקחת',t:'seg',o:['לא','כן']},{k:'priority',l:'עדיפות',t:'seg',o:['רגילה','גבוהה']},{k:'due',l:'עד מתי',t:'date'},{k:'category',l:'תחום',t:'chips',o:TASK_CATS},{k:'notes',l:'הערות',t:'textarea'}],def:{status:'לביצוע',priority:'רגילה',category:'אחר'}},
+ tasks:{one:'משימה',g:1,fields:[{k:'title',l:'מה צריך לעשות',t:'textarea'},{k:'owner',l:'אחראי',t:'owner'},{k:'status',l:'סטטוס',t:'seg',o:['לביצוע','בתהליך','ממתין','בוצע']},{k:'open',l:'להציע למשתתפים לקחת (בלי אחראי, יופיע אצלם ב"פתוחות")',t:'seg',o:['לא','כן']},{k:'priority',l:'עדיפות',t:'seg',o:['רגילה','גבוהה']},{k:'due',l:'עד מתי',t:'date'},{k:'category',l:'תחום',t:'chips',o:TASK_CATS},{k:'notes',l:'הערות',t:'textarea'}],def:{status:'לביצוע',priority:'רגילה',category:'אחר'}},
  expenses:{one:'הוצאה',g:1,fields:[{k:'name',l:'על מה',t:'text'},{k:'estimate',l:'סכום (₪)',t:'number',half:1},{k:'paid',l:'שולם בפועל (₪)',t:'number',half:1},{k:'final',l:'הסכום סופי',t:'toggle'},{k:'status',l:'מצב',t:'seg',o:['לא שולם','מקדמה','שולם']},{k:'receipt',l:'יש קבלה',t:'toggle'},{k:'paidBy',l:'מי שילם',t:'owner'},{k:'category',l:'תחום',t:'chips',o:EXP_CATS},{k:'notes',l:'הערות',t:'textarea'}],def:{status:'לא שולם',category:'אחר',estimate:0,paid:0,final:false}},
  participants:{one:'משתתף',fields:[{k:'name',l:'שם',t:'text'},{k:'amount',l:'סכום (₪)',t:'number',half:1},{k:'phone',l:'טלפון',t:'tel',half:1},{k:'status',l:'תשלום',t:'seg',o:['לא שולם','שולם חלקית','שולם','פטור']},{k:'paidAmt',l:'כמה שולם עד עכשיו (₪, בתשלום חלקי)',t:'number'},{k:'gender',l:'מין',t:'seg',o:['גבר','אישה']},{k:'method',l:'איך שילם',t:'chips',o:['אשראי','העברה לאיציק','מזומן לאיציק','העברה לשלומי','מזומן לשלומי']},{k:'holder',l:'אצל מי הכסף',t:'seg',o:['שלומי','איציק']},{k:'passport',l:'צילום דרכון התקבל',t:'toggle'},{k:'kitter',l:'מסדר את הערכות בחדרים (יראה אצלו מסך לעדכון חדרים)',t:'toggle'},{k:'nameEn',l:'שם באנגלית, כמו בדרכון',t:'text',ph:'COHEN AVI'},{k:'passExp',l:'תוקף הדרכון',t:'date'},{k:'passUrl',l:'קישור לצילום הדרכון (בתיקיית הדרייב)',t:'text',ph:'https://drive.google.com/…'},{k:'carry',l:'מה סוחב (מזוודה/ציוד)',t:'text'},{k:'duties',l:'תפקידים ומשימות שלו',t:'text'},{k:'nusach',l:'נוסח',t:'seg',o:['אשכנז','ספרד','עדות המזרח']},{k:'outbound',l:'טיסת הלוך',t:'chips',o:()=>outGroups()},{k:'returnGroup',l:'טיסת חזור',t:'chips',o:RETURN_GROUPS},{k:'notes',l:'הערות',t:'textarea'}],def:{amount:1750,status:'לא שולם',outbound:'קבוצתי'}},
  donations:{one:'תרומה',g:1,fields:[{k:'donor',l:'תורם',t:'text'},{k:'amount',l:'סכום (₪)',t:'number'},{k:'purpose',l:'מיועד ל',t:'chips',o:['כללי','סידורים','זמירות','תהילים','הדפסות']},{k:'status',l:'מצב',t:'seg',o:['התחייב','התקבל']},{k:'method',l:'איך התקבל',t:'chips',o:['אשראי','העברה לאיציק','מזומן לאיציק','העברה לשלומי','מזומן לשלומי']},{k:'holder',l:'אצל מי הכסף',t:'seg',o:['שלומי','איציק']},{k:'notes',l:'הערות',t:'textarea'}],def:{status:'התחייב',purpose:'כללי',amount:0}},
@@ -2215,7 +2230,7 @@ const VIEWS={
      const st=(c,n,l,sg)=>`<button class="tsb ${n?c:'zero'}" data-seg="${sg}"><b class="num">${n}</b><span>${l}</span></button>`;
      return `<section class="tsum" aria-label="מצב המשימות"><div class="tring"><svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="${R}" fill="none" stroke="rgba(214,178,98,.2)" stroke-width="5"/><circle class="v" cx="28" cy="28" r="${R}" fill="none" stroke="#e0b25a" stroke-width="5" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-tp/100)}" transform="rotate(-90 28 28)"/></svg><b class="num">${tp}%</b><small>בוצעו</small></div>
       <div class="tsg">${st('bad',late,'באיחור','all')}${st('warn',urg,'דחופות','all')}${st('warn',cnt.noowner,'בלי אחראי','noowner')}${st('mid',cnt.wait,'ממתינות','wait')}</div></section>`})()}
-   <form class="quick" id="qadd"><input id="qaddIn" placeholder="${ME?`הוספת משימה ל${esc(ME)}…`:'הוספת משימה…'}" autocomplete="off"><button>הוסף</button></form>
+   <form class="quick" id="qadd"><input id="qaddIn" placeholder="${(own&&own!=='__none'?own:ME)?`הוספת משימה ל${esc(own&&own!=='__none'?own:ME)}…`:'הוספת משימה…'}" autocomplete="off"><button>הוסף</button></form>
    <div class="seg">${[['mine','שלי'],['all','לעשות'],['wait','ממתין'],['done','בוצעו']].map(([k,l])=>`<button data-seg="${k}" aria-pressed="${seg===k}">${l}<span class="c num">${cnt[k]}</span></button>`).join('')}</div>
    <div class="chips own"><span class="chl">אחראי</span>${[['','כולם'],...owners.map(n=>[n,n]),...(oc.__none?[['__none','בלי אחראי']]:[])].map(([v,l])=>`<button class="chip" data-filter="own" data-val="${esc(v)}" aria-pressed="${own===v}">${esc(l)}${v?` <span class="num">${oc[v]||0}</span>`:''}</button>`).join('')}</div>
    <div class="chips">${[['','כל התחומים'],...cats.map(c=>[c,c])].map(([v,l])=>`<button class="chip" data-filter="cat" data-val="${esc(v)}" aria-pressed="${(cat||'')===v}">${esc(l)}</button>`).join('')}</div>
@@ -2518,7 +2533,7 @@ view.addEventListener('change',e=>{const i=e.target.closest&&e.target.closest('[
 view.addEventListener('submit',e=>{if(e.target.id==='padd'){e.preventDefault();const i=document.getElementById('paddIn');const v=i.value.trim();if(!v)return;
   add('packing',{...F.packing.def,item:v,buyer:V.filter.by&&V.filter.by!=='__none'?V.filter.by:(ME||''),where:'בארץ'}).then(ok=>{if(ok){i.value='';toast('נוסף לרשימת הקניות')}});return}
   if(e.target.id==='qadd'){e.preventDefault();const i=document.getElementById('qaddIn');const v=i.value.trim();if(!v)return;
-  add('tasks',{title:v,owner:ME||'',status:'לביצוע',priority:'רגילה',category:V.filter.cat||'אחר',due:'',notes:''}).then(ok=>{if(ok){i.value='';toast('המשימה נוספה')}})}});
+  add('tasks',{title:v,owner:(V.filter.own&&V.filter.own!=='__none'?V.filter.own:ME)||'',status:'לביצוע',priority:'רגילה',category:V.filter.cat||'אחר',due:'',notes:''}).then(ok=>{if(ok){i.value='';toast('המשימה נוספה')}})}});
 
 const TEAM_FULL={'שלומי':'שלומי זינגר','איציק':'איציק שרייבר','יעל':'יעל שרייבר'};
 function rolesMap(){
@@ -3363,16 +3378,19 @@ function editor(c,id){
   const lists=[...new Set(S.packing.map(x=>x.list))];
   const fld=f=>{const v=f.k==='kit'?(d.item?kitOf(d):(d.kit||'')):(f.ks?kst(d,f.k):(d[f.k]??'')),iid='e_'+f.k,o=(typeof f.o==='function'?f.o():f.o)||[];
     if(f.t==='seg'||f.t==='chips'){const all=[...new Set([...o,...(v&&!o.includes(v)?[v]:[])])];return `<div class="field">${f.l}<div class="opts" data-k="${f.k}">${all.map(x=>`<button type="button" class="opt" data-v="${esc(x)}" aria-pressed="${v===x}">${esc(x)}</button>`).join('')}</div></div>`}
-    if(f.t==='owner'){const cur=String(v).split(/,\s*/).filter(Boolean);const people=[...new Set([...team(),...cur])];return `<div class="field">${f.l}<div class="opts" data-k="${f.k}" data-multi="1">${people.map(x=>`<button type="button" class="opt" data-v="${esc(x)}" aria-pressed="${cur.includes(x)}">${esc(x)}</button>`).join('')}</div><input id="${iid}" placeholder="או כתבו שם אחר"></div>`}
+    if(f.t==='owner'){const cur=String(v).split(/,\s*/).filter(Boolean);const people=[...new Set([...team(),...cur])];const pn=[...new Set(S.participants.map(p=>p.name).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'he'));return `<div class="field">${f.l}<div class="opts" data-k="${f.k}" data-multi="1">${people.map(x=>`<button type="button" class="opt" data-v="${esc(x)}" aria-pressed="${cur.includes(x)}">${esc(x)}</button>`).join('')}</div><input id="${iid}" class="ownin" data-k="${f.k}" list="dl_${f.k}" placeholder="➕ להוסיף משתתף: מקלידים שם ובוחרים" autocomplete="off"><datalist id="dl_${f.k}">${pn.map(n=>`<option value="${esc(n)}">`).join('')}</datalist></div>`}
     if(f.t==='toggle')return f.k==='kitReady'&&KITLOCK()?`<label class="toggle" style="opacity:.55">${f.l} · 🔒 נפתח ב-19.11<input type="checkbox" id="${iid}" ${v?'checked':''} disabled></label>`:`<label class="toggle">${f.l}<input type="checkbox" id="${iid}" ${v?'checked':''}></label>`;
     if(f.t==='textarea')return `<label class="field">${f.l}<textarea id="${iid}">${esc(v)}</textarea></label>`;
     if(f.t==='list')return `<label class="field">${f.l}<input id="${iid}" list="dl" value="${esc(v)}"><datalist id="dl">${lists.map(l=>`<option value="${esc(l)}">`).join('')}</datalist></label>`;
     return `<label class="field">${f.l}<input id="${iid}" type="${f.t==='number'?'number':f.t}" ${f.t==='number'?'inputmode="decimal" step="any"':''} ${f.ph?`placeholder="${f.ph}"`:''} value="${esc(v)}"></label>`};
   let html='',buf=[];const flush=()=>{if(buf.length){html+=buf.length===2?`<div class="two">${buf.join('')}</div>`:buf[0];buf=[]}};
   sc.fields.forEach(f=>{if(f.half){buf.push(fld(f));if(buf.length===2)flush()}else{flush();html+=fld(f)}});flush();
-  sheet(`<h3>${id?'עריכת '+sc.one:sc.one+' '+(sc.g?'חדשה':'חדש')}</h3><div class="form" id="ef">${html}</div>${expBreak(c,id)}
+  const waT=c==='tasks'&&id?String(d.owner||'').split(/,\s*/).map(n=>S.participants.find(p=>p.name===n.trim())).filter(p=>p&&p.phone):[];
+  const waH=waT.length?`<div class="wabox"><b>לשלוח את המשימה בוואטסאפ</b>${waT.map(p=>`<a class="btn ghost" target="_blank" rel="noopener" href="https://wa.me/${String(p.phone).replace(/\D/g,'').replace(/^0/,'972')}?text=${encodeURIComponent('שלום '+firstN(p.name)+', נשמח אם תיקח/י על עצמך משימה לקראת המסע להונגריה:\n«'+(d.title||'')+'»'+(d.due?'\nעד '+fmtDate(d.due):'')+'\nהמשימה מופיעה אצלך באפליקציה, בלשונית משימות. כשמסיימים לוחצים "סיימתי". תודה!')}">💬 ${esc(firstN(p.name))}</a>`).join('')}</div>`:'';
+  sheet(`<h3>${id?'עריכת '+sc.one:sc.one+' '+(sc.g?'חדשה':'חדש')}</h3><div class="form" id="ef">${html}</div>${waH}${expBreak(c,id)}
    <div class="sheet-acts">${id?'<button class="btn danger" id="del">מחיקה</button>':''}<span class="sp"></span><button class="btn" data-close>ביטול</button><button class="btn primary" id="sv">שמירה</button></div>`);
   const ef=document.getElementById('ef');
+  ef.querySelectorAll('.ownin').forEach(inp=>{const addName=()=>{const n=inp.value.trim();if(!n||!S.participants.some(p=>p.name===n))return;const box=ef.querySelector(`.opts[data-k="${inp.dataset.k}"]`);let b=[...box.querySelectorAll('.opt')].find(x=>x.dataset.v===n);if(!b){b=document.createElement('button');b.type='button';b.className='opt';b.dataset.v=n;b.textContent=n;box.appendChild(b)}b.setAttribute('aria-pressed','true');inp.value=''};inp.addEventListener('change',addName);inp.addEventListener('input',()=>{if(S.participants.some(p=>p.name===inp.value.trim()))addName()})});
   ef.addEventListener('click',e=>{const b=e.target.closest('.opt');if(!b)return;const box=b.parentElement;
     if(box.dataset.multi){b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')!=='true')}else{const on=b.getAttribute('aria-pressed')==='true';box.querySelectorAll('.opt').forEach(x=>x.setAttribute('aria-pressed','false'));if(!on)b.setAttribute('aria-pressed','true')}});
   if(!id&&!('ontouchstart' in window)){const first=ef.querySelector('input:not([type=checkbox]),textarea');if(first)setTimeout(()=>first.focus(),340)}
@@ -3739,7 +3757,8 @@ function passCard(ppl){
   return `<div class="gs ${all?'ok':'bad'}"><small>דרכון</small>${ppl.map(x=>`<span class="pl">${esc(firstN(x.name))}: <b class="${x.passport?'y':'n'}">${x.passport?'התקבל ✓':'עוד לא נשלח'}</b></span>`).join('')}</div>`}
 
 function myTasks(ppl){
-  const names=ppl.map(p=>p.name);
+  const fn=n=>String(n||'').trim().split(/\s+/)[0], tm=team(), uniq=f=>S.participants.filter(p=>fn(p.name)===f).length===1;
+  const names=[...ppl.map(p=>p.name),...ppl.map(p=>fn(p.name)).filter(f=>uniq(f)&&!tm.includes(f))];
   return S.tasks.filter(t=>ownersOf(t).some(o=>names.includes(o))||(t.claimStatus==='ממתין לאישור'&&names.includes(t.claimBy)))}
 function taskCard(t,mode,ppl){
   const pending=t.claimStatus==='ממתין לאישור', done=t.status==='בוצע';
