@@ -19,6 +19,8 @@
 <script defer src="vendor/lenis-1.3.26.min.js"></script>
 <style>html,body{margin:0;padding:0;background:#0b0a08}html.lenis,html.lenis body{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!important}.lenis [data-lenis-prevent],.lenis .sheet{overscroll-behavior:contain}
 .wabox{margin:14px 0 4px;padding:12px;border:1px solid rgba(224,178,90,.25);border-radius:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}.wabox b{width:100%;font-size:14px;color:var(--gold)}
+
+.gway{align-items:stretch!important}.gway .gw{height:100%;min-height:64px;box-sizing:border-box;margin:0!important;text-align:start!important}.gway .gw small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 </head>
 <body>
@@ -1780,7 +1782,6 @@ body.guest #meBtn:active{transform:scale(.95)}
 .gw::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 40%,rgba(255,240,200,.1) 50%,transparent 60%);animation:r2Sheen 4.5s calc(1s + var(--i,0)*.4s) ease-in-out infinite;pointer-events:none}
 .gw-i{width:40px!important;height:40px!important;animation:r2Bob 3s calc(var(--i,0)*.3s) ease-in-out infinite}
 .gw-x{min-width:0}.gw b{font-size:14px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gw small{font-size:11.5px!important}
-.gw.rest .gw-i{background:linear-gradient(150deg,#f3c4b0,#c9806a)!important;color:#2a120a}
 .gw.uber .gw-i{background:#111!important;color:#fff;border:1px solid rgba(255,255,255,.35)}
 .gw.taxi b,.gw.uber b{color:var(--ink)!important}
 .gw.taxi small,.gw.uber small{color:var(--muted)!important}
@@ -3945,9 +3946,9 @@ function guestHTML0(){
 </div></section>`})();
     const way=`<section class="gway" aria-label="בדרכים">
       <a class="gw" style="--i:0" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener"><span class="gw-i">${IX.nav}</span><span class="gw-x"><b>ניווט למלון</b><small>הליכה במפות</small></span></a>
-      <a class="gw rest" style="--i:1" href="${mapsGo(HANNA.q)}" target="_blank" rel="noopener"><span class="gw-i">${IX.food}</span><span class="gw-x"><b>למסעדת חנה</b><small>ניווט · ארוחות שבת</small></span></a>
+      <a class="gw rest" style="--i:1" href="${mapsGo(HANNA.q)}" target="_blank" rel="noopener"><span class="gw-i">${IX.nav}</span><span class="gw-x"><b>ניווט למסעדת חנה</b><small>הליכה במפות</small></span></a>
       <a class="gw taxi" style="--i:2" href="${BOLT_URL}" rel="noopener"><span class="gw-i">🚕</span><span class="gw-x"><b>מונית Bolt</b><small>בבודפשט</small></span></a>
-      <a class="gw uber" style="--i:3" href="${UBER_URL}" rel="noopener"><span class="gw-i">${UBER_SVG}</span><span class="gw-x"><b>Uber</b><small>בארץ, למשל לנתב״ג</small></span></a></section>`;
+      <a class="gw uber" style="--i:3" href="${UBER_URL}" rel="noopener"><span class="gw-i">${UBER_SVG}</span><span class="gw-x"><b>מונית Uber</b><small>בבודפשט ובארץ</small></span></a></section>`;
     const SKY='<div class="gsky" aria-hidden="true">'+[[8,14,0],[22,6,.8],[35,22,1.6],[48,9,.4],[61,18,2.1],[74,5,1.2],[86,16,.2],[93,8,1.9],[14,30,2.4],[67,34,.9]].map(([x,y,d])=>`<i style="inset-inline-start:${x}%;top:${y}%;animation-delay:${d}s"></i>`).join('')+'<svg viewBox="0 0 400 90" preserveAspectRatio="xMidYMax slice"><path d="M0 90V70h30v-8h14v8h22V58h10v12h18V64h8v-6h6v6h8v6h26V52c0-9 8-14 16-18v-8l3-9 3 9v8c8 4 16 9 16 18v18h26V60h12v10h22v-6h10v6h26V56h12v14h30v-8h16v8h30v20z" fill="#0b0905" stroke="#c99a3d" stroke-opacity=".28" stroke-width="1"/></svg></div>';
     const ph=orgPhone();
     const help=`<section class="ghelp" aria-label="עזרה"><div><b>צריכים עזרה?</b><small>שלומי, מארגן המסע · <span class="num ltr">${esc(fmtPhone(ph))}</span></small></div>
