@@ -2999,7 +2999,7 @@ const TORD=['passports','people','appusers','tasks','photos','rides','program','
 // gold = something there is waiting for you; the rest stay dark, so the eye goes straight to what's open
 const tileHot=k=>{try{return ({reqs:pendN()>0,passports:S.participants.some(p=>!p.passport),announce:msgDue().length>0})[k]||false}catch(e){return false}};
 const msgDue=()=>{const t=todayISO();return S.messages.filter(m=>!m.sent&&m.date&&m.date<=t)};
-const homeTiles=()=>`<section class="sec"><div class="sec-h"><h3>הכל במקום אחד</h3><span class="sec-k"><i></i>מחכה לטיפול</span></div><div class="cubes tiles">${TILE_DEFS().sort((a,b)=>TORD.indexOf(a[0])-TORD.indexOf(b[0])).map(([k,ic,l,s,c],i)=>(k==='trivia'?`<a class="cube ${c}" href="../" target="_blank" rel="noopener" style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></a>`:`<button class="cube ${c}${tileHot(k)?' hot':''}" ${k==='tasks'?'data-go="tasks"':`data-go="more" data-opts='{"sub":"${k}"}'`} style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></button>`)).join('')}</div></section>`;
+const homeTiles=()=>`<section class="sec"><div class="sec-h"><h3>הכל במקום אחד</h3><span class="sec-k"><i></i>מחכה לטיפול</span></div><div class="cubes tiles">${TILE_DEFS().sort((a,b)=>TORD.indexOf(a[0])-TORD.indexOf(b[0])).map(([k,ic,l,s,c],i)=>(k==='trivia'?`<a class="cube ${c}" href="trivia/" style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></a>`:`<button class="cube ${c}${tileHot(k)?' hot':''}" ${k==='tasks'?'data-go="tasks"':`data-go="more" data-opts='{"sub":"${k}"}'`} style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></button>`)).join('')}</div></section>`;
 
 
 const PROG=[
@@ -3973,7 +3973,7 @@ function guestHTML0(){
       ${cube('gi',IX.cam,'תמונות מהמסע','מעלים, רואים ומשתפים',(()=>{const n=photoNew();return n||''})())}
       ${cube('gd',IX.car,'נסיעה משותפת לשדה','מתאמים הגעה יחד, הלוך וחזור',rideMine()||'')}
       ${cube('gk',IX.tools,'כלים לדרך','שעון, זמנים, מטבע, ביטויים')}
-      ${open?`<a class="gc gtrv" href="../" target="_blank" rel="noopener" style="--i:${n++}"><span class="gc-i">${I.spark}</span><span class="gc-t">טריוויה</span><span class="gc-s">משחק לאוטובוס. פתוח עכשיו!</span></a>`:`<button class="gc gtrv locked" data-glock style="--i:${n++}"><span class="gc-i">🔒</span><span class="gc-t">טריוויה</span><span class="gc-s">נפתח כשנחתים בבודפשט</span></button>`}
+      ${open?`<a class="gc gtrv" href="trivia/" style="--i:${n++}"><span class="gc-i">${I.spark}</span><span class="gc-t">טריוויה</span><span class="gc-s">משחק לאוטובוס. פתוח עכשיו!</span></a>`:`<button class="gc gtrv locked" data-glock style="--i:${n++}"><span class="gc-i">🔒</span><span class="gc-t">טריוויה</span><span class="gc-s">נפתח כשנחתים בבודפשט</span></button>`}
      </div>
      ${flightGroups(ppl,'חזור').map(g=>guestFlightCard(g,ppl,'חזור')).join('')}
      ${help}</div>`}
