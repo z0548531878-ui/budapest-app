@@ -23,7 +23,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="טריוויה">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
 <link rel="manifest" href="manifest.json">
 <style>
@@ -78,9 +78,12 @@
       body='<ul class="steps">'+li(1,'הקישור נפתח בתוך וואטסאפ — שם אי אפשר להתקין')+li(2,'לוחצים על הכפתור, והמשחק ייפתח ב<b>כרום</b> עם כפתור התקנה')+'</ul>'
         +'<a class="go" href="intent://'+url+'#Intent;scheme=https;package=com.android.chrome;end">פתיחה בכרום</a>';
     } else if(inApp && ios){
-      body='<ul class="steps">'+li(1,'הקישור נפתח בתוך אפליקציה אחרת — שם אי אפשר להתקין')+li(2,'לוחצים על <b>⋯</b> או על סמל המצפן, ובוחרים <b>"פתיחה בספארי"</b>')+li(3,'בספארי יופיעו הוראות ההתקנה')+'</ul>';
+      body='<ul class="steps">'+li(1,'הקישור נפתח בתוך אפליקציה אחרת — שם אי אפשר להתקין')+li(2,'לוחצים על סמל <b>המצפן</b> 🧭 או על <b>⋯</b> / שיתוף ⬆️ ובוחרים <b>"פתיחה בספארי"</b>')+li(3,'בספארי יופיעו הוראות ההתקנה')+'</ul>';
+    } else if(ios && /CriOS|FxiOS|EdgiOS/i.test(ua)){
+      // כרום / פיירפוקס / אדג' באייפון: כפתור השיתוף למעלה, ליד שורת הכתובת
+      body='<ul class="steps">'+li(1,'לוחצים על כפתור <b>השיתוף</b> ⬆️ למעלה, ליד שורת הכתובת')+li(2,'בוחרים <b>"הוספה למסך הבית"</b> ➕')+li(3,'לוחצים <b>"הוספה"</b> — והאייקון מופיע במסך הבית')+'</ul>';
     } else if(ios){
-      body='<ul class="steps">'+li(1,'לוחצים על כפתור <b>השיתוף</b> ⬆️ בשורה התחתונה')+li(2,'גוללים ובוחרים <b>"הוספה למסך הבית"</b> ➕')+li(3,'לוחצים <b>"הוספה"</b> — והאייקון מופיע במסך הבית')+'</ul>';
+      body='<ul class="steps">'+li(1,'לוחצים על כפתור <b>השיתוף</b> ⬆️ (בשורה התחתונה, או ליד הכתובת למעלה)')+li(2,'גוללים ובוחרים <b>"הוספה למסך הבית"</b> ➕')+li(3,'לוחצים <b>"הוספה"</b> — והאייקון מופיע במסך הבית')+'</ul>';
     } else {
       body='<ul class="steps">'+li(1,'לוחצים על <b>⋮</b> (שלוש הנקודות) למעלה')+li(2,'בוחרים <b>"התקנת אפליקציה"</b> (או "הוספה למסך הבית" ← <b>"התקנה"</b>)')+li(3,'מאשרים — והטריוויה מופיעה כאפליקציה במסך הבית')+'</ul>';
     }
