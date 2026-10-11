@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>טריוויה על גלגלים</title>
+<meta name="theme-color" content="#0b0a07">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="טריוויה">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
+<style>
+  html,body{margin:0;height:100%;background:#0b0a07;overflow:hidden;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;}
+  /* המשחק עצמו (הדף הראשי) מוצג על כל המסך — כך נפתח כאפליקציה, בלי שורת כתובת */
+  #game{position:fixed;left:env(safe-area-inset-left,0px);right:env(safe-area-inset-right,0px);top:env(safe-area-inset-top,0px);bottom:env(safe-area-inset-bottom,0px);
+    width:calc(100% - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px));height:calc(100% - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));border:0;background:#0b0a07;}
+  #inst{position:fixed;z-index:5;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:none;align-items:center;gap:8px;
+    background:linear-gradient(180deg,#F3D98B,#D4AF37);color:#1B1706;border:0;border-radius:999px;padding:10px 16px 10px 12px;font:800 15px/1.2 system-ui,Arial,sans-serif;
+    box-shadow:0 6px 18px rgba(0,0,0,.55),0 0 0 2px rgba(255,236,170,.35);cursor:pointer;white-space:nowrap;animation:pop .5s cubic-bezier(.2,1.5,.4,1) both;}
+  #inst .x{margin-inline-start:6px;opacity:.6;font-size:17px;padding:0 4px;}
+  #tip{position:fixed;z-index:6;left:14px;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));display:none;background:#1f1b12;color:#f2ead3;border:1px solid #D4AF37;
+    border-radius:16px;padding:14px 16px;font:600 15px/1.6 system-ui,Arial,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.6);text-align:center;}
+  #tip b{color:#F3D98B;}
+  @keyframes pop{from{opacity:0;transform:translate(-50%,20px) scale(.9);}to{opacity:1;transform:translate(-50%,0);}}
+</style>
+</head>
+<body>
+<iframe id="game" title="טריוויה על גלגלים" allow="autoplay; screen-wake-lock; fullscreen; clipboard-write"></iframe>
+<button id="inst" type="button">📲 התקנת הטריוויה כאפליקציה <span class="x" aria-label="סגירה">✕</span></button>
+<div id="tip" role="dialog"></div>
+<script>
+(function(){
+  // המשחק נמצא בדף הראשי של האתר (שתי תיקיות למעלה). מעבירים הלאה פרמטרים (למשל קוד חדר) אם יש.
+  var f=document.getElementById('game');
+  f.src='../../'+location.search+location.hash;
+  try{ f.addEventListener('load',function(){ try{ f.contentWindow.focus(); }catch(e){} }); }catch(e){}
+
+  // הצעה להתקנה — רק כשהדף פתוח בדפדפן (לא כשהוא כבר אפליקציה, וגם לא בתוך אפליקציית המסע)
+  var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone===true;
+  var KEY='trivia_inst_dismissed', btn=document.getElementById('inst'), tip=document.getElementById('tip'), ev=null;
+  function dismissed(){ try{ return Date.now()-Number(localStorage.getItem(KEY)||0) < 3*24*3600*1000; }catch(e){ return false; } }
+  function hide(){ btn.style.display='none'; try{ localStorage.setItem(KEY,String(Date.now())); }catch(e){} }
+  btn.querySelector('.x').addEventListener('click',function(e){ e.stopPropagation(); hide(); });
+  if(!standalone && !dismissed()){
+    window.addEventListener('beforeinstallprompt',function(e){ e.preventDefault(); ev=e; btn.style.display='flex'; });
+    var ios=/iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if(ios){ setTimeout(function(){ btn.style.display='flex'; }, 1500); }
+    btn.addEventListener('click',function(){
+      if(ev){ ev.prompt(); ev.userChoice.then(function(){ ev=null; hide(); }); return; }
+      tip.innerHTML='כדי להוסיף את הטריוויה כאפליקציה:<br>לוחצים על <b>שיתוף</b> ⬆️ למטה, ואז <b>"הוספה למסך הבית"</b>';
+      tip.style.display='block'; btn.style.display='none';
+      setTimeout(function(){ tip.style.display='none'; hide(); }, 9000);
+    });
+    window.addEventListener('appinstalled',hide);
+  }
+  // אפליקציית המסע רושמת service worker לכל התיקייה שלה — הוא שומר גם את הדף הזה בטלפון
+  try{ if('serviceWorker' in navigator && location.protocol==='https:') navigator.serviceWorker.register('../sw.js').catch(function(){}); }catch(e){}
+})();
+</script>
+</body>
+</html>
