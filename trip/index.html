@@ -2558,21 +2558,20 @@ function rolesMap(){
 }
 const ROLE_TAG={role:['תפקיד','rt-role'],task:['משימה','rt-task'],buy:['קנייה','rt-buy'],sched:['לו״ז','rt-sched'],carry:['סוחב','rt-carry']};
 /* who already has the app: entered, installed to the home screen, notifications on (a couple counts once) */
-function appGroups(){const seen={},G=[];S.participants.slice().sort(famCmp).forEach(p=>{if(seen[p._id])return;const c=coupleOf(p);c.forEach(x=>seen[x._id]=1);G.push(c)});return G}
-function appStat(){const tok=new Set(S.settings.filter(x=>x.kind==='tok'&&x.role==='guest').flatMap(x=>x.pids||[]));
-  const G=appGroups().map(c=>{const ids=c.map(x=>x._id);return {c,seen:c.some(x=>x.seenAt),inst:c.some(x=>x.inst),push:ids.some(i=>tok.has(i))||c.some(x=>x.notif==='granted'),denied:c.some(x=>x.notif==='denied'),last:c.map(x=>x.lastAt||x.seenAt||'').sort().pop()}});
-  return {G,n:G.length,seen:G.filter(g=>g.seen).length,inst:G.filter(g=>g.inst).length,push:G.filter(g=>g.push).length}}
+function appStat(){const tk=S.settings.filter(x=>x.kind==='tok'&&x.role==='guest'),byT=new Set(tk.map(x=>x.by).filter(Boolean));
+  const G=S.participants.slice().sort(famCmp).map(p=>({p,seen:!!p.seenAt,inst:!!p.inst&&!p.viaSpouse,push:byT.has(p._id)||(p.notif==='granted'&&!p.viaSpouse),last:p.lastAt||p.seenAt||''}));
+  return {G,n:G.length,seen:G.filter(g=>g.seen).length,inst:G.filter(g=>g.inst).length,push:G.filter(g=>g.push).length,ok:G.filter(g=>g.inst&&g.push).length}}
 SUB.appusers=function(){const a=appStat(),f=V.filter.au||'ok';
   const pick={ok:g=>g.inst&&g.push,inst:g=>g.inst,push:g=>g.push,seen:g=>g.seen}[f]||(g=>g.inst&&g.push), rows=a.G.filter(pick).sort((x,y)=>(y.last||'').localeCompare(x.last||''));
-  const cnt={ok:a.G.filter(g=>g.inst&&g.push).length,inst:a.inst,push:a.push,seen:a.seen};
+  const cnt={ok:a.ok,inst:a.inst,push:a.push,seen:a.seen};
   const chip=(k,l)=>`<button class="chip" data-filter="au" data-val="${k}" aria-pressed="${f===k}">${l} <span class="num">${cnt[k]}</span></button>`;
   const tag=(on,t)=>on?`<span class="pill p-ok">${t}</span>`:'';
-  const rowH=g=>`<div class="row"><div class="main"><div class="t">${esc(coupleLabel(g.c,g.c[0]))}</div><div class="m">${tag(g.inst,'📲 התקינו')}${tag(g.push,'🔔 התראות')}${!g.inst&&!g.push&&g.seen?tag(1,'נכנסו'):''}${g.last?`<span class="num">${esc(fmtWhen(g.last))}</span>`:''}</div></div></div>`;
-  return subHead('מי באפליקציה',`<span class="cnt num">${cnt.ok}/${a.n} זוגות</span>`)+`
+  const rowH=g=>`<div class="row" data-person="${g.p._id}" role="button" tabindex="0"><div class="main"><div class="t">${esc(g.p.name)}</div><div class="m">${tag(g.inst,'📲 התקין/ה')}${tag(g.push,'🔔 התראות')}${!g.inst&&!g.push&&g.seen?tag(1,'נכנס/ה'):''}${g.last?`<span class="num">${esc(fmtWhen(g.last))}</span>`:''}</div></div></div>`;
+  return subHead('מי באפליקציה',`<span class="cnt num">${cnt.ok}/${a.n}</span>`)+`
    <div class="pcsum"><div class="pcs ok"><b class="num">${cnt.ok}</b><span>התקינו + התראות</span></div><div class="pcs ok"><b class="num">${a.inst}</b><span>📲 התקינו</span></div><div class="pcs ok"><b class="num">${a.push}</b><span>🔔 התראות</span></div></div>
    <div class="chips">${chip('ok','התקינו והפעילו התראות')}${chip('inst','התקינו')}${chip('push','עם התראות')}${chip('seen','נכנסו לאפליקציה')}</div>
    ${card(rows.map(rowH).join(''),'<b>עוד אין כאן אף אחד</b>ברגע שמישהו יתקין ויפעיל התראות, הוא יופיע כאן')}
-   <p class="note">כל זוג נספר פעם אחת, והחדשים למעלה. ההתקנה נרשמת מהכניסה הבאה של כל אחד, כך שמי שהתקין לפני היום יופיע אחרי שייכנס שוב.</p>`};
+   <p class="note">כל משתתף בנפרד, והחדשים למעלה. ההתקנה נרשמת מהכניסה הבאה של כל אחד מהטלפון שלו, כך שמי שהתקין לפני היום יופיע אחרי שייכנס שוב.</p>`};
 SUB.roles=function(){
   const M=rolesMap(), q=(V.q||'').trim(), team=Object.values(TEAM_FULL);
   let names=Object.keys(M).sort((a,b)=>(team.includes(b)-team.includes(a))||(M[b].length-M[a].length)||a.localeCompare(b,'he'));
@@ -2986,7 +2985,7 @@ function shopStat(){const rest=S.packing.slice(),bt=x=>kst(x,'ordered'),where=x=
 const TILE_DEFS=()=>{const pk=S.packing.filter(x=>!x.sug||kst(x,'ordered')),pd=pk.filter(x=>kst(x,'ordered')).length,rk=S.rooms.filter(r=>r.kitReady).length;return [
  ['program','sched','לוח המסע','חמישי–שבת','c2'],
  ['people','people','משתתפים',`${S.participants.length} נוסעים`,'c1'],
- ['appusers','phone','מי באפליקציה',(()=>{const a=appStat();return `${a.G.filter(g=>g.inst&&g.push).length} זוגות התקינו + התראות`})(),'c3'],
+ ['appusers','phone','מי באפליקציה',(()=>{const a=appStat();return `${a.ok} התקינו + התראות`})(),'c3'],
  ['passports','file','דרכונים',`${S.participants.filter(p=>p.passport).length}/${S.participants.length}`,'c2'],
  ['kits','box','ערכות',`${kstat(kitItems()).placed}/${kitItems().length} הונחו`,'c5'],
  ['rooms','bed','חדרים',`${S.rooms.length} · ${rk} עם סט`,'c5'],
@@ -4553,7 +4552,7 @@ async function pushToken(){
     const org=ROLE==='org', me=org?null:(typeof meG==='function'?meG():null), ppl=me&&typeof coupleOf==='function'?coupleOf(me):[];
     const key=token+'|'+ROLE;let prev='';try{prev=localStorage.getItem('tokSaved')||''}catch(e){}
     if(prev===key)return;
-    if(db){await db.doc('settings/'+tokId(token)).set({kind:'tok',token,role:org?'org':'guest',pids:ppl.map(p=>p._id),names:ppl.map(p=>p.name),orgName:org?(typeof ME!=='undefined'?ME:''):'',ts:Date.now()},{merge:true});try{localStorage.setItem('tokSaved',key)}catch(e){}}
+    if(db){await db.doc('settings/'+tokId(token)).set({kind:'tok',token,role:org?'org':'guest',pids:ppl.map(p=>p._id),names:ppl.map(p=>p.name),by:org?'':ROLE.slice(6),orgName:org?(typeof ME!=='undefined'?ME:''):'',ts:Date.now()},{merge:true});try{localStorage.setItem('tokSaved',key)}catch(e){}}
   }catch(e){console.warn('push',e)}}
 let PUSHFG=0;
 async function askPush(){
@@ -4590,8 +4589,8 @@ setInterval(pgate,4000);
 const _pickMeBase=pickMe;pickMe=function(){if(GUEST()||!ROLE)return;_pickMeBase();const sh=document.querySelector('#scrim .sheet');if(sh&&ROLE==='org'){const b=document.createElement('button');b.className='btn';b.style.cssText='margin-top:14px;width:100%';b.textContent='👁 תצוגת משתתף (כך זה נראה להם)';b.onclick=()=>{closeSheet();setPrev(true)};sh.appendChild(b);const o=document.createElement('button');o.className='btn ghost';o.style.cssText='margin-top:10px;width:100%';o.textContent='🚪 יציאה וכניסה מחדש כמשתתף';o.onclick=()=>{closeSheet();logoutRole()};sh.appendChild(o)}};
 document.body.classList.toggle('guest',GUEST());if(!ROLE)showGate();
 let SEEN_MARKED=false;const _r2=render;render=function(a){_r2(a);if(!SEEN_MARKED&&ROLE.startsWith('guest:')&&!PREV&&db&&loaded.has('participants')){SEEN_MARKED=true;let done=false;try{done=sessionStorage.getItem('seenMark')==='1'}catch(e){}if(!done){try{sessionStorage.setItem('seenMark','1')}catch(e){}const now=new Date().toISOString(),inst=isStandalone(),nt=('Notification' in window)?Notification.permission:'none',me=meG();
-   gset('participants/'+ROLE.slice(6),{seenAt:now,lastAt:now,notif:nt,...(inst?{inst:true}:{})});
-   (me?coupleOf(me):[]).filter(x=>x._id!==ROLE.slice(6)).forEach(x=>{if(db)db.doc('participants/'+x._id).set({...(inst?{inst:true}:{}),notif:nt,viaSpouse:true},{merge:true}).catch(()=>{})})}}};
+   gset('participants/'+ROLE.slice(6),{seenAt:now,lastAt:now,notif:nt,viaSpouse:false,...(inst?{inst:true}:{})});
+}}};
 
 render(true);
 (()=>{const sp=document.getElementById('splash');let seen=false;try{seen=sessionStorage.getItem('splash')==='1';sessionStorage.setItem('splash','1')}catch(e){}
