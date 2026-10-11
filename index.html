@@ -239,7 +239,9 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
 .host-link:active{transform:translateY(1px);}
 .landing-links{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
 .app-link{text-decoration:none;display:inline-flex;align-items:center;color:var(--gold-light);border-color:rgba(212,175,55,.6);}
-.app-link[hidden]{display:none;}
+.app-link[hidden],.push-link[hidden]{display:none;}
+.push-link{color:var(--gold-light);border-color:rgba(212,175,55,.6);}
+.push-link.on{color:#8FE3A6;border-color:rgba(91,208,122,.6);}
 .landing-foot .player-chip-row{justify-content:center;}
 .credit{text-align:center;color:var(--ink-dim);font-size:11.5px;opacity:.75;margin-top:4px;}
 .wait-hero{text-align:center;padding:26px 8px 10px;}
@@ -964,7 +966,7 @@ button,a,.btn,.answer-btn{touch-action:manipulation;}
     <span class="glint" style="left:18%;animation-delay:.3s"></span><span class="glint" style="left:47%;animation-delay:1.4s"></span><span class="glint" style="left:76%;animation-delay:2.2s"></span>
   </div>
   <div class="landing-foot">
-    <div class="landing-links"><a class="host-link app-link" id="btn-app" href="play/" hidden>📲 התקנה כאפליקציה</a><button class="host-link" id="btn-host">🎤 כניסת מנחה משחק</button></div>
+    <div class="landing-links"><a class="host-link app-link" id="btn-app" href="play/" hidden>📲 התקנה כאפליקציה</a><button class="host-link push-link" id="btn-push" hidden>🔔 התראות על משחקים</button><button class="host-link" id="btn-host">🎤 כניסת מנחה משחק</button></div>
     <div class="credit">פותח ע״י שלומי זינגר. כל הזכויות שמורות.</div>
   </div>
 </section>
@@ -3978,6 +3980,7 @@ function readFullName(id){
   const el=$(id); const v=(el.value||'').trim().replace(/\s+/g,' ');
   if(v.split(' ').length<2){ const f=el.closest('.entry-field'); if(f){ f.classList.remove('shake'); void f.offsetWidth; f.classList.add('shake'); } alert('נא לכתוב שם ושם משפחה (למשל: משה כהן)'); el.focus(); return null; }
   try{ localStorage.setItem('trivia_full_name', v); }catch(e){}
+  try{ const h=pushHost(); if(h && h.trvPushName) h.trvPushName(v); }catch(e){}
   return v;
 }
 // הוראות קצרות לכל סוג משחק — המספרים נלקחים מההגדרות של המשחק עצמו, כך שתמיד יתאימו
@@ -4100,7 +4103,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-11c';
+const APP_VERSION = '2026-10-11d';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -4123,6 +4126,38 @@ function init(){
   const rp = params.get('room');
   if(rp){ roomCode = rp.toUpperCase(); showScreen('s-pjoin'); }
   else if(params.get('join')){ roomCode = null; showScreen('s-pjoin'); }
+  // נכנסו מהתראה — ישר למסך המתאים
+  else if(location.hash==='#duel') setTimeout(()=>{ try{ duelEntry(); }catch(e){} }, 200);
+  else if(location.hash==='#group'){ roomCode = null; renderPjoin(); showScreen('s-pjoin'); }
+  pushBtnInit();
+}
+// ---------- התראות על משחקים (ראש בראש שמחכה ליריב, משחק קבוצתי שנפתח) ----------
+// ההרשמה עצמה נעשית בדף האפליקציה שעוטף את המשחק (play/), כי שם רשום ה-service worker
+function pushHost(){ try{ return (window.parent!==window && window.parent.trvPushOn) ? window.parent : null; }catch(e){ return null; } }
+function pushBtnPaint(){
+  const b=$('btn-push'), h=pushHost(); if(!b || !h) return;
+  const st=h.trvPushState(); b.hidden=false; b.classList.toggle('on', st==='on');
+  b.textContent = st==='on' ? '🔔 ההתראות פעילות' : '🔔 התראות על משחקים';
+}
+function pushBtnInit(){
+  const b=$('btn-push'), h=pushHost(); if(!b || !h) return;
+  pushBtnPaint();
+  b.addEventListener('click', ()=>{
+    const st=h.trvPushState();
+    if(st==='on'){ if(confirm('לכבות את ההתראות על משחקים?')) h.trvPushOff().then(pushBtnPaint); return; }
+    if(st==='install'){ alert('באייפון אפשר לקבל התראות רק מהאפליקציה: מוסיפים את הטריוויה למסך הבית (שיתוף ← "הוספה למסך הבית"), נכנסים מהאייקון ולוחצים כאן שוב.'); return; }
+    if(st==='unsupported'){ alert('הטלפון או הדפדפן הזה לא תומכים בהתראות.'); return; }
+    if(st==='denied'){ alert('ההתראות חסומות בהגדרות הטלפון. כדי להפעיל: הגדרות ← התראות ← טריוויה (או הגדרות האתר בכרום) ← לאפשר.'); return; }
+    b.textContent='🔔 מפעילים...';
+    h.trvPushOn(savedFullName()).then(r=>{
+      pushBtnPaint();
+      if(r==='on') alert('🔔 ההתראות הופעלו! תקבלו הודעה כשמישהו מחכה ליריב בראש בראש וכשנפתח משחק קבוצתי.');
+      else if(r==='denied') alert('לא אישרתם התראות. אפשר להפעיל בכל רגע מכאן.');
+      else if(r==='install') alert('באייפון אפשר לקבל התראות רק מהאפליקציה שבמסך הבית.');
+      else if(r==='unsupported') alert('הטלפון או הדפדפן הזה לא תומכים בהתראות.');
+      else alert('לא הצלחנו להפעיל את ההתראות כרגע. בדקו את החיבור ונסו שוב.');
+    });
+  });
 }
 
 // כשהמשחק פתוח בדפדפן רגיל — מציעים לפתוח אותו כאפליקציה (דף ההתקנה מציג את המשחק על כל המסך)

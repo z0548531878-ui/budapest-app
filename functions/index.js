@@ -109,3 +109,56 @@ exports.checkinReminder = functions.region('europe-west1').pubsub.schedule('ever
     if (pax.length) await send(trip, r => guests(r) && (r.pids || []).some(p => pax.includes(p)), '✈ הצ׳ק־אין לטיסה נפתח', 'עשו צ׳ק־אין לטיסה ' + trim(f.flightNo, 12) + ' ושמרו את כרטיס העלייה בטלפון', 'gt', 'ci_' + doc.id);
   }
 });
+
+// ---------- Trivia game (the root page / the trivia app in /play): notifications to whoever turned them on ----------
+// tokens: trivia_push/{id} = {token, name, at, on}. Sent: someone entered the head-to-head lobby (waiting for an opponent),
+// and a host opened a group-game lobby (the game is about to start). trivia_meta holds the last send time, so a player
+// who leaves and comes back doesn't spam everyone.
+async function sendTrivia(skipName, title, body, url, tag) {
+  const snap = await db.collection('trivia_push').get();
+  const rows = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(r => r.token && r.on !== false && (!skipName || r.name !== skipName));
+  for (let i = 0; i < rows.length; i += 500) {
+    const part = rows.slice(i, i + 500);
+    const res = await admin.messaging().sendEachForMulticast({
+      tokens: part.map(r => r.token),
+      data: { title, body, url: url || '', tag: tag || '' },
+      webpush: { headers: { Urgency: 'high', TTL: '1800' } },
+    });
+    const dead = [];
+    res.responses.forEach((r, k) => {
+      const c = r.error && r.error.code;
+      if (c === 'messaging/registration-token-not-registered' || c === 'messaging/invalid-registration-token') dead.push(part[k].id);
+    });
+    await Promise.all(dead.map(id => db.doc(`trivia_push/${id}`).delete()));
+  }
+}
+async function triviaThrottle(key, ms) {
+  const ref = db.doc(`trivia_meta/${key.replace(/[\/.#$\[\]\s]/g, '_').slice(0, 120)}`);
+  return db.runTransaction(async tx => {
+    const d = await tx.get(ref), last = d.exists ? d.data().at || 0 : 0;
+    if (Date.now() - last < ms) return false;
+    tx.set(ref, { at: Date.now() });
+    return true;
+  });
+}
+exports.triviaPush = functions.region('europe-west1').firestore.document('rooms/{room}').onWrite(async (change, ctx) => {
+  const room = ctx.params.room;
+  const before = change.before.exists ? change.before.data() : null;
+  const after = change.after.exists ? change.after.data() : null;
+  if (!after) return;
+  if (room === 'duel_lobby') {
+    const was = (before && before.players) || {}, now = after.players || {};
+    const fresh = Object.keys(now).filter(id => !was[id] && now[id] && now[id].name);
+    for (const id of fresh) {
+      const name = trim(now[id].name, 40);
+      if (!(await triviaThrottle('duel_' + name, 10 * 60 * 1000))) continue;
+      await sendTrivia(name, '⚔️ מחכים לכם לראש בראש', `${name} בחדר ההמתנה של ראש בראש — היכנסו והזמינו לדו-קרב!`, '#duel', 'trv_duel');
+    }
+    return;
+  }
+  // group-game rooms have a 4-digit code; a new lobby means a host is about to start a game
+  if (/^\d{4}$/.test(room) && after.phase === 'lobby' && (!before || before.phase !== 'lobby')) {
+    if (!(await triviaThrottle('group_' + room, 30 * 60 * 1000))) return;
+    return sendTrivia('', '👥 משחק קבוצתי עומד להתחיל!', 'המנחה פתח חדר המתנה — היכנסו עכשיו ושחקו עם כולם', '#group', 'trv_group');
+  }
+});
