@@ -3562,7 +3562,7 @@ const later=()=>{if(rq)return;if(V.sub==='notes'&&document.querySelector('#sortB
   rq=setTimeout(()=>requestAnimationFrame(()=>{rq=0;const all=COLS.every(c=>loaded.has(c));render(all&&!firstAll);if(all&&!firstAll)setTimeout(autoApply,800);if(all)firstAll=true}),firstAll?90:0)};
 /* ===== entrance: participants (by name) / organizers (by code) ===== */
 /* organizer code: PBKDF2-SHA256 (600000 rounds, own salt). The page keeps only a SHA-256 of the derived key, the device keeps the derived key as proof */
-const ORG_SALT='1106a0cf49bf17d4bae51c22d6f5bb61',ORG_ITER=600000,ORG_CHK='8f6b485dc7a2a1ee4911c6fe0357120ead344b3ff1ed1f78e744d2df85f9618d';
+const ORG_SALT='d77742f9a791ee7608fc6c191780aab0',ORG_ITER=600000,ORG_CHK='03405cce2969b704a54459c83029018c6135020db7fbc4e6be183df159c91347';
 async function orgDerive(code){const enc=new TextEncoder(),salt=new Uint8Array(ORG_SALT.match(/../g).map(h=>parseInt(h,16)));const base=await crypto.subtle.importKey('raw',enc.encode(code),'PBKDF2',false,['deriveBits']);const bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt,iterations:ORG_ITER,hash:'SHA-256'},base,256);return [...new Uint8Array(bits)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 const orgLock=()=>{try{return JSON.parse(localStorage.getItem('orgLock')||'{}')}catch(e){return {}}};
 let ROLE='';try{ROLE=localStorage.getItem('role')||''}catch(e){}
