@@ -35,7 +35,7 @@ for (const role of ['org', 'guest'] as const) {
     });
     const screens: [string, string][] = role === 'org'
       ? [['home', "go('home')"], ['tasks', "go('tasks')"], ['money', "go('money')"], ['money-people', "V.seg='participants';render(true)"], ['money-cash', "V.seg='cash';render(true)"], ['sched', "go('sched')"], ['more', "go('more')"],
-         ...['announce', 'photos', 'people', 'passports', 'packing', 'rooms', 'flights', 'program', 'settings', 'messages', 'attendance', 'claude', 'notes', 'files', 'contacts'].map(s => [s, `go('more',{sub:'${s}'})`] as [string, string])]
+         ...['announce', 'photos', 'rides', 'people', 'passports', 'packing', 'rooms', 'flights', 'program', 'settings', 'messages', 'attendance', 'claude', 'notes', 'files', 'contacts'].map(s => [s, `go('more',{sub:'${s}'})`] as [string, string])]
       : ['gh', 'gx', 'gl', 'gp', 'gr', 'gt', 'gm', 'gq', 'gf', 'gk', 'gz', 'gd', 'gi'].map(t => [t, `GTAB='${t}';render(true)`] as [string, string]);
     for (const [name, js] of screens) {
       await page.evaluate(js + ';scrollTo(0,0)');
