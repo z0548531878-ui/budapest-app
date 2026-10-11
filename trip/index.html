@@ -2562,19 +2562,17 @@ function appGroups(){const seen={},G=[];S.participants.slice().sort(famCmp).forE
 function appStat(){const tok=new Set(S.settings.filter(x=>x.kind==='tok'&&x.role==='guest').flatMap(x=>x.pids||[]));
   const G=appGroups().map(c=>{const ids=c.map(x=>x._id);return {c,seen:c.some(x=>x.seenAt),inst:c.some(x=>x.inst),push:ids.some(i=>tok.has(i))||c.some(x=>x.notif==='granted'),denied:c.some(x=>x.notif==='denied'),last:c.map(x=>x.lastAt||x.seenAt||'').sort().pop()}});
   return {G,n:G.length,seen:G.filter(g=>g.seen).length,inst:G.filter(g=>g.inst).length,push:G.filter(g=>g.push).length}}
-SUB.appusers=function(){const a=appStat(),f=V.filter.au||'not';
-  const pick={not:g=>!g.seen,noinst:g=>g.seen&&!g.inst,nopush:g=>g.seen&&!g.push,ok:g=>g.inst&&g.push,all:()=>true}[f]||(()=>true), rows=a.G.filter(pick);
-  const cnt={not:a.G.filter(g=>!g.seen).length,noinst:a.G.filter(g=>g.seen&&!g.inst).length,nopush:a.G.filter(g=>g.seen&&!g.push).length,ok:a.G.filter(g=>g.inst&&g.push).length,all:a.n};
+SUB.appusers=function(){const a=appStat(),f=V.filter.au||'ok';
+  const pick={ok:g=>g.inst&&g.push,inst:g=>g.inst,push:g=>g.push,seen:g=>g.seen}[f]||(g=>g.inst&&g.push), rows=a.G.filter(pick).sort((x,y)=>(y.last||'').localeCompare(x.last||''));
+  const cnt={ok:a.G.filter(g=>g.inst&&g.push).length,inst:a.inst,push:a.push,seen:a.seen};
   const chip=(k,l)=>`<button class="chip" data-filter="au" data-val="${k}" aria-pressed="${f===k}">${l} <span class="num">${cnt[k]}</span></button>`;
-  const ic=(on,y,n)=>`<span class="pill ${on?'p-ok':'p-mute'}">${on?y:n}</span>`;
-  const link=location.origin+location.pathname.replace(/trip\/[^/]*$/,'go/')+(TRIP_KEY?'#k='+TRIP_KEY:'');
-  const msg={not:`שלום! זה הקישור לאפליקציית המסע להונגריה, יש בה את כל הפרטים: הטיסות, החדר, הלו״ז ועדכונים. נכנסים, כותבים את השם המלא, ומוסיפים למסך הבית:\n${link}`,noinst:`שלום! כדאי להוסיף את אפליקציית המסע למסך הבית, כדי שתקבלו עדכונים בזמן. פותחים את הקישור ולוחצים "הוספה למסך הבית":\n${link}`,nopush:`שלום! כדי לקבל עדכונים חשובים מהמסע (שינויים בלו״ז, תזכורות), פתחו את האפליקציה ואשרו התראות:\n${link}`}[f];
-  const rowH=g=>{const ph=g.c.find(x=>x.phone);return `<div class="row"><div class="main"><div class="t">${esc(coupleLabel(g.c,g.c[0]))}</div><div class="m">${ic(g.seen,'נכנסו ✓','לא נכנסו')}${ic(g.inst,'📲 התקינו','לא התקינו')}${ic(g.push,'🔔 התראות','בלי התראות')}${g.last?`<span class="num">${esc(fmtWhen(g.last))}</span>`:''}</div></div>${msg&&ph?`<a class="pill p-gold" href="${waLink(ph.phone,msg)}" target="_blank" rel="noopener">💬 שליחה</a>`:''}</div>`};
-  return subHead('מי באפליקציה',`<span class="cnt num">${a.seen}/${a.n} זוגות</span>`)+`
-   <div class="pcsum"><div class="pcs ok"><b class="num">${a.seen}</b><span>נכנסו</span></div><div class="pcs miss"><b class="num">${a.inst}</b><span>📲 התקינו</span></div><div class="pcs ok"><b class="num">${a.push}</b><span>🔔 התראות</span></div></div>
-   <p class="note">כל זוג נספר פעם אחת. "התקינו" = פתחו את האפליקציה מהאייקון במסך הבית. ההתקנה וההתראות נרשמות מהכניסה הבאה שלהם, כך שמי שנכנס לפני העדכון הזה יופיע כ"לא התקינו" עד שייכנס שוב.</p>
-   <div class="chips">${chip('not','לא נכנסו')}${chip('noinst','לא התקינו')}${chip('nopush','בלי התראות')}${chip('ok','הכל מוכן')}${chip('all','כולם')}</div>
-   ${card(rows.map(rowH).join(''),'<b>אין כאן אף אחד</b>')}`};
+  const tag=(on,t)=>on?`<span class="pill p-ok">${t}</span>`:'';
+  const rowH=g=>`<div class="row"><div class="main"><div class="t">${esc(coupleLabel(g.c,g.c[0]))}</div><div class="m">${tag(g.inst,'📲 התקינו')}${tag(g.push,'🔔 התראות')}${!g.inst&&!g.push&&g.seen?tag(1,'נכנסו'):''}${g.last?`<span class="num">${esc(fmtWhen(g.last))}</span>`:''}</div></div></div>`;
+  return subHead('מי באפליקציה',`<span class="cnt num">${cnt.ok}/${a.n} זוגות</span>`)+`
+   <div class="pcsum"><div class="pcs ok"><b class="num">${cnt.ok}</b><span>התקינו + התראות</span></div><div class="pcs ok"><b class="num">${a.inst}</b><span>📲 התקינו</span></div><div class="pcs ok"><b class="num">${a.push}</b><span>🔔 התראות</span></div></div>
+   <div class="chips">${chip('ok','התקינו והפעילו התראות')}${chip('inst','התקינו')}${chip('push','עם התראות')}${chip('seen','נכנסו לאפליקציה')}</div>
+   ${card(rows.map(rowH).join(''),'<b>עוד אין כאן אף אחד</b>ברגע שמישהו יתקין ויפעיל התראות, הוא יופיע כאן')}
+   <p class="note">כל זוג נספר פעם אחת, והחדשים למעלה. ההתקנה נרשמת מהכניסה הבאה של כל אחד, כך שמי שהתקין לפני היום יופיע אחרי שייכנס שוב.</p>`};
 SUB.roles=function(){
   const M=rolesMap(), q=(V.q||'').trim(), team=Object.values(TEAM_FULL);
   let names=Object.keys(M).sort((a,b)=>(team.includes(b)-team.includes(a))||(M[b].length-M[a].length)||a.localeCompare(b,'he'));
@@ -2988,7 +2986,7 @@ function shopStat(){const rest=S.packing.slice(),bt=x=>kst(x,'ordered'),where=x=
 const TILE_DEFS=()=>{const pk=S.packing.filter(x=>!x.sug||kst(x,'ordered')),pd=pk.filter(x=>kst(x,'ordered')).length,rk=S.rooms.filter(r=>r.kitReady).length;return [
  ['program','sched','לוח המסע','חמישי–שבת','c2'],
  ['people','people','משתתפים',`${S.participants.length} נוסעים`,'c1'],
- ['appusers','phone','מי באפליקציה',(()=>{const a=appStat();return `${a.inst} התקינו · ${a.push} עם התראות`})(),'c3'],
+ ['appusers','phone','מי באפליקציה',(()=>{const a=appStat();return `${a.G.filter(g=>g.inst&&g.push).length} זוגות התקינו + התראות`})(),'c3'],
  ['passports','file','דרכונים',`${S.participants.filter(p=>p.passport).length}/${S.participants.length}`,'c2'],
  ['kits','box','ערכות',`${kstat(kitItems()).placed}/${kitItems().length} הונחו`,'c5'],
  ['rooms','bed','חדרים',`${S.rooms.length} · ${rk} עם סט`,'c5'],
