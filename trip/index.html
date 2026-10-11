@@ -1619,7 +1619,7 @@ button.pp{font-size:11px!important;padding:2px 5px!important;min-height:24px!imp
 .kzs{margin:4px 2px 0;font-size:12px}
 
 .fold>summary{display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none;padding:12px 4px;min-height:44px}.fold>summary::-webkit-details-marker{display:none}
-.fold>summary h3{margin:0;font-size:16px;flex:1}.fold>summary .fc{background:rgba(214,178,98,.2);color:#f0d28c;border-radius:99px;padding:1px 9px;font-size:12.5px;font-weight:800}
+.fold>summary h3{margin:0;font-size:16px;flex:1}.fold>summary .fcnt{background:rgba(214,178,98,.2);color:#f0d28c;border-radius:99px;padding:1px 9px;font-size:12.5px;font-weight:800}
 .fold>summary::after{content:'›';font-size:20px;color:#e0b25a;transition:transform .2s}.fold[open]>summary::after{transform:rotate(90deg)}
 .fold>summary .link{order:3;background:none;border:0;color:#e0b25a;font-weight:800;font-size:13px;padding:6px}
 /* ===== zmanim strip (inside the parchment), pocket-guide tools, taxi card ===== */
@@ -1666,7 +1666,7 @@ body.guest .ghome .greet b{font-size:36px;text-shadow:0 0 28px rgba(240,210,140,
 .ri.ok .ri-c{color:#0d2a1a;background:#7fd1a5;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:15px;animation:pop .5s cubic-bezier(.2,1.6,.4,1) both;animation-delay:calc(1s + var(--i,0)*150ms)}
 .ri.bad{border-color:rgba(255,160,120,.55);background:rgba(255,140,100,.08)}.ri.bad .ri-c{animation:nudge 1.4s ease-in-out infinite}
 @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}@keyframes nudge{50%{transform:translateX(-5px)}}
-.ri.nav{background:transparent;border-style:dashed}
+.ri.rnav{background:transparent;border-style:dashed}
 @supports (animation-timeline:view()){
  .gc{animation:gcScroll linear both;animation-timeline:view();animation-range:entry 0% entry 70%}
  @keyframes gcScroll{from{opacity:0;transform:translateY(46px) scale(.88) rotateX(12deg)}to{opacity:1;transform:none}}
@@ -1675,16 +1675,28 @@ body.guest .ghome .greet b{font-size:36px;text-shadow:0 0 28px rgba(240,210,140,
 .gc .gc-i{animation:floatI 4s ease-in-out infinite;animation-delay:calc(var(--i,0)*-.4s)}
 @keyframes floatI{50%{transform:translateY(-4px)}}
 @media (prefers-reduced-motion:reduce){.gsky i,.gsky svg,.rdy,.ri,.ri-c,.rdy .rg,.gc .gc-i,body.guest .ghome .greet b,.rdy-ring{animation:none!important}.rdy .rg{stroke-dashoffset:var(--o)}}
-/* ===== organizer home: money strip right under the clock ===== */
-.fin{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 16px}
-.fc{position:relative;text-align:right;border:1px solid rgba(214,178,98,.3);border-radius:22px;padding:12px 14px;background:linear-gradient(160deg,#1d1912,#0e0c09);color:var(--ink);display:flex;flex-direction:column;gap:2px;min-height:84px;animation:rdyIn .6s cubic-bezier(.2,.85,.25,1.1) both}
-.fc:nth-child(2){animation-delay:.08s}.fc:nth-child(3){animation-delay:.16s}.fc:nth-child(4){animation-delay:.24s}.fc:nth-child(5){animation-delay:.32s}
-.fc span{font-size:12.5px;color:var(--muted);font-weight:800}.fc b{font-size:24px;font-weight:900;line-height:1.15}.fc small{font-size:12px;color:#a69a7d}
-.fc.big{grid-column:1/-1;background:radial-gradient(120% 120% at 90% 0,rgba(214,170,80,.28),transparent 60%),linear-gradient(160deg,#241d10,#0e0c09);border-color:rgba(214,178,98,.55)}.fc.big b{font-size:34px}
-.fc.ok b{color:#7fd1a5}.fc.bad b{color:#f08b82}.fc.mid b{color:#f0c46a}
-.fc:active{transform:scale(.97)}
-.fbar{display:block;height:6px;border-radius:99px;background:#221e17;overflow:hidden;margin-top:6px}.fbar u{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#b8862f,#f0d28c);text-decoration:none}
-@media (prefers-reduced-motion:reduce){.fc{animation:none!important}}
+/* ===== organizer home: compact money strip with dials, right under the clock ===== */
+.fin{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0 14px;padding:10px 8px 8px;border:1px solid rgba(214,178,98,.35);border-radius:22px;background:radial-gradient(120% 120% at 90% 0,rgba(214,170,80,.18),transparent 60%),linear-gradient(160deg,#1a160f,#0c0a07)}
+.fbal{grid-column:1/-1;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;background:none;border:0;border-bottom:1px solid rgba(214,178,98,.18);color:var(--ink);padding:0 6px 8px;margin-bottom:4px;text-align:right}
+.fbal span{font-size:13px;font-weight:800;color:var(--muted)}.fbal b{font-size:22px;font-weight:900}.fbal small{font-size:12px;color:#a69a7d;margin-inline-start:auto}
+.fbal.ok b{color:#7fd1a5}.fbal.bad b{color:#f08b82}
+.fc{background:none;border:0;color:var(--ink);display:flex;flex-direction:column;align-items:center;gap:1px;padding:2px 0;min-width:0;animation:rdyIn .6s cubic-bezier(.2,.85,.25,1.1) both}
+.fc:nth-child(3){animation-delay:.08s}.fc:nth-child(4){animation-delay:.16s}.fc:nth-child(5){animation-delay:.24s}
+.fd{position:relative;width:58px;height:58px}.fd svg{width:100%;height:100%}.fd b{position:absolute;inset:0;display:grid;place-items:center;font-size:14px;font-weight:900}
+.fc .rg{stroke-dashoffset:var(--c);animation:rdyDraw 1.6s .25s cubic-bezier(.2,.8,.2,1) forwards}
+.fc.ok{color:#7fd1a5}.fc.bad{color:#f08b82}.fc.mid{color:#f0c46a}
+.fl{font-size:11.5px;font-weight:800;color:var(--ink);white-space:nowrap}.fc small{font-size:11px;color:#a69a7d;white-space:nowrap}
+.fc:active,.fbal:active{transform:scale(.95)}
+.fin .fc.skel{height:96px;border-radius:14px}
+@media (prefers-reduced-motion:reduce){.fc{animation:none!important}.fc .rg{animation:none!important;stroke-dashoffset:var(--o)}}
+/* participant home: the list is rows, not cubes */
+.gcb{grid-template-columns:1fr!important;gap:9px!important}
+.gcb>.gc,.gcb>.gc.gtrv,.gcb>.gc:nth-child(n){display:grid!important;grid-template-columns:50px 1fr 18px;grid-template-rows:auto auto;column-gap:12px;align-items:center!important;justify-items:start;min-height:74px!important;padding:11px 14px!important;border-radius:20px!important;grid-column:auto!important;text-align:right;background:linear-gradient(160deg,#1d1912,#0e0c09)!important;color:var(--ink)!important;border:1px solid rgba(214,178,98,.3)!important}
+.gcb>.gc .gc-i{position:static!important;grid-row:1/3;width:48px!important;height:48px!important;margin:0!important;border-radius:15px;background:var(--goldbtn)!important;color:#15110a!important}
+.gcb>.gc .gc-t{grid-column:2;font-size:17px!important;align-self:end}.gcb>.gc .gc-s{grid-column:2;grid-row:2;color:var(--muted)!important;font-size:13px!important;align-self:start}
+.gcb>.gc::before{content:'‹';grid-column:3;grid-row:1/3;font-size:22px;font-weight:900;color:var(--gold);position:static}
+.gcb>.gc .gc-b{top:50%!important;transform:translateY(-50%);inset-inline-end:40px!important;inset-inline-start:auto!important}
+.gcb>.gc .gc-t,.gcb>.gc .gc-s{justify-self:stretch!important;text-align:right!important;width:auto!important}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -1975,13 +1987,10 @@ const VIEWS={
   const today=new Date().toLocaleDateString('he-IL',{weekday:'long',day:'numeric',month:'numeric'});
   const ppN=S.participants.length, ppOk=S.participants.filter(x=>x.passport).length, rq=pendN();
   const kpi=(cls,v,l,to,o)=>`<button class="kpi ${cls}" data-go="${to}" data-opts='${esc(JSON.stringify(o||{}))}'><b class="num"${/^\d+%?$/.test(String(v))?` data-count="${parseInt(v)}"${String(v).endsWith('%')?' data-fmt="pct"':''}`:''}>${v}</b><span>${l}</span></button>`;
-  const fin=ready('participants','expenses','donations')?(()=>{const m=money(),go=(sg)=>`data-go="money" data-opts='{"seg":"${sg}"}'`;
-    return `<section class="fin" aria-label="תמונת מצב">
-    <button class="fc big ${m.gap<0?'bad':'ok'}" ${go('sum')}><span>מאזן צפוי</span><b class="num">${m.gap<0?'−':'+'}${ils(Math.abs(m.gap))}</b><small>${m.gap<0?'חסר כדי לכסות את כל ההוצאות':'יישאר עודף'}</small></button>
-    <button class="fc ${pct>=90?'ok':pct>=60?'mid':'bad'}" ${go('participants')}><span>נגבה ממשתתפים</span><b class="num" data-count="${pct}" data-fmt="pct">${pct}%</b><i class="fbar"><u style="width:${Math.min(100,pct)}%"></u></i></button>
-    <button class="fc" ${go('sum')}><span>נכנס לקופה</span><b class="num">${ils(m.pIn+m.dIn)}</b><small>מתוך ${ils(m.income)}</small></button>
-    <button class="fc" ${go('expenses')}><span>שולם לספקים</span><b class="num">${ils(m.out)}</b><small>מתוך ${ils(m.est)}</small></button>
-    <button class="fc ${m.left>0?'mid':'ok'}" ${go('expenses')}><span>נותר לשלם</span><b class="num">${ils(m.left)}</b><small>${S.expenses.filter(e=>e.status!=='שולם').length} הוצאות פתוחות</small></button></section>`})():`<div class="fin">${'<div class="fc skel shimmer"></div>'.repeat(4)}</div>`;
+  const fin=ready('participants','expenses','donations')?(()=>{const m=money(),go=sg=>`data-go="money" data-opts='{"seg":"${sg}"}'`,pc=(a,b)=>b?Math.max(0,Math.min(100,Math.round(a/b*100))):0,R=26,C=2*Math.PI*R;
+    const dial=(cls,p,lbl,v,sg,cnt)=>`<button class="fc ${cls}" ${go(sg)}><span class="fd"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="${R}" fill="none" stroke="rgba(214,178,98,.16)" stroke-width="6"/><circle class="rg" cx="32" cy="32" r="${R}" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-dasharray="${C}" style="--c:${C};--o:${C*(1-p/100)}" transform="rotate(-90 32 32)"/></svg><b class="num"${cnt?` data-count="${p}" data-fmt="pct"`:''}>${p}%</b></span><span class="fl">${lbl}</span><small class="num">${v}</small></button>`;
+    return `<section class="fin" aria-label="תמונת מצב"><button class="fbal ${m.gap<0?'bad':'ok'}" ${go('sum')}><span>מאזן צפוי</span><b class="num">${m.gap<0?'−':'+'}${ils(Math.abs(m.gap))}</b><small>${m.gap<0?'חסר לכיסוי ההוצאות':'יישאר עודף'}</small></button>
+    ${dial(pct>=90?'ok':pct>=60?'mid':'bad',pct,'נגבה ממשתתפים',ils(m.pIn),'participants',1)}${dial('ok',pc(m.pIn+m.dIn,m.income),'נכנס לקופה',ils(m.pIn+m.dIn),'sum')}${dial('mid',pc(m.out,m.est),'שולם לספקים',ils(m.out),'expenses')}${dial('bad',pc(m.left,m.est),'נותר לשלם',ils(m.left),'expenses')}</section>`})():`<div class="fin">${'<div class="fc skel shimmer"></div>'.repeat(4)}</div>`;
   const attention=fires.length?`<section class="sec"><div class="sec-h"><h3>דורש תשומת לב</h3><button class="link" data-go="more">כל התובנות ›</button></div>${card(fires.map(([c,l,to,o])=>`<button class="row" data-go="${to}" data-opts='${esc(JSON.stringify(o))}'><span class="pill ${c}">!</span><div class="main"><div class="t">${esc(l)}</div></div><span aria-hidden="true" style="color:var(--muted)">‹</span></button>`).join(''))}</section>`:'';
   return `<div class="hello"><div class="greet">${greeting()}<b>${ME?esc(ME):'ברוכים הבאים'}</b></div><span class="date">${today}</span></div>
   <section class="pass"><span class="shine"></span><div class="pass-main"><div class="pass-top"><span>${out?`אל על · <span class="ltr">${esc(out.flightNo)}</span>`:'טיסת הלוך'}</span><span>חמישי 19.11</span></div>
@@ -1999,7 +2008,7 @@ const VIEWS={
     <div class="btns"><button class="btn ${pn?'primary':''}" data-send>שליחת עדכון ל-Claude</button></div></div>${CAN_SEND()?'':'-->'}
   </section>
   ${guideCard()}
-  ${na.length?`<details class="sec fold"><summary><h3>מה הצוות עשה</h3><span class="num fc">${na.length}</span><button class="link" id="seeAct">הכל ›</button></summary><div class="card feed">${na.slice(0,3).map(a=>`<button class="it new" ${find(a.col,a.rid)?`data-edit="${a.col}/${a.rid}"`:''}><span class="av">${esc((a.by||'?')[0])}</span><span class="main"><b>${esc(a.by||'מישהו')}</b> ${esc(actLine(a))}${a.change?`<small>${esc(a.change)}</small>`:''}</span></button>`).join('')}</div></details>`:''}
+  ${na.length?`<details class="sec fold"><summary><h3>מה הצוות עשה</h3><span class="num fcnt">${na.length}</span></summary><div class="card feed">${na.slice(0,3).map(a=>`<button class="it new" ${find(a.col,a.rid)?`data-edit="${a.col}/${a.rid}"`:''}><span class="av">${esc((a.by||'?')[0])}</span><span class="main"><b>${esc(a.by||'מישהו')}</b> ${esc(actLine(a))}${a.change?`<small>${esc(a.change)}</small>`:''}</span></button>`).join('')}</div><button class="btn" id="seeAct" style="width:100%;margin-top:8px">כל הפעילות ›</button></details>`:''}
 `;
  },
  tasks(){
@@ -3578,7 +3587,7 @@ function guestHTML0(){
       return `<section class="rdy ${pct===100?'full':''}" aria-label="המוכנות שלכם למסע"><div class="rdy-top"><div class="rdy-ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="${R}" fill="none" stroke="rgba(214,178,98,.18)" stroke-width="8"/><circle class="rg" cx="60" cy="60" r="${R}" fill="none" stroke="url(#rdg)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" style="--c:${C};--o:${C*(1-pct/100)}" transform="rotate(-90 60 60)"/><defs><linearGradient id="rdg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b8862f"/><stop offset="1" stop-color="#ffe9a8"/></linearGradient></defs></svg><b class="num">${pct}%</b></div>
        <div class="rdy-h"><small>המוכנות שלכם</small><b>${pct===100?'הכל מוכן ✈':ok+' מתוך '+items.length+' בוצעו'}</b><span>${pct===100?'נשאר רק לארוז ולבוא':'עוד רגע וסיימתם'}</span></div></div>
        <div class="rdy-l">${items.map(([o,l,sb,g,ic],i)=>{const t=o?'div':'button';return `<${t} class="ri ${o?'ok':'bad'}" ${o?'':`data-gnav="${g}"`} style="--i:${i}"><span class="ri-i">${ic}</span><span class="ri-t"><b>${l}</b><small>${sb}</small></span><span class="ri-c">${o?'✓':'‹'}</span></${t}>`}).join('')}
-       <a class="ri nav" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener" style="--i:3"><span class="ri-i">${IX.nav}</span><span class="ri-t"><b>חזרה למלון</b><small>אבדתם? נחזיר אתכם</small></span><span class="ri-c">‹</span></a></div></section>`})();
+       <a class="ri rnav" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener" style="--i:3"><span class="ri-i">${IX.nav}</span><span class="ri-t"><b>חזרה למלון</b><small>אבדתם? נחזיר אתכם</small></span><span class="ri-c">‹</span></a></div></section>`})();
     const SKY='<div class="gsky" aria-hidden="true">'+[[8,14,0],[22,6,.8],[35,22,1.6],[48,9,.4],[61,18,2.1],[74,5,1.2],[86,16,.2],[93,8,1.9],[14,30,2.4],[67,34,.9]].map(([x,y,d])=>`<i style="inset-inline-start:${x}%;top:${y}%;animation-delay:${d}s"></i>`).join('')+'<svg viewBox="0 0 400 90" preserveAspectRatio="xMidYMax slice"><path d="M0 90V70h30v-8h14v8h22V58h10v12h18V64h8v-6h6v6h8v6h26V52c0-9 8-14 16-18v-8l3-9 3 9v8c8 4 16 9 16 18v18h26V60h12v10h22v-6h10v6h26V56h12v14h30v-8h16v8h30v20z" fill="#0b0905" stroke="#c99a3d" stroke-opacity=".28" stroke-width="1"/></svg></div>';
     const ph=orgPhone();
     const help=`<section class="ghelp" aria-label="עזרה"><div><b>צריכים עזרה?</b><small>שלומי, מארגן המסע · <span class="num ltr">${esc(fmtPhone(ph))}</span></small></div>
@@ -3586,15 +3595,11 @@ function guestHTML0(){
     return pv+`<div class="ghome">${SKY}<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(coupleLabel(ppl,me)||'')}</b></div></div>
      ${nowCard('data-gnav="gl"')}${banner}${TRIPDAY()?tripDayBlock(ppl):passBlock+extraOut+ready}
      <div class="gcb">
-      ${cube('gl',I.sched,'לוח המסע','מה קורה בכל יום, ובאיזו שעה')}
       ${cube('gz',IX.pin,'קרעסטיר','על רבי ישעיה׳לה ועל הציון')}
       ${cube('gx',IX.food,'מסעדות ואטרקציות','איפה אוכלים כשר, ומה כדאי לראות')}
-      ${cube('gr',I.bed,'החדר שלי','מספר חדר, קומה ופרטי המלון')}
       ${me&&me.kitter?cube('gs',I.box,'סידור ערכות בחדרים',(()=>{const rp=roomsPlaced();return rp.t?`הונחו ${rp.n} מתוך ${rp.t} חדרים`:'עדכון באיזה חדר סידרתם'})(),(()=>{const rp=roomsPlaced();return rp.t-rp.n||''})()):''}
       ${cube('gp',I.people,'משתתפים','מי בא איתנו, ואיך מתקשרים')}
-      ${cube('gt',I.tasks,'משימות',openT?`יש ${openT} משימות שמחכות למתנדבים`:'לעזור ולקחת משימה',mineT||'')}
       ${cube('gm',I.chat,'הודעות','עדכונים מהמארגנים',un||'')}
-      ${cube('gq',I.mic,'בקשה אישית','צריכים משהו? כתבו לנו')}
       ${cube('gf',SIL,'הפרופיל שלי','תמונה ודרכון')}
       ${cube('gk',I.box,'מדריך כיס','שעון, מטבע, חשמל וביטויים')}
       ${open?`<a class="gc gtrv" href="../" target="_blank" rel="noopener" style="--i:${n++}"><span class="gc-i">${I.spark}</span><span class="gc-t">טריוויה</span><span class="gc-s">משחק לאוטובוס. פתוח עכשיו!</span></a>`:`<button class="gc gtrv locked" data-glock style="--i:${n++}"><span class="gc-i">🔒</span><span class="gc-t">טריוויה</span><span class="gc-s">נפתח כשנחתים בבודפשט</span></button>`}

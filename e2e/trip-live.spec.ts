@@ -114,12 +114,12 @@ test('MOTION-1 with motion on, numbers roll to a changed value and a quick flick
   await expect.poll(() => page.evaluate('COLS.every(c => loaded.has(c))')).toBe(true);
   expect(await page.evaluate('typeof gsap')).toBe('object');
   await page.evaluate("go('home')");
-  const paid = page.getByRole('region', { name: 'תמונת מצב' }).getByRole('button', { name: /נגבה ממשתתפים/ }).locator('.num');
+  const paid = page.getByRole('region', { name: 'תמונת מצב' }).getByRole('button', { name: /נגבה ממשתתפים/ }).locator('.fd .num');
   await expect(paid).toHaveText('50%');
   // another phone marks the second participant as paid: the number rolls up instead of jumping
   await db.put(`${T}/participants/p2`, { name: 'בני לוי', amount: 1750, phone: '0502345678', status: 'שולם', passport: false, order: 2 });
   const seen = await page.evaluate(() => new Promise<string[]>(ok => {
-    const el = document.querySelector('.fin .fc:nth-child(2) .num')!, out: string[] = [];
+    const el = document.querySelector('.fin .fc:nth-child(2) .fd .num')!, out: string[] = [];
     const mo = new MutationObserver(() => out.push(el.textContent || ''));
     mo.observe(el, { childList: true, characterData: true, subtree: true });
     setTimeout(() => { mo.disconnect(); ok(out) }, 1200);
