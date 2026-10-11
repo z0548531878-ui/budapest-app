@@ -3561,9 +3561,13 @@ let rq=0, firstAll=false;
 const later=()=>{if(rq)return;if(V.sub==='notes'&&document.querySelector('#sortBox .prop,#sortBox .thinking'))return;// changes arrive one list at a time (an update from Claude touches several): wait a moment and redraw once for all of them
   rq=setTimeout(()=>requestAnimationFrame(()=>{rq=0;const all=COLS.every(c=>loaded.has(c));render(all&&!firstAll);if(all&&!firstAll)setTimeout(autoApply,800);if(all)firstAll=true}),firstAll?90:0)};
 /* ===== entrance: participants (by name) / organizers (by code) ===== */
-const ORG_HASH='9117bafd8636bb35ed53d6396719a52c93ea95536b33e69fb1dd3ed348e14678';
+/* organizer code: PBKDF2-SHA256 (600000 rounds, own salt). The page keeps only a SHA-256 of the derived key, the device keeps the derived key as proof */
+const ORG_SALT='1106a0cf49bf17d4bae51c22d6f5bb61',ORG_ITER=600000,ORG_CHK='8f6b485dc7a2a1ee4911c6fe0357120ead344b3ff1ed1f78e744d2df85f9618d';
+async function orgDerive(code){const enc=new TextEncoder(),salt=new Uint8Array(ORG_SALT.match(/../g).map(h=>parseInt(h,16)));const base=await crypto.subtle.importKey('raw',enc.encode(code),'PBKDF2',false,['deriveBits']);const bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt,iterations:ORG_ITER,hash:'SHA-256'},base,256);return [...new Uint8Array(bits)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+const orgLock=()=>{try{return JSON.parse(localStorage.getItem('orgLock')||'{}')}catch(e){return {}}};
 let ROLE='';try{ROLE=localStorage.getItem('role')||''}catch(e){}
-if(!ROLE&&ME){ROLE='org';try{localStorage.setItem('role','org')}catch(e){}}
+/* an organizer session must carry a valid proof of the code; otherwise it falls back to the entry screen */
+if(ROLE==='org'){let pr='';try{pr=localStorage.getItem('orgProof')||''}catch(e){}setTimeout(async()=>{let ok=false;try{ok=!!pr&&(await sha(pr))===ORG_CHK}catch(e){}if(!ok&&ROLE==='org'){try{localStorage.removeItem('orgProof')}catch(e){}logoutRole()}},0)}
 let PREV=false;try{PREV=sessionStorage.getItem('prev')==='1'}catch(e){}
 const GUEST=()=>ROLE.startsWith('guest:')||(ROLE==='org'&&PREV);
 function setPrev(v){PREV=v;try{sessionStorage.setItem('prev',v?'1':'0')}catch(e){}GTAB='gh';V.seg=null;document.body.classList.toggle('guest',GUEST());render(true);window.scrollTo(0,0)}
@@ -3579,7 +3583,7 @@ function matchGuest(inp){
 }
 async function sha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 function setRole(r){ROLE=r;PREV=false;try{sessionStorage.setItem('prev','0')}catch(e){}try{localStorage.setItem('role',r)}catch(e){}const g=document.getElementById('gate');if(g)g.remove();document.body.classList.toggle('guest',GUEST());if(typeof pickMe==='function'&&GUEST()){}render(true);window.scrollTo(0,0)}
-function logoutRole(){ROLE='';try{localStorage.removeItem('role');localStorage.removeItem('me')}catch(e){}ME='';document.body.classList.remove('guest');showGate()}
+function logoutRole(){ROLE='';try{localStorage.removeItem('role');localStorage.removeItem('me');localStorage.removeItem('orgProof')}catch(e){}ME='';document.body.classList.remove('guest');showGate()}
 function showGate(step){
   if(!step&&typeof isStandalone==='function'&&isStandalone()&&typeof isMobile==='function'&&isMobile()&&!skipG())step='guest';
   if(step==='choice')step='';
@@ -3608,8 +3612,13 @@ function showGate(step){
      <input id="gcode" class="gin ltr" type="password" autocomplete="off" inputmode="text" placeholder="קוד" enterkeyhint="go">
      <div id="gmsg" class="gmsg" role="alert"></div>
      <button class="gbtn" id="ggo">כניסה</button><button class="glink" id="gback">חזרה</button></div>`;
-    const go=async()=>{const v=document.getElementById('gcode').value.trim().toLowerCase();
-      if(await sha('budapest-salt:'+v)===ORG_HASH)setRole('org');else document.getElementById('gmsg').textContent='הקוד שגוי'};
+    let busy=false;
+    const go=async()=>{if(busy)return;const msg=document.getElementById('gmsg'),v=document.getElementById('gcode').value.trim().toLowerCase();if(!v)return;
+      const L=orgLock(),now=Date.now();if(L.until&&now<L.until){msg.textContent=`יותר מדי ניסיונות. אפשר לנסות שוב בעוד ${Math.ceil((L.until-now)/60000)} דקות`;return}
+      busy=true;msg.textContent='בודק…';let d='';try{d=await orgDerive(v)}catch(e){}busy=false;
+      if(d&&(await sha(d))===ORG_CHK){try{localStorage.setItem('orgProof',d);localStorage.removeItem('orgLock')}catch(e){}msg.textContent='';setRole('org');return}
+      const n=(L.n||0)+1,lock=n>=5?now+Math.min(60,5*Math.pow(2,Math.floor(n/5)-1))*60000:0;try{localStorage.setItem('orgLock',JSON.stringify({n,until:lock}))}catch(e){}
+      msg.textContent=lock?'הקוד שגוי. הכניסה ננעלה לכמה דקות':`הקוד שגוי (נשארו ${5-n%5} ניסיונות לפני נעילה)`};
     document.getElementById('ggo').onclick=go;document.getElementById('gcode').onkeydown=e=>{if(e.key==='Enter')go()};
     document.getElementById('gback').onclick=()=>showGate('choice');setTimeout(()=>document.getElementById('gcode').focus(),50);return}
   g.innerHTML=`<div class="gbox">${logo}<h1>שיעור מבקשי ה׳</h1><p class="gsub">מסע גיבוש הונגריה<br><span class=\"gdate\">ט׳–י״ב כסלו תשפ״ז · <bdi dir=\"ltr\">19–22.11.2026</bdi></span></p>
