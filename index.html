@@ -2,6 +2,11 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<script>
+// נכנסים מהקישור הרגיל בדפדפן → עוברים לדף האפליקציה (עם הוראות ההתקנה), שמציג את המשחק על כל המסך
+try{ var sa=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+  if(window.top===window && !sa && !navigator.webdriver && !/[?&](app|noapp)=/.test(location.search)) location.replace('trip/trivia/'+location.search+location.hash); }catch(e){}
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>טריוויה על גלגלים — חי</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -4081,7 +4086,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-11a';
+const APP_VERSION = '2026-10-11b';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
