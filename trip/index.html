@@ -1014,7 +1014,7 @@ body.guest .nav-in button[data-gnav="gh"] .badge{inset-inline-end:calc(50% - 30p
 }
 
 #pgate{position:fixed;inset:0;z-index:9998;background:radial-gradient(120% 80% at 50% 0%,#1a150c 0%,#050504 60%);display:grid;place-items:center;padding:24px;overflow:auto}
-#pgate .gbox{gap:12px}#pgate .glogo{width:min(40vw,150px);height:min(40vw,150px)}
+#pgate.top{z-index:10000}#pgate .gbox{gap:12px}#pgate .glogo{width:min(40vw,150px);height:min(40vw,150px)}
 #pgate h1{font-size:30px}.pst{text-align:right;margin:4px 0;padding-inline-start:26px;color:#e8dfc7;font-size:16px;line-height:1.6;display:grid;gap:8px}.pst b{color:#f0d28c}
 body.pg #nav{display:none}
 #opush{position:fixed;inset-inline:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 86px);z-index:30;min-height:50px;border:0;border-radius:16px;font-weight:900;font-size:16px;color:#15110a;background:linear-gradient(180deg,#f6dc93,#c99a3d);box-shadow:0 12px 26px -10px rgba(0,0,0,.8)}
@@ -3326,7 +3326,7 @@ const backupAge=()=>{const b=find('settings','backup');return b&&b.at?(Date.now(
 const FB_CFG={apiKey:"AIzaSyBTEdbmsFx2Qa6Z_CDAMuQu14NkuSb24jY",authDomain:"budapest-983e4.firebaseapp.com",projectId:"budapest-983e4",storageBucket:"budapest-983e4.firebasestorage.app",messagingSenderId:"452602339599",appId:"1:452602339599:web:f2b3eb059730c4948a1e7a"};
 const CHAT_URL='https://claude.ai/code/session_01Vr3GVH6iK5uzhbYZ47FrNj';
 let TRIP_KEY='';
-(()=>{const m=(location.hash||'').match(/k=([A-Za-z0-9_-]{20,})/);if(m){TRIP_KEY=m[1];try{localStorage.setItem('tripKey',TRIP_KEY)}catch(e){}}else{try{TRIP_KEY=localStorage.getItem('tripKey')||''}catch(e){}}
+(()=>{const m=((location.hash||'')+'&'+(location.search||'')).match(/k=([A-Za-z0-9_-]{20,})/);if(m){TRIP_KEY=m[1];try{localStorage.setItem('tripKey',TRIP_KEY)}catch(e){}}else{try{TRIP_KEY=localStorage.getItem('tripKey')||''}catch(e){}}
   if(m){try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}}})();
 async function initFire(){
   if(!TRIP_KEY||!window.firebase)return null;
@@ -3401,7 +3401,7 @@ function showGate(step){
     g.innerHTML=`<div class="gbox">${logo}<h1>כניסת משתתפי המסע</h1><p>כתבו את שמכם המלא כפי שנרשמתם למסע</p>
      <input id="gname" class="gin" type="text" autocomplete="off" placeholder="שם מלא" enterkeyhint="go">
      <div id="gmsg" class="gmsg" role="alert"></div>
-     <div id="gkeybox" hidden style="display:grid;gap:8px"><input id="gkey" class="gin ltr" type="text" autocomplete="off" placeholder="הדביקו כאן את הקישור המלא" enterkeyhint="go"><button class="gbtn alt" id="gkeyok">שמירת הקישור</button></div>
+     <div id="gkeybox" hidden style="display:none;gap:8px"><input id="gkey" class="gin ltr" type="text" autocomplete="off" placeholder="הדביקו כאן את הקישור המלא" enterkeyhint="go"><button class="gbtn alt" id="gkeyok">שמירת הקישור</button></div>
      <button class="gbtn" id="ggo">כניסה</button><button class="glink" id="gback">חזרה</button></div>`;
     const setKey=()=>{const m=(document.getElementById('gkey').value||'').match(/k=([A-Za-z0-9_-]{20,})/)||(document.getElementById('gkey').value||'').trim().match(/^([A-Za-z0-9_-]{24,})$/);const msg=document.getElementById('gmsg');
       if(!m){msg.textContent='לא זוהה מפתח בקישור. הדביקו את הקישור המלא שמסתיים ב־#k=…';return}
@@ -4054,9 +4054,16 @@ addEventListener('beforeinstallprompt',e=>{e.preventDefault();DEFER=e;pgate()});
 addEventListener('appinstalled',()=>{DEFER=null});
 const isMobile=()=>/iphone|ipad|ipod|android/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const skipG=()=>{try{return sessionStorage.getItem('skipInst')==='1'}catch(e){return false}};
+/* WhatsApp/Instagram/Facebook/Telegram open links in their own browser, which can't add to the home screen or show notifications.
+   On iPhone a real browser always says "Safari/" (Chrome and Firefox too); the in-app ones don't */
+const isInApp=()=>{const u=navigator.userAgent;return /FBAN|FBAV|FB_IAB|Instagram|WhatsApp|Telegram|Line\/|MicroMessenger|Snapchat|TikTok|musical_ly|; wv\)/i.test(u)||(isIOS()&&!/Safari\//.test(u))};
+/* web push on iPhone exists only from iOS 16.4 */
+const iosOld=()=>{const m=navigator.userAgent.match(/OS (\d+)_(\d+)/);return isIOS()&&!!m&&(+m[1]<16||(+m[1]===16&&+m[2]<4))};
+const appLink=()=>location.origin+location.pathname+(TRIP_KEY?'#k='+TRIP_KEY:'');
 function gateState(){
   if(PREV||nogate()||ROLE==='org'||skipG()||!isMobile())return '';
-  if(!isStandalone())return 'install';
+  if(iosOld())return 'old';
+  if(!isStandalone())return isInApp()?'inapp':'install';
   if(!('Notification' in window)||!('serviceWorker' in navigator))return 'unsupported';
   if(Notification.permission==='denied')return 'denied';
   if(Notification.permission!=='granted')return 'ask';
@@ -4067,17 +4074,30 @@ function pgate(){
   if(el&&el.dataset.st===st+(DEFER?'d':''))return;
   if(!el){el=document.createElement('div');el.id='pgate';document.body.appendChild(el)}
   el.dataset.st=st+(DEFER?'d':'');document.body.classList.add('pg');
+  // before the app is on the home screen, typing a name is wasted (the installed copy starts fresh), so these sit above the entry screen
+  el.classList.toggle('top',st==='inapp'||st==='old'||st==='install');
   const logo='<img class="glogo" src="logo.webp" alt="">';
   let h='';
   if(st==='install'){
     const steps=isIOS()?
-      ['לחצו על כפתור השיתוף <b>⬆︎</b> בתחתית הדפדפן (ב־Safari)','גללו ובחרו <b>"הוסף למסך הבית"</b>','לחצו <b>"הוסף"</b> ופתחו את האפליקציה מהאייקון החדש']:
+      ['לחצו על כפתור השיתוף <b>⬆︎</b> (ב־Safari בתחתית המסך, ב־Chrome למעלה)','גללו ובחרו <b>"הוסף למסך הבית"</b>','לחצו <b>"הוסף"</b> ופתחו את האפליקציה מהאייקון החדש']:
       ['לחצו על שלוש הנקודות <b>⋮</b> בפינת הדפדפן (Chrome)','בחרו <b>"התקנת אפליקציה"</b> או <b>"הוסף למסך הבית"</b>','פתחו את האפליקציה מהאייקון החדש במסך הבית'];
     h=`${logo}<h1>מוסיפים למסך הבית</h1><p>שני לחיצות ואתם בפנים. כך תקבלו התראות על הודעות ומשימות חדשות.</p>
       ${DEFER?'<button class="gbtn" id="pinst">הוספה למסך הבית</button>':''}
       <ol class="pst">${steps.map(s=>`<li>${s}</li>`).join('')}</ol>
-      ${isIOS()?'<p class="gsub">חשוב: באייפון זה עובד רק דרך Safari.</p>':''}
+      ${isIOS()?'<p class="gsub">לא רואים "הוסף למסך הבית"? גללו למטה ברשימה, או לחצו "ערוך פעולות".</p>':''}
       <button class="glink" id="pskip">אני מארגן, להמשיך בלי התקנה</button>`}
+  else if(st==='inapp'){
+    const and=!isIOS(), u=new URL(appLink());
+    // Android: an intent link opens the same address straight in Chrome; the key rides in ?k= because the intent syntax takes the #
+    const intent=`intent://${u.host}${u.pathname}${TRIP_KEY?'?k='+TRIP_KEY:''}#Intent;scheme=https;package=com.android.chrome;end`;
+    h=`${logo}<h1>פותחים בדפדפן</h1><p>הקישור נפתח בתוך אפליקציה אחרת (וואטסאפ, אינסטגרם וכו׳). משם אי אפשר להתקין ולקבל התראות.</p>
+      ${and?`<a class="gbtn" id="pchrome" href="${esc(intent)}" style="display:grid;place-items:center;text-decoration:none">פתיחה ב־Chrome</a>`:''}
+      <ol class="pst">${(and?['אם הכפתור לא עבד: לחצו על <b>⋮</b> בפינה','בחרו <b>"פתיחה ב־Chrome"</b> או <b>"פתיחה בדפדפן"</b>']:['לחצו על <b>⋯</b> או על <b>⬆︎</b> בפינת המסך','בחרו <b>"פתיחה ב־Safari"</b> או <b>"פתיחה בדפדפן"</b>','לא מופיע? העתיקו את הקישור והדביקו ב־Safari']).map(s=>`<li>${s}</li>`).join('')}</ol>
+      <button class="gbtn alt" id="pcopy">העתקת הקישור</button>
+      <button class="glink" id="pskip">אני מארגן, להמשיך בכל זאת</button>`}
+  else if(st==='old'){
+    h=`${logo}<h1>צריך לעדכן את האייפון</h1><p>התראות לאפליקציה עובדות רק מגרסה 16.4 ומעלה של iOS.</p><ol class="pst">${['פתחו <b>הגדרות</b>, <b>כללי</b>, <b>עדכון תוכנה</b>','התקינו את העדכון','פתחו שוב את הקישור'].map(s=>`<li>${s}</li>`).join('')}</ol><button class="glink" id="pskip">אני מארגן, להמשיך בכל זאת</button>`}
   else if(st==='ask'){
     h=`${logo}<h1>הפעלת התראות</h1><p>נשלח לכם התראה בכל הודעה מהמארגנים ובכל משימה חדשה. בלי זה אפשר לפספס שינויים בלוז.</p><button class="gbtn" id="pask">הפעלת התראות</button><p class="gsub">בחלון שייפתח לחצו על "אפשר".</p><button class="glink" id="pskip">אני מארגן, להמשיך בלי התראות</button>`}
   else if(st==='denied'){
@@ -4116,6 +4136,7 @@ document.addEventListener('click',e=>{
   const T=e.target;
   if(T.closest('#pask')){askPush();return}
   if(T.closest('#pchk')){location.reload();return}
+  if(T.closest('#pcopy')){const l=appLink();(navigator.clipboard?navigator.clipboard.writeText(l):Promise.reject()).then(()=>toast('הקישור הועתק. הדביקו אותו בדפדפן'),()=>prompt('העתיקו את הקישור:',l));return}
   if(T.closest('#pskip')){try{sessionStorage.setItem('skipInst','1')}catch(x){}pgate();return}
   if(T.closest('#pinst')&&DEFER){DEFER.prompt();DEFER.userChoice.finally(()=>{DEFER=null;pgate()});return}
 },true);
