@@ -25,7 +25,7 @@ test('LIVE-1 an organizer moves an item in the programme; participants see the n
   const sheet = page.getByRole('dialog');
   await expect(sheet).toContainText('במקור: 13:00');
   await sheet.getByLabel('שעה').fill('13:30');
-  await sheet.getByRole('button', { name: 'עדכון לכולם' }).click();
+  await sheet.getByRole('button', { name: 'עדכון ושליחת הודעה' }).click();
   await expect.poll(async () => (await db.get(`${T}/settings/prog`))?.fix?.fri_2?.tm).toBe('13:30');
   await expect.poll(async () => (await db.list(`${T}/settings`)).find((d: any) => d.data.kind === 'ann')?.data.text).toContain('במקום 13:00, עכשיו ב־13:30');
   // marked as a programme change, so the server sends it as a phone notification that opens the programme
@@ -106,7 +106,7 @@ test('HELP-1 participants can reach the organizer from the home screen', async (
   expect(errors).toEqual([]);
 });
 
-test('MOTION-1 with motion on, numbers roll to a changed value and a quick flick down closes a sheet', async ({ browser, db }) => {
+test('MOTION-1 with motion on, a changed number shows at once with a short highlight, and a quick flick down closes a sheet', async ({ browser, db }) => {
   await seed(db);
   const { page, errors } = await openTrip(browser, db);
   await page.emulateMedia({ reducedMotion: 'no-preference' });
@@ -116,7 +116,7 @@ test('MOTION-1 with motion on, numbers roll to a changed value and a quick flick
   await page.evaluate("go('home')");
   const paid = page.getByRole('region', { name: 'תמונת מצב' }).getByRole('button', { name: /נכנס לקופה/ }).locator('.fd .num');
   await expect(paid).toHaveText('50%');
-  // another phone marks the second participant as paid: the number rolls up instead of jumping
+  // another phone marks the second participant as paid: the new number is readable at once (no counting) and is highlighted
   await db.put(`${T}/participants/p2`, { name: 'בני לוי', amount: 1750, phone: '0502345678', status: 'שולם', passport: false, order: 2 });
   const seen = await page.evaluate(() => new Promise<string[]>(ok => {
     const el = document.querySelector('.fin .fc:nth-child(2) .fd .num')!, out: string[] = [];
@@ -124,8 +124,9 @@ test('MOTION-1 with motion on, numbers roll to a changed value and a quick flick
     mo.observe(el, { childList: true, characterData: true, subtree: true });
     setTimeout(() => { mo.disconnect(); ok(out) }, 1200);
   }));
-  expect(seen.some(t => t !== '50%' && t !== '100%')).toBe(true);
+  expect(seen.every(t => t === '50%' || t === '100%')).toBe(true);
   await expect(paid).toHaveText('100%');
+  await expect(paid).toHaveClass(/pChg/);
   // open a task and flick it closed: 40px fast is enough
   await page.evaluate("go('tasks')");
   await page.locator('.row .main').first().click();

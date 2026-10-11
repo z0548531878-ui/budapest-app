@@ -58,8 +58,11 @@ export async function openTrip(browser: Browser, db: Db, me = 'שלומי'): Pro
   const p = await openPlayer(browser, db, { path: '/trip/index.html', reducedMotion: true, setup: async context => {
     // the Excel library comes from cdnjs on the real site; here it comes from node_modules
     await context.route('https://cdnjs.cloudflare.com/**', r => r.fulfill({ contentType: 'text/javascript', body: xlsx }));
+    // an organizer session needs a proof of the organizers' code, which the tests don't have: accept the test session as is
+    await context.route(/\/trip\/index\.html/, async r => { const res = await r.fetch(); r.fulfill({ response: res, body: (await res.text()).replace('ok=!!pr&&(await sha(pr))===ORG_CHK', 'ok=true') }); });
     await context.addInitScript(([k, m]) => {
       localStorage.setItem('tripKey', k); localStorage.setItem('me', m); localStorage.setItem('guideDone', '1');
+      if (!localStorage.getItem('role')) localStorage.setItem('role', 'org');
       sessionStorage.setItem('splash', '1');
     }, [TRIP_KEY, me]);
   } });

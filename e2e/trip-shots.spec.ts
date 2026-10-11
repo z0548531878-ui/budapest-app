@@ -23,6 +23,8 @@ for (const role of ['org', 'guest'] as const) {
     await page.evaluate(r => { localStorage.setItem('nogate', '1'); sessionStorage.setItem('skipInst', '1'); localStorage.setItem('role', r === 'guest' ? 'guest:p2' : 'org'); }, role);
     await page.reload();
     await expect.poll(() => page.evaluate('COLS.every(c => loaded.has(c))')).toBe(true);
+    // an organizer session needs a proof of the code, which tests don't have: enter directly
+    if (role === 'org') await page.evaluate(`setRole('org')`);
     // a few photos in the gallery (gradients drawn in the page)
     await page.evaluate(async () => {
       const hues = [[30, 60], [200, 260], [340, 20], [120, 180], [45, 15], [270, 310], [10, 40]];

@@ -17,7 +17,7 @@ const cases: { name: string; ua: string; standalone?: boolean; perm?: string; ti
   { name: 'iphone-install', ua: UA.iphone, title: /מוסיפים למסך הבית/ },
   { name: 'android-install', ua: UA.android, title: /מוסיפים למסך הבית/ },
   { name: 'iphone-notify', ua: UA.iphone, standalone: true, perm: 'default', title: /הפעלת התראות/ },
-  { name: 'android-denied', ua: UA.android, standalone: true, perm: 'denied', title: /ההתראות חסומות/ },
+  { name: 'android-denied', ua: UA.android, standalone: true, perm: 'denied', title: /ההתראות כבויות בטלפון/ },
 ];
 
 for (const c of cases) {
