@@ -13,6 +13,7 @@
 <link rel="icon" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="manifest" href="manifest.json">
+<script>try{if(/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1))document.querySelector('link[rel="manifest"]').href='manifest-ios.json'}catch(e){}</script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script defer src="vendor/gsap-3.15.0.min.js"></script>
@@ -3840,7 +3841,8 @@ const FB_CFG={apiKey:"AIzaSyBTEdbmsFx2Qa6Z_CDAMuQu14NkuSb24jY",authDomain:"budap
 const CHAT_URL='https://claude.ai/code/session_01Vr3GVH6iK5uzhbYZ47FrNj';
 let TRIP_KEY='';
 (()=>{const m=((location.hash||'')+'&'+(location.search||'')).match(/k=([A-Za-z0-9_-]{20,})/);if(m){TRIP_KEY=m[1];try{localStorage.setItem('tripKey',TRIP_KEY)}catch(e){}}else{try{TRIP_KEY=localStorage.getItem('tripKey')||''}catch(e){}}
-  if(m){try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}}})();
+  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1),sa=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
+  if(m&&(!ios||sa)){try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}}})();
 async function initFire(){
   if(!TRIP_KEY||!window.firebase)return null;
   try{firebase.initializeApp(FB_CFG)}catch(e){}
@@ -3912,11 +3914,25 @@ function logoutRole(){ROLE='';try{localStorage.removeItem('role');localStorage.r
 /* the entry buttons say they're working, and can't be pressed twice */
 function gBusy(b,t){if(!b)return;if(t){b.dataset.t=b.textContent;b.disabled=true;b.setAttribute('aria-busy','true');b.innerHTML=`<span class="gspin" aria-hidden="true"></span>${esc(t)}`}else if(b.dataset.t!=null){b.disabled=false;b.removeAttribute('aria-busy');b.textContent=b.dataset.t;delete b.dataset.t}}
 function lockMsg(msg,ms){const m=Math.max(1,Math.ceil(ms/60000));msg.className='gmsg glock';msg.innerHTML=`<b>הכניסה ננעלה זמנית</b>אחרי כמה קודים שגויים. אפשר לנסות שוב בעוד ${m} ${m===1?'דקה':'דקות'}. אם שכחתם את הקוד, בקשו אותו ממארגן אחר.`}
+function keyGate(g,logo){
+  g.innerHTML=`<div class="gbox">${logo}<h1>עוד צעד אחד</h1><p class="gsub">האפליקציה צריכה את קישור המסע פעם אחת בלבד.</p>
+   <button class="gbtn" id="kpaste">📋 הדבקת הקישור שהעתקתם</button>
+   <input id="gkey" class="gin ltr" type="text" autocomplete="off" placeholder="או הדביקו כאן את הקישור מהוואטסאפ" enterkeyhint="go">
+   <div id="gmsg" class="gmsg" role="alert"></div>
+   <button class="gbtn alt" id="gkeyok">כניסה</button>
+   <p class="gsub">אין לכם את הקישור? העתיקו אותו מההודעה בוואטסאפ (לחיצה ארוכה ← העתקה) וחזרו לכאן.</p></div>`;
+  const use=v=>{const m=(v||'').match(/k=([A-Za-z0-9_-]{20,})/)||(v||'').trim().match(/^([A-Za-z0-9_-]{24,})$/),msg=document.getElementById('gmsg');
+    if(!m){msg.textContent='לא זוהה קישור מסע. העתיקו את הקישור המלא מהוואטסאפ ונסו שוב.';return}
+    try{localStorage.setItem('tripKey',m[1])}catch(e){}location.replace(location.pathname+'#k='+m[1]);location.reload()};
+  document.getElementById('kpaste').onclick=async()=>{try{use(await navigator.clipboard.readText())}catch(e){document.getElementById('gmsg').textContent='לא הצלחנו לקרוא. לחצו לחיצה ארוכה בשדה למטה ובחרו "הדבק".';document.getElementById('gkey').focus()}};
+  document.getElementById('gkeyok').onclick=()=>use(document.getElementById('gkey').value);
+  document.getElementById('gkey').onkeydown=e=>{if(e.key==='Enter')use(e.target.value)}}
 function showGate(step){
   if(!step&&typeof isStandalone==='function'&&isStandalone()&&typeof isMobile==='function'&&isMobile()&&!skipG())step='guest';
   if(step==='choice')step='';
   let g=document.getElementById('gate');if(!g){g=document.createElement('div');g.id='gate';g.setAttribute('dir','rtl');g.setAttribute('lang','he');document.body.appendChild(g)}
   const logo='<img src="logo.webp" alt="" class="glogo">';
+  if(!TRIP_KEY){keyGate(g,logo);return}
   if(step==='guest'){
     g.innerHTML=`<div class="gbox">${logo}<h1>כניסת משתתפי המסע</h1>
      <label class="glab" for="gname">השם המלא כפי שנרשמתם</label>
@@ -4857,6 +4873,7 @@ function pgate(){
     h=`${logo}<h1>מוסיפים למסך הבית</h1><p>שתי לחיצות ואתם בפנים. כך תקבלו התראות על הודעות ומשימות חדשות.</p>
       ${DEFER?'<button class="gbtn" id="pinst">הוספה למסך הבית</button>':''}
       <ol class="pst">${steps.map(s=>`<li>${s}</li>`).join('')}</ol>
+      ${isIOS()?'<button class="gbtn alt" id="pcopy">העתקת קישור הכניסה (ליתר ביטחון)</button>':''}
       ${isIOS()?'<p class="gsub">לא רואים "הוסף למסך הבית"? גללו למטה ברשימה, או לחצו "ערוך פעולות".</p>':''}
       <button class="glink" id="pskip">להמשיך כרגע בדפדפן</button>`}
   else if(st==='inapp'){
@@ -4920,7 +4937,7 @@ setInterval(pgate,4000);
 
 /* installed copy must start with the team link, otherwise iPhone opens an empty app */
 (()=>{try{
-  if(!TRIP_KEY)return;
+  if(!TRIP_KEY||isIOS())return;
   const base=location.origin+location.pathname.replace(/[^/]*$/,'');
   const m={name:'מסע גיבוש הונגריה',short_name:'הונגריה',lang:'he',dir:'rtl',id:base,scope:base,start_url:base+'#k='+TRIP_KEY,display:'standalone',background_color:'#050504',theme_color:'#050504',
     icons:[{src:base+'icon-192.png',sizes:'192x192',type:'image/png',purpose:'any'},{src:base+'icon-512.png',sizes:'512x512',type:'image/png',purpose:'any'},{src:base+'icon-512.png',sizes:'512x512',type:'image/png',purpose:'maskable'}]};
@@ -4929,7 +4946,7 @@ setInterval(pgate,4000);
 }catch(e){}})();
 
 const _pickMeBase=pickMe;pickMe=function(){if(GUEST()||!ROLE)return;_pickMeBase();const sh=document.querySelector('#scrim .sheet');if(sh&&ROLE==='org'){const hd=document.createElement('div');hd.className='ghead pm-h';hd.innerHTML='<span>תצוגה ויציאה</span>';sh.appendChild(hd);const b=document.createElement('button');b.className='btn';b.style.cssText='width:100%';b.textContent='👁 תצוגת משתתף (כך זה נראה להם)';b.onclick=()=>{closeSheet();setPrev(true)};sh.appendChild(b);const o=document.createElement('button');o.className='btn ghost';o.style.cssText='margin-top:10px;width:100%';o.textContent='🚪 יציאה וכניסה מחדש כמשתתף';o.onclick=()=>{closeSheet();logoutRole()};sh.appendChild(o)}};
-document.body.classList.toggle('guest',GUEST());if(!ROLE)showGate();
+document.body.classList.toggle('guest',GUEST());if(!ROLE||!TRIP_KEY)showGate();
 let SEEN_MARKED=false;const _r2=render;render=function(a){_r2(a);if(!SEEN_MARKED&&ROLE.startsWith('guest:')&&!PREV&&db&&loaded.has('participants')){SEEN_MARKED=true;let done=false;try{done=sessionStorage.getItem('seenMark')==='1'}catch(e){}if(!done){try{sessionStorage.setItem('seenMark','1')}catch(e){}const now=new Date().toISOString(),inst=isStandalone(),nt=('Notification' in window)?Notification.permission:'none',me=meG();
    gset('participants/'+ROLE.slice(6),{seenAt:now,lastAt:now,notif:nt,viaSpouse:false,...(inst?{inst:true}:{})});
 }}};
@@ -4958,7 +4975,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B='ccd779e0f3';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B='16527425d9';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
