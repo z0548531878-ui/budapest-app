@@ -61,11 +61,11 @@ test('organizers: personal message and a task for everyone from the messages scr
   await page.evaluate(() => { localStorage.setItem('role', 'org'); });
   await page.reload();
   await expect.poll(() => page.evaluate('COLS.every(c => loaded.has(c))')).toBe(true);
-  // the home tiles start with passports, participants and tasks
+  // the home tiles start with passports and participants ("who is in the app" came in next, then tasks)
   await expect(page.locator('.cubes.tiles .cube b').nth(0)).toHaveText('דרכונים');
   await expect(page.locator('.cubes.tiles .cube b').nth(1)).toHaveText('משתתפים');
-  await expect(page.locator('.cubes.tiles .cube b').nth(2)).toHaveText('משימות');
-  await page.locator('.cubes.tiles .cube').nth(2).click();
+  await expect(page.locator('.cubes.tiles .cube b').nth(3)).toHaveText('משימות');
+  await page.locator('.cubes.tiles .cube').nth(3).click();
   await expect.poll(() => page.evaluate('V.tab')).toBe('tasks');
   await page.evaluate(`go('more',{sub:'announce'})`);
   await page.locator('[data-ann-mode="one"]').click();

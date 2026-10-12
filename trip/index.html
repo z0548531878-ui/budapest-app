@@ -1214,6 +1214,13 @@ body.guest button:not(:disabled):active,body.guest .btn:active,body.guest a.gc:a
 .gw.drv .gw-i{background:linear-gradient(150deg,#ffe9a8,#c99a3d)!important;color:#15110a;border:0}
 .gtask.pre .pill.p-warn{white-space:nowrap}
 .gcred{text-align:center;font-size:11.5px;color:#8f846b;margin:14px 0 4px;letter-spacing:.2px}
+/* narrow phones (320–360px): the header and the bottom bar must not wrap */
+@media (max-width:360px){
+ #meBtn{min-height:44px!important;padding:3px 10px 3px 4px!important;gap:6px!important}#meBtn i{width:34px!important;height:34px!important;font-size:16px!important}
+ #meBtn span small{display:none!important}#meBtn span b{font-size:14px}
+ header.top h1{font-size:17px!important;line-height:1.15;white-space:nowrap}header.top h1 .sub{font-size:10.5px!important;white-space:nowrap}header.top .logo{width:58px!important;height:58px!important}
+ .nav button span,#nav button span{font-size:10px!important;white-space:nowrap;letter-spacing:-.2px}
+}
 .pm+.pm{border-top:1px dashed rgba(214,178,98,.22)}
 .pc .av{width:44px!important;height:44px!important;font-size:16px!important;flex:none;border-radius:50%!important;box-shadow:0 0 0 3px var(--a),0 8px 18px -8px var(--b)}
 .pc .av.nophoto{background:linear-gradient(160deg,#2a251a,#13110c)!important;color:var(--a)!important}
@@ -3498,6 +3505,8 @@ function progSheet(key){
   document.getElementById('pfAnn').onchange=e=>{document.getElementById('pfOk').textContent=e.target.checked?'עדכון ושליחת הודעה':'עדכון בלי הודעה'};
   const put=async(f,annText)=>{const all={...progFix()};if(f)all[key]=f;else delete all[key];
     if(!await save('settings','prog',{...strip(find('settings','prog')||{}),fix:all}))return;
+    // a merge keeps keys that were removed from the map: remove the reverted one explicitly
+    if(!f&&db){try{await db.doc('settings/prog').update({['fix.'+key]:firebase.firestore.FieldValue.delete()})}catch(e){console.warn('prog reset',e)}}
     if(annText&&document.getElementById('pfAnn').checked&&db){const ts=Date.now();db.doc('settings/ann_'+ts).set({kind:'ann',title:'שינוי בלוח המסע',text:annText,ts,prog:key}).catch(()=>toast('ההודעה למשתתפים לא נשלחה'))}
     closeSheet();toast(f?'עודכן. כל המשתתפים רואים את השינוי':'חזר לתוכנית המקורית')};
   document.getElementById('pfOk').onclick=()=>{const tm=document.getElementById('pfTm').value.trim(),ti=document.getElementById('pfTi').value.trim(),sub=document.getElementById('pfSub').value.trim();
@@ -4020,11 +4029,11 @@ const later=()=>{if(rq)return;if(V.sub==='notes'&&document.querySelector('#sortB
 const ORG_SALT='d77742f9a791ee7608fc6c191780aab0',ORG_ITER=600000,ORG_CHK='03405cce2969b704a54459c83029018c6135020db7fbc4e6be183df159c91347';
 async function orgDerive(code){const enc=new TextEncoder(),salt=new Uint8Array(ORG_SALT.match(/../g).map(h=>parseInt(h,16)));const base=await crypto.subtle.importKey('raw',enc.encode(code),'PBKDF2',false,['deriveBits']);const bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt,iterations:ORG_ITER,hash:'SHA-256'},base,256);return [...new Uint8Array(bits)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 const orgLock=()=>{try{return JSON.parse(localStorage.getItem('orgLock')||'{}')}catch(e){return {}}};
-/* a phone that opens the link in the browser (for example after deleting the home-screen icon) starts logged out:
-   participants go through install and enter their name again, organizers enter the code again */
+/* a participant who opens the link in the phone's browser (for example after deleting the home-screen icon) starts logged out:
+   install again and enter the name again. Organizers stay logged in: they often work from the browser */
 try{const ua=navigator.userAgent,mob=/iphone|ipad|ipod|android/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1),
   sa=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
-  if(mob&&!sa&&!window.claude&&localStorage.getItem('nogate')!=='1'){['role','me','orgProof','tokSaved'].forEach(k=>localStorage.removeItem(k))}}catch(e){}
+  if(mob&&!sa&&!window.claude&&localStorage.getItem('nogate')!=='1'&&String(localStorage.getItem('role')||'').startsWith('guest:')){['role','me','tokSaved'].forEach(k=>localStorage.removeItem(k))}}catch(e){}
 let ROLE='';try{ROLE=localStorage.getItem('role')||''}catch(e){}
 /* an organizer session must carry a valid proof of the code; otherwise it falls back to the entry screen */
 if(ROLE==='org'){let pr='';try{pr=localStorage.getItem('orgProof')||''}catch(e){}setTimeout(async()=>{let ok=false;try{ok=!!pr&&(await sha(pr))===ORG_CHK}catch(e){}if(!ok&&ROLE==='org'){try{localStorage.removeItem('orgProof')}catch(e){}logoutRole()}},0)}
@@ -5401,7 +5410,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='e79da8ff74';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='cff010dcfd';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>

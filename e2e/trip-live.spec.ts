@@ -95,13 +95,14 @@ test('KPI-1 the organizer home opens with the status strip; each number leads to
   expect(errors).toEqual([]);
 });
 
-test('HELP-1 participants can reach the organizer from the home screen', async ({ browser, db }) => {
+test('HELP-1 participants can reach the organizers from the home screen', async ({ browser, db }) => {
   await seed(db);
   const { page, errors } = await openTrip(browser, db);
   await asGuest(page);
   const help = page.getByRole('region', { name: 'עזרה' });
-  await expect(help.getByRole('link', { name: 'שיחה לשלומי' })).toHaveAttribute('href', /^tel:/);
-  await expect(help.getByRole('link', { name: 'וואטסאפ לשלומי' })).toHaveAttribute('href', /^https:\/\/wa\.me\/972/);
+  // WhatsApp only, one small chip per organizer (decided 12.10)
+  for (const n of ['שלומי זינגר', 'איציק שרייבר', 'יעל שרייבר'])
+    await expect(help.getByRole('link', { name: 'וואטסאפ ל' + n })).toHaveAttribute('href', /^https:\/\/wa\.me\/972/);
   await expect(help.getByRole('link', { name: 'חירום 112' })).toHaveAttribute('href', 'tel:112');
   expect(errors).toEqual([]);
 });
