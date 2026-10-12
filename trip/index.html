@@ -3271,14 +3271,20 @@ const PASS_MIN='2027-02-22';
 const passUrlOf=p=>safeUrl(p.passUrl||p.passportUrl||'');
 // passport number, nationality and date of birth are private: kept in one doc that only organizers' phones read,
 // and laid over the participant records on the organizer's side only
+// a participant who already has a passport on file enters their date of birth after their name: the app keeps only a hash of it
+const dobHash=async(pid,iso)=>{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pid+'|'+iso+'|bm26'));return [...new Uint8Array(b)].slice(0,10).map(x=>x.toString(16).padStart(2,'0')).join('')};
+const dobParse=t=>{t=String(t||'').trim();let m=t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);if(m)return m[1]+'-'+m[2].padStart(2,'0')+'-'+m[3].padStart(2,'0');
+  m=t.match(/^(\d{1,2})\D+(\d{1,2})\D+(\d{4})$/)||t.replace(/\D/g,'').match(/^(\d{2})(\d{2})(\d{4})$/);return m?m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0'):''};
+let DOBBUSY=false;
+async function dobSync(){if(GUEST()||!db||DOBBUSY||!(window.crypto&&crypto.subtle))return;DOBBUSY=true;try{for(const p of (S.participants||[])){if(!p.birthDate)continue;const h=await dobHash(p._id,p.birthDate);if(p.dobH!==h){p.dobH=h;await db.collection('participants').doc(p._id).set({dobH:h},{merge:true})}}}catch(e){diagE('dob',e)}DOBBUSY=false}
 const PDK=['passNo','nationality','birthDate'];let PD={},PDSUB=false,PDMIG=false;
 function pdOverlay(){if(GUEST())return;(S.participants||[]).forEach(p=>{const x=PD[p._id];if(x)PDK.forEach(k=>{if(x[k])p[k]=x[k]})})}
-function pdSub(){if(PDSUB||!db||GUEST())return;PDSUB=true;db.doc('photobig/pp_all').onSnapshot(d=>{PD=d.exists?d.data():{};pdOverlay();later()},e=>{PDSUB=false;diagE('pd',e)})}
+function pdSub(){if(PDSUB||!db||GUEST())return;PDSUB=true;db.doc('photobig/pp_all').onSnapshot(d=>{PD=d.exists?d.data():{};pdOverlay();dobSync();later()},e=>{PDSUB=false;diagE('pd',e)})}
 // older records kept these fields on the participant itself: move them to the private doc and remove them there
 function pdMigrate(){if(GUEST()||!db||PDMIG)return;const mv=(S.participants||[]).filter(p=>PDK.some(k=>p[k]));if(!mv.length)return;PDMIG=true;
   const upd={},bt=db.batch();mv.forEach(p=>{upd[p._id]=Object.fromEntries(PDK.filter(k=>p[k]).map(k=>[k,p[k]]));bt.set(db.collection('participants').doc(p._id),Object.fromEntries(PDK.filter(k=>k in p).map(k=>[k,firebase.firestore.FieldValue.delete()])),{merge:true})});
   db.doc('photobig/pp_all').set(upd,{merge:true}).then(()=>bt.commit()).then(()=>{PDMIG=false}).catch(e=>{PDMIG=false;diagE('pdmig',e)})}
-async function pdSave(p,k,v){const x={...(PD[p._id]||{}),[k]:v};PD={...PD,[p._id]:x};p[k]=v;try{await db.doc('photobig/pp_all').set({[p._id]:{[k]:v}},{merge:true});return true}catch(e){diagE('pdsave',e);toast('השמירה נכשלה');return false}}
+async function pdSave(p,k,v){const x={...(PD[p._id]||{}),[k]:v};PD={...PD,[p._id]:x};p[k]=v;try{await db.doc('photobig/pp_all').set({[p._id]:{[k]:v}},{merge:true});if(k==='birthDate')dobSync();return true}catch(e){diagE('pdsave',e);toast('השמירה נכשלה');return false}}
 // ok / warn (valid, but only just) / bad (expired or too short) / miss (still to be filled in)
 function passState(p){const t=todayISO();
   if(p.passExp&&p.passExp<t)return ['bad','פג תוקף'];
@@ -4129,7 +4135,21 @@ function showGate(step){
         if(!loaded.has('participants')){msg.innerHTML='הרשימה לא נטענה. בדקו שיש אינטרנט ונסו שוב. <button class="glink" id="pdiag" type="button">בדיקת תקינות</button>';return}}
       const p=matchGuest(v);
       if(!p){msg.textContent='השם הזה לא נמצא ברשימת המסע. בדקו את האיות, או פנו למארגנים.';return}
+      if(p.dobH&&window.crypto&&crypto.subtle){askDob(p);return}
       setRole('guest:'+p._id)};
+    const askDob=p=>{g.innerHTML=`<div class="gbox">${logo}<h1>עוד פרט אחד</h1>
+       <label class="glab" for="gdob">${esc(firstN(p.name))}, הכניסו את תאריך הלידה שלכם</label>
+       <input id="gdob" class="gin ltr" type="text" inputmode="numeric" autocomplete="off" placeholder="15.03.1985" enterkeyhint="go" aria-describedby="gdhint gmsg">
+       <small id="gdhint" class="ghint">כך אנחנו מוודאים שזה אתם. אם זה לא מצליח, פנו למארגנים.</small>
+       <div id="gmsg" class="gmsg" role="alert"></div>
+       <button class="gbtn" id="gdgo">כניסה</button><button class="glink" id="gdback">חזרה</button></div>`;
+      const chk=async()=>{const msg=document.getElementById('gmsg'),iso=dobParse(document.getElementById('gdob').value);
+        if(!iso){msg.textContent='כתבו יום, חודש ושנה. לדוגמה 15.03.1985';return}
+        let ok=false;try{ok=(await dobHash(p._id,iso))===p.dobH}catch(e){ok=true}
+        if(!ok){msg.textContent='התאריך לא תואם. נסו שוב, או פנו למארגנים.';return}
+        setRole('guest:'+p._id)};
+      document.getElementById('gdgo').onclick=chk;document.getElementById('gdob').onkeydown=e=>{if(e.key==='Enter')chk()};
+      document.getElementById('gdback').onclick=()=>showGate('guest');setTimeout(()=>document.getElementById('gdob').focus(),50)};
     document.getElementById('ggo').onclick=go;document.getElementById('gname').onkeydown=e=>{if(e.key==='Enter')go()};
     document.getElementById('gback').onclick=()=>showGate('org');document.getElementById('gback').textContent='אני מארגן';setTimeout(()=>document.getElementById('gname').focus(),50);return}
   if(step==='org'){
@@ -5448,7 +5468,7 @@ render(true);
   if(!db){document.getElementById('banner').innerHTML='<p class="banner">חסר הקישור המלא של הצוות. פתחו את האפליקציה מהקישור ששלומי שלח (הוא מסתיים ב-#k=…).</p>';return}
   // the log and the trash only grow: take the newest, not whichever 1000 Firestore returns first
   const NEWEST={activity:600,trash:300}, q=c=>NEWEST[c]?db.collection(c).orderBy('at','desc').limit(NEWEST[c]):db.collection(c).limit(1000);
-  COLS.forEach(c=>q(c).onSnapshot(s=>{S[c]=s.docs.map(d=>({...d.data(),_id:d.id}));if(c==='participants'){pdMigrate();pdOverlay()}loaded.add(c);later()},
+  COLS.forEach(c=>q(c).onSnapshot(s=>{S[c]=s.docs.map(d=>({...d.data(),_id:d.id}));if(c==='participants'){pdMigrate();pdOverlay();dobSync()}loaded.add(c);later()},
     e=>{diagE('listen '+c,e);document.getElementById('banner').innerHTML=`<p class="banner">${e&&e.code==='permission-denied'?'אין גישה לנתונים. ודאו שעדכנתם את חוקי Firebase (ההוראות אצל Claude).':'החיבור נותק. רעננו את הדף.'}</p>`}));
   pdSub();
   if(!ME)setTimeout(()=>{if(!ME&&!document.getElementById('scrim'))pickMe()},1200);
