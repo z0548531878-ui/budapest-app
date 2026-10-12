@@ -2686,8 +2686,8 @@ const SESSIONS=[
  {k:'plane_out',l:'עלייה למטוס · הלוך',f:p=>(p.outbound||'קבוצתי')==='קבוצתי'},
  {k:'bud_air',l:'הגעה לשדה בבודפשט',f:p=>!!p.returnGroup&&p.returnGroup!=='עצמאי'},
  {k:'plane_back',l:'עלייה למטוס · חזור',f:p=>!!p.returnGroup&&p.returnGroup!=='עצמאי'},
- {k:'bus_bud',l:'אוטובוס בשדה',f:p=>(p.outbound||'קבוצתי')==='קבוצתי'},
- {k:'bus_ker',l:'יציאה מקרעסטיר',f:p=>(p.outbound||'קבוצתי')==='קבוצתי'&&!EARLY.includes(p.name)},
+ {k:'bus_bud',l:'אוטובוס בשדה',f:p=>p.outbound!=='נפרד'},
+ {k:'bus_ker',l:'יציאה מקרעסטיר',f:p=>p.outbound!=='נפרד'&&!EARLY.includes(p.name)},
  {k:'fri_dinner',l:'הליכה לליל שבת',f:()=>true},
  {k:'sat_lunch',l:'הליכה לסעודת שבת',f:()=>true},
 ];
