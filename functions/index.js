@@ -46,6 +46,10 @@ exports.tripPush = functions.region('europe-west1').firestore.document('trips/{t
       const who = to.length ? r => guests(r) && ((r.pids || []).some(p => to.includes(p)) || to.includes(r.by)) : guests;
       return send(trip, who, (to.length ? 'הודעה אישית מהמארגנים' : 'הודעה מהמארגנים') + (after.title ? ': ' + trim(after.title, 40) : ''), trim(after.text, 140), 'gm', 'ann_' + id);
     }
+    // a recording of the rabbi was published
+    if (after.kind === 'audio' && !after.hidden && (!before || before.hidden)) {
+      return send(trip, () => true, '🎧 ' + trim(after.title || 'דברי הרב לקראת המסע', 60), 'הקלטה חדשה מחכה לכם באפליקציה. לחצו להאזנה', 'gh', 'audio');
+    }
     // the moment of the day: an organizer starred a photo
     if (after.kind === 'moment' && !after.hidden && (!before || before.pid !== after.pid)) {
       return send(trip, () => true, '⭐ הרגע של היום', after.byName ? 'צילום: ' + trim(after.byName, 40) + '. היכנסו לראות' : 'היכנסו לראות את התמונה שנבחרה', 'gh', 'moment');
@@ -145,7 +149,29 @@ exports.checkinReminder = functions.region('europe-west1').pubsub.schedule('ever
       return f.dir === 'הלוך' ? (p.outbound || 'קבוצתי') === (f.group || 'קבוצתי') : p.returnGroup === f.group;
     }).map(d => d.id);
     await doc.ref.set({ ciSent: true }, { merge: true });
-    if (pax.length) await send(trip, r => guests(r) && (r.pids || []).some(p => pax.includes(p)), '✈ הצ׳ק־אין לטיסה נפתח', 'עשו צ׳ק־אין לטיסה ' + trim(f.flightNo, 12) + ' ושמרו את כרטיס העלייה בטלפון', 'gt', 'ci_' + doc.id);
+    const doneCi = new Set(ps.docs.filter(d => String(d.data().ciDone || '').split(',').includes(doc.id)).map(d => d.id));
+    if (pax.length) await send(trip, r => guests(r) && (r.pids || []).some(p => pax.includes(p) && !doneCi.has(p)), '✈ הצ׳ק־אין לטיסה נפתח', 'עשו צ׳ק־אין לטיסה ' + trim(f.flightNo, 12) + ' ושמרו את כרטיס העלייה בטלפון', 'gt', 'ci_' + doc.id);
+  }
+});
+
+// Evening before the flight: a reminder only to whoever hasn't done it yet (once per trip and kind).
+// 18.11 at 20:00 Israel time: travel insurance; at 21:00: packing.
+const REMIND = [
+  { key: 'ins', at: Date.parse('2026-11-18T18:00:00Z'), title: '🛡 ביטוח נסיעות לחו״ל', body: 'מחר טסים! עוד לא סימנתם שהזמנתם ביטוח. זה לוקח כמה דקות באפליקציה', tab: 'gb', need: p => !p.insDone },
+  { key: 'pack', at: Date.parse('2026-11-18T19:00:00Z'), title: '🧳 מה אורזים', body: 'מחר טסים! ברשימת האריזה שלכם עוד יש דברים פתוחים', tab: 'gc', need: p => { const [n, t] = String(p.pack || '0/1').split('/').map(Number); return !t || n < t; } },
+];
+exports.preflightReminders = functions.region('europe-west1').pubsub.schedule('every 30 minutes').onRun(async () => {
+  const now = Date.now(), due = REMIND.filter(r => now >= r.at && now < r.at + 3 * 36e5);
+  if (!due.length) return;
+  const all = await db.collectionGroup('participants').get(), byTrip = {};
+  all.docs.forEach(d => { const t = d.ref.parent.parent && d.ref.parent.parent.id; if (t && t.length >= 24) (byTrip[t] = byTrip[t] || {})[d.id] = d.data(); });
+  for (const [trip, ppl] of Object.entries(byTrip)) {
+    for (const r of due) {
+      const flag = db.doc(`remind/${trip}_${r.key}`);
+      if ((await flag.get()).exists) continue;
+      await flag.set({ at: now });
+      await send(trip, t => guests(t) && (t.pids || []).some(id => ppl[id] && r.need(ppl[id])), r.title, r.body, r.tab, 'rm_' + r.key);
+    }
   }
 });
 

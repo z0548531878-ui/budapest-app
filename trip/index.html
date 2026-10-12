@@ -1181,6 +1181,12 @@ body.guest button:not(:disabled):active,body.guest .btn:active,body.guest a.gc:a
 .spl-l{display:grid;gap:6px}.sl{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;border:1px solid rgba(214,178,98,.22)}.sl>div{flex:1;display:grid}.sl small{color:var(--muted);font-size:12.5px}.sl-x{border:0;background:none;color:var(--muted);font-size:15px}
 .ocr{display:grid;gap:8px;margin:10px 0}.ocr .btn{width:100%}#ocrR{font-size:14px;color:var(--muted)}#ocrR small{display:block;margin-top:6px}
 .ocr-r{display:flex;align-items:center;justify-content:center;gap:12px;padding:12px;border-radius:16px;border:1px solid #f0c86e;background:rgba(240,200,110,.08);color:#e9dfc4;animation:pop .35s both}.ocr-r .big{font-size:28px;color:#ffe9a8}
+.rav{margin:0 0 12px;padding:10px;border-radius:22px;border:1px solid rgba(214,178,98,.45);background:linear-gradient(120deg,#241c0f,#0f0c08)}.rav.new{border-color:#f0c86e;box-shadow:0 0 28px -8px rgba(240,200,110,.7)}
+.rav-b{display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;color:var(--ink);text-align:right;padding:2px}
+.rav-i{flex:none;width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-size:22px;background:var(--goldbtn,linear-gradient(180deg,#ffe9a8,#c99a3d));color:#15110a;box-shadow:0 0 0 0 rgba(240,200,110,.6)}.rav.new .rav-i{animation:ravPulse 2s ease-out infinite}
+@keyframes ravPulse{0%{box-shadow:0 0 0 0 rgba(240,200,110,.6)}100%{box-shadow:0 0 0 16px rgba(240,200,110,0)}}
+.rav-b small{display:block;color:#f0c86e;font-weight:900;font-size:12.5px}.rav-b b{font-size:17px}
+@media (prefers-reduced-motion:reduce){.rav-i{animation:none!important}}
 .pm+.pm{border-top:1px dashed rgba(214,178,98,.22)}
 .pc .av{width:44px!important;height:44px!important;font-size:16px!important;flex:none;border-radius:50%!important;box-shadow:0 0 0 3px var(--a),0 8px 18px -8px var(--b)}
 .pc .av.nophoto{background:linear-gradient(160deg,#2a251a,#13110c)!important;color:var(--a)!important}
@@ -2636,6 +2642,13 @@ const SESSIONS=[
 ];
 const curSes=()=>SESSIONS.find(x=>x.k===V.filter.ses)||SESSIONS[0];
 const SUB={
+ rav(){const L=S.settings.filter(x=>x.kind==='audio').sort((a,b)=>(b.at||0)-(a.at||0));
+  return subHead('הקלטת הרב')+`<p class="note">מעלים הקלטה של הרב (או מקליטים כאן), והיא מופיעה למעלה במסך הבית של כל המשתתפים, עם התראה. עד כ־20 דקות הקלטה.</p>
+   <div class="card" style="padding:14px;display:grid;gap:10px"><label class="field">כותרת<input id="ravT" type="text" value="דברי הרב לקראת המסע"></label>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" id="ravPick">📁 העלאת קובץ שמע</button><button class="btn" id="ravRec">${RAVREC?'⏹ עצירת ההקלטה':'🎙 הקלטה עכשיו'}</button></div>
+    <input type="file" id="ravF" accept="audio/*" hidden><div id="ravMsg" class="note" style="margin:0">${RAVREC?'<b style="color:#ff8b7a">● מקליט…</b>':''}</div></div>
+   ${L.length?`<div class="ghead"><span>הקלטות</span><span class="num">${L.length}</span></div>`+L.map(a=>`<div class="card" style="padding:12px;display:grid;gap:8px"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(a.title||'הקלטה')}</b><span class="pill ${a.hidden?'p-mute':'p-ok'}">${a.hidden?'מוסתרת':'מופיעה אצל כולם'}</span></div><small class="note" style="margin:0">${new Date(a.at||0).toLocaleString('he-IL',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'})} · ${(a.size/1048576).toFixed(1)}MB</small>
+    <div style="display:flex;gap:8px"><button class="btn" data-ravplay="${a._id}">▶ האזנה</button><button class="btn ghost" data-ravhide="${a._id}" data-h="${a.hidden?0:1}">${a.hidden?'החזרה למשתתפים':'הסתרה'}</button></div><div id="ravP_${a._id}"></div></div>`).join(''):''}`},
  program(){
   const t=todayISO(), def=t==='2026-11-20'?'fri':t==='2026-11-21'?'sat':'thu', k=V.filter.pd||def, d=PROG.find(x=>x.k===k)||PROG[0];
   return subHead('לוח המסע')+`<div class="seg">${PROG.map(x=>`<button data-filter="pd" data-val="${x.k}" aria-pressed="${x.k===d.k}">${x.tab}</button>`).join('')}</div>
@@ -3337,10 +3350,10 @@ const TILE_DEFS=()=>{const pk=S.packing.filter(x=>!x.sug||kst(x,'ordered')),pd=p
  ['flights','plane','טיסות',`${S.flights.length} טיסות`,'c6'],
  ['files','file','מסמכים',`${S.files.filter(f=>f._id!=='f00').length} מסמכים · ${S.contacts.length} אנשים`,'c8'],
  ['attendance','people','ספירת נוכחות','לאוטובוס','c9'],
- ['reqs','tasks','בקשות ואישורים',`${pendN()} ממתינות`,'c12'], ['announce','chat','הודעות',`${annList().length} פורסמו · ${msgDue().length} לשלוח`,'c13'], ['trivia','spark','טריוויה','משחק לאוטובוס','c10'],['tasks','tasks','משימות',`${S.tasks.filter(t=>t.status!=='בוצע').length} פתוחות`,'c3'],['photos','cam','תמונות מהמסע',PHL?`${PH.length} תמונות · העלאה`:'צפייה והעלאה','c7'],['rides','car','נסיעות לשדה',`${S.settings.filter(x=>x.kind==='ride'&&!x.hidden).length} נסיעות`,'c4'],
+ ['reqs','tasks','בקשות ואישורים',`${pendN()} ממתינות`,'c12'], ['announce','chat','הודעות',`${annList().length} פורסמו · ${msgDue().length} לשלוח`,'c13'], ['trivia','spark','טריוויה','משחק לאוטובוס','c10'],['rav','mic','הקלטת הרב',(()=>{const n=S.settings.filter(x=>x.kind==='audio'&&!x.hidden).length;return n?n+' פורסמו':'להעלאה לכולם'})(),'c14'],['tasks','tasks','משימות',`${S.tasks.filter(t=>t.status!=='בוצע').length} פתוחות`,'c3'],['photos','cam','תמונות מהמסע',PHL?`${PH.length} תמונות · העלאה`:'צפייה והעלאה','c7'],['rides','car','נסיעות לשדה',`${S.settings.filter(x=>x.kind==='ride'&&!x.hidden).length} נסיעות`,'c4'],
  ['roles','spark','תפקידים',`${Object.keys(rolesMap()).length} עם תפקיד`,'c11'],
  ]};
-const TORD=['passports','people','appusers','tasks','photos','rides','program','reqs','announce','roles','flights','rooms','kits','files','attendance','trivia'];
+const TORD=['passports','people','appusers','tasks','photos','rides','program','reqs','announce','rav','roles','flights','rooms','kits','files','attendance','trivia'];
 // gold = something there is waiting for you; the rest stay dark, so the eye goes straight to what's open
 const tileHot=k=>{try{return ({reqs:pendN()>0,passports:S.participants.some(p=>!p.passport),announce:msgDue().length>0})[k]||false}catch(e){return false}};
 const msgDue=()=>{const t=todayISO();return S.messages.filter(m=>!m.sent&&m.date&&m.date<=t)};
@@ -4146,6 +4159,32 @@ function splitHTML(head,me){const mk=cKey(me),C=couplesAll(),nm=k=>(C.find(c=>c.
     <button class="btn primary" data-spl-add style="width:100%">➕ הוספה וחלוקה</button></section>
    ${mine.length?`<div class="ghead"><span>ההוצאות שלכם</span><span class="num">${mine.length}</span></div><div class="spl-l">${mine.map(x=>`<div class="sl"><div><b>${esc(x.title||(x.settle?'סגירת חוב':'הוצאה'))}</b><small>${x.settle?'העברה':'שילמו: '+esc(nm(x.by))} · ${(x.with||[]).length} זוגות · ${new Date(x.at||0).toLocaleDateString('he-IL',{day:'numeric',month:'numeric'})}</small></div><b class="num">${x.cur==='HUF'?Math.round(x.amount).toLocaleString('he-IL')+' Ft':'₪'+Math.round(x.amount).toLocaleString('he-IL')}</b>${x.by===mk?`<button class="sl-x" data-spl-del="${x._id}" aria-label="מחיקה">✕</button>`:''}</div>`).join('')}</div>`:''}
    <p class="note">פורינט מומר לשקלים לפי השער שבכלים לדרך (עכשיו: ${hufRate()} פורינט לשקל).</p>`}
+let RAVREC=null,RAVSHOW='';const RAVBLOB={};
+async function ravUpload(blob,title){const msg=document.getElementById('ravMsg');if(!db){toast('אין חיבור');return}
+  if(blob.size>22*1048576){toast('הקובץ גדול מדי (עד 20MB)');return}
+  const data=await new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=no;r.readAsDataURL(blob)});
+  const id='audio_'+Date.now().toString(36),CH=700000,n=Math.ceil(data.length/CH);
+  for(let i=0;i<n;i++){if(msg)msg.innerHTML=`<span class="gspin"></span> מעלה ${Math.round(i/n*100)}%…`;await db.doc('photobig/'+id+'_'+i).set({src:data.slice(i*CH,(i+1)*CH),ts:Date.now()})}
+  await db.doc('settings/'+id).set({kind:'audio',title:(title||'דברי הרב לקראת המסע').slice(0,80),mime:blob.type||'audio/mpeg',n,size:blob.size,at:Date.now(),hidden:false});
+  if(msg)msg.textContent='פורסם ✓ כולם יקבלו התראה';toast('ההקלטה פורסמה לכולם 🎧')}
+async function ravLoad(a){if(RAVBLOB[a._id])return RAVBLOB[a._id];const parts=await Promise.all([...Array(a.n||0)].map((_,i)=>db.doc('photobig/'+a._id+'_'+i).get().then(d=>d.exists?d.data().src:'')));
+  const b=await (await fetch(parts.join(''))).blob();return RAVBLOB[a._id]=URL.createObjectURL(b)}
+const ravNow=()=>S.settings.filter(x=>x.kind==='audio'&&!x.hidden&&x.n).sort((a,b)=>(b.at||0)-(a.at||0))[0];
+function ravCard(){const a=ravNow();if(!a)return '';let heard=false;try{heard=localStorage.getItem('ravHeard')===a._id}catch(e){}
+  return `<section class="rav ${heard?'':'new'}"><button class="rav-b" data-rav="${a._id}"><span class="rav-i">${RAVBLOB[a._id]?'🎧':'▶'}</span><span><small>${heard?'🎧 להאזנה חוזרת':'🎧 חדש · לקראת המסע'}</small><b>${esc(a.title||'דברי הרב')}</b></span></button><div id="ravG_${a._id}">${RAVSHOW===a._id&&RAVBLOB[a._id]?`<audio controls src="${RAVBLOB[a._id]}" style="width:100%;margin-top:8px"></audio>`:''}</div></section>`}
+async function ravPlayInto(a,el){if(!el)return;el.innerHTML='<p class="note" style="margin:6px 0"><span class="gspin"></span> טוען את ההקלטה…</p>';
+  try{const u=await ravLoad(a);RAVSHOW=a._id;el.innerHTML=`<audio controls src="${u}" style="width:100%;margin-top:8px"></audio>`;const au=el.querySelector('audio');try{au.play()}catch(e){}try{localStorage.setItem('ravHeard',a._id)}catch(e){}}catch(x){el.innerHTML='<p class="note">ההקלטה לא נטענה. בדקו שיש אינטרנט ונסו שוב.</p>'}}
+document.addEventListener('click',async e=>{const T=e.target;
+  if(T.closest('#ravPick')){document.getElementById('ravF').click();return}
+  if(T.closest('#ravRec')){if(RAVREC){RAVREC.stop();return}
+    try{const st=await navigator.mediaDevices.getUserMedia({audio:true}),mr=new MediaRecorder(st),ch=[];mr.ondataavailable=x=>ch.push(x.data);
+      mr.onstop=async()=>{st.getTracks().forEach(t=>t.stop());RAVREC=null;render();const b=new Blob(ch,{type:mr.mimeType||'audio/webm'});const t=(document.getElementById('ravT')||{}).value;if(confirm('לפרסם את ההקלטה לכל המשתתפים?'))await ravUpload(b,t)};
+      mr.start();RAVREC=mr;render()}catch(x){toast('אין גישה למיקרופון')}return}
+  const pl=T.closest('[data-ravplay]');if(pl){const a=S.settings.find(x=>x._id===pl.dataset.ravplay);if(a)ravPlayInto(a,document.getElementById('ravP_'+a._id));return}
+  const hd=T.closest('[data-ravhide]');if(hd){db.doc('settings/'+hd.dataset.ravhide).set({hidden:hd.dataset.h==='1'},{merge:true}).then(()=>toast('עודכן'));return}
+  const rv=T.closest('[data-rav]');if(rv){e.stopPropagation();const a=S.settings.find(x=>x._id===rv.dataset.rav);if(a)ravPlayInto(a,document.getElementById('ravG_'+a._id));return}
+},true);
+document.addEventListener('change',async e=>{if(e.target.id!=='ravF'||!e.target.files[0])return;const f=e.target.files[0];e.target.value='';const t=(document.getElementById('ravT')||{}).value;if(confirm('לפרסם את "'+f.name+'" לכל המשתתפים?'))await ravUpload(f,t)});
 const elalFlights=ppl=>['הלוך','חזור'].flatMap(d=>flightGroups(ppl,d).filter(g=>isElAl(g.f)).map(g=>({dir:d,f:g.f,on:ppl.filter(p=>g.names.includes(firstN(p.name)))})));
 const ciDoneFor=(f,on)=>on.length&&on.every(p=>ciDoneOf(p).includes(f._id));
 const insDoneFor=ppl=>ppl.length&&ppl.every(p=>p.insDone);
@@ -4533,7 +4572,7 @@ function guestHTML0(){
     const help=`<section class="ghelp" aria-label="עזרה"><div><b>צריכים עזרה?</b><small>שלומי, מארגן המסע · <span class="num ltr">${esc(fmtPhone(ph))}</span></small></div>
       <a class="btn" href="${telLink(ph)}" aria-label="שיחה לשלומי">${I.phone}<span>שיחה</span></a><a class="btn" href="${waLink(ph)}" target="_blank" rel="noopener" aria-label="וואטסאפ לשלומי">${IX.wa||'💬'}<span>וואטסאפ</span></a><a class="btn sos" href="tel:112" aria-label="חירום 112">112</a></section>`;
     return pv+`<div class="ghome">${SKY}<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(coupleLabel(ppl,me)||'')}</b>${dayMood()?`<span class="mood">${dayMood()}</span>`:''}</div></div>
-     ${nowCard('data-gnav="gl"')}${momentHTML()}${banner}${ciTasks(ppl).filter(c=>!c.done).map(ciCard).join('')}${TRIPDAY()?(todayISO()==='2026-11-19'&&first&&Date.now()<depAt(first)+4*36e5?passBlock:'')+boardHTML(ppl)+tripDayBlock(ppl):passBlock+extraOut+ready}${prepHTML(ppl)}${way}
+     ${nowCard('data-gnav="gl"')}${ravCard()}${momentHTML()}${banner}${ciTasks(ppl).filter(c=>!c.done).map(ciCard).join('')}${TRIPDAY()?(todayISO()==='2026-11-19'&&first&&Date.now()<depAt(first)+4*36e5?passBlock:'')+boardHTML(ppl)+tripDayBlock(ppl):passBlock+extraOut+ready}${prepHTML(ppl)}${way}
      <div class="gcb">
       ${(()=>{/* most used first; the order changes once the trip starts */
         const C={gs:()=>me&&me.kitter?cube('gs',I.box,'סידור ערכות בחדרים',(()=>{const rp=roomsPlaced();return rp.t?`הונחו ${rp.n} מתוך ${rp.t} חדרים`:'עדכון באיזה חדר סידרתם'})(),(()=>{const rp=roomsPlaced();return rp.t-rp.n||''})()):'',
@@ -5285,7 +5324,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='396aa29951';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='261f29aa42';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
