@@ -26,6 +26,7 @@ async function send(trip, filter, title, body, tab, tag) {
 
 const guests = r => r.role === 'guest';
 const orgs = r => r.role === 'org';
+const CHAT_OPEN = Date.parse('2026-11-15T00:00:00+02:00');
 const owners = t => String((t && t.owner) || '').split(/,\s*/).map(x => x.trim()).filter(Boolean);
 
 exports.tripPush = functions.region('europe-west1').firestore.document('trips/{trip}/{col}/{id}').onWrite(async (change, ctx) => {
@@ -71,7 +72,8 @@ exports.tripPush = functions.region('europe-west1').firestore.document('trips/{t
       if (!go) return;
       const body = trim((after.nm || '') + ': ' + (after.voice ? '🎙 הודעה קולית' : after.text), 120);
       const notSender = r => !(r.pids || []).includes(after.by) && r.by !== after.by;
-      await send(trip, r => guests(r) && notSender(r), '💬 הודעה חדשה בצ׳אט המסע', body, 'gy', 'chat');
+      // participants get chat notifications only from the week of the trip (the app keeps the chat locked for them until then)
+      if (Date.now() >= CHAT_OPEN) await send(trip, r => guests(r) && notSender(r), '💬 הודעה חדשה בצ׳אט המסע', body, 'gy', 'chat');
       return send(trip, r => orgs(r) && notSender(r), '💬 הודעה חדשה בצ׳אט המסע', body, 'chat', 'chat');
     }
     // a task for every participant
