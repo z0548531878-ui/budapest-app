@@ -1221,6 +1221,7 @@ body.guest button:not(:disabled):active,body.guest .btn:active,body.guest a.gc:a
  header.top h1{font-size:17px!important;line-height:1.15;white-space:nowrap}header.top h1 .sub{font-size:10.5px!important;white-space:nowrap}header.top .logo{width:58px!important;height:58px!important}
  .nav button span,#nav button span{font-size:10px!important;white-space:nowrap;letter-spacing:-.2px}
 }
+.gcb>.gc:has(.gc-b) .gc-t,.gcb>.gc:has(.gc-b) .gc-s{padding-inline-end:46px!important}
 .pm+.pm{border-top:1px dashed rgba(214,178,98,.22)}
 .pc .av{width:44px!important;height:44px!important;font-size:16px!important;flex:none;border-radius:50%!important;box-shadow:0 0 0 3px var(--a),0 8px 18px -8px var(--b)}
 .pc .av.nophoto{background:linear-gradient(160deg,#2a251a,#13110c)!important;color:var(--a)!important}
@@ -2127,7 +2128,7 @@ body:not(.guest) #view [role=button].main{min-height:40px}
 .kosher b{color:#f0c46f;font-size:15.5px}
 .place{animation-delay:calc(var(--g,0)*70ms)!important}
 /* Kerestir: our day */
-.kzt .back b{color:#f6e7bf}.kzt .back .num{color:#f0c46f;font-weight:900}
+.kzt .kzback b{color:#f6e7bf}.kzt .kzback .num{color:#f0c46f;font-weight:900}
 .kzstay{margin:10px 0 0;padding:10px 12px;border-radius:14px;background:rgba(214,178,98,.12);font-weight:700;font-size:14.5px;line-height:1.5}
 /* rides */
 .rd-my{font-size:11.5px;vertical-align:2px;margin-inline-start:4px}
@@ -4708,7 +4709,7 @@ function guestHTML0(){
   if(GTAB==='gz'){
     const thu=PROG.find(x=>x.k==='thu'),it=thu?progItems(thu).filter(x=>/קרעסטיר|ציון|סעודת הישועות|חזרה/.test(x.ti+' '+x.sub)):[];
     // on the day of the visit our own schedule comes first; the return time and "stay with the group" stand out
-    const ourDay=it.length?`<div class="kzc kzday"><h4>היום שלנו בקרעסטיר</h4><div class="kzt">${it.map(x=>`<div class="${/חזרה|יציאה/.test(x.ti)?'back':''}"><span class="num">${esc(x.tm||'—')}</span><b>${esc(x.ti)}</b><small>${esc(x.sub||'')}</small></div>`).join('')}</div><p class="kzstay">נשארים עם הקבוצה ועם המארגנים. שעת החזרה מתעדכנת בלוח המסע.</p></div>`:'',visit=todayISO()==='2026-11-19';
+    const ourDay=it.length?`<div class="kzc kzday"><h4>היום שלנו בקרעסטיר</h4><div class="kzt">${it.map(x=>`<div class="${/חזרה|יציאה/.test(x.ti)?'kzback':''}"><span class="num">${esc(x.tm||'—')}</span><b>${esc(x.ti)}</b><small>${esc(x.sub||'')}</small></div>`).join('')}</div><p class="kzstay">נשארים עם הקבוצה ועם המארגנים. שעת החזרה מתעדכנת בלוח המסע.</p></div>`:'',visit=todayISO()==='2026-11-19';
     return head('קרעסטיר')+`<div class="kzh"><small>החסידות והציון</small><b>רבי ישעיה׳לה מקרעסטיר זי״ע</b><span>ה׳תרי״א (1851) – ג׳ באייר ה׳תרפ״ה (1925)</span></div>${visit?ourDay:''}
      <div class="kzc"><h4>מי היה</h4><ul>
       <li>רבי ישעיה שטיינר, ידוע בכינוי <b>״רבי ישעיה׳לה קערעסטירער״</b>, מייסד חסידות קרעסטיר.</li>
@@ -5410,7 +5411,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='cff010dcfd';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='b27896d9f1';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
