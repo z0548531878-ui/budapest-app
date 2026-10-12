@@ -309,7 +309,7 @@ input[type=text]::placeholder{color:#A69C84;opacity:1;}
 }
 
 /* ===================== FX: אנימציות מיוחדות ===================== */
-#fx-canvas{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:60;}
+#fx-canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60;}
 .fx-float{position:fixed;z-index:61;pointer-events:none;font-family:'Frank Ruhl Libre',serif;font-weight:900;font-size:34px;color:#FFF3C4;text-shadow:0 0 18px rgba(212,175,55,.9),0 2px 0 #8A6E1E;transform:translate(-50%,-50%);animation:fxFloat 1.4s cubic-bezier(.2,.8,.3,1) forwards;}
 @keyframes fxFloat{0%{opacity:0;transform:translate(-50%,-20%) scale(.4);}20%{opacity:1;transform:translate(-50%,-60%) scale(1.25);}100%{opacity:0;transform:translate(-50%,-260%) scale(1);}}
 .fx-flash{position:fixed;inset:0;z-index:59;pointer-events:none;background:radial-gradient(circle,rgba(255,250,220,.55),rgba(255,250,220,0) 70%);animation:fxFlash .5s ease-out forwards;}
@@ -3415,7 +3415,7 @@ function miniBoardHtml(){
 
 // ---------- FX: מנוע אנימציות (קנבס חלקיקים, קונפטי, זיקוקים, אבק זהב, לוגו תלת-ממדי) ----------
 const FX_OK = !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
-const fx = {cv:null, ctx:null, parts:[], running:false, ambient:false, w:0, h:0};
+const fx = {cv:null, ctx:null, parts:[], running:false, ambient:false, w:0, h:0, raf:0, last:0};
 const FX_GOLD = ['#FFF3C4','#E9CE7C','#D4AF37','#FFD86B'];
 const FX_PARTY = ['#E9CE7C','#D4AF37','#3DBE72','#5EC8D8','#FFFFFF','#FF8A6B','#E08DB0'];
 function fxInit(){
@@ -3423,10 +3423,17 @@ function fxInit(){
   const c=document.createElement('canvas'); c.id='fx-canvas'; document.body.appendChild(c);
   fx.cv=c; fx.ctx=c.getContext('2d'); fxResize(); addEventListener('resize', fxResize);
 }
-function fxResize(){ if(!fx.cv) return; const d=Math.min(window.devicePixelRatio||1,2); fx.w=innerWidth; fx.h=innerHeight; fx.cv.width=fx.w*d; fx.cv.height=fx.h*d; fx.ctx.setTransform(d,0,0,d,0,0); }
-function fxStart(){ if(!fx.cv) return; if(!fx.running){ fx.running=true; requestAnimationFrame(fxLoop); } }
-function fxAdd(p){ if(fx.parts.length<700) fx.parts.push(p); }
+function fxResize(){ if(!fx.cv) return; const d=Math.min(window.devicePixelRatio||1,2); fx.w=innerWidth; fx.h=innerHeight; fx.cv.width=Math.round(fx.w*d); fx.cv.height=Math.round(fx.h*d); fx.ctx.setTransform(d,0,0,d,0,0); fx.parts=[]; }
+/* the screen must never stay painted: if the animation loop dies (error, app switched away, phone locked, resized) wipe the canvas and start clean */
+function fxReset(){ cancelAnimationFrame(fx.raf); fx.parts=[]; fx.running=false; if(fx.ctx){ fx.ctx.setTransform(1,0,0,1,0,0); fx.ctx.clearRect(0,0,fx.cv.width,fx.cv.height); fxResize(); } if(fx.ambient) fxStart(); }
+document.addEventListener('visibilitychange', fxReset); addEventListener('pageshow', fxReset); addEventListener('orientationchange', ()=>setTimeout(fxReset,250));
+function fxStart(){ if(!fx.cv) return; if(fx.running && performance.now()-fx.last>600){ cancelAnimationFrame(fx.raf); fx.running=false; } if(!fx.running){ fx.running=true; fx.last=performance.now(); fx.raf=requestAnimationFrame(fxLoop); } }
+function fxAdd(p){ if(fx.parts.length<700 && isFinite(p.x) && isFinite(p.y)) fx.parts.push(p); }
 function fxLoop(){
+  try{ fxFrame(); }catch(e){ console.warn('fx',e); fxReset(); }
+}
+function fxFrame(){
+  fx.last=performance.now();
   const c=fx.ctx; c.clearRect(0,0,fx.w,fx.h);
   if(fx.ambient && Math.random()<0.35){
     fxAdd({kind:'dust', x:Math.random()*fx.w, y:fx.h+10, vx:0, vy:-(0.3+Math.random()*0.7), g:0, life:0, max:420+Math.random()*300, size:1+Math.random()*2.4, color:FX_GOLD[(Math.random()*4)|0], sway:Math.random()*6.28});
@@ -3456,7 +3463,7 @@ function fxLoop(){
     next.push(p);
   }
   c.globalAlpha=1; fx.parts=next;
-  if(fx.parts.length || fx.ambient) requestAnimationFrame(fxLoop); else { fx.running=false; c.clearRect(0,0,fx.w,fx.h); }
+  if(fx.parts.length || fx.ambient) fx.raf=requestAnimationFrame(fxLoop); else { fx.running=false; c.clearRect(0,0,fx.w,fx.h); }
 }
 /* a new question is coming: whatever is still flying from the last answer fades out fast instead of covering the new question */
 function fxFadeOut(){ for(const p of fx.parts){ if(p.kind!=='dust') p.max=Math.min(p.max,p.life+12); } }
