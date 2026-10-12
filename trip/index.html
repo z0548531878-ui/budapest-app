@@ -2250,6 +2250,10 @@ body:not(.guest) #view [role=button].main{min-height:40px}
 .delwarn{margin:10px 0 0;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,140,120,.45);background:rgba(255,120,100,.08);color:#ffcfc5;font-size:13.5px;font-weight:700}
 .cg-del span:first-child{color:#ffb09e}
 .repwhat{margin-top:12px}.repwhat>summary{cursor:pointer;list-style:none;font-weight:800;color:#e9c46f;padding:6px 2px}.repwhat>summary::-webkit-details-marker{display:none}
+/* the chat before it opens */
+.chlock{display:grid;justify-items:center;gap:8px;text-align:center;margin:28px 0;padding:24px 18px;border-radius:20px;border:1px solid rgba(214,178,98,.3);background:#13110c}
+.chlock span{font-size:34px}.chlock b{font-size:19px;color:#f0d28c}.chlock p{margin:0;color:var(--muted);line-height:1.6}
+.chorg{margin:0 0 10px;padding:10px 12px;border-radius:14px;border:1px dashed rgba(214,178,98,.5);background:rgba(214,178,98,.08);font-size:13.5px;line-height:1.5;color:#e9c46f}
 /* end polish */
 </style>
 
@@ -4312,11 +4316,14 @@ let CHREC=null,CHT=0;const CHBLOB={};
 const chMe=()=>{if(GUEST()){const m=meG();return m?{id:m._id,nm:m.name}:null}return {id:'org:'+(ME||'מארגן'),nm:ME||'מארגן'}};
 const chMsgs=()=>S.settings.filter(x=>x.kind==='chat'&&x.ts&&x.by).sort((a,b)=>a.ts-b.ts).slice(-300);
 const chSeen=()=>{try{return +localStorage.getItem('chSeen')||0}catch(e){return 0}};
-const chUnread=()=>{const me=chMe(),s=chSeen();return chMsgs().filter(m=>m.ts>s&&(!me||m.by!==me.id)).length};
+// the group chat opens for participants in the week of the trip; until then organizers can still use it among themselves
+const CHAT_OPEN='2026-11-15', chLocked=()=>GUEST()&&todayISO()<CHAT_OPEN;
+const chUnread=()=>{if(chLocked())return 0;const me=chMe(),s=chSeen();return chMsgs().filter(m=>m.ts>s&&(!me||m.by!==me.id)).length};
 const chOpen=()=>GUEST()?GTAB==='gy':V.tab==='chat';
 const chTime=ts=>{const d=new Date(ts);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
 const chDay=ts=>{const d=new Date(ts);return d.getDate()+'.'+(d.getMonth()+1)};
 function chatHTML(){
+  if(chLocked())return `<div class="chlock"><span aria-hidden="true">🔒</span><b>הצ׳אט ייפתח ביום ראשון, 15.11</b><p>בשבוע של המסע נפתח כאן צ׳אט לכל משתתפי המסע. עד אז, עדכונים מהמארגנים מגיעים במסך ההודעות.</p></div>`;
   const me=chMe(),L=chMsgs(),isOrg=!GUEST();let last='',h='';
   if(chOpen()){try{const t=L.length?L[L.length-1].ts:0;if(t>chSeen())localStorage.setItem('chSeen',String(t))}catch(e){}}
   L.forEach(m=>{const d=chDay(m.ts);if(d!==last){h+=`<div class="chd">${d}</div>`;last=d}
@@ -4325,10 +4332,10 @@ function chatHTML(){
   if(!L.length)h='<p class="note" style="text-align:center;margin:30px 0">עוד אין הודעות. אפשר להתחיל 🙂</p>';
   const rec=CHREC?`<div class="chrec"><b>● מקליט <span id="chSec">0</span> שנ׳</b><button class="btn" data-chcancel>ביטול</button><button class="btn primary" data-chstop>שליחה</button></div>`:
     `<div class="chbar"><input id="chIn" class="search" type="text" maxlength="800" placeholder="כתבו הודעה…" autocomplete="off" enterkeyhint="send"><button class="chb" data-chmic aria-label="הקלטה">🎙</button><button class="chb go" data-chsend aria-label="שליחה">➤</button></div>`;
-  return `<div class="chat"><p class="note" style="margin:0 0 8px">צ׳אט פנימי של המסע: טקסט והקלטות קוליות בלבד.</p><div class="chl" id="chL">${h}</div>${rec}</div>`}
+  return `<div class="chat">${isOrg&&todayISO()<CHAT_OPEN?'<p class="chorg">🔒 המשתתפים עוד לא רואים את הצ׳אט ולא מקבלים ממנו התראות. הוא ייפתח להם ביום ראשון, 15.11.</p>':''}<p class="note" style="margin:0 0 8px">צ׳אט פנימי של המסע: טקסט והקלטות קוליות בלבד.</p><div class="chl" id="chL">${h}</div>${rec}</div>`}
 async function chPost(o){if(!db)return toast('אין חיבור');const me=chMe();if(!me)return toast('לא זוהה שם');const ts=Date.now(),id='chat_'+ts.toString(36)+Math.random().toString(36).slice(2,6);
   await db.doc('settings/'+id).set({kind:'chat',by:me.id,nm:me.nm,ts,...o});return id}
-async function chSend(){if(blockPrev())return;const i=document.getElementById('chIn');if(!i)return;const t=i.value.trim().slice(0,800);if(!t)return;i.value='';try{await chPost({text:t})}catch(e){i.value=t;toast('לא נשלח. נסו שוב')}}
+async function chSend(){if(blockPrev()||chLocked())return;const i=document.getElementById('chIn');if(!i)return;const t=i.value.trim().slice(0,800);if(!t)return;i.value='';try{await chPost({text:t})}catch(e){i.value=t;toast('לא נשלח. נסו שוב')}}
 async function chVoice(blob,sec){const data=await new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=no;r.readAsDataURL(blob)});
   const ts=Date.now(),id='chat_'+ts.toString(36)+Math.random().toString(36).slice(2,6),CH=700000,n=Math.ceil(data.length/CH),me=chMe();if(!me||!db)return;
   for(let i=0;i<n;i++)await db.doc('photobig/'+id+'_'+i).set({src:data.slice(i*CH,(i+1)*CH),ts});
@@ -4337,7 +4344,7 @@ async function chPlay(m,el){if(!el)return;el.innerHTML='<p class="note" style="m
   try{if(!CHBLOB[m._id]){const parts=await Promise.all([...Array(m.n||0)].map((_,i)=>db.doc('photobig/'+m._id+'_'+i).get().then(d=>d.exists?d.data().src:'')));CHBLOB[m._id]=URL.createObjectURL(await (await fetch(parts.join(''))).blob())}
     el.innerHTML=`<audio controls src="${CHBLOB[m._id]}" style="width:100%;margin-top:6px"></audio>`;try{el.querySelector('audio').play()}catch(e){}}catch(x){el.innerHTML='<p class="note">ההקלטה לא נטענה. נסו שוב.</p>'}}
 let CHN=-1,CHNT=0,CHNS=0;
-setInterval(()=>{try{if(!loaded.has('settings')||!ROLE||PREV)return;const me=chMe();if(!me)return;
+setInterval(()=>{try{if(!loaded.has('settings')||!ROLE||PREV||chLocked())return;const me=chMe();if(!me)return;
   const vis=document.visibilityState==='visible'&&chOpen();if(vis)return;
   const lim=Math.max(chSeen(),CHNS),nw=chMsgs().filter(m=>m.ts>lim&&m.by!==me.id),n=nw.length;if(!n||Date.now()-CHNT<3*60000)return;CHNT=Date.now();CHNS=nw[nw.length-1].ts;
   const t='💬 '+(n===1?'הודעה חדשה בצ׳אט':n+' הודעות חדשות בצ׳אט');
@@ -5553,7 +5560,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='bb0ee8a168';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='0d20c5aeca';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
