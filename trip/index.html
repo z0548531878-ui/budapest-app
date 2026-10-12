@@ -5270,6 +5270,8 @@ let DEFER=null;
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();DEFER=e;pgate()});
 let INSTD=false;addEventListener('appinstalled',()=>{DEFER=null;INSTD=true;pgate()});
 const isMobile=()=>/iphone|ipad|ipod|android/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+let SKIPN=0,HIDAT=0;
+document.addEventListener('visibilitychange',()=>{if(document.hidden){HIDAT=Date.now();return}if(HIDAT&&Date.now()-HIDAT>20000)SKIPN=0;HIDAT=0;try{pgate()}catch(e){}});
 const skipG=()=>{try{return sessionStorage.getItem('skipInst')==='1'}catch(e){return false}};
 /* WhatsApp/Instagram/Facebook/Telegram open links in their own browser, which can't add to the home screen or show notifications.
    On iPhone a real browser always says "Safari/" (Chrome and Firefox too); the in-app ones don't */
@@ -5278,10 +5280,12 @@ const isInApp=()=>{const u=navigator.userAgent;return /FBAN|FBAV|FB_IAB|Instagra
 const iosOld=()=>{const m=navigator.userAgent.match(/OS (\d+)_(\d+)/);return isIOS()&&!!m&&(+m[1]<16||(+m[1]===16&&+m[2]<4))};
 const appLink=()=>location.origin+location.pathname+(TRIP_KEY?'#k='+TRIP_KEY:'');
 function gateState(){
-  if(PREV||nogate()||ROLE==='org'||skipG()||!isMobile())return '';
-  if(iosOld())return 'old';
-  if(!isStandalone())return isInApp()?'inapp':'install';
-  if(!('Notification' in window)||!('serviceWorker' in navigator))return 'unsupported';
+  if(PREV||nogate()||ROLE==='org'||!isMobile())return '';
+  if(iosOld())return skipG()?'':'old';
+  if(!isStandalone())return skipG()?'':isInApp()?'inapp':'install';
+  if(!('Notification' in window)||!('serviceWorker' in navigator))return skipG()?'':'unsupported';
+  // notifications not on yet: asked again on every opening of the app; "continue without" only lasts until the app is left
+  if(SKIPN)return '';
   if(Notification.permission==='denied')return 'denied';
   if(Notification.permission!=='granted')return 'ask';
   return ''}
@@ -5375,7 +5379,7 @@ document.addEventListener('click',e=>{
   if(T.closest('#pdtest')){try{localStorage.removeItem('tokSaved')}catch(x){}pushToken(true).then(ok=>{if(ok)toast('נרשם בהצלחה');showDiag()});return}
   if(T.closest('#pdclose')){const d=document.getElementById('pdbox');if(d)d.remove();return}
   if(T.closest('#pcopy')){const l=appLink();(navigator.clipboard?navigator.clipboard.writeText(l):Promise.reject()).then(()=>toast('הקישור הועתק. הדביקו אותו בדפדפן'),()=>prompt('העתיקו את הקישור:',l));return}
-  if(T.closest('#pskip')){try{sessionStorage.setItem('skipInst','1')}catch(x){}pgate();return}
+  if(T.closest('#pskip')){const st=(document.getElementById('pgate')||{}).dataset;if(st&&/^(ask|denied)/.test(st.st||''))SKIPN=1;else try{sessionStorage.setItem('skipInst','1')}catch(x){}pgate();return}
   if(T.closest('#pinst')&&DEFER){DEFER.prompt();DEFER.userChoice.then(c=>{if(c&&c.outcome==='accepted')INSTD=true}).finally(()=>{DEFER=null;pgate()});return}
 },true);
 const openTab=t=>{if(!t)return;if(GUEST()){if(GNAV.concat([['gm'],['gk'],['gx'],['gp'],['gf']]).some(n=>n[0]===t)){GTAB=t;render(true)}}else if(ROLE==='org'&&NAV.some(n=>n[0]===t))go(t)};
@@ -5430,7 +5434,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='4c056c3bd1';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='bb0ee8a168';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
