@@ -48,7 +48,12 @@ exports.tripPush = functions.region('europe-west1').firestore.document('trips/{t
     }
     // a recording of the rabbi was published
     if (after.kind === 'audio' && !after.hidden && (!before || before.hidden)) {
+      if (after.voice) return send(trip, guests, '🔊 הודעה קולית מהמארגנים', trim(after.title, 100) + ' · לחצו להאזנה', 'gh', 'vm_' + id);
       return send(trip, () => true, '🎧 ' + trim(after.title || 'דברי הרב לקראת המסע', 60), 'הקלטה חדשה מחכה לכם באפליקציה. לחצו להאזנה', 'gh', 'audio');
+    }
+    // a photo challenge for everyone
+    if (after.kind === 'challenge' && !after.hidden && !before) {
+      return send(trip, guests, '🎯 אתגר צילום!', trim(after.text, 120), 'gi', 'ch_' + id);
     }
     // the moment of the day: an organizer starred a photo
     if (after.kind === 'moment' && !after.hidden && (!before || before.pid !== after.pid)) {

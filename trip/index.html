@@ -1187,6 +1187,22 @@ body.guest button:not(:disabled):active,body.guest .btn:active,body.guest a.gc:a
 @keyframes ravPulse{0%{box-shadow:0 0 0 0 rgba(240,200,110,.6)}100%{box-shadow:0 0 0 16px rgba(240,200,110,0)}}
 .rav-b small{display:block;color:#f0c86e;font-weight:900;font-size:12.5px}.rav-b b{font-size:17px}
 @media (prefers-reduced-motion:reduce){.rav-i{animation:none!important}}
+.vmc{padding:14px;display:grid;gap:10px;margin-bottom:12px;border-color:rgba(240,200,110,.5)}.vm-h{display:flex;gap:10px;align-items:flex-start}.vm-h>span{font-size:28px}.vm-h b{display:block}.vm-h small{color:var(--muted)}
+.vm-r{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px dashed rgba(214,178,98,.2)}.vm-r span{flex:1}.vm-r small{color:var(--muted)}
+.rav.vm .rav-i{background:linear-gradient(180deg,#9ce7b8,#3fae72)}
+.chal{margin:0 0 12px;padding:14px;border-radius:22px;border:1.5px solid #f0c86e;background:radial-gradient(120% 100% at 15% 0,rgba(240,200,110,.2),transparent 60%),#14100a;display:grid;gap:10px;animation:r2In .5s both}
+.ch-h{display:flex;gap:10px;align-items:center}.ch-i{font-size:32px;animation:r2Bob 2.4s ease-in-out infinite}.ch-h small{display:block;color:#f0c86e;font-weight:900;font-size:12.5px}.ch-h b{font-size:17px}
+.chorg{padding:12px;display:grid;gap:8px;margin-bottom:12px}.ph-day.ch b{color:#ffe9a8}
+@media (prefers-reduced-motion:reduce){.ch-i{animation:none!important}}
+#view[data-scr="ggx"] .page-title h2{font-size:21px!important}#view[data-scr="ggx"] .place .pl-a{margin-top:2px}
+#view[data-scr="ggx"] .hotelbar{min-height:42px;font-size:14.5px;border-radius:14px}#view[data-scr="ggx"] .hotelbar svg{width:16px;height:16px}
+#view[data-scr="ggx"] .kosher{font-size:12.5px;padding:8px 11px;line-height:1.4}#view[data-scr="ggx"] .kosher b{font-size:13px}
+#view[data-scr="ggx"] .note{font-size:12.5px;line-height:1.45}
+#view[data-scr="ggx"] .ghead{font-size:13.5px}
+#view[data-scr="ggx"] .place{padding:9px 11px;gap:4px;margin:6px 0;border-radius:14px}
+#view[data-scr="ggx"] .place .pl-t b{font-size:15.5px!important}#view[data-scr="ggx"] .pl-t .en{font-size:11.5px}
+#view[data-scr="ggx"] .place .pill{font-size:11.5px;padding:2px 9px}#view[data-scr="ggx"] .place small{font-size:12px}
+#view[data-scr="ggx"] .pl-a .btn{min-height:36px!important;font-size:13.5px;border-radius:12px}#view[data-scr="ggx"] .pl-a svg{width:15px;height:15px}
 .pm+.pm{border-top:1px dashed rgba(214,178,98,.22)}
 .pc .av{width:44px!important;height:44px!important;font-size:16px!important;flex:none;border-radius:50%!important;box-shadow:0 0 0 3px var(--a),0 8px 18px -8px var(--b)}
 .pc .av.nophoto{background:linear-gradient(160deg,#2a251a,#13110c)!important;color:var(--a)!important}
@@ -2282,7 +2298,7 @@ const F={
  claude:{one:'פריט',fields:[{k:'title',l:'כותרת',t:'text'},{k:'kind',l:'סוג',t:'seg',o:['שאלה','הצעה']},{k:'text',l:'פירוט',t:'textarea'},{k:'answer',l:'התשובה שלך',t:'textarea'},{k:'status',l:'מצב',t:'seg',o:['פתוח','נענה','התקבל','לא רלוונטי']}],def:{kind:'שאלה',status:'פתוח'}},
  contacts:{one:'איש קשר',fields:[{k:'name',l:'ספק / שם',t:'text'},{k:'role',l:'על מה',t:'text'},{k:'person',l:'איש קשר',t:'text',half:1},{k:'phone',l:'טלפון',t:'tel',half:1},{k:'notes',l:'הערות',t:'textarea'}],def:{}},
 };
-const COLS=[...Object.keys(F),'settings','activity','trash'];
+const COLS=[...Object.keys(F),'settings','activity','trash','attendance'];
 const S={attendance:[]};COLS.forEach(c=>S[c]=[]);
 let db=null; const loaded=new Set();
 /* what went wrong on this phone, for the check screen (no data, only step names and error codes) */
@@ -2635,6 +2651,7 @@ function flightCard(f){
 const subHead=(t,extra='')=>`<div class="page-title"><button class="back" data-back aria-label="חזרה">›</button><h2>${t}</h2>${extra}</div>`;
 const EARLY=['איתיאל זנזורי',"ג'ודי זנזורי",'בני דרחי','ינון שעיו','יסכה שעיו'];
 const SESSIONS=[
+ {k:'tlv',l:'הגעה לנתב״ג',f:p=>(p.outbound||'קבוצתי')==='קבוצתי'},
  {k:'bus_bud',l:'אוטובוס בשדה',f:p=>(p.outbound||'קבוצתי')==='קבוצתי'},
  {k:'bus_ker',l:'יציאה מקרעסטיר',f:p=>(p.outbound||'קבוצתי')==='קבוצתי'&&!EARLY.includes(p.name)},
  {k:'fri_dinner',l:'הליכה לליל שבת',f:()=>true},
@@ -2642,7 +2659,7 @@ const SESSIONS=[
 ];
 const curSes=()=>SESSIONS.find(x=>x.k===V.filter.ses)||SESSIONS[0];
 const SUB={
- rav(){const L=S.settings.filter(x=>x.kind==='audio').sort((a,b)=>(b.at||0)-(a.at||0));
+ rav(){const L=S.settings.filter(x=>x.kind==='audio'&&!x.voice).sort((a,b)=>(b.at||0)-(a.at||0));
   return subHead('הקלטת הרב')+`<p class="note">מעלים הקלטה של הרב (או מקליטים כאן), והיא מופיעה למעלה במסך הבית של כל המשתתפים, עם התראה. עד כ־20 דקות הקלטה.</p>
    <div class="card" style="padding:14px;display:grid;gap:10px"><label class="field">כותרת<input id="ravT" type="text" value="דברי הרב לקראת המסע"></label>
     <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" id="ravPick">📁 העלאת קובץ שמע</button><button class="btn" id="ravRec">${RAVREC?'⏹ עצירת ההקלטה':'🎙 הקלטה עכשיו'}</button></div>
@@ -4127,11 +4144,13 @@ function packHTML(head){const {o,x}=packLoad(),st=packStat(),pc=st.t?Math.round(
    <b class="chk-h">הרשימה שלי</b><div class="pkr-l">${x.map((it,i)=>row(i,it.t,it.on,1)).join('')||'<p class="note" style="margin:0">אפשר להוסיף כאן דברים משלכם</p>'}</div>
    <div class="pkr-add"><input id="pkNew" class="search" type="text" placeholder="להוסיף פריט, למשל: מטריה קטנה" enterkeyhint="done"><button class="btn primary" data-pkadd>הוספה</button></div>
    <p class="note">הרשימה שמורה בטלפון שלכם. בערב שלפני הטיסה נשלח תזכורת למי שעוד לא סיים לארוז.</p></section>`}
-const rollCur=()=>{const r=S.settings.find(x=>x._id==='rollcur');return r&&r.ses&&Date.now()-(r.at||0)<3*36e5?SESSIONS.find(x=>x.k===r.ses):null};
+const tlvOpen=()=>{const f=S.flights.find(x=>x.dir==='הלוך'&&(x.group||'קבוצתי')==='קבוצתי')||S.flights.find(x=>x.dir==='הלוך');const d=f?depAt(f):Date.parse('2026-11-19T08:00:00+02:00'),n=Date.now();return n>=d-8*36e5&&n<d-20*6e4};
+const rollCur=()=>{const r=S.settings.find(x=>x._id==='rollcur');if(r&&r.ses&&Date.now()-(r.at||0)<3*36e5)return SESSIONS.find(x=>x.k===r.ses);return tlvOpen()?SESSIONS.find(x=>x.k==='tlv'):null};
 function boardHTML(ppl){const ses=rollCur();if(!ses)return '';const mine=ppl.filter(ses.f);if(!mine.length)return '';
   const on=p=>S.attendance.some(a=>a._id===ses.k+'__'+p._id&&a.here);
-  return `<section class="board" aria-label="${esc(ses.l)}"><div class="bd-h"><span class="bd-i">🚌</span><span><small>ספירה פתוחה עכשיו</small><b>${esc(ses.l)}</b></span></div>
-   <div class="bd-l">${mine.map(p=>on(p)?`<div class="bd-b ok">✓ ${esc(firstN(p.name))} כאן</div>`:`<button class="btn primary bd-b" data-board="${p._id}">${mine.length>1?esc(firstN(p.name))+': ':''}אני כאן ✋</button>`).join('')}</div></section>`}
+  const air=ses.k==='tlv';
+  return `<section class="board" aria-label="${esc(ses.l)}"><div class="bd-h"><span class="bd-i">${air?'🛫':'🚌'}</span><span><small>${air?'בדרך לשדה · נפגשים בנתב״ג':'ספירה פתוחה עכשיו'}</small><b>${air?'הגעתם לנתב״ג?':esc(ses.l)}</b></span></div>
+   <div class="bd-l">${mine.map(p=>on(p)?`<div class="bd-b ok">✓ ${esc(firstN(p.name))} כאן</div>`:`<button class="btn primary bd-b" data-board="${p._id}">${mine.length>1?esc(firstN(p.name))+': ':''}${air?'הגעתי לנתב״ג ✈':'אני כאן ✋'}</button>`).join('')}</div></section>`}
 /* shared expenses: one couple pays, several couples share; balances in shekels */
 const cKey=p=>{const c=coupleOf(p).map(x=>x._id).sort();return c[0]||''};
 function couplesAll(){const seen={},out=[];S.participants.slice().sort(famCmp).forEach(p=>{const k=cKey(p);if(!k||seen[k])return;seen[k]=1;const c=coupleOf(p);out.push({k,ppl:c,l:coupleLabel(c,p)})});return out}
@@ -4160,22 +4179,32 @@ function splitHTML(head,me){const mk=cKey(me),C=couplesAll(),nm=k=>(C.find(c=>c.
    ${mine.length?`<div class="ghead"><span>ההוצאות שלכם</span><span class="num">${mine.length}</span></div><div class="spl-l">${mine.map(x=>`<div class="sl"><div><b>${esc(x.title||(x.settle?'סגירת חוב':'הוצאה'))}</b><small>${x.settle?'העברה':'שילמו: '+esc(nm(x.by))} · ${(x.with||[]).length} זוגות · ${new Date(x.at||0).toLocaleDateString('he-IL',{day:'numeric',month:'numeric'})}</small></div><b class="num">${x.cur==='HUF'?Math.round(x.amount).toLocaleString('he-IL')+' Ft':'₪'+Math.round(x.amount).toLocaleString('he-IL')}</b>${x.by===mk?`<button class="sl-x" data-spl-del="${x._id}" aria-label="מחיקה">✕</button>`:''}</div>`).join('')}</div>`:''}
    <p class="note">פורינט מומר לשקלים לפי השער שבכלים לדרך (עכשיו: ${hufRate()} פורינט לשקל).</p>`}
 let RAVREC=null,RAVSHOW='';const RAVBLOB={};
-async function ravUpload(blob,title){const msg=document.getElementById('ravMsg');if(!db){toast('אין חיבור');return}
+async function ravUpload(blob,title,extra){const msg=document.getElementById('ravMsg');if(!db){toast('אין חיבור');return}
   if(blob.size>22*1048576){toast('הקובץ גדול מדי (עד 20MB)');return}
   const data=await new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=no;r.readAsDataURL(blob)});
   const id='audio_'+Date.now().toString(36),CH=700000,n=Math.ceil(data.length/CH);
   for(let i=0;i<n;i++){if(msg)msg.innerHTML=`<span class="gspin"></span> מעלה ${Math.round(i/n*100)}%…`;await db.doc('photobig/'+id+'_'+i).set({src:data.slice(i*CH,(i+1)*CH),ts:Date.now()})}
-  await db.doc('settings/'+id).set({kind:'audio',title:(title||'דברי הרב לקראת המסע').slice(0,80),mime:blob.type||'audio/mpeg',n,size:blob.size,at:Date.now(),hidden:false});
-  if(msg)msg.textContent='פורסם ✓ כולם יקבלו התראה';toast('ההקלטה פורסמה לכולם 🎧')}
+  await db.doc('settings/'+id).set({kind:'audio',title:(title||'דברי הרב לקראת המסע').slice(0,80),mime:blob.type||'audio/mpeg',n,size:blob.size,at:Date.now(),hidden:false,...(extra||{})});
+  if(msg)msg.textContent='פורסם ✓ כולם יקבלו התראה';toast(extra&&extra.voice?'ההודעה הקולית נשלחה לכולם 🔊':'ההקלטה פורסמה לכולם 🎧')}
 async function ravLoad(a){if(RAVBLOB[a._id])return RAVBLOB[a._id];const parts=await Promise.all([...Array(a.n||0)].map((_,i)=>db.doc('photobig/'+a._id+'_'+i).get().then(d=>d.exists?d.data().src:'')));
   const b=await (await fetch(parts.join(''))).blob();return RAVBLOB[a._id]=URL.createObjectURL(b)}
-const ravNow=()=>S.settings.filter(x=>x.kind==='audio'&&!x.hidden&&x.n).sort((a,b)=>(b.at||0)-(a.at||0))[0];
+const ravNow=()=>S.settings.filter(x=>x.kind==='audio'&&!x.hidden&&x.n&&!x.voice).sort((a,b)=>(b.at||0)-(a.at||0))[0];
+const voiceNow=()=>S.settings.filter(x=>x.kind==='audio'&&x.voice&&!x.hidden&&x.n&&Date.now()-(x.at||0)<12*36e5).sort((a,b)=>(b.at||0)-(a.at||0))[0];
+function voiceCard(){const a=voiceNow();if(!a)return '';let heard=false;try{heard=localStorage.getItem('vmHeard')===a._id}catch(e){}
+  const ago=Math.max(1,Math.round((Date.now()-a.at)/6e4));
+  return `<section class="rav vm ${heard?'':'new'}"><button class="rav-b" data-rav="${a._id}"><span class="rav-i">🔊</span><span><small>הודעה קולית מ${esc(a.from||'המארגנים')} · לפני ${ago<60?ago+' דק׳':Math.round(ago/60)+' שע׳'}</small><b>${esc(a.title||'הודעה קולית')}</b></span></button><div id="ravG_${a._id}">${RAVSHOW===a._id&&RAVBLOB[a._id]?`<audio controls src="${RAVBLOB[a._id]}" style="width:100%;margin-top:8px"></audio>`:''}</div></section>`}
 function ravCard(){const a=ravNow();if(!a)return '';let heard=false;try{heard=localStorage.getItem('ravHeard')===a._id}catch(e){}
   return `<section class="rav ${heard?'':'new'}"><button class="rav-b" data-rav="${a._id}"><span class="rav-i">${RAVBLOB[a._id]?'🎧':'▶'}</span><span><small>${heard?'🎧 להאזנה חוזרת':'🎧 חדש · לקראת המסע'}</small><b>${esc(a.title||'דברי הרב')}</b></span></button><div id="ravG_${a._id}">${RAVSHOW===a._id&&RAVBLOB[a._id]?`<audio controls src="${RAVBLOB[a._id]}" style="width:100%;margin-top:8px"></audio>`:''}</div></section>`}
 async function ravPlayInto(a,el){if(!el)return;el.innerHTML='<p class="note" style="margin:6px 0"><span class="gspin"></span> טוען את ההקלטה…</p>';
-  try{const u=await ravLoad(a);RAVSHOW=a._id;el.innerHTML=`<audio controls src="${u}" style="width:100%;margin-top:8px"></audio>`;const au=el.querySelector('audio');try{au.play()}catch(e){}try{localStorage.setItem('ravHeard',a._id)}catch(e){}}catch(x){el.innerHTML='<p class="note">ההקלטה לא נטענה. בדקו שיש אינטרנט ונסו שוב.</p>'}}
+  try{const u=await ravLoad(a);RAVSHOW=a._id;el.innerHTML=`<audio controls src="${u}" style="width:100%;margin-top:8px"></audio>`;const au=el.querySelector('audio');try{au.play()}catch(e){}try{localStorage.setItem(a.voice?'vmHeard':'ravHeard',a._id)}catch(e){}}catch(x){el.innerHTML='<p class="note">ההקלטה לא נטענה. בדקו שיש אינטרנט ונסו שוב.</p>'}}
 document.addEventListener('click',async e=>{const T=e.target;
   if(T.closest('#ravPick')){document.getElementById('ravF').click();return}
+  if(T.closest('#vmRec')){if(RAVREC){RAVREC.stop();return}
+    try{const st=await navigator.mediaDevices.getUserMedia({audio:true}),mr=new MediaRecorder(st),ch=[],t0=Date.now();mr._vm=1;mr._t=((document.getElementById('vmT')||{}).value||'').trim();mr.ondataavailable=x=>ch.push(x.data);
+      const tick=setInterval(()=>{const e=document.getElementById('vmSec');if(e)e.textContent=Math.round((Date.now()-t0)/1000);if(Date.now()-t0>60000&&RAVREC===mr)mr.stop()},500);
+      mr.onstop=async()=>{clearInterval(tick);st.getTracks().forEach(t=>t.stop());RAVREC=null;const ti=mr._t||'הודעה קולית מהמארגנים';render();
+        const b=new Blob(ch,{type:mr.mimeType||'audio/webm'});if(Date.now()-t0<1500){toast('ההקלטה קצרה מדי');return}await ravUpload(b,ti,{voice:true,from:(typeof ME!=='undefined'&&ME)||''})};
+      mr.start();RAVREC=mr;render()}catch(x){toast('אין גישה למיקרופון')}return}
   if(T.closest('#ravRec')){if(RAVREC){RAVREC.stop();return}
     try{const st=await navigator.mediaDevices.getUserMedia({audio:true}),mr=new MediaRecorder(st),ch=[];mr.ondataavailable=x=>ch.push(x.data);
       mr.onstop=async()=>{st.getTracks().forEach(t=>t.stop());RAVREC=null;render();const b=new Blob(ch,{type:mr.mimeType||'audio/webm'});const t=(document.getElementById('ravT')||{}).value;if(confirm('לפרסם את ההקלטה לכל המשתתפים?'))await ravUpload(b,t)};
@@ -4447,16 +4476,24 @@ async function certMake(){const me=meG();if(!me){toast('צריך להיכנס ע
   c.toBlob(async b=>{if(!b){toast('התעודה לא נוצרה. נסו שוב');return}const f=new File([b],'תעודת-המסע.png',{type:'image/png'});
     try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],text:'מסע גיבוש הונגריה 🇭🇺'});return}}catch(e){if(e&&e.name==='AbortError')return}
     const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);toast('התעודה נשמרה')},'image/png')}
+const chNow=()=>S.settings.filter(x=>x.kind==='challenge'&&!x.hidden).sort((a,b)=>(b.at||0)-(a.at||0))[0];
+const chLive=()=>{const c=chNow();return c&&Date.now()-(c.at||0)<8*36e5?c:null};
+let PHCH='';
+function chCard(home){const c=chLive();if(!c)return '';const n=(PH||[]).filter(p=>p.ch===c._id).length;
+  return `<section class="chal"><div class="ch-h"><span class="ch-i">🎯</span><div><small>אתגר צילום${n?' · <span class="num">'+n+'</span> תמונות':''}</small><b>${esc(c.text)}</b></div></div><button class="btn primary" data-chup="${c._id}" style="width:100%">📷 צילום לאתגר</button>${home?'':''}</section>`}
 function photosHTML(){
   photosSub();
   const mine=phMeId(), L=PHF==='mine'?PH.filter(p=>p.by===mine):PH;
   if(PHL&&PH.length&&GUEST()&&!isPrevOrg())setTimeout(()=>{try{localStorage.setItem('phSeen',String(Math.max(...PH.map(p=>p.ts||0))))}catch(e){}},1500);
   const err=PHERR==='permission-denied'?`<div class="lockbar">צריך לעדכן את חוקי Firebase כדי שהגלריה תעבוד (ההוראות אצל Claude).</div>`:PHERR?`<div class="lockbar">הגלריה לא נטענה. בדקו שיש אינטרנט ונסו שוב.</div>`:'';
   const fail=PHFAIL.length&&!PHBUSY?`<div class="ph-fail" role="alert"><span>${PHFAIL.length===1?'תמונה אחת לא עלתה':PHFAIL.length+' תמונות לא עלו'}. בדרך כלל זו קליטה חלשה.</span><button class="btn" data-ph-retry>ניסיון חוזר</button></div>`:'';
-  return `<div class="ph-top"><button class="ph-up ${PHBUSY?'busy':''}" data-ph-up ${PHBUSY?'aria-disabled="true" aria-busy="true"':''}><span class="ph-upi">${PHBUSY?'<span class="gspin"></span>':IX.cam}</span><span><b>${PHBUSY||'העלאת תמונות'}</b><small>${PHBUSY?'אפשר להמשיך לגלוש. לא צריך ללחוץ שוב':'אפשר לבחור כמה תמונות ביחד'}</small></span>${PHBUSY?`<i class="ph-prog" style="width:${PHPCT}%"></i>`:''}</button></div>${fail}${err}
+  const chOrg=ROLE==='org'&&!PREV?`<div class="card chorg"><b>🎯 אתגר צילום לכולם</b><div class="pkr-add"><input id="chT" class="search" type="text" placeholder="למשל: הצילום הכי יפה של הדנובה"><button class="btn primary" data-chnew>שליחה</button></div>${chNow()?`<small class="note" style="margin:0">האתגר האחרון: ${esc(chNow().text)} · <button class="glink" data-chend="${chNow()._id}">סיום</button></small>`:''}</div>`:'';
+  const chP=(PH||[]).filter(p=>p.ch),chs=S.settings.filter(x=>x.kind==='challenge').sort((a,b)=>(b.at||0)-(a.at||0)).filter(c=>chP.some(p=>p.ch===c._id));
+  const chAlb=PHF==='all'&&chs.length?chs.map(c=>`<div class="ph-day ch"><b>🎯 ${esc(c.text)}</b><span class="num">${chP.filter(p=>p.ch===c._id).length}</span></div><div class="ph-grid">${chP.filter(p=>p.ch===c._id).map((p,i)=>`<button class="ph-c" data-ph="${p._id}" style="--i:${Math.min(i,8)}"><img src="${p.th}" alt="" loading="lazy"></button>`).join('')}</div>`).join(''):'';
+  return chOrg+chCard()+`<div class="ph-top"><button class="ph-up ${PHBUSY?'busy':''}" data-ph-up ${PHBUSY?'aria-disabled="true" aria-busy="true"':''}><span class="ph-upi">${PHBUSY?'<span class="gspin"></span>':IX.cam}</span><span><b>${PHBUSY||'העלאת תמונות'}</b><small>${PHBUSY?'אפשר להמשיך לגלוש. לא צריך ללחוץ שוב':'אפשר לבחור כמה תמונות ביחד'}</small></span>${PHBUSY?`<i class="ph-prog" style="width:${PHPCT}%"></i>`:''}</button></div>${fail}${err}
    <div class="seg ph-seg"><button data-phf="all" aria-pressed="${PHF==='all'}">כל התמונות<span class="c num">${PH.length}</span></button><button data-phf="mine" aria-pressed="${PHF==='mine'}">שהעליתי<span class="c num">${PH.filter(p=>p.by===mine).length}</span></button></div>
    ${!PHL?`<div class="ph-grid">${'<div class="ph-c skel shimmer"></div>'.repeat(9)}</div>`:L.length?(L.length>2?`<button class="ph-show" data-phshow><span>▶</span><b>מצגת של כל התמונות</b><small class="num">${L.length} תמונות</small></button>`:'')+phDays(L).map(([k,lab,arr])=>`<div class="ph-day"><b>${lab}</b><span class="num">${arr.length}</span></div><div class="ph-grid">${arr.map((p,i)=>`<button class="ph-c" data-ph="${p._id}" style="--i:${Math.min(i,8)}" aria-label="תמונה של ${esc(p.byName||'')}"><img src="${p.th}" alt="" loading="lazy"></button>`).join('')}</div>`).join(''):card('',PHF==='mine'?'<b>עוד לא העליתם תמונות</b>לחצו "העלאת תמונות" למעלה':'<b>עוד אין תמונות</b>תהיו הראשונים לשתף רגע מהמסע 📸')}
-   <p class="note">לחיצה על תמונה פותחת אותה. משם אפשר לשתף לוואטסאפ, לאינסטגרם או לשמור בטלפון.</p>`}
+   ${chAlb}<p class="note">לחיצה על תמונה פותחת אותה. משם אפשר לשתף לוואטסאפ, לאינסטגרם או לשמור בטלפון.</p>`}
 function shrinkImg(file,max,q){return new Promise((res,rej)=>{const u=URL.createObjectURL(file),img=new Image();img.onload=()=>{let w=img.naturalWidth,h=img.naturalHeight;const f=Math.min(1,max/Math.max(w,h));w=Math.max(1,Math.round(w*f));h=Math.max(1,Math.round(h*f));
   const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);URL.revokeObjectURL(u);let d=c.toDataURL('image/jpeg',q);
   // a document holds up to 1MB: lower the quality until the picture fits
@@ -4466,15 +4503,18 @@ async function phUpload(files){
   const me=meG(), by=phMeId(), byName=me?firstN(me.name)+' '+famKey(me.name).last:(ME||'מארגן');let ok=0;PHFAIL=[];
   for(let i=0;i<files.length;i++){PHBUSY=`מעלים ${i+1} מתוך ${files.length}…`;PHPCT=Math.round(i/files.length*100);render();
     try{const big=await shrinkImg(files[i],1600,.82),th=await shrinkImg(files[i],420,.7),ts=Date.now(),id='ph_'+ts.toString(36)+Math.random().toString(36).slice(2,6);
-      await db.doc('photobig/'+id).set({src:big.d,ts});await db.doc('photos/'+id).set({th:th.d,w:big.w,h:big.h,by,byName,ts});ok++}
+      await db.doc('photobig/'+id).set({src:big.d,ts});await db.doc('photos/'+id).set({th:th.d,w:big.w,h:big.h,by,byName,ts,...(PHCH?{ch:PHCH}:{})});ok++}
     catch(e){console.warn('photo',e);if(e&&e.code==='permission-denied'){PHERR='permission-denied';break}PHFAIL.push(files[i])}}
-  PHBUSY='';PHPCT=0;render();toast(ok?(ok===1?'התמונה עלתה':`${ok} תמונות עלו`)+(PHFAIL.length?` · ${PHFAIL.length} לא עלו`:''):'ההעלאה לא הצליחה. אפשר לנסות שוב')}
+  PHBUSY='';PHPCT=0;PHCH='';render();toast(ok?(ok===1?'התמונה עלתה':`${ok} תמונות עלו`)+(PHFAIL.length?` · ${PHFAIL.length} לא עלו`:''):'ההעלאה לא הצליחה. אפשר לנסות שוב')}
 (()=>{const f=document.createElement('input');f.type='file';f.accept='image/*';f.multiple=true;f.id='phFile';f.hidden=true;document.body.appendChild(f);
   f.addEventListener('change',()=>{const l=[...(f.files||[])];f.value='';if(l.length)phUpload(l.slice(0,30))})})();
 document.addEventListener('click',e=>{const T=e.target;if(!T.closest||document.getElementById('phv')&&document.getElementById('phv').contains(T))return;
   const phf=T.closest('[data-phf]');if(phf){e.stopPropagation();PHF=phf.dataset.phf;render();return}
   if(T.closest('[data-ph-retry]')){e.stopPropagation();if(!PHBUSY&&PHFAIL.length)phUpload(PHFAIL.slice());return}
-  if(T.closest('[data-ph-up]')){e.stopPropagation();if(blockPrev())return;if(PHBUSY)return;document.getElementById('phFile').click();return}
+  if(T.closest('[data-ph-up]')){e.stopPropagation();if(blockPrev())return;if(PHBUSY)return;PHCH='';document.getElementById('phFile').click();return}
+  const cu=T.closest('[data-chup]');if(cu){e.stopPropagation();if(blockPrev())return;if(PHBUSY)return;PHCH=cu.dataset.chup;const f=document.getElementById('phFile');if(f)f.click();else{GTAB='gi';render(true);setTimeout(()=>{const g=document.getElementById('phFile');if(g)g.click()},300)}return}
+  if(T.closest('[data-chnew]')){e.stopPropagation();const t=(document.getElementById('chT').value||'').trim();if(!t){toast('כתבו את האתגר');return}db.doc('settings/ch_'+Date.now().toString(36)).set({kind:'challenge',text:t.slice(0,100),at:Date.now(),hidden:false}).then(()=>{toast('האתגר נשלח לכולם 🎯');render()});return}
+  const ce=T.closest('[data-chend]');if(ce){e.stopPropagation();db.doc('settings/'+ce.dataset.chend).set({hidden:true},{merge:true}).then(()=>toast('האתגר הסתיים'));return}
   if(T.closest('[data-phshow]')){e.stopPropagation();ssOpen();return}
   const pho=T.closest('[data-ph]');if(pho){e.stopPropagation();phOpen(pho.dataset.ph);return}},true);
 async function phBig(p){if(PHBIG[p._id])return PHBIG[p._id];try{const d=await db.doc('photobig/'+p._id).get();const s=d.exists&&d.data().src;if(s){PHBIG[p._id]=s;return s}}catch(e){}return p.th}
@@ -4556,10 +4596,10 @@ function guestHTML0(){
       {const iN=ppl.filter(x=>x.insDone).length;items.push([iN===ppl.length,'ביטוח נסיעות',iN===ppl.length?'דיווחתם שהזמנתם':'מזמינים ומסמנים "הזמנתי"','gb',IX.shield,ppl.length?iN/ppl.length:1])}
       {const fl=flyElAl(ppl)?elalFlights(ppl):[],dn=fl.filter(x=>ciDoneFor(x.f,x.on)).length,openNow=fl.some(x=>{const a=fltAt(x.f),n=Date.now();return n>=a-864e5&&n<a});
         if(fl.length&&(openNow||dn))items.push([dn===fl.length,'צ׳ק־אין',dn===fl.length?'בוצע לכל הטיסות':openNow?'הצ׳ק־אין פתוח עכשיו!':`${dn} מתוך ${fl.length} טיסות`,'gw',IX.ci,dn/fl.length])}
-      {const st=packStat();items.push([st.n===st.t,'אריזה',st.n===st.t?'הכל ארוז':`${st.n} מתוך ${st.t} פריטים`,'gc','🧳',st.t?st.n/st.t:0])}
+
       const ok=items.filter(x=>x[0]).length,pct=Math.round(items.reduce((a,x)=>a+x[5],0)/items.length*100),some=items.some(x=>x[5]>0),R=52,C=2*Math.PI*R;
       return `<section class="rdy ${pct===100?'full':''}" aria-label="מה המארגנים צריכים מכם: ${pct}% הושלם"><div class="rdy-top"><div class="rdy-ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="${R}" fill="none" stroke="rgba(214,178,98,.18)" stroke-width="8"/><circle class="rg" cx="60" cy="60" r="${R}" fill="none" stroke="url(#rdg)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" style="--c:${C};--o:${C*(1-pct/100)}" transform="rotate(-90 60 60)"/><defs><linearGradient id="rdg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b8862f"/><stop offset="1" stop-color="#ffe9a8"/></linearGradient></defs></svg><b class="num">${pct}%</b></div>
-       <div class="rdy-h"><small>הדרך לטיסה</small><b>${pct===100?'מוכנים לטיסה ✓':ok?ok+' מתוך '+items.length+' הושלמו':some?'חלק כבר התקבל':'מחכים לכם'}</b><span>${pct===100?'הכל מוכן. נתראה בשדה!':'תשלום, דרכון, ביטוח ואריזה'}</span></div></div>
+       <div class="rdy-h"><small>הדרך לטיסה</small><b>${pct===100?'מוכנים לטיסה ✓':ok?ok+' מתוך '+items.length+' הושלמו':some?'חלק כבר התקבל':'מחכים לכם'}</b><span>${pct===100?'הכל מוכן. נתראה בשדה!':'תשלום, דרכון וביטוח'}</span></div></div>
        <div class="rdy-l">${items.map(([o,l,sb,g,ic,f],i)=>{const t=o?'div':'button';return `<${t} class="ri ${o?'ok':f>0?'mid':'bad'}" ${o?'':`data-gnav="${g}"`} style="--i:${i}"><span class="ri-i">${ic}</span><span class="ri-t"><b>${l}${!o&&f>0?` <em class="ri-p num">${Math.round(f*100)}%</em>`:''}</b><small>${sb}</small></span><span class="ri-c">${o?'✓':'‹'}</span></${t}>`}).join('')}
 </div>${pct===100?'<i class="rdy-cele" aria-hidden="true"></i>':''}</section>`})();
     const way=`<section class="gway" aria-label="בדרכים">
@@ -4572,7 +4612,7 @@ function guestHTML0(){
     const help=`<section class="ghelp" aria-label="עזרה"><div><b>צריכים עזרה?</b><small>שלומי, מארגן המסע · <span class="num ltr">${esc(fmtPhone(ph))}</span></small></div>
       <a class="btn" href="${telLink(ph)}" aria-label="שיחה לשלומי">${I.phone}<span>שיחה</span></a><a class="btn" href="${waLink(ph)}" target="_blank" rel="noopener" aria-label="וואטסאפ לשלומי">${IX.wa||'💬'}<span>וואטסאפ</span></a><a class="btn sos" href="tel:112" aria-label="חירום 112">112</a></section>`;
     return pv+`<div class="ghome">${SKY}<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(coupleLabel(ppl,me)||'')}</b>${dayMood()?`<span class="mood">${dayMood()}</span>`:''}</div></div>
-     ${nowCard('data-gnav="gl"')}${ravCard()}${momentHTML()}${banner}${ciTasks(ppl).filter(c=>!c.done).map(ciCard).join('')}${TRIPDAY()?(todayISO()==='2026-11-19'&&first&&Date.now()<depAt(first)+4*36e5?passBlock:'')+boardHTML(ppl)+tripDayBlock(ppl):passBlock+extraOut+ready}${prepHTML(ppl)}${way}
+     ${nowCard('data-gnav="gl"')}${voiceCard()}${chCard(1)}${ravCard()}${momentHTML()}${banner}${ciTasks(ppl).filter(c=>!c.done).map(ciCard).join('')}${TRIPDAY()?boardHTML(ppl)+(todayISO()==='2026-11-19'&&first&&Date.now()<depAt(first)+4*36e5?passBlock:'')+tripDayBlock(ppl):boardHTML(ppl)+passBlock+extraOut+ready}${prepHTML(ppl)}${way}
      <div class="gcb">
       ${(()=>{/* most used first; the order changes once the trip starts */
         const C={gs:()=>me&&me.kitter?cube('gs',I.box,'סידור ערכות בחדרים',(()=>{const rp=roomsPlaced();return rp.t?`הונחו ${rp.n} מתוך ${rp.t} חדרים`:'עדכון באיזה חדר סידרתם'})(),(()=>{const rp=roomsPlaced();return rp.t-rp.n||''})()):'',
@@ -4588,7 +4628,6 @@ function guestHTML0(){
         return ord.map(k=>C[k]()).join('')})()}
       ${open?`<a class="gc gtrv" href="trivia/" style="--i:${n++}"><span class="gc-i">${I.spark}</span><span class="gc-t">טריוויה</span><span class="gc-s">משחק לאוטובוס. פתוח עכשיו!</span></a>`:`<button class="gc gtrv locked" data-glock style="--i:${n++}"><span class="gc-i">🔒</span><span class="gc-t">טריוויה</span><span class="gc-s">נפתח כשנחתים בבודפשט</span></button>`}
      </div>
-     ${certTile()}
      ${flightGroups(ppl,'חזור').map(g=>guestFlightCard(g,ppl,'חזור')).join('')}
      ${help}</div>`}
   if(GTAB==='gx'){
@@ -5026,6 +5065,11 @@ SUB.reqs=function(){
    ${openR.length?`<div class="annlist">${openR.map(reqCard).join('')}</div>`:card('','<b>אין בקשות פתוחות</b>כשמשתתף ישלח בקשה אישית, היא תופיע כאן')}
    ${doneR.length?`<details class="nonebox"><summary><span>טופלו</span><span class="num">${doneR.length}</span></summary><div class="annlist">${doneR.map(reqCard).join('')}</div></details>`:''}`}`};
 // one screen for every message: announcements in the app (with a phone notification) and the ready texts for the WhatsApp group
+function vmHTML(){const L=S.settings.filter(x=>x.kind==='audio'&&x.voice).sort((a,b)=>(b.at||0)-(a.at||0)).slice(0,3);
+  return `<div class="card vmc"><div class="vm-h"><span>🔊</span><div><b>הודעה קולית לכולם</b><small>מקליטים עד דקה, וכולם מקבלים התראה. מופיעה בראש מסך הבית ל־12 שעות.</small></div></div>
+   <label class="field" style="margin:0">כותרת קצרה<input id="vmT" type="text" placeholder="למשל: האוטובוס יוצא בעוד 10 דקות"></label>
+   <button class="btn ${RAVREC&&RAVREC._vm?'danger':'primary'}" id="vmRec" style="width:100%">${RAVREC&&RAVREC._vm?'⏹ עצירה ושליחה · <span class="num" id="vmSec">0</span> שנ׳':'🎙 הקלטה'}</button><div id="ravMsg" class="note" style="margin:0"></div>
+   ${L.length?L.map(a=>`<div class="vm-r"><span>${esc(a.title||'הודעה קולית')}</span><small class="num">${new Date(a.at).toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'})}</small><button class="btn ghost" data-ravhide="${a._id}" data-h="${a.hidden?0:1}">${a.hidden?'החזרה':'הסתרה'}</button></div>`).join(''):''}</div>`}
 SUB.announce=function(){
   const seg=V.seg==='wa'?'wa':'app', L=annList(), joined=S.participants.filter(p=>p.seenAt), not=S.participants.filter(p=>!p.seenAt);
   const t=todayISO(), M=S.messages.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')), due=M.filter(m=>!m.sent&&m.date&&m.date<=t), next=M.filter(m=>!m.sent&&!(m.date&&m.date<=t)), sent=M.filter(m=>m.sent);
@@ -5071,6 +5115,7 @@ SUB.rides=function(){
    <div class="rd-list">${L.map(rc).join('')||card('','<b>עוד אין נסיעות</b>כשמשתתפים יפרסמו נסיעה או יחפשו טרמפ, זה יופיע כאן')}</div>
    <details class="rd-mates"><summary>${none.length} משתתפים שלא תיאמו נסיעה באפליקציה ›</summary><p class="note" style="margin:6px 0">זה לא אומר שאין להם איך להגיע, רק שלא פרסמו ולא הצטרפו לנסיעה כאן.</p><div>${none.map(p=>`<span>${esc(p.name)}</span>`).join('')}</div></details>`};
 SUB.messages=function(){if(V.seg!=='app')V.seg='wa';return SUB.announce()};
+{const _an=SUB.announce;SUB.announce=function(){const h=_an();return V.seg==='wa'?h:h.replace(/(<div class="seg msgseg">[\s\S]*?<\/div>)/,'$1'+vmHTML())}}
 function orgClick(e){
   if(ROLE!=='org')return;
   const T=e.target, ms=(path,d)=>db&&db.doc(path).set(d,{merge:true}).then(()=>true).catch(()=>{toast('זה לא עבר. בדקו שיש אינטרנט ונסו שוב');return false});
@@ -5324,7 +5369,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='261f29aa42';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='94b65c3b8f';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
