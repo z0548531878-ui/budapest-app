@@ -2328,6 +2328,9 @@ const V={tab:'home',sub:null,seg:null,filter:{},q:''};
 let ME=''; try{ME=localStorage.getItem('me')||''}catch(e){}
 const team=()=>{const s=S.settings.find(x=>x._id==='trip');return (s&&s.team&&s.team.length)?s.team:['שלומי','איציק','יעל']};
 const mine=t=>!!ME&&String(t.owner||'').split(/,\s*/).includes(ME);
+/* participants see their donation in what they owe, except these couples (the organizers' decision, 12.10) */
+const DON_HIDE=['חיים פולק'];
+const gDon=ppl=>ppl.some(p=>DON_HIDE.some(n=>String(p.name||'').replace(/^הרב(נית)?\s+/,'').trim()===n))?[]:donOf(ppl);
 const donOf=ppl=>{const ids=ppl.map(x=>x._id),nms=ppl.map(x=>String(x.name||'').replace(/^הרב(נית)?\s+/,'').trim().toLowerCase());return S.donations.filter(d=>(d.pid&&ids.includes(d.pid))||(d.donor&&nms.some(n=>{const dd=String(d.donor).replace(/^הרב(נית)?\s+/,'').trim().toLowerCase();return dd&&(dd.includes(n)||(dd.split(/\s+/).length>1&&n.includes(dd)))})))};
 const babyRoom=r=>S.participants.some(p=>p.baby&&p.roomId===r._id);
 const isFinal=e=>!!e.final||e.status==='שולם';
@@ -4611,7 +4614,7 @@ function guestHTML0(){
       const tot=need.reduce((s,x)=>s+(+x.amount||0),0), got=need.reduce((s,x)=>s+paidOf(x),0), pc=tot?Math.round(got/tot*100):100;
       const all=!need.length||need.every(x=>x.status==='שולם'), part=got>0&&!all;
       const nms=ppl.map(x=>String(x.name||'').replace(/^הרב(נית)?\s+/,'').trim().toLowerCase());
-      const dn=[]/*donations are for organizers only*/;
+      const dn=gDon(ppl);
       const dsum=dn.reduce((s,d)=>s+(+d.amount||0),0), dgot=dn.every(d=>d.status==='התקבל'), dopen=dn.filter(d=>d.status!=='התקבל').reduce((s,d)=>s+(+d.amount||0),0);
       const R=19,C=2*Math.PI*R;
       const ring=`<svg class="sc-ring" viewBox="0 0 44 44"><circle cx="22" cy="22" r="${R}" fill="none" stroke="rgba(214,178,98,.25)" stroke-width="3"/><circle class="rg" cx="22" cy="22" r="${R}" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-dasharray="${C}" style="--c:${C};--o:${C*(1-pc/100)}" transform="rotate(-90 22 22)"/></svg>`;
@@ -4627,11 +4630,11 @@ function guestHTML0(){
       const todo=sc(needs.length?'bad':'ok',needs.length?I.tasks:`<span style="font-size:26px">✓</span>`,'עוד מעט סיימנו',needs.length?`${needs.length===1?'דבר אחד':needs.length+' דברים'}`:'הכל מסודר',needs.length?needs.map(x=>x[1]).join(' · '):'אין לכם מה להשלים',needs.length?'<span class="sc-go">‹</span>':'','button',needs.length?'data-gnav="gf"':'');
       return `<div class="gst">${pay}${pass}${nav}${todo}</div>`})();
     const ready=(()=>{
-      const need=ppl.filter(x=>x.status!=='פטור'&&+x.amount>0),tot=need.reduce((a,x)=>a+(+x.amount||0),0),got=need.reduce((a,x)=>a+paidOf(x),0),dOp=[]/*donations are for organizers only*/.filter(d=>d.status!=='התקבל').reduce((a,d)=>a+(+d.amount||0),0),tripOk=!need.length||got>=tot,payOk=tripOk&&!dOp,passOk=ppl.every(x=>x.passport);
+      const need=ppl.filter(x=>x.status!=='פטור'&&+x.amount>0),tot=need.reduce((a,x)=>a+(+x.amount||0),0),got=need.reduce((a,x)=>a+paidOf(x),0),dOp=gDon(ppl).filter(d=>d.status!=='התקבל').reduce((a,d)=>a+(+d.amount||0),0),tripOk=!need.length||got>=tot,payOk=tripOk&&!dOp,passOk=ppl.every(x=>x.passport);
       // each item counts by how much of it is done: half the payment, one passport of two
-      const pf=payOk?1:tot?Math.min(1,got/tot):0, hasP=ppl.filter(x=>x.passport), sf=ppl.length?hasP.length/ppl.length:1;
+      const pf=payOk?1:(tot+dOp)?Math.min(1,got/(tot+dOp)):0, hasP=ppl.filter(x=>x.passport), sf=ppl.length?hasP.length/ppl.length:1;
       const nm=a=>a.map(x=>esc(firstN(x.name))).join(' ו');
-      const items=[[payOk,'התשלום',payOk?(!need.length?'פטור, אין מה לשלם':`שולם ${ils(got)}`):got>0?`שולם ${ils(got)} מתוך ${ils(tot)} · נותר ${ils(Math.max(0,tot-got))}`:`לתשלום ${ils(Math.max(0,tot-got))}`,'gf',IX.coin,pf],
+      const items=[[payOk,'התשלום',payOk?(!need.length?'פטור, אין מה לשלם':`שולם ${ils(got)}`):(got>0?`שולם ${ils(got)} · נותר ${ils(Math.max(0,tot-got)+dOp)}`:`לתשלום ${ils(Math.max(0,tot-got)+dOp)}`)+(dOp?(tripOk?' (התרומה)':` (כולל תרומה ${ils(dOp)})`):''),'gf',IX.coin,pf],
         [passOk,'צילום דרכון',passOk?'התקבל, תודה':hasP.length?`התקבל של ${nm(hasP)} · חסר של ${nm(ppl.filter(x=>!x.passport))}`:nm(ppl)+' · לחצו לשליחה','gf',IX.pass,sf]];
       {const iN=ppl.filter(x=>x.insDone).length;items.push([iN===ppl.length,'ביטוח נסיעות',iN===ppl.length?'דיווחתם שהזמנתם':'מזמינים ומסמנים "הזמנתי"','gb',IX.shield,ppl.length?iN/ppl.length:1])}
       {const fl=flyElAl(ppl)?elalFlights(ppl):[],dn=fl.filter(x=>ciDoneFor(x.f,x.on)).length,openNow=fl.some(x=>{const a=fltAt(x.f),n=Date.now();return n>=a-864e5&&n<a});
@@ -4760,7 +4763,7 @@ function guestHTML0(){
     const fl=dir=>{const g=flightGroups(ppl,dir);if(!g.length)return 'טרם עודכן';return g.map(x=>{const pre=g.length>1?x.names.join(' ו')+': ':'';if(x.solo)return pre+'טסים בעצמם';const f=x.f;return pre+(f?`<span class="ltr num">${esc(f.flightNo||'')}</span> · ${esc(dayHe(f.date))} ${fmtDate(f.date)} · <span class="num">${esc(f.dep||'')}</span>`:'טרם שויכה')}).join('<br>')};
     const need=ppl.filter(x=>x.status!=='פטור'&&+x.amount>0), tot=need.reduce((s,x)=>s+(+x.amount||0),0), got=need.reduce((s,x)=>s+paidOf(x),0), payAll=!need.length||need.every(x=>x.status==='שולם');
     const payV=!need.length?'פטור':payAll?`שולם ${ils(got)} ✓`:got?`שולם ${ils(got)} · נותר ${ils(tot-got)}`:`לתשלום ${ils(tot)}`;
-    const dn=[]/*donations are for organizers only*/, dTot=dn.reduce((s,d)=>s+(+d.amount||0),0), dOpen=dn.filter(d=>d.status!=='התקבל').reduce((s,d)=>s+(+d.amount||0),0);
+    const dn=gDon(ppl), dTot=dn.reduce((s,d)=>s+(+d.amount||0),0), dOpen=dn.filter(d=>d.status!=='התקבל').reduce((s,d)=>s+(+d.amount||0),0);
     const donV=!dn.length?'':dOpen?`התחייבתם ל־${ils(dTot)} · לתשלום ${ils(dOpen)}`:`התקבלה ${ils(dTot)} ✓ תודה!`;
     const tile=(ic,l,v,cls='',wide)=>`<div class="pa-t ${cls} ${wide?'wide':''}" style="--i:${k++}"><span class="pa-i">${ic}</span><span class="pa-x"><small>${l}</small><b>${v}</b></span></div>`;
     const roomV=r&&(r.roomNumber||r.floor)?`חדר <span class="num">${esc(r.roomNumber||'?')}</span>${r.floor?` · קומה <span class="num">${esc(r.floor)}</span>`:''}${r.entrance?' · '+esc(r.entrance):''}`:'טרם שובצתם';
@@ -5412,7 +5415,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='aefeabdd8d';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='ce6e3a4b85';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
