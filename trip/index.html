@@ -1141,6 +1141,23 @@ body.guest button:not(:disabled):active,body.guest .btn:active,body.guest a.gc:a
 .gcb>.gc::before{transition:transform .2s}.gcb>.gc:active::before{transform:translateX(-5px)}
 .gcb>.gc .gc-t{color:#f6e3b0!important}
 @media (prefers-reduced-motion:reduce){.gcb>.gc::after,.gcb>.gc .gc-i,.tapfx{animation:none!important}}
+.cfx{position:fixed;inset:0;pointer-events:none;z-index:99998;overflow:hidden}.cfx i{position:absolute;top:-20px;border-radius:2px;animation:cfx 2.4s cubic-bezier(.2,.6,.4,1) forwards}
+@keyframes cfx{to{transform:translate(var(--dx),105vh) rotate(var(--r));opacity:.9}}
+.pack{display:grid;gap:8px}.pkr-top{display:grid;gap:6px;padding:14px;border-radius:20px;border:1px solid rgba(214,178,98,.4);background:linear-gradient(160deg,#231c10,#0e0c09)}.pkr-top b{font-size:30px;color:#ffe9a8;font-weight:900}.pkr-top span{color:#e9dfc4}
+.pkr-l{display:grid;gap:6px}.pkr{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:14px;border:1px solid rgba(214,178,98,.25);background:rgba(255,255,255,.02);cursor:pointer}
+.pkr input{position:absolute;opacity:0;pointer-events:none}.pkr i{flex:none;width:24px;height:24px;border-radius:8px;border:2px solid rgba(214,178,98,.6);display:grid;place-items:center;font-style:normal;font-weight:900;color:transparent;transition:.2s}
+.pkr.on i{background:linear-gradient(180deg,#9ce7b8,#3fae72);border-color:transparent;color:#0d2a1a;animation:pop .35s cubic-bezier(.2,1.6,.4,1)}.pkr.on span{color:#a7d9bd;text-decoration:line-through;text-decoration-color:rgba(167,217,189,.5)}
+.pkr span{flex:1;font-size:15px}.pkr-x{border:0;background:none;color:var(--muted);font-size:16px;padding:4px 6px}
+.pkr-add{display:flex;gap:8px;margin-top:4px}.pkr-add input{flex:1;margin:0}
+.greet .mood{display:block;margin-top:4px;font-size:14px;font-weight:800;color:#f0c86e;letter-spacing:.2px;animation:r2In .6s .4s both}
+.pass.soon{box-shadow:0 0 0 2px #f0c86e,0 0 34px -4px rgba(240,200,110,.75);animation:passGlow 2.4s ease-in-out infinite}
+@keyframes passGlow{50%{box-shadow:0 0 0 2px #ffe9a8,0 0 48px 2px rgba(240,200,110,.9)}}
+.pass-soon{grid-column:1/-1;display:grid;gap:2px;padding:9px 14px;margin:-2px -2px 6px;border-radius:18px 18px 0 0;background:linear-gradient(90deg,#c99a3d,#ffe9a8,#c99a3d);background-size:200% 100%;color:#15110a;animation:soonBar 3s linear infinite}.pass-soon b{font-size:17px}.pass-soon span{font-size:12.5px;font-weight:700}
+@keyframes soonBar{to{background-position:-200% 0}}
+.board{margin:0 0 12px;padding:14px;border-radius:22px;border:1.5px solid #f0c86e;background:radial-gradient(120% 100% at 85% 0,rgba(240,200,110,.22),transparent 60%),#15110a;animation:r2In .5s both}
+.bd-h{display:flex;align-items:center;gap:10px;margin-bottom:10px}.bd-i{font-size:30px;animation:r2Bob 2s ease-in-out infinite}.bd-h small{display:block;color:var(--muted);font-weight:800;font-size:12.5px}.bd-h b{font-size:19px;color:#ffe9a8}
+.bd-l{display:grid;gap:8px}.bd-b{width:100%;min-height:52px;font-size:17px}.bd-b.ok{display:grid;place-items:center;border-radius:16px;background:rgba(127,209,165,.14);border:1px solid #7fd1a5;color:#a7d9bd;font-weight:900}
+@media (prefers-reduced-motion:reduce){.pass.soon,.pass-soon,.bd-i{animation:none!important}}
 .pm+.pm{border-top:1px dashed rgba(214,178,98,.22)}
 .pc .av{width:44px!important;height:44px!important;font-size:16px!important;flex:none;border-radius:50%!important;box-shadow:0 0 0 3px var(--a),0 8px 18px -8px var(--b)}
 .pc .av.nophoto{background:linear-gradient(160deg,#2a251a,#13110c)!important;color:var(--a)!important}
@@ -2437,6 +2454,8 @@ function taskRow(t){
     <div class="main"><div class="t">${esc(t.title)}</div><div class="m">${t.owner?`<span class="who">${esc(t.owner)}</span>`:'<span>אין אחראי</span>'}${t.due?`<span class="num" ${late?'style="color:var(--bad);font-weight:800"':''}>${late?'באיחור · ':'עד '}${fmtDate(t.due)}</span>`:''}${t.status==='בתהליך'?'<span class="pill p-warn">בתהליך</span>':t.status==='ממתין'?'<span class="pill p-mute">ממתין</span>':''}</div></div>
     ${urg?'<span class="pill p-bad">דחוף</span>':''}</div>`;
 }
+function dayMood(){const t=todayISO(),f=S.flights.find(x=>x.dir==='הלוך'),dd=Math.floor(((f?depAt(f):Date.parse('2026-11-19T08:00:00+02:00'))-Date.now())/864e5);
+  return t==='2026-11-19'?'היום טסים ✈ ויוצאים לקרעסטיר':t==='2026-11-20'?'ערב שבת קודש בבודפשט 🕯':t==='2026-11-21'?'שבת שלום 🕯 שבת פרשת ויצא':t==='2026-11-22'?'יום אחרון במסע · חוזרים הביתה':dd>1?`עוד ${dd} ימים למסע`:dd===1?'מחר טסים!':''}
 function greeting(){const h=new Date().getHours();return h<5?'לילה טוב':h<12?'בוקר טוב':h<17?'צהריים טובים':h<21?'ערב טוב':'לילה טוב'}
 
 const VIEWS={
@@ -2688,7 +2707,8 @@ const SUB={
    return `<div class="row ${m.sent?'done':''}" data-msg="${m._id}" role="button" tabindex="0"><div class="main"><div class="t">${esc(m.title)}</div><div class="m"><span>${esc((m.text||'').replace(/\n/g,' ').slice(0,58))}…</span></div></div><span class="pill ${st[0]} num">${st[1]}</span></div>`}).join(''));
  },
  attendance(){
-  const ses=curSes(), ppl=S.participants.filter(ses.f).sort((a,b)=>a.name.localeCompare(b.name,'he'));
+  const ses=curSes();{const r=S.settings.find(x=>x._id==='rollcur');if(db&&!PREV&&(!r||r.ses!==ses.k||Date.now()-(r.at||0)>36e5)&&ROLL_PUB!==ses.k+Math.floor(Date.now()/36e5)){ROLL_PUB=ses.k+Math.floor(Date.now()/36e5);db.doc('settings/rollcur').set({kind:'rollcur',ses:ses.k,at:Date.now()},{merge:true}).catch(()=>{})}}
+  const ppl=S.participants.filter(ses.f).sort((a,b)=>a.name.localeCompare(b.name,'he'));
   const here=new Set(S.attendance.filter(a=>a.session===ses.k&&a.here).map(a=>a.pid));
   // someone just marked stays in place for a moment (ticked), so the next tap doesn't land on the wrong person
   const fresh=pid=>Date.now()-(ROLLED[pid]||0)<ROLL_HOLD, missing=ppl.filter(p=>!here.has(p._id)||fresh(p._id)), present=ppl.filter(p=>here.has(p._id)&&!fresh(p._id)), nHere=ppl.filter(p=>here.has(p._id)).length;
@@ -3634,7 +3654,7 @@ function logAct(act,c,id,data,prev){
   if(act==='edit'&&!change)return;
   db.collection('activity').add({by:ME||'',at:new Date().toISOString(),act,col:c,rid:id||'',title:ttl(data||prev),change}).catch(()=>{});
 }
-const ROLLED={},ROLL_HOLD=2500;
+const ROLLED={},ROLL_HOLD=2500;let ROLL_PUB='';
 async function roll(pid){
   const ses=curSes().k, id=ses+'__'+pid, cur=find('attendance',id);
   if(!(cur&&cur.here)){ROLLED[pid]=Date.now();setTimeout(()=>{if(V.sub==='attendance'&&!document.getElementById('scrim'))render()},ROLL_HOLD+50)}else delete ROLLED[pid];
@@ -4059,6 +4079,23 @@ function prepHTML(ppl){
   const items=[el&&t('gw',IX.ci,'צ׳ק־אין',ciN?(ciN===fl.length?'בוצע':`${ciN} מתוך ${fl.length}`):'אל על',fl.length&&ciN===fl.length,0),
     t('gb',IX.shield,'ביטוח','פספורטכארד',insDoneFor(ppl),1),t('gn',IX.sim,'eSIM','קוד הנחה',false,2)].filter(Boolean);
   return `<section class="gprep" aria-label="לפני הטיסה" style="--n:${items.length}">${items.join('')}</section>`}
+const PACK_DEF=['דרכון בתוקף','כרטיס אשראי ומעט מזומן','תפילין וציצית','בגדי שבת','מעיל חם ומטרייה (בנובמבר בבודפשט קר)','מטען לנייד ומתאם חשמל','תרופות אישיות','סידור או ספר','כרטיס העלייה למטוס בטלפון','אוזניות ומטען נייד','אוכל ושתייה לדרך','בגדים חמים לקרעסטיר'],PACK_MUST=[0,1,2,6];
+const packLoad=()=>{let o={},x=[];try{o=JSON.parse(localStorage.getItem('chk')||'{}');x=JSON.parse(localStorage.getItem('chkx')||'[]')}catch(e){}return {o,x}};
+function packStat(){const {o,x}=packLoad();const t=PACK_DEF.length+x.length,n=PACK_DEF.filter((_,i)=>o[i]).length+x.filter(i=>i.on).length;return {n,t,must:PACK_MUST.every(i=>o[i])}}
+let PACKT=0;function packSync(){clearTimeout(PACKT);PACKT=setTimeout(()=>{const me=meG();if(!me||PREV||!db)return;const st=packStat();gset('participants/'+me._id,{pack:st.n+'/'+st.t})},1200)}
+function packHTML(head){const {o,x}=packLoad(),st=packStat(),pc=st.t?Math.round(st.n/st.t*100):0;
+  const row=(id,t,on,del)=>`<label class="pkr ${on?'on':''}"><input type="checkbox" ${del?`data-chkx="${id}"`:`data-chk="${id}"`} ${on?'checked':''}><i aria-hidden="true">✓</i><span>${esc(t)}</span>${del?`<button type="button" class="pkr-x" data-chkxdel="${id}" aria-label="מחיקה">✕</button>`:''}</label>`;
+  return head('מה אורזים')+`<section class="pack"><div class="pkr-top"><b class="num">${st.n}/${st.t}</b><span>${pc===100?'הכל ארוז. נסיעה טובה! 🧳':st.must?'הדברים החשובים ארוזים':'עוד חסרים דברים חשובים'}</span><div class="tk-bar"><i style="width:${pc}%"></i></div></div>
+   <b class="chk-h">חובה</b><div class="pkr-l">${PACK_MUST.map(i=>row(i,PACK_DEF[i],o[i])).join('')}</div>
+   <b class="chk-h">מומלץ</b><div class="pkr-l">${PACK_DEF.map((t,i)=>i).filter(i=>!PACK_MUST.includes(i)).map(i=>row(i,PACK_DEF[i],o[i])).join('')}</div>
+   <b class="chk-h">הרשימה שלי</b><div class="pkr-l">${x.map((it,i)=>row(i,it.t,it.on,1)).join('')||'<p class="note" style="margin:0">אפשר להוסיף כאן דברים משלכם</p>'}</div>
+   <div class="pkr-add"><input id="pkNew" class="search" type="text" placeholder="להוסיף פריט, למשל: מטריה קטנה" enterkeyhint="done"><button class="btn primary" data-pkadd>הוספה</button></div>
+   <p class="note">הרשימה שמורה בטלפון שלכם. בערב שלפני הטיסה נשלח תזכורת למי שעוד לא סיים לארוז.</p></section>`}
+const rollCur=()=>{const r=S.settings.find(x=>x._id==='rollcur');return r&&r.ses&&Date.now()-(r.at||0)<3*36e5?SESSIONS.find(x=>x.k===r.ses):null};
+function boardHTML(ppl){const ses=rollCur();if(!ses)return '';const mine=ppl.filter(ses.f);if(!mine.length)return '';
+  const on=p=>S.attendance.some(a=>a._id===ses.k+'__'+p._id&&a.here);
+  return `<section class="board" aria-label="${esc(ses.l)}"><div class="bd-h"><span class="bd-i">🚌</span><span><small>ספירה פתוחה עכשיו</small><b>${esc(ses.l)}</b></span></div>
+   <div class="bd-l">${mine.map(p=>on(p)?`<div class="bd-b ok">✓ ${esc(firstN(p.name))} כאן</div>`:`<button class="btn primary bd-b" data-board="${p._id}">${mine.length>1?esc(firstN(p.name))+': ':''}אני כאן ✋</button>`).join('')}</div></section>`}
 const elalFlights=ppl=>['הלוך','חזור'].flatMap(d=>flightGroups(ppl,d).filter(g=>isElAl(g.f)).map(g=>({dir:d,f:g.f,on:ppl.filter(p=>g.names.includes(firstN(p.name)))})));
 const ciDoneFor=(f,on)=>on.length&&on.every(p=>ciDoneOf(p).includes(f._id));
 const insDoneFor=ppl=>ppl.length&&ppl.every(p=>p.insDone);
@@ -4181,7 +4218,9 @@ function passHTML(f,solo){
   const t=todayISO(), days=Math.round((new Date(TRIP_DAYS[0].d)-new Date(t))/864e5), idx=TRIP_DAYS.findIndex(d=>d.d===t);
   const big=days>0?days:idx>=0?'היום':'✓', lbl=days>1?'ימים לטיסה':days===1?'מחר טסים!':idx>=0?TRIP_DAYS[idx].l:'המסע הסתיים';
   const c=cdParts(f);
-  return `<section class="pass"><span class="shine"></span><div class="pass-main"><div class="pass-top"><span>${f.flightNo?`אל על · <span class="ltr">${esc(f.flightNo)}</span>`:'טיסת הלוך'}</span><span>${esc(dayHe(f.date))} ${fmtDate(f.date)}</span></div>
+  const al=(CI_SITE[String(f.flightNo||'').replace(/\s+/g,'').slice(0,2).toUpperCase()]||[])[0], left=depAt(f)-Date.now(), soon=left>0&&left<864e5;
+  const atAp=(()=>{const d=new Date(depAt(f)-3*36e5);return d.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Jerusalem'})})();
+  return `<section class="pass ${soon?'soon':''}"><span class="shine"></span>${soon?`<div class="pass-soon"><b>${left<12*36e5?'עוד מעט טסים! ✈':'מחר טסים! ✈'}</b><span>להגיע לנתב״ג עד <span class="num">${atAp}</span> · דרכון, כרטיס עלייה, ומטען לנייד</span></div>`:''}<div class="pass-main"><div class="pass-top"><span>${f.flightNo?`${al?al+' · ':''}<span class="ltr">${esc(f.flightNo)}</span>`:'טיסת הלוך'}</span><span>${esc(dayHe(f.date))} ${fmtDate(f.date)}</span></div>
     <div class="pass-route"><div><b>TLV</b><span>${esc(f.dep||'')}</span></div><div class="path"><svg viewBox="0 0 150 22" fill="none"><path d="M4 11h142" stroke="currentColor" stroke-width="1.6" stroke-dasharray="3 5"/><g class="plane"><path fill="currentColor" d="M146 11l-13-5.4v3.7l-6.5.1-2.8-3.8h-2l1.6 3.9-4.3.1v2.8l4.3.1-1.6 3.9h2l2.8-3.8 6.5.1v3.7z"/></g></svg></div><div><b>BUD</b><span>${esc(f.arr||'')}</span></div></div><small class="loct">שעות מקומיות</small>
     <div class="days">${TRIP_DAYS.map((d,i)=>`<div class="${d.sh?'sh':''} ${i===idx?'now':''}"><b>${d.s}</b>${d.l}</div>`).join('')}</div></div>
     <div class="pass-stub" data-f="${f._id}">${depAt(f)>Date.now()?`<span class="big num" id="gcdD">${c.d}</span><small>ימים</small><div class="cdg num" id="gcdT">${c.t}</div>`:`<span class="big num">${big}</span><small>${lbl}</small>`}</div></section>`}
@@ -4381,11 +4420,15 @@ function guestHTML0(){
       const nm=a=>a.map(x=>esc(firstN(x.name))).join(' ו');
       const items=[[payOk,'התשלום',payOk?(!need.length?'פטור, אין מה לשלם':`שולם ${ils(got)}`):got>0?`שולם ${ils(got)} מתוך ${ils(tot)} · נותר ${ils(Math.max(0,tot-got))}`:`לתשלום ${ils(Math.max(0,tot-got))}`,'gf',IX.coin,pf],
         [passOk,'צילום דרכון',passOk?'התקבל, תודה':hasP.length?`התקבל של ${nm(hasP)} · חסר של ${nm(ppl.filter(x=>!x.passport))}`:nm(ppl)+' · לחצו לשליחה','gf',IX.pass,sf]];
+      {const iN=ppl.filter(x=>x.insDone).length;items.push([iN===ppl.length,'ביטוח נסיעות',iN===ppl.length?'דיווחתם שהזמנתם':'מזמינים ומסמנים "הזמנתי"','gb',IX.shield,ppl.length?iN/ppl.length:1])}
+      {const fl=flyElAl(ppl)?elalFlights(ppl):[],dn=fl.filter(x=>ciDoneFor(x.f,x.on)).length,openNow=fl.some(x=>{const a=fltAt(x.f),n=Date.now();return n>=a-864e5&&n<a});
+        if(fl.length&&(openNow||dn))items.push([dn===fl.length,'צ׳ק־אין',dn===fl.length?'בוצע לכל הטיסות':openNow?'הצ׳ק־אין פתוח עכשיו!':`${dn} מתוך ${fl.length} טיסות`,'gw',IX.ci,dn/fl.length])}
+      {const st=packStat();items.push([st.n===st.t,'אריזה',st.n===st.t?'הכל ארוז':`${st.n} מתוך ${st.t} פריטים`,'gc','🧳',st.t?st.n/st.t:0])}
       const ok=items.filter(x=>x[0]).length,pct=Math.round(items.reduce((a,x)=>a+x[5],0)/items.length*100),some=items.some(x=>x[5]>0),R=52,C=2*Math.PI*R;
       return `<section class="rdy ${pct===100?'full':''}" aria-label="מה המארגנים צריכים מכם: ${pct}% הושלם"><div class="rdy-top"><div class="rdy-ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="${R}" fill="none" stroke="rgba(214,178,98,.18)" stroke-width="8"/><circle class="rg" cx="60" cy="60" r="${R}" fill="none" stroke="url(#rdg)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" style="--c:${C};--o:${C*(1-pct/100)}" transform="rotate(-90 60 60)"/><defs><linearGradient id="rdg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b8862f"/><stop offset="1" stop-color="#ffe9a8"/></linearGradient></defs></svg><b class="num">${pct}%</b></div>
-       <div class="rdy-h"><small>מה המארגנים צריכים מכם</small><b>${pct===100?'הכל התקבל ✓':ok?ok+' מתוך '+items.length+' הושלמו':some?'חלק כבר התקבל':'מחכים לכם'}</b><span>${pct===100?'התשלום והדרכון אצלנו':'תשלום וצילום דרכון'}</span></div></div>
+       <div class="rdy-h"><small>הדרך לטיסה</small><b>${pct===100?'מוכנים לטיסה ✓':ok?ok+' מתוך '+items.length+' הושלמו':some?'חלק כבר התקבל':'מחכים לכם'}</b><span>${pct===100?'הכל מוכן. נתראה בשדה!':'תשלום, דרכון, ביטוח ואריזה'}</span></div></div>
        <div class="rdy-l">${items.map(([o,l,sb,g,ic,f],i)=>{const t=o?'div':'button';return `<${t} class="ri ${o?'ok':f>0?'mid':'bad'}" ${o?'':`data-gnav="${g}"`} style="--i:${i}"><span class="ri-i">${ic}</span><span class="ri-t"><b>${l}${!o&&f>0?` <em class="ri-p num">${Math.round(f*100)}%</em>`:''}</b><small>${sb}</small></span><span class="ri-c">${o?'✓':'‹'}</span></${t}>`}).join('')}
-</div></section>`})();
+</div>${pct===100?'<i class="rdy-cele" aria-hidden="true"></i>':''}</section>`})();
     const way=`<section class="gway" aria-label="בדרכים">
       <a class="gw" style="--i:0" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener"><span class="gw-i">${IX.nav}</span><span class="gw-x"><b>ניווט למלון</b><small>הליכה במפות</small></span></a>
       <a class="gw rest" style="--i:1" href="${mapsGo(HANNA.q)}" target="_blank" rel="noopener"><span class="gw-i">${IX.nav}</span><span class="gw-x"><b>ניווט למסעדת חנה</b><small>הליכה במפות</small></span></a>
@@ -4395,8 +4438,8 @@ function guestHTML0(){
     const ph=orgPhone();
     const help=`<section class="ghelp" aria-label="עזרה"><div><b>צריכים עזרה?</b><small>שלומי, מארגן המסע · <span class="num ltr">${esc(fmtPhone(ph))}</span></small></div>
       <a class="btn" href="${telLink(ph)}" aria-label="שיחה לשלומי">${I.phone}<span>שיחה</span></a><a class="btn" href="${waLink(ph)}" target="_blank" rel="noopener" aria-label="וואטסאפ לשלומי">${IX.wa||'💬'}<span>וואטסאפ</span></a><a class="btn sos" href="tel:112" aria-label="חירום 112">112</a></section>`;
-    return pv+`<div class="ghome">${SKY}<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(coupleLabel(ppl,me)||'')}</b></div></div>
-     ${nowCard('data-gnav="gl"')}${banner}${ciTasks(ppl).filter(c=>!c.done).map(ciCard).join('')}${TRIPDAY()?tripDayBlock(ppl):passBlock+extraOut+ready}${prepHTML(ppl)}${way}
+    return pv+`<div class="ghome">${SKY}<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(coupleLabel(ppl,me)||'')}</b>${dayMood()?`<span class="mood">${dayMood()}</span>`:''}</div></div>
+     ${nowCard('data-gnav="gl"')}${banner}${ciTasks(ppl).filter(c=>!c.done).map(ciCard).join('')}${TRIPDAY()?(todayISO()==='2026-11-19'&&first&&Date.now()<depAt(first)+4*36e5?passBlock:'')+boardHTML(ppl)+tripDayBlock(ppl):passBlock+extraOut+ready}${prepHTML(ppl)}${way}
      <div class="gcb">
       ${(()=>{/* most used first; the order changes once the trip starts */
         const C={gs:()=>me&&me.kitter?cube('gs',I.box,'סידור ערכות בחדרים',(()=>{const rp=roomsPlaced();return rp.t?`הונחו ${rp.n} מתוך ${rp.t} חדרים`:'עדכון באיזה חדר סידרתם'})(),(()=>{const rp=roomsPlaced();return rp.t-rp.n||''})()):'',
@@ -4535,6 +4578,7 @@ function guestHTML0(){
      ${isPrevOrg()?'':`<button class="btn ghost gout2" id="pdiag">🔧 בדיקת תקינות והתראות</button><button class="btn ghost gout2" id="gout">🚪 יציאה מהחשבון</button>`}</section>`}
   if(GTAB==='gd')return head('נסיעה משותפת לשדה')+`<p class="note">מתאמים ביחד את הדרך לשדה: מי שיש לו מקום ברכב, מי שמחפש טרמפ, ומי שרוצה לחלוק מונית.</p>`+ridesHTML(ppl,me);
   if(GTAB==='gi')return head('תמונות מהמסע')+photosHTML();
+  if(GTAB==='gc')return packHTML(head);
   if(EXT[GTAB]&&(GTAB!=='gw'||flyElAl(ppl)||PREV))return extHTML(GTAB,head,ppl);
   if(GTAB==='gk'){
     const rate=(()=>{try{return +localStorage.getItem('huf')||100}catch(e){return 100}})();
@@ -4555,8 +4599,7 @@ function guestHTML0(){
      <div class="tk-c wide" ${at()}><span class="tk-e">💱</span><small>ממיר מטבע · שקל לפורינט הונגרי</small>
       <div class="conv"><label><span class="cv-l">שקלים ₪</span><input id="cvI" type="number" inputmode="decimal" value="100"></label><span>=</span><label class="cv-out"><span class="cv-l">פורינט (HUF)</span><input id="cvH" type="text" inputmode="decimal" readonly></label></div>
       <label class="rate">שער: כמה פורינט לשקל <input id="cvR" type="number" inputmode="decimal" value="${rate}"></label><small class="cv-n">חישוב משוער. אפשר לעדכן את השער לפי מה שרואים בצ׳יינג׳.</small></div>
-     <div class="tk-c wide" ${at()}><span class="tk-e">🧳</span><small>מה לקחת · <span class="num" id="chkN">${done}/${items.length}</span></small><div class="tk-bar"><i id="chkBar" style="width:${Math.round(done/items.length*100)}%"></i></div>
-      ${[['חובה',MUST],['מומלץ',items.map((x,i)=>i).filter(i=>!MUST.includes(i))]].map(([h,ix])=>`<b class="chk-h">${h}</b><div class="chklist">${ix.map(i=>`<label class="chk"><input type="checkbox" data-chk="${i}" ${chk[i]?'checked':''}><span>${esc(items[i])}</span></label>`).join('')}</div>`).join('')}</div>
+     <button class="tk-c wide" data-gnav="gc" ${at()}><span class="tk-e">🧳</span><small>מה אורזים · <span class="num">${packStat().n}/${packStat().t}</span></small><b class="tk-t">רשימת אריזה אישית, עם הוספת פריטים משלכם</b><span class="more">פתיחה ›</span></button>
      <div class="tk-c wide" ${at()}><span class="tk-e">🗣</span><small>ביטויים בהונגרית · לחצו כדי לשמוע</small><div class="tk-ph">${phr.map((p,i)=>`<button data-say="${esc(p[1])}" style="--j:${i}"><b>${p[0]}</b><span class="ltr">${p[1]}</span><small>${p[2]}</small></button>`).join('')}</div></div>
      <div class="tk-info">${info.map(([e,l,tx])=>`<details class="tk-d" ${at()}><summary><span>${e}</span><b>${l}</b><i>‹</i></summary><p>${tx}</p></details>`).join('')}</div>
      <div class="tk-2">
@@ -4575,6 +4618,7 @@ render=function(anim){
   {const mb=document.getElementById('meBtn'),me_=meG();if(mb&&me_){mb.onclick=()=>{GTAB='gf';render(true);window.scrollTo({top:0,behavior:'smooth'})};const miss=coupleOf(me_).some(x=>!x.passport)||coupleOf(me_).some(x=>x.status!=='פטור'&&+x.amount>0&&x.status!=='שולם');
     const h=`<i>${esc(initialOf(me_))}${miss?'<em class="me-dot" aria-hidden="true"></em>':''}</i><span><b>${esc(firstN(me_.name||''))}</b><small>האזור האישי ›</small></span>`;mb.setAttribute('aria-label','האזור האישי');if(mb.dataset.g!==h){mb.dataset.g=h;mb.innerHTML=h}}}
   gNewCalc();
+  setTimeout(()=>{const c=document.querySelector('.rdy-cele');if(!c||reduce||PREV)return;let d=false;try{d=localStorage.getItem('celeDone')==='1';localStorage.setItem('celeDone','1')}catch(e){}if(d)return;confetti()},900);
   document.getElementById('nav').innerHTML=GNAV.map(([k,l,ic])=>`<button data-gnav="${k}" ${GNEW[k]?'class="nw" ':''}${GTAB===k?'aria-current="page"':''}>${gIco(ic)}<span>${l}</span>${k==='gh'&&un?`<span class="badge num">${un}</span>`:''}${k==='gt'&&pendOpen()?`<span class="badge num">${pendOpen()}</span>`:''}</button>`).join('');
   const v=document.getElementById('view'), a=document.activeElement, keep=a&&a.id&&v.contains(a)?{id:a.id,val:a.value,pos:a.selectionStart}:null;
   v.innerHTML=guestHTML();v.dataset.scr='g'+GTAB;
@@ -4602,7 +4646,9 @@ document.addEventListener('input',e=>{
   if(e.target.id==='trQ'){const q=e.target.value.trim();document.querySelectorAll('.trrow').forEach(r=>r.hidden=!!q&&!r.textContent.includes(q))}
   if(/^rd(From|Time|Seats)$/.test(e.target.id)){const el=document.getElementById('rdSum');if(el)el.innerHTML=rdSumTxt(RFORM,rideDir()==='out')}
 });
-document.addEventListener('change',e=>{const c=e.target.closest('[data-chk]');if(c){let o={};try{o=JSON.parse(localStorage.getItem('chk')||'{}')}catch(x){}o[c.dataset.chk]=c.checked;try{localStorage.setItem('chk',JSON.stringify(o))}catch(x){}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='pkNew'){e.preventDefault();const b=document.querySelector('[data-pkadd]');if(b)b.click()}});
+document.addEventListener('change',e=>{const cx=e.target.closest('[data-chkx]');if(cx){const {x}=packLoad();if(x[+cx.dataset.chkx])x[+cx.dataset.chkx].on=cx.checked;try{localStorage.setItem('chkx',JSON.stringify(x))}catch(z){}packSync();render();return}
+  const c=e.target.closest('[data-chk]');if(c){packSync();setTimeout(()=>{if(GUEST()&&GTAB==='gc')render()},0);let o={};try{o=JSON.parse(localStorage.getItem('chk')||'{}')}catch(x){}o[c.dataset.chk]=c.checked;try{localStorage.setItem('chk',JSON.stringify(o))}catch(x){}
   const all=document.querySelectorAll('[data-chk]'),n=[...all].filter(x=>x.checked).length,N=document.getElementById('chkN'),B=document.getElementById('chkBar');if(N)N.textContent=n+'/'+all.length;if(B)B.style.width=Math.round(n/all.length*100)+'%'}});
 document.addEventListener('click',e=>{const s=e.target.closest&&e.target.closest('[data-say]');if(!s)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(s.dataset.say);u.lang='hu-HU';u.rate=.85;speechSynthesis.speak(u)}catch(x){}s.classList.remove('say');void s.offsetWidth;s.classList.add('say')});
 document.addEventListener('click',e=>{
@@ -4630,6 +4676,9 @@ document.addEventListener('click',e=>{
     gset('rooms/'+r._id,{kitReady:on,kitBy:on?me.name:'',kitAt:on?new Date().toISOString():''}).then(ok=>{if(ok)toast(on?`חדר ${r.roomNumber||''}: הסט הונח`:'הסימון בוטל')});return}
   const ci=T.closest('[data-g-ci],[data-g-ciu]');if(ci){if(blockPrev())return;const fid=ci.dataset.gCi||ci.dataset.gCiu,on=!!ci.dataset.gCi;
     const c=ciTasks(ppl).find(x=>x.f._id===fid);(c?c.on:ppl).forEach(p=>{const l=ciDoneOf(p).filter(x=>x!==fid);if(on)l.push(fid);gset('participants/'+p._id,{ciDone:l.join(',')})});if(on)toast('מעולה! נסיעה טובה ✈');return}
+  const bd=T.closest('[data-board]');if(bd){if(blockPrev())return;const ses=rollCur();if(!ses)return;const pid=bd.dataset.board;gset('attendance/'+ses.k+'__'+pid,{session:ses.k,pid,here:true}).then(ok=>{if(ok)toast('סומן. תודה!')});return}
+  if(T.closest('[data-pkadd]')){const i=document.getElementById('pkNew'),v=(i&&i.value||'').trim();if(!v)return;const {x}=packLoad();x.push({t:v.slice(0,60),on:false});try{localStorage.setItem('chkx',JSON.stringify(x))}catch(z){}packSync();render();setTimeout(()=>{const n=document.getElementById('pkNew');if(n)n.focus()},50);return}
+  const pkd=T.closest('[data-chkxdel]');if(pkd){e.preventDefault();const {x}=packLoad();x.splice(+pkd.dataset.chkxdel,1);try{localStorage.setItem('chkx',JSON.stringify(x))}catch(z){}packSync();render();return}
   const ins=T.closest('[data-g-ins],[data-g-insu]');if(ins){if(blockPrev())return;const on=ins.hasAttribute('data-g-ins');ppl.forEach(p=>gset('participants/'+p._id,{insDone:on}));if(on)toast('נרשם. נסיעה בטוחה!');return}
   const gt=T.closest('[data-g-gt],[data-g-gtu]');if(gt){if(blockPrev())return;const id=gt.dataset.gGt||gt.dataset.gGtu,on=!!gt.dataset.gGt,d={};ppl.forEach(p=>d[p._id]=on);
     gset('settings/'+id,{done:d}).then(ok=>{if(ok&&on)toast('נרשם. תודה!')});return}
@@ -5065,6 +5114,9 @@ document.addEventListener('click',e=>{
 const openTab=t=>{if(!t)return;if(GUEST()){if(GNAV.concat([['gm'],['gk'],['gx'],['gp'],['gf']]).some(n=>n[0]===t)){GTAB=t;render(true)}}else if(ROLE==='org'&&NAV.some(n=>n[0]===t))go(t)};
 if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>openTab(e.data&&e.data.tab));
 addEventListener('hashchange',()=>{const m=location.hash.match(/tab=([a-z]+)/);if(m)openTab(m[1])});
+function confetti(){const box=document.createElement('div');box.className='cfx';box.setAttribute('aria-hidden','true');const col=['#ffe9a8','#f0c86e','#c99a3d','#7fd1a5','#fff'];
+  for(let i=0;i<70;i++){const e=document.createElement('i');e.style.cssText=`left:${Math.random()*100}%;background:${col[i%col.length]};--dx:${(Math.random()-.5)*160}px;--r:${Math.random()*720-360}deg;animation-delay:${Math.random()*.5}s;animation-duration:${1.8+Math.random()*1.4}s;width:${6+Math.random()*6}px;height:${8+Math.random()*8}px`;box.appendChild(e)}
+  document.body.appendChild(box);setTimeout(()=>box.remove(),4200);try{navigator.vibrate&&navigator.vibrate([20,40,20])}catch(e){}toast('מוכנים לטיסה! 🎉')}
 const _rp=render;render=function(a){_rp(a);pgate()};
 document.addEventListener('pointerdown',e=>{const b=e.target.closest&&e.target.closest('button,a,.btn,[role=button],label.toggle');if(!b||b.disabled)return;
   try{if(navigator.vibrate)navigator.vibrate(8)}catch(x){}
@@ -5111,7 +5163,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='70e31e6a69';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='b449d37562';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
