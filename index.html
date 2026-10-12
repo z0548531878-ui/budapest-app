@@ -3458,6 +3458,8 @@ function fxLoop(){
   c.globalAlpha=1; fx.parts=next;
   if(fx.parts.length || fx.ambient) requestAnimationFrame(fxLoop); else { fx.running=false; c.clearRect(0,0,fx.w,fx.h); }
 }
+/* a new question is coming: whatever is still flying from the last answer fades out fast instead of covering the new question */
+function fxFadeOut(){ for(const p of fx.parts){ if(p.kind!=='dust') p.max=Math.min(p.max,p.life+12); } }
 function fxCenter(el){ if(!el) return {x:innerWidth/2,y:innerHeight/2}; const r=el.getBoundingClientRect(); return {x:r.left+r.width/2, y:r.top+r.height/2}; }
 function fxConfetti(x,y,n){
   if(!fx.cv) return;
@@ -5213,7 +5215,7 @@ function soloShowQuestion(){
   const s = soloState; if(!s) return;
   if(!imgOk(s.qs[s.i])) soloSwapQ(s, s.i);
   const q = s.qs[s.i];
-  s.locked=false; s.startedAt=Date.now();
+  s.locked=false; s.startedAt=Date.now(); fxFadeOut();
   const body = $('solo-body');
   body.innerHTML = `<div id="s-header">${soloHeaderInner()}</div>
     ${progressHtml(s.i, s.qs.length)}
