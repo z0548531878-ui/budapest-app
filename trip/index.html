@@ -4634,7 +4634,7 @@ function guestHTML0(){
       <a class="gw" style="--i:0" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener"><span class="gw-i">${IX.nav}</span><span class="gw-x"><b>ניווט למלון</b><small>הליכה במפות</small></span></a>
       <a class="gw rest" style="--i:1" href="${mapsGo(HANNA.q)}" target="_blank" rel="noopener"><span class="gw-i">${IX.nav}</span><span class="gw-x"><b>ניווט למסעדת חנה</b><small>הליכה במפות</small></span></a>
       <a class="gw taxi" style="--i:2" href="${BOLT_URL}" rel="noopener"><span class="gw-i">🚕</span><span class="gw-x"><b>מונית Bolt</b><small>בבודפשט</small></span></a>
-      ${DRIVER_PHONE?`<a class="gw drv" style="--i:3" href="${waLink(DRIVER_PHONE,`שלום, כאן ${coupleLabel(ppl,me)||''} מקבוצת מבקשי ה׳ במלון ${HOTEL.name||''}. נשמח להזמין נסיעה לשדה התעופה בבודפשט ביום ___ בשעה ___, ל־___ נוסעים עם ___ מזוודות. תודה!`)}" target="_blank" rel="noopener"><span class="gw-i">🚐</span><span class="gw-x"><b>דרייבר לשדה</b><small>הזמנה בוואטסאפ</small></span></a>`:`<button class="gw drv" style="--i:3" data-nodrv><span class="gw-i">🚐</span><span class="gw-x"><b>דרייבר לשדה</b><small>בקרוב</small></span></button>`}</section>`;
+      ${DRIVER_PHONE?`<a class="gw drv" style="--i:3" href="${waLink(DRIVER_PHONE,`אנחנו צריכים דרייבר לנתב״ג`)}" target="_blank" rel="noopener"><span class="gw-i">🚐</span><span class="gw-x"><b>דרייבר לשדה</b><small>הזמנה בוואטסאפ</small></span></a>`:`<button class="gw drv" style="--i:3" data-nodrv><span class="gw-i">🚐</span><span class="gw-x"><b>דרייבר לשדה</b><small>בקרוב</small></span></button>`}</section>`;
     const SKY='<div class="gsky" aria-hidden="true">'+[[8,14,0],[22,6,.8],[35,22,1.6],[48,9,.4],[61,18,2.1],[74,5,1.2],[86,16,.2],[93,8,1.9],[14,30,2.4],[67,34,.9]].map(([x,y,d])=>`<i style="inset-inline-start:${x}%;top:${y}%;animation-delay:${d}s"></i>`).join('')+'<svg viewBox="0 0 400 90" preserveAspectRatio="xMidYMax slice"><path d="M0 90V70h30v-8h14v8h22V58h10v12h18V64h8v-6h6v6h8v6h26V52c0-9 8-14 16-18v-8l3-9 3 9v8c8 4 16 9 16 18v18h26V60h12v10h22v-6h10v6h26V56h12v14h30v-8h16v8h30v20z" fill="#0b0905" stroke="#c99a3d" stroke-opacity=".28" stroke-width="1"/></svg></div>';
     const ph=orgPhone();
     const orgP=(nm,fb)=>{const x=S.participants.find(q=>String(q.name||'').includes(nm));return (x&&x.phone)||fb};
@@ -5400,7 +5400,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='f0afa0c5ed';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='f2715b62f8';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
