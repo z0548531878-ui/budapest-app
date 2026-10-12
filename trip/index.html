@@ -1124,6 +1124,23 @@ body.guest .btn,body.guest button.btn,body.guest a.btn{display:inline-flex;align
 .gpt.nw{border-color:#f0c86e;box-shadow:0 0 0 1.5px #f0c86e}
 .ext-r{justify-self:stretch;display:grid;gap:8px}.ext-rr{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:16px;border:1px solid rgba(214,178,98,.35);background:rgba(255,255,255,.03);text-align:right}.ext-rr span{display:grid}.ext-rr small{color:var(--muted);font-size:12.5px}.ext-rr.ok{border-color:#7fd1a5;background:rgba(127,209,165,.08)}.ext-rr .btn{white-space:nowrap}
 @media (prefers-reduced-motion:reduce){.gpt,.gpt::after,.gpt-i{animation:none!important}}
+.gback:not(.bot){position:sticky;top:calc(env(safe-area-inset-top,0px) + 6px);z-index:40;background:rgba(18,15,9,.88);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 10px 24px -14px #000}
+.prevbar+.gback:not(.bot){top:calc(env(safe-area-inset-top,0px) + 78px)}
+.gback:active{transform:scale(.97);background:rgba(214,178,98,.2)}
+/* press feel everywhere: a quick sink and a gold flash */
+body.guest button,body.guest .btn,body.guest a.gc,body.guest .gw,body.guest .pa-a{-webkit-tap-highlight-color:transparent}
+body.guest button:not(:disabled):active,body.guest .btn:active,body.guest a.gc:active,body.guest .gw:active,body.guest .pa-a:active{transform:scale(.96);filter:brightness(1.12);transition:transform .06s,filter .06s}
+.tapfx{position:fixed;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;pointer-events:none;z-index:99999;background:radial-gradient(circle,rgba(255,233,168,.75),rgba(255,233,168,0) 70%);animation:tapfx .42s ease-out forwards}
+@keyframes tapfx{to{transform:scale(7);opacity:0}}
+/* the button list: a slow gold sweep, the icon breathes, the arrow leans in */
+.gcb>.gc{isolation:isolate;border:1px solid rgba(214,178,98,.38)!important;background:linear-gradient(135deg,#231c10 0%,#120f0a 55%,#1a150d 100%)!important;box-shadow:0 10px 22px -16px #000,inset 0 1px 0 rgba(255,233,168,.08)}
+.gcb>.gc::after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(110deg,transparent 30%,rgba(255,233,168,.10) 48%,transparent 62%);transform:translateX(-130%);animation:gcSweep 7s calc(1.5s + var(--i,0)*.45s) ease-in-out infinite;pointer-events:none}
+@keyframes gcSweep{0%,78%{transform:translateX(-130%)}100%{transform:translateX(130%)}}
+.gcb>.gc .gc-i{box-shadow:0 0 0 0 rgba(240,200,110,.0);animation:gcGlow 3.6s calc(var(--i,0)*.3s) ease-in-out infinite}
+@keyframes gcGlow{50%{box-shadow:0 0 14px 1px rgba(240,200,110,.45)}}
+.gcb>.gc::before{transition:transform .2s}.gcb>.gc:active::before{transform:translateX(-5px)}
+.gcb>.gc .gc-t{color:#f6e3b0!important}
+@media (prefers-reduced-motion:reduce){.gcb>.gc::after,.gcb>.gc .gc-i,.tapfx{animation:none!important}}
 .pm+.pm{border-top:1px dashed rgba(214,178,98,.22)}
 .pc .av{width:44px!important;height:44px!important;font-size:16px!important;flex:none;border-radius:50%!important;box-shadow:0 0 0 3px var(--a),0 8px 18px -8px var(--b)}
 .pc .av.nophoto{background:linear-gradient(160deg,#2a251a,#13110c)!important;color:var(--a)!important}
@@ -4381,14 +4398,17 @@ function guestHTML0(){
     return pv+`<div class="ghome">${SKY}<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(coupleLabel(ppl,me)||'')}</b></div></div>
      ${nowCard('data-gnav="gl"')}${banner}${ciTasks(ppl).filter(c=>!c.done).map(ciCard).join('')}${TRIPDAY()?tripDayBlock(ppl):passBlock+extraOut+ready}${prepHTML(ppl)}${way}
      <div class="gcb">
-      ${cube('gz',IX.pin,'קרעסטיר','על רבי ישעיה׳לה ועל הציון')}
-      ${cube('gx',IX.food,'מסעדות ואטרקציות','איפה אוכלים כשר, ומה כדאי לראות')}
-      ${me&&me.kitter?cube('gs',I.box,'סידור ערכות בחדרים',(()=>{const rp=roomsPlaced();return rp.t?`הונחו ${rp.n} מתוך ${rp.t} חדרים`:'עדכון באיזה חדר סידרתם'})(),(()=>{const rp=roomsPlaced();return rp.t-rp.n||''})()):''}
-      ${cube('gp',I.people,'משתתפים','מי בא איתנו, ואיך מתקשרים')}
-      ${cube('gm',I.chat,'הודעות','עדכונים מהמארגנים',un||'')}
-      ${cube('gi',IX.cam,'תמונות מהמסע','מעלים, רואים ומשתפים',(()=>{const n=photoNew();return n||''})())}
-      ${cube('gd',IX.car,'נסיעה משותפת לשדה','מתאמים הגעה יחד, הלוך וחזור',rideMine()||'')}
-      ${cube('gk',IX.tools,'כלים לדרך','שעון, זמנים, מטבע, ביטויים')}
+      ${(()=>{/* most used first; the order changes once the trip starts */
+        const C={gs:()=>me&&me.kitter?cube('gs',I.box,'סידור ערכות בחדרים',(()=>{const rp=roomsPlaced();return rp.t?`הונחו ${rp.n} מתוך ${rp.t} חדרים`:'עדכון באיזה חדר סידרתם'})(),(()=>{const rp=roomsPlaced();return rp.t-rp.n||''})()):'',
+          gm:()=>cube('gm',I.chat,'הודעות','עדכונים מהמארגנים',un||''),
+          gd:()=>cube('gd',IX.car,'נסיעה משותפת לשדה','מתאמים הגעה יחד, הלוך וחזור',rideMine()||''),
+          gp:()=>cube('gp',I.people,'משתתפים','מי בא איתנו, ואיך מתקשרים'),
+          gi:()=>cube('gi',IX.cam,'תמונות מהמסע','מעלים, רואים ומשתפים',(()=>{const n=photoNew();return n||''})()),
+          gx:()=>cube('gx',IX.food,'מסעדות ואטרקציות','איפה אוכלים כשר, ומה כדאי לראות'),
+          gz:()=>cube('gz',IX.pin,'קרעסטיר','על רבי ישעיה׳לה ועל הציון'),
+          gk:()=>cube('gk',IX.tools,'כלים לדרך','שעון, זמנים, מטבע, ביטויים')};
+        const ord=TRIPDAY()?['gs','gm','gi','gx','gz','gp','gk','gd']:['gs','gm','gd','gp','gx','gz','gk','gi'];
+        return ord.map(k=>C[k]()).join('')})()}
       ${open?`<a class="gc gtrv" href="trivia/" style="--i:${n++}"><span class="gc-i">${I.spark}</span><span class="gc-t">טריוויה</span><span class="gc-s">משחק לאוטובוס. פתוח עכשיו!</span></a>`:`<button class="gc gtrv locked" data-glock style="--i:${n++}"><span class="gc-i">🔒</span><span class="gc-t">טריוויה</span><span class="gc-s">נפתח כשנחתים בבודפשט</span></button>`}
      </div>
      ${flightGroups(ppl,'חזור').map(g=>guestFlightCard(g,ppl,'חזור')).join('')}
@@ -5046,6 +5066,9 @@ const openTab=t=>{if(!t)return;if(GUEST()){if(GNAV.concat([['gm'],['gk'],['gx'],
 if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>openTab(e.data&&e.data.tab));
 addEventListener('hashchange',()=>{const m=location.hash.match(/tab=([a-z]+)/);if(m)openTab(m[1])});
 const _rp=render;render=function(a){_rp(a);pgate()};
+document.addEventListener('pointerdown',e=>{const b=e.target.closest&&e.target.closest('button,a,.btn,[role=button],label.toggle');if(!b||b.disabled)return;
+  try{if(navigator.vibrate)navigator.vibrate(8)}catch(x){}
+  if(!reduce&&document.body.classList.contains('guest')){const d=document.createElement('i');d.className='tapfx';d.style.left=e.clientX+'px';d.style.top=e.clientY+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),450)}},{passive:true,capture:true});
 setInterval(pgate,4000);
 
 /* installed copy must start with the team link, otherwise iPhone opens an empty app */
@@ -5088,7 +5111,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='7d3ff3b39f';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='70e31e6a69';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
