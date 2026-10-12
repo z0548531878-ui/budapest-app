@@ -46,6 +46,10 @@ exports.tripPush = functions.region('europe-west1').firestore.document('trips/{t
       const who = to.length ? r => guests(r) && ((r.pids || []).some(p => to.includes(p)) || to.includes(r.by)) : guests;
       return send(trip, who, (to.length ? 'הודעה אישית מהמארגנים' : 'הודעה מהמארגנים') + (after.title ? ': ' + trim(after.title, 40) : ''), trim(after.text, 140), 'gm', 'ann_' + id);
     }
+    // the moment of the day: an organizer starred a photo
+    if (after.kind === 'moment' && !after.hidden && (!before || before.pid !== after.pid)) {
+      return send(trip, () => true, '⭐ הרגע של היום', after.byName ? 'צילום: ' + trim(after.byName, 40) + '. היכנסו לראות' : 'היכנסו לראות את התמונה שנבחרה', 'gh', 'moment');
+    }
     // a task for every participant
     if (after.kind === 'gtask' && !after.hidden && !before) {
       return send(trip, guests, 'משימה חדשה לכל המשתתפים', trim(after.title, 100), 'gt', 'gt_' + id);
