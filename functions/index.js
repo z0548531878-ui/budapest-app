@@ -43,7 +43,7 @@ exports.tripPush = functions.region('europe-west1').firestore.document('trips/{t
     // new announcement: for everyone, or (with 'to') only for that participant and their spouse
     if (after.kind === 'ann' && !after.hidden && !(before && before.kind === 'ann' && !before.hidden)) {
       const to = Array.isArray(after.to) ? after.to : [];
-      const who = to.length ? r => guests(r) && (r.pids || []).some(p => to.includes(p)) : guests;
+      const who = to.length ? r => guests(r) && ((r.pids || []).some(p => to.includes(p)) || to.includes(r.by)) : guests;
       return send(trip, who, (to.length ? 'הודעה אישית מהמארגנים' : 'הודעה מהמארגנים') + (after.title ? ': ' + trim(after.title, 40) : ''), trim(after.text, 140), 'gm', 'ann_' + id);
     }
     // a task for every participant
@@ -86,6 +86,41 @@ exports.tripPush = functions.region('europe-west1').firestore.document('trips/{t
     }
   }
 });
+
+// Trip photos: one notification per burst of uploads. The first new photo opens a 5-minute window;
+// photos uploaded during it are only counted. When the window ends, everyone gets one notification
+// (except the uploader, when a single person uploaded them all). The window lives in photoq/{trip}, server only.
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const PHOTO_WAIT = 5 * 60 * 1000;
+exports.photoPush = functions.region('europe-west1').runWith({ timeoutSeconds: 420 })
+  .firestore.document('trips/{trip}/photos/{id}').onCreate(async (snap, ctx) => {
+    const { trip } = ctx.params;
+    if (trip.length < 24) return;
+    const p = snap.data() || {};
+    if (p.hidden) return;
+    const ref = db.doc(`photoq/${trip}`);
+    const lead = await db.runTransaction(async tx => {
+      const d = await tx.get(ref), q = d.exists ? d.data() : null, now = Date.now();
+      // a window is open (a crashed one is ignored after 10 minutes): just count this photo
+      if (q && q.open && now - (q.start || 0) < 2 * PHOTO_WAIT) {
+        tx.update(ref, { count: admin.firestore.FieldValue.increment(1), names: admin.firestore.FieldValue.arrayUnion(trim(p.byName, 40) || 'מישהו'), bys: admin.firestore.FieldValue.arrayUnion(p.by || '') });
+        return false;
+      }
+      tx.set(ref, { open: true, start: now, count: 1, names: [trim(p.byName, 40) || 'מישהו'], bys: [p.by || ''] });
+      return true;
+    });
+    if (!lead) return;
+    await sleep(PHOTO_WAIT);
+    const q = await db.runTransaction(async tx => {
+      const d = await tx.get(ref), v = d.exists ? d.data() : {};
+      tx.set(ref, { open: false, sentAt: Date.now() }, { merge: true });
+      return v;
+    });
+    const n = q.count || 1, names = (q.names || []).filter(Boolean), bys = (q.bys || []);
+    const who = names.length <= 2 ? names.join(' ו') : names.slice(0, 2).join(', ') + ` ועוד ${names.length - 2}`;
+    const one = bys.length === 1 && bys[0] ? bys[0] : '';
+    return send(trip, r => !(one && (r.by === one)), n === 1 ? '📷 תמונה חדשה בגלריה' : `📷 ${n} תמונות חדשות בגלריה`, (who || 'משתתפי המסע') + (n === 1 ? ' העלה/תה תמונה. היכנסו לראות' : ' העלו תמונות. היכנסו לראות'), 'gi', 'photos');
+  });
 
 // Check-in reminder: 24 hours before each flight, everyone on it gets a notification (once per flight).
 // Flight times are local: outbound leaves Israel (UTC+2 in November), the return leaves Budapest (UTC+1).

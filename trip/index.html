@@ -4919,7 +4919,8 @@ async function pushToken(loud){
     if(!token){diag('push','no-token');return}diag('push','token');
     if(!PUSHFG){PUSHFG=1;m.onMessage(p=>{const d=p.data||{};toast((d.title?d.title+': ':'')+(d.body||''));try{reg.showNotification(d.title||'מבקשי ה׳',{body:d.body||'',icon:'icon-192.png',dir:'rtl',lang:'he',tag:d.tag})}catch(e){}})}
     const org=ROLE==='org', me=org?null:(typeof meG==='function'?meG():null), ppl=me&&typeof coupleOf==='function'?coupleOf(me):[];
-    const key=token+'|'+ROLE;let prev='';try{prev=localStorage.getItem('tokSaved')||''}catch(e){}
+    if(!org&&!ppl.length){diag('push','token, waiting for name');return}
+    const key=token+'|'+ROLE+'|'+ppl.map(p=>p._id).join(',');let prev='';try{prev=localStorage.getItem('tokSaved')||''}catch(e){}
     if(prev===key)return;
     step='save';if(!db){diag('push','token, no db');if(loud)toast('ההתראות אושרו, אבל אין חיבור לנתונים. סגרו ופתחו את האפליקציה');return}
     if(db){await withTO(db.doc('settings/'+tokId(token)).set({kind:'tok',token,role:org?'org':'guest',pids:ppl.map(p=>p._id),names:ppl.map(p=>p.name),by:org?'':ROLE.slice(6),orgName:org?(typeof ME!=='undefined'?ME:''):'',ts:Date.now()},{merge:true}),15000,'save');diag('push','saved');try{localStorage.setItem('tokSaved',key)}catch(e){}}
@@ -5004,7 +5005,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='27efa340cc';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='6c311f60c3';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
