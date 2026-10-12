@@ -1223,6 +1223,13 @@ body.guest button:not(:disabled):active,body.guest .btn:active,body.guest a.gc:a
 }
 .gcb>.gc:has(.gc-b) .gc-t,.gcb>.gc:has(.gc-b) .gc-s{padding-inline-end:46px!important}
 .cplc{border:1px solid rgba(214,178,98,.3);border-radius:18px;margin:0 0 10px;overflow:hidden;background:#12100b}.cplh{display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(214,178,98,.08);border-bottom:1px solid rgba(214,178,98,.18)}.cplh b{flex:1;font-size:15.5px}.cpla{font-weight:800;font-size:14px}.cplc .row{border-radius:0;margin:0;box-shadow:none}
+.progc{margin:0 0 12px;padding:12px;border-radius:22px;border:1.5px solid rgba(240,200,110,.6);background:linear-gradient(160deg,#f8ecc8 0%,#e8d29a 100%);color:#2a2010;box-shadow:0 14px 30px -18px rgba(240,200,110,.8);animation:r2In .55s both}
+.pgc-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.pgc-h b{font-family:var(--display);font-size:18px;color:#5a3e0e}.progc .glink{color:#7a5410;font-weight:800;font-size:13px;padding:0}
+.pgc-d{display:grid;grid-template-columns:repeat(var(--n,3),1fr);gap:6px}
+.pgc-x{display:grid;gap:3px;align-content:start;text-align:right;padding:8px 7px;border-radius:14px;border:1px solid rgba(90,62,14,.25);background:rgba(255,255,255,.45);color:#2a2010;animation:r2In .5s calc(.15s + var(--i,0)*.08s) both}
+.pgc-x:active{transform:scale(.96)}.pgc-t{display:flex;align-items:baseline;justify-content:space-between;gap:4px}.pgc-t b{font-size:14.5px;color:#5a3e0e}.pgc-t small{font-size:11px;color:#7a6440}
+.pgc-x em{font-style:normal;font-size:11px;font-weight:800;color:#9a6a12}
+.pgc-x ul{list-style:none;margin:2px 0 0;padding:0;display:grid;gap:2px}.pgc-x li{font-size:11.5px;line-height:1.3;color:#3a2c14;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.pgc-x li .num{font-weight:800;color:#7a5410;margin-inline-end:3px}
 .pm+.pm{border-top:1px dashed rgba(214,178,98,.22)}
 .pc .av{width:44px!important;height:44px!important;font-size:16px!important;flex:none;border-radius:50%!important;box-shadow:0 0 0 3px var(--a),0 8px 18px -8px var(--b)}
 .pc .av.nophoto{background:linear-gradient(160deg,#2a251a,#13110c)!important;color:var(--a)!important}
@@ -4162,6 +4169,10 @@ const EXT={
     steps:['בוחרים חבילה להונגריה','בקופה מדביקים את קוד הקופון','מתקינים את ה־eSIM בטלפון לפני הטיסה, ומפעילים בנחיתה']}};
 const isElAl=f=>!!f&&(/^\s*LY/i.test(String(f.flightNo||''))||/אל ?על|el ?al/i.test(String(f.label||'')+' '+String(f.notes||'')));
 const flyElAl=ppl=>['הלוך','חזור'].some(d=>flightGroups(ppl,d).some(g=>isElAl(g.f)));
+/* the trip programme, at a glance on the home screen: one column per day, tap to open that day */
+function progCard(){if(!PROG.length)return '';
+  return `<section class="progc" aria-label="תוכנית המסע"><div class="pgc-h"><b>📜 תוכנית המסע</b><button class="glink" data-gnav="gl">כל התוכנית ›</button></div>
+   <div class="pgc-d" style="--n:${PROG.length}">${PROG.map((d,i)=>{const it=progItems(d).filter(x=>x.ti).slice(0,3);return `<button class="pgc-x" data-gprog="${d.k}" style="--i:${i}"><span class="pgc-t"><b>${esc(d.tab)}</b><small>${esc(String(d.date||'').split('·').pop().trim())}</small></span><em>${esc(d.over||'')}</em><ul>${it.map(x=>`<li><span class="num">${esc(x.tm||'')}</span>${esc(x.ti)}</li>`).join('')}</ul></button>`}).join('')}</div></section>`}
 function prepHTML(ppl){
   const el=flyElAl(ppl), fl=el?elalFlights(ppl):[], ciN=fl.filter(x=>ciDoneFor(x.f,x.on)).length;
   const t=(k,ic,l,sub,ok,i)=>`<button class="gpt ${ok?'ok':''} ${GNEW[k]?'nw':''}" data-gnav="${k}" style="--i:${i}"><span class="gpt-i">${ic}</span><b>${l}</b><small>${sub}</small>${ok?'<em class="gpt-ok">✓</em>':''}</button>`;
@@ -4666,7 +4677,7 @@ function guestHTML0(){
     const help=`<section class="ghelp g3" aria-label="עזרה"><small class="gh-t">צריכים עזרה? כתבו לנו בוואטסאפ</small>
       <div class="gh-l">${ORGS.map(([n,t])=>`<a class="gh-w" href="${waLink(t)}" target="_blank" rel="noopener" aria-label="וואטסאפ ל${n}">${IX.wa||'💬'}<span>${n}</span></a>`).join('')}<a class="gh-w sos" href="tel:112" aria-label="חירום 112">112</a></div></section><p class="gcred">פותח על ידי שלומי זינגר · כל הזכויות שמורות ©</p>`;
     return pv+`<div class="ghome">${SKY}<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(coupleLabel(ppl,me)||'')}</b>${dayMood()?`<span class="mood">${dayMood()}</span>`:''}</div></div>
-     ${nowCard('data-gnav="gl"')}${voiceCard()}${chCard(1)}${ravCard()}${momentHTML()}${banner}${ciTasks(ppl).filter(c=>!c.done).map(ciCard).join('')}${TRIPDAY()?boardHTML(ppl)+(todayISO()==='2026-11-19'&&first&&Date.now()<depAt(first)+4*36e5?passBlock:'')+tripDayBlock(ppl):boardHTML(ppl)+passBlock+extraOut+ready}${prepHTML(ppl)}${way}
+     ${nowCard('data-gnav="gl"')}${voiceCard()}${chCard(1)}${ravCard()}${momentHTML()}${banner}${ciTasks(ppl).filter(c=>!c.done).map(ciCard).join('')}${TRIPDAY()?boardHTML(ppl)+(todayISO()==='2026-11-19'&&first&&Date.now()<depAt(first)+4*36e5?passBlock:'')+tripDayBlock(ppl):boardHTML(ppl)+passBlock+extraOut+progCard()+ready}${prepHTML(ppl)}${way}
      <div class="gcb">
       ${(()=>{/* most used first; the order changes once the trip starts */
         const C={gs:()=>me&&me.kitter?cube('gs',I.box,'סידור ערכות בחדרים',(()=>{const rp=roomsPlaced();return rp.t?`הונחו ${rp.n} מתוך ${rp.t} חדרים`:'עדכון באיזה חדר סידרתם'})(),(()=>{const rp=roomsPlaced();return rp.t-rp.n||''})()):'',
@@ -4919,6 +4930,7 @@ document.addEventListener('click',e=>{
     const c=ciTasks(ppl).find(x=>x.f._id===fid);(c?c.on:ppl).forEach(p=>{const l=ciDoneOf(p).filter(x=>x!==fid);if(on)l.push(fid);gset('participants/'+p._id,{ciDone:l.join(',')})});if(on)toast('מעולה! נסיעה טובה ✈');return}
   if(T.closest('[data-moment]')){const m=momentNow();if(m){photosSub();PHI=0;phShow([{_id:m.pid,th:m.th,byName:m.byName,ts:m.at,by:''}])}return}
   if(T.closest('[data-cert]')){certMake();return}
+  const gpr=T.closest('[data-gprog]');if(gpr){V.filter.pd=gpr.dataset.gprog;GTAB='gl';render(true);window.scrollTo(0,0);return}
   if(T.closest('[data-nodrv]')){toast('מספר הדרייבר יתווסף בקרוב');return}
   const bd=T.closest('[data-board]');if(bd){if(blockPrev())return;const ses=bd.dataset.ses?SESSIONS.find(x=>x.k===bd.dataset.ses):rollCur();if(!ses)return;const pid=bd.dataset.board;gset('attendance/'+ses.k+'__'+pid,{session:ses.k,pid,here:true}).then(ok=>{if(ok)toast('סומן. תודה!')});return}
   if(T.closest('[data-spl-w],[data-spl-cur]')){const a=document.getElementById('splT'),b=document.getElementById('splA');if(a)SPL.t=a.value;if(b)SPL.a=b.value}
@@ -5424,7 +5436,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='9cb7da3768';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='d5eee82329';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
