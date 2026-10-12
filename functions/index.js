@@ -59,6 +59,21 @@ exports.tripPush = functions.region('europe-west1').firestore.document('trips/{t
     if (after.kind === 'moment' && !after.hidden && (!before || before.pid !== after.pid)) {
       return send(trip, () => true, '⭐ הרגע של היום', after.byName ? 'צילום: ' + trim(after.byName, 40) + '. היכנסו לראות' : 'היכנסו לראות את התמונה שנבחרה', 'gh', 'moment');
     }
+    // internal chat: at most one notification every 3 minutes per trip (window kept in chatq/{trip}, server only)
+    if (after.kind === 'chat' && !before) {
+      const ref = db.doc(`chatq/${trip}`);
+      const go = await db.runTransaction(async t => {
+        const d = await t.get(ref);
+        if (d.exists && Date.now() - (d.data().at || 0) < 3 * 60000) return false;
+        t.set(ref, { at: Date.now() });
+        return true;
+      });
+      if (!go) return;
+      const body = trim((after.nm || '') + ': ' + (after.voice ? '🎙 הודעה קולית' : after.text), 120);
+      const notSender = r => !(r.pids || []).includes(after.by) && r.by !== after.by;
+      await send(trip, r => guests(r) && notSender(r), '💬 הודעה חדשה בצ׳אט המסע', body, 'gy', 'chat');
+      return send(trip, r => orgs(r) && notSender(r), '💬 הודעה חדשה בצ׳אט המסע', body, 'chat', 'chat');
+    }
     // a task for every participant
     if (after.kind === 'gtask' && !after.hidden && !before) {
       return send(trip, guests, 'משימה חדשה לכל המשתתפים', trim(after.title, 100), 'gt', 'gt_' + id);
