@@ -1206,7 +1206,9 @@ body.guest button:not(:disabled):active,body.guest .btn:active,body.guest a.gc:a
 .rdy{padding:12px 12px 10px!important;margin:10px 0 12px!important;border-radius:24px!important}.rdy-top{gap:12px!important;margin-bottom:8px!important}
 .rdy-ring{width:74px!important;height:74px!important}.rdy-ring b{font-size:19px!important}.rdy-h b{font-size:18px!important}.rdy-h small{font-size:12px!important}.rdy-h span{font-size:12.5px!important}
 .rdy-l{gap:6px!important}.rdy .ri{padding:7px 10px;gap:10px;border-radius:14px}.rdy .ri-i{width:32px;height:32px;border-radius:10px}.rdy .ri-i svg{width:18px;height:18px}.rdy .ri-t b{font-size:14.5px}.rdy .ri-t small{font-size:12px}.rdy .ri-c{font-size:16px}.rdy .ri.ok .ri-c{width:22px;height:22px;font-size:12px}
-.ghelp.g3{display:grid!important;gap:8px}.gh-t b{display:block;font-size:17px}.gh-t small{color:var(--muted)}
+.ghelp.g3{display:grid!important;gap:6px;padding:10px 12px!important;margin-top:12px}.ghelp.g3 .gh-t{color:var(--muted);font-size:12px;font-weight:700}
+.gh-l{display:flex!important;flex-wrap:wrap;gap:6px;justify-content:flex-start}.ghelp.g3 .gh-w{width:auto!important;flex:0 0 auto!important;min-height:0!important;grid-column:auto!important;margin:0!important}.gh-w{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:99px;border:1px solid rgba(63,174,114,.55);background:rgba(63,174,114,.1);color:#bfe9cf;font-size:12.5px;font-weight:800;text-decoration:none}
+.gh-w svg{width:14px;height:14px;color:#5fd39b}.gh-w.sos{border-color:rgba(255,120,100,.5);background:rgba(255,120,100,.1);color:#ffb3a6}
 .gh-r{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:14px;border:1px solid rgba(214,178,98,.25)}.gh-r>span{flex:1;display:grid}.gh-r small{font-size:12.5px;color:var(--muted);text-align:right}.gh-r .btn{min-width:46px;min-height:42px;padding:0 12px;justify-content:center}.gh-r .btn svg{width:18px;height:18px}
 .ghelp.g3 .sos{width:100%;justify-content:center}
 .gw.drv .gw-i{background:linear-gradient(150deg,#ffe9a8,#c99a3d)!important;color:#15110a;border:0}
@@ -4255,7 +4257,7 @@ function extHTML(k,head,ppl){const x=EXT[k];
 const HANNA={name:'מסעדת חנה',q:'Hanna Glatt Kosher Restaurant Kazinczy utca 29 Budapest'};
 const ANDROID=/Android/i.test(navigator.userAgent);
 const BOLT_URL=ANDROID?'intent://#Intent;package=ee.mtakso.client;S.browser_fallback_url='+encodeURIComponent('https://play.google.com/store/apps/details?id=ee.mtakso.client')+';end':'https://bolt.eu/';
-const DRIVER_PHONE='';/* the airport driver's number (WhatsApp) */
+const DRIVER_PHONE='0559654725';/* the airport driver's number (WhatsApp) */
 const UBER_URL=ANDROID?'intent://#Intent;package=com.ubercab;S.browser_fallback_url='+encodeURIComponent('https://m.uber.com/')+';end':'https://m.uber.com/ul/';
 const UBER_SVG='<svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>';
 /* check-in: 24 hours before each flight everybody on it gets a task (no stored task: it follows the flight) */
@@ -4621,11 +4623,11 @@ function guestHTML0(){
         [passOk,'צילום דרכון',passOk?'התקבל, תודה':hasP.length?`התקבל של ${nm(hasP)} · חסר של ${nm(ppl.filter(x=>!x.passport))}`:nm(ppl)+' · לחצו לשליחה','gf',IX.pass,sf]];
       {const iN=ppl.filter(x=>x.insDone).length;items.push([iN===ppl.length,'ביטוח נסיעות',iN===ppl.length?'דיווחתם שהזמנתם':'מזמינים ומסמנים "הזמנתי"','gb',IX.shield,ppl.length?iN/ppl.length:1])}
       {const fl=flyElAl(ppl)?elalFlights(ppl):[],dn=fl.filter(x=>ciDoneFor(x.f,x.on)).length,openNow=fl.some(x=>{const a=fltAt(x.f),n=Date.now();return n>=a-864e5&&n<a});
-        if(fl.length&&(openNow||dn))items.push([dn===fl.length,'צ׳ק־אין',dn===fl.length?'בוצע לכל הטיסות':openNow?'הצ׳ק־אין פתוח עכשיו!':`${dn} מתוך ${fl.length} טיסות`,'gw',IX.ci,dn/fl.length])}
+        if(fl.length)items.push([dn===fl.length,'צ׳ק־אין',dn===fl.length?'בוצע לכל הטיסות':openNow?'הצ׳ק־אין פתוח עכשיו!':dn?`${dn} מתוך ${fl.length} טיסות`:'נפתח 24 שעות לפני כל טיסה','gw',IX.ci,dn/fl.length])}
 
       const ok=items.filter(x=>x[0]).length,pct=Math.round(items.reduce((a,x)=>a+x[5],0)/items.length*100),some=items.some(x=>x[5]>0),R=52,C=2*Math.PI*R;
       return `<section class="rdy ${pct===100?'full':''}" aria-label="מה המארגנים צריכים מכם: ${pct}% הושלם"><div class="rdy-top"><div class="rdy-ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="${R}" fill="none" stroke="rgba(214,178,98,.18)" stroke-width="8"/><circle class="rg" cx="60" cy="60" r="${R}" fill="none" stroke="url(#rdg)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" style="--c:${C};--o:${C*(1-pct/100)}" transform="rotate(-90 60 60)"/><defs><linearGradient id="rdg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b8862f"/><stop offset="1" stop-color="#ffe9a8"/></linearGradient></defs></svg><b class="num">${pct}%</b></div>
-       <div class="rdy-h"><small>הדרך לטיסה</small><b>${pct===100?'מוכנים לטיסה ✓':ok?ok+' מתוך '+items.length+' הושלמו':some?'חלק כבר התקבל':'מחכים לכם'}</b><span>${pct===100?'הכל מוכן. נתראה בשדה!':'תשלום, דרכון וביטוח'}</span></div></div>
+       <div class="rdy-h"><small>הדרך לטיסה</small><b>${pct===100?'מוכנים לטיסה ✓':ok?ok+' מתוך '+items.length+' הושלמו':some?'חלק כבר התקבל':'מחכים לכם'}</b><span>${pct===100?'הכל מוכן. נתראה בשדה!':'תשלום, דרכון, ביטוח וצ׳ק־אין'}</span></div></div>
        <div class="rdy-l">${items.map(([o,l,sb,g,ic,f],i)=>{const t=o?'div':'button';return `<${t} class="ri ${o?'ok':f>0?'mid':'bad'}" ${o?'':`data-gnav="${g}"`} style="--i:${i}"><span class="ri-i">${ic}</span><span class="ri-t"><b>${l}${!o&&f>0?` <em class="ri-p num">${Math.round(f*100)}%</em>`:''}</b><small>${sb}</small></span><span class="ri-c">${o?'✓':'‹'}</span></${t}>`}).join('')}
 </div>${pct===100?'<i class="rdy-cele" aria-hidden="true"></i>':''}</section>`})();
     const way=`<section class="gway" aria-label="בדרכים">
@@ -4636,10 +4638,9 @@ function guestHTML0(){
     const SKY='<div class="gsky" aria-hidden="true">'+[[8,14,0],[22,6,.8],[35,22,1.6],[48,9,.4],[61,18,2.1],[74,5,1.2],[86,16,.2],[93,8,1.9],[14,30,2.4],[67,34,.9]].map(([x,y,d])=>`<i style="inset-inline-start:${x}%;top:${y}%;animation-delay:${d}s"></i>`).join('')+'<svg viewBox="0 0 400 90" preserveAspectRatio="xMidYMax slice"><path d="M0 90V70h30v-8h14v8h22V58h10v12h18V64h8v-6h6v6h8v6h26V52c0-9 8-14 16-18v-8l3-9 3 9v8c8 4 16 9 16 18v18h26V60h12v10h22v-6h10v6h26V56h12v14h30v-8h16v8h30v20z" fill="#0b0905" stroke="#c99a3d" stroke-opacity=".28" stroke-width="1"/></svg></div>';
     const ph=orgPhone();
     const orgP=(nm,fb)=>{const x=S.participants.find(q=>String(q.name||'').includes(nm));return (x&&x.phone)||fb};
-    const ORGS=[['שלומי',ph],['איציק',orgP('איציק שרייבר','0543030492')],['יעל',orgP('יעל שרייבר','0549251241')]].filter(o=>o[1]);
-    const help=`<section class="ghelp g3" aria-label="עזרה"><div class="gh-t"><b>צריכים עזרה?</b><small>המארגנים כאן בשבילכם</small></div>
-      ${ORGS.map(([n,t])=>`<div class="gh-r"><span><b>${n}</b><small class="num ltr">${esc(fmtPhone(t))}</small></span><a class="btn" href="${telLink(t)}" aria-label="שיחה ל${n}">${I.phone}</a><a class="btn" href="${waLink(t)}" target="_blank" rel="noopener" aria-label="וואטסאפ ל${n}">${IX.wa||'💬'}</a></div>`).join('')}
-      <a class="btn sos" href="tel:112" aria-label="חירום 112">🚨 חירום 112</a></section>`;
+    const ORGS=[['שלומי זינגר',ph],['איציק שרייבר',orgP('איציק שרייבר','0543030492')],['יעל שרייבר',orgP('יעל שרייבר','0549251241')]].filter(o=>o[1]);
+    const help=`<section class="ghelp g3" aria-label="עזרה"><small class="gh-t">צריכים עזרה? כתבו לנו בוואטסאפ</small>
+      <div class="gh-l">${ORGS.map(([n,t])=>`<a class="gh-w" href="${waLink(t)}" target="_blank" rel="noopener" aria-label="וואטסאפ ל${n}">${IX.wa||'💬'}<span>${n}</span></a>`).join('')}<a class="gh-w sos" href="tel:112" aria-label="חירום 112">112</a></div></section>`;
     return pv+`<div class="ghome">${SKY}<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(coupleLabel(ppl,me)||'')}</b>${dayMood()?`<span class="mood">${dayMood()}</span>`:''}</div></div>
      ${nowCard('data-gnav="gl"')}${voiceCard()}${chCard(1)}${ravCard()}${momentHTML()}${banner}${ciTasks(ppl).filter(c=>!c.done).map(ciCard).join('')}${TRIPDAY()?boardHTML(ppl)+(todayISO()==='2026-11-19'&&first&&Date.now()<depAt(first)+4*36e5?passBlock:'')+tripDayBlock(ppl):boardHTML(ppl)+passBlock+extraOut+ready}${prepHTML(ppl)}${way}
      <div class="gcb">
@@ -4653,7 +4654,7 @@ function guestHTML0(){
           gz:()=>cube('gz',IX.pin,'קרעסטיר','על רבי ישעיה׳לה ועל הציון'),
           gk:()=>cube('gk',IX.tools,'כלים לדרך','שעון, זמנים, מטבע, ביטויים'),
           ge:()=>cube('ge',IX.coin,'חשבון משותף','מי שילם, ומי חייב למי',(()=>{const b=me?Object.values(splitBal(me)).filter(v=>v<=-1).length:0;return b||''})())};
-        const ord=TRIPDAY()?['gs','gm','gi','gx','ge','gz','gp','gk','gd']:['gs','gm','gd','gp','gx','gz','gk','ge','gi'];
+        const ord=TRIPDAY()?['gs','gm','gi','gx','gz','gp','gk','gd']:['gs','gm','gd','gp','gx','gz','gk','gi'];
         return ord.map(k=>C[k]()).join('')})()}
       ${open?`<a class="gc gtrv" href="trivia/" style="--i:${n++}"><span class="gc-i">${I.spark}</span><span class="gc-t">טריוויה</span><span class="gc-s">משחק לאוטובוס. פתוח עכשיו!</span></a>`:`<button class="gc gtrv locked" data-glock style="--i:${n++}"><span class="gc-i">🔒</span><span class="gc-t">טריוויה</span><span class="gc-s">נפתח כשנחתים בבודפשט</span></button>`}
      </div>
@@ -5399,7 +5400,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='e16f95dc4e';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='f0afa0c5ed';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
