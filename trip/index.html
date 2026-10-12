@@ -4268,7 +4268,7 @@ function guestHTML0(){
       const tot=need.reduce((s,x)=>s+(+x.amount||0),0), got=need.reduce((s,x)=>s+paidOf(x),0), pc=tot?Math.round(got/tot*100):100;
       const all=!need.length||need.every(x=>x.status==='שולם'), part=got>0&&!all;
       const nms=ppl.map(x=>String(x.name||'').replace(/^הרב(נית)?\s+/,'').trim().toLowerCase());
-      const dn=donOf(ppl);
+      const dn=[]/*donations are for organizers only*/;
       const dsum=dn.reduce((s,d)=>s+(+d.amount||0),0), dgot=dn.every(d=>d.status==='התקבל'), dopen=dn.filter(d=>d.status!=='התקבל').reduce((s,d)=>s+(+d.amount||0),0);
       const R=19,C=2*Math.PI*R;
       const ring=`<svg class="sc-ring" viewBox="0 0 44 44"><circle cx="22" cy="22" r="${R}" fill="none" stroke="rgba(214,178,98,.25)" stroke-width="3"/><circle class="rg" cx="22" cy="22" r="${R}" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-dasharray="${C}" style="--c:${C};--o:${C*(1-pc/100)}" transform="rotate(-90 22 22)"/></svg>`;
@@ -4284,7 +4284,7 @@ function guestHTML0(){
       const todo=sc(needs.length?'bad':'ok',needs.length?I.tasks:`<span style="font-size:26px">✓</span>`,'עוד מעט סיימנו',needs.length?`${needs.length===1?'דבר אחד':needs.length+' דברים'}`:'הכל מסודר',needs.length?needs.map(x=>x[1]).join(' · '):'אין לכם מה להשלים',needs.length?'<span class="sc-go">‹</span>':'','button',needs.length?'data-gnav="gf"':'');
       return `<div class="gst">${pay}${pass}${nav}${todo}</div>`})();
     const ready=(()=>{
-      const need=ppl.filter(x=>x.status!=='פטור'&&+x.amount>0),tot=need.reduce((a,x)=>a+(+x.amount||0),0),got=need.reduce((a,x)=>a+paidOf(x),0),dOp=donOf(ppl).filter(d=>d.status!=='התקבל').reduce((a,d)=>a+(+d.amount||0),0),tripOk=!need.length||got>=tot,payOk=tripOk&&!dOp,passOk=ppl.every(x=>x.passport);
+      const need=ppl.filter(x=>x.status!=='פטור'&&+x.amount>0),tot=need.reduce((a,x)=>a+(+x.amount||0),0),got=need.reduce((a,x)=>a+paidOf(x),0),dOp=[]/*donations are for organizers only*/.filter(d=>d.status!=='התקבל').reduce((a,d)=>a+(+d.amount||0),0),tripOk=!need.length||got>=tot,payOk=tripOk&&!dOp,passOk=ppl.every(x=>x.passport);
       const items=[[payOk,'התשלום',payOk?(!need.length?'פטור, אין מה לשלם':`שולם ${ils(got)}`):`נותר לתשלום ${ils(Math.max(0,tot-got)+dOp)}${dOp?(tripOk?' (התרומה)':` (כולל תרומה ${ils(dOp)})`):''}`,'gf',IX.coin],[passOk,'צילום דרכון',passOk?'התקבל, תודה':ppl.filter(x=>!x.passport).map(x=>esc(firstN(x.name))).join(' ו')+' · לחצו לשליחה','gf',IX.pass]];
       const ok=items.filter(x=>x[0]).length,pct=Math.round(ok/items.length*100),R=52,C=2*Math.PI*R;
       return `<section class="rdy ${pct===100?'full':''}" aria-label="מה המארגנים צריכים מכם: ${ok} מתוך ${items.length} הושלמו"><div class="rdy-top"><div class="rdy-ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="${R}" fill="none" stroke="rgba(214,178,98,.18)" stroke-width="8"/><circle class="rg" cx="60" cy="60" r="${R}" fill="none" stroke="url(#rdg)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" style="--c:${C};--o:${C*(1-pct/100)}" transform="rotate(-90 60 60)"/><defs><linearGradient id="rdg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b8862f"/><stop offset="1" stop-color="#ffe9a8"/></linearGradient></defs></svg><b class="num">${pct}%</b></div>
@@ -4403,7 +4403,7 @@ function guestHTML0(){
     const fl=dir=>{const g=flightGroups(ppl,dir);if(!g.length)return 'טרם עודכן';return g.map(x=>{const pre=g.length>1?x.names.join(' ו')+': ':'';if(x.solo)return pre+'טסים בעצמם';const f=x.f;return pre+(f?`<span class="ltr num">${esc(f.flightNo||'')}</span> · ${esc(dayHe(f.date))} ${fmtDate(f.date)} · <span class="num">${esc(f.dep||'')}</span>`:'טרם שויכה')}).join('<br>')};
     const need=ppl.filter(x=>x.status!=='פטור'&&+x.amount>0), tot=need.reduce((s,x)=>s+(+x.amount||0),0), got=need.reduce((s,x)=>s+paidOf(x),0), payAll=!need.length||need.every(x=>x.status==='שולם');
     const payV=!need.length?'פטור':payAll?`שולם ${ils(got)} ✓`:got?`שולם ${ils(got)} · נותר ${ils(tot-got)}`:`לתשלום ${ils(tot)}`;
-    const dn=donOf(ppl), dTot=dn.reduce((s,d)=>s+(+d.amount||0),0), dOpen=dn.filter(d=>d.status!=='התקבל').reduce((s,d)=>s+(+d.amount||0),0);
+    const dn=[]/*donations are for organizers only*/, dTot=dn.reduce((s,d)=>s+(+d.amount||0),0), dOpen=dn.filter(d=>d.status!=='התקבל').reduce((s,d)=>s+(+d.amount||0),0);
     const donV=!dn.length?'':dOpen?`התחייבתם ל־${ils(dTot)} · לתשלום ${ils(dOpen)}`:`התקבלה ${ils(dTot)} ✓ תודה!`;
     const tile=(ic,l,v,cls='',wide)=>`<div class="pa-t ${cls} ${wide?'wide':''}" style="--i:${k++}"><span class="pa-i">${ic}</span><span class="pa-x"><small>${l}</small><b>${v}</b></span></div>`;
     const roomV=r&&(r.roomNumber||r.floor)?`חדר <span class="num">${esc(r.roomNumber||'?')}</span>${r.floor?` · קומה <span class="num">${esc(r.floor)}</span>`:''}${r.entrance?' · '+esc(r.entrance):''}`:'טרם שובצתם';
@@ -5005,7 +5005,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='6c311f60c3';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='2a6bbd7969';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
