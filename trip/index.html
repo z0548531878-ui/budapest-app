@@ -2206,6 +2206,10 @@ const F={
 const COLS=[...Object.keys(F),'settings','activity','trash'];
 const S={attendance:[]};COLS.forEach(c=>S[c]=[]);
 let db=null; const loaded=new Set();
+/* what went wrong on this phone, for the check screen (no data, only step names and error codes) */
+const DIAG={steps:{},errs:[]};const diag=(k,v)=>{DIAG.steps[k]=v};const diagE=(k,e)=>{DIAG.errs.push(k+': '+((e&&(e.code||e.name||e.message))||e));if(DIAG.errs.length>12)DIAG.errs.shift()};
+const withTO=(pr,ms,tag)=>Promise.race([pr,new Promise((_,no)=>setTimeout(()=>no({code:'timeout-'+tag}),ms))]);
+const IOSDEV=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const V={tab:'home',sub:null,seg:null,filter:{},q:''};
 let ME=''; try{ME=localStorage.getItem('me')||''}catch(e){}
 const team=()=>{const s=S.settings.find(x=>x._id==='trip');return (s&&s.team&&s.team.length)?s.team:['שלומי','איציק','יעל']};
@@ -3847,10 +3851,14 @@ async function initFire(){
   if(!TRIP_KEY||!window.firebase)return null;
   try{firebase.initializeApp(FB_CFG)}catch(e){}
   const fs=firebase.firestore(), root=fs.collection('trips').doc(TRIP_KEY);
-  // keep a copy of everything on the phone, so the app still opens with all the data where there's no signal
-  try{if(fs.enablePersistence)await fs.enablePersistence({synchronizeTabs:true})}catch(e){console.warn('offline cache',e&&e.code)}
+  // iPhone: the streaming connection often stalls inside an installed web app; long polling always gets through
+  if(IOSDEV){try{fs.settings({experimentalForceLongPolling:true,merge:true})}catch(e){diagE('settings',e)}}
+  // keep a copy of everything on the phone, so the app still opens with all the data where there's no signal.
+  // On iPhone the installed app is a single window, and its storage can hang: never wait more than 3 seconds for it
+  try{if(fs.enablePersistence){await withTO(fs.enablePersistence(IOSDEV?{}:{synchronizeTabs:true}),3000,'cache');diag('cache','ok')}}catch(e){diag('cache','off');diagE('cache',e)}
   const w={collection:c=>root.collection(c),doc:p=>{const [c,id]=p.split('/');return root.collection(c).doc(id)},batch:()=>fs.batch(),fs};
-  try{await maybeSeed(w)}catch(e){console.warn(e);if(e&&e.code==='permission-denied')return w}
+  try{await withTO(maybeSeed(w),8000,'seed')}catch(e){diagE('seed',e);if(e&&e.code==='permission-denied')return w}
+  diag('db','ok');
   return w;
 }
 async function deriveKey(pass,salt){const enc=new TextEncoder();const base=await crypto.subtle.importKey('raw',enc.encode(pass),'PBKDF2',false,['deriveKey']);
@@ -3946,10 +3954,13 @@ function showGate(step){
       try{localStorage.setItem('tripKey',m[1])}catch(e){}location.hash='k='+m[1];location.reload()};
     document.getElementById('gkeyok').onclick=setKey;document.getElementById('gkey').onkeydown=e=>{if(e.key==='Enter')setKey()};
     const go=async()=>{const msg=document.getElementById('gmsg'),v=document.getElementById('gname').value,b=document.getElementById('ggo');if(b.disabled)return;
+      if(!db&&TRIP_KEY){msg.innerHTML='אין חיבור לשרת. בדקו שיש אינטרנט, סגרו ופתחו את האפליקציה. <button class="glink" id="pdiag" type="button">בדיקת תקינות</button>';return}
       if(!db){msg.textContent='חסר הקישור המלא של המסע. הדביקו אותו בשדה שנפתח למטה.';document.getElementById('gkeybox').hidden=false;document.getElementById('gkeybox').style.display='grid';return}
       if(!v.trim()){msg.textContent='כתבו את השם המלא שלכם';return}
-      if(!loaded.has('participants')){gBusy(b,'בודקים את השם…');msg.textContent='';for(let i=0;i<40&&!loaded.has('participants');i++)await new Promise(r=>setTimeout(r,250));gBusy(b);
-        if(!loaded.has('participants')){msg.textContent='הרשימה עוד לא נטענה. בדקו שיש אינטרנט ונסו שוב.';return}}
+      if(!loaded.has('participants')){gBusy(b,'בודקים את השם…');msg.textContent='';for(let i=0;i<24&&!loaded.has('participants');i++)await new Promise(r=>setTimeout(r,250));
+        if(!loaded.has('participants')){try{const sn=await withTO(db.collection('participants').get(),12000,'names');S.participants=sn.docs.map(d=>({...d.data(),_id:d.id}));loaded.add('participants');diag('names','direct')}catch(e){diagE('names',e)}}
+        gBusy(b);
+        if(!loaded.has('participants')){msg.innerHTML='הרשימה לא נטענה. בדקו שיש אינטרנט ונסו שוב. <button class="glink" id="pdiag" type="button">בדיקת תקינות</button>';return}}
       const p=matchGuest(v);
       if(!p){msg.textContent='השם הזה לא נמצא ברשימת המסע. בדקו את האיות, או פנו למארגנים.';return}
       setRole('guest:'+p._id)};
@@ -4423,7 +4434,7 @@ function guestHTML0(){
      <h3 class="pa-h">פרטים אישיים</h3>
      ${ppl.map(person).join('')}
      <div class="pa-acts"><a class="pa-a soft" href="${waLink(sh)}" target="_blank" rel="noopener">${IX.wa}<span><b>שאלה לשלומי</b><small>וואטסאפ למארגן המסע</small></span></a></div>
-     ${isPrevOrg()?'':`<button class="btn ghost gout2" id="gout">🚪 יציאה מהחשבון</button>`}</section>`}
+     ${isPrevOrg()?'':`<button class="btn ghost gout2" id="pdiag">🔧 בדיקת תקינות והתראות</button><button class="btn ghost gout2" id="gout">🚪 יציאה מהחשבון</button>`}</section>`}
   if(GTAB==='gd')return head('נסיעה משותפת לשדה')+`<p class="note">מתאמים ביחד את הדרך לשדה: מי שיש לו מקום ברכב, מי שמחפש טרמפ, ומי שרוצה לחלוק מונית.</p>`+ridesHTML(ppl,me);
   if(GTAB==='gi')return head('תמונות מהמסע')+photosHTML();
   if(GTAB==='gk'){
@@ -4888,7 +4899,7 @@ function pgate(){
   else if(st==='old'){
     h=`${logo}<h1>צריך לעדכן את האייפון</h1><p>התראות לאפליקציה עובדות רק מגרסה 16.4 ומעלה של iOS.</p><ol class="pst">${['פתחו <b>הגדרות</b>, <b>כללי</b>, <b>עדכון תוכנה</b>','התקינו את העדכון','פתחו שוב את הקישור'].map(s=>`<li>${s}</li>`).join('')}</ol><button class="glink" id="pskip">להמשיך כרגע בדפדפן</button>`}
   else if(st==='ask'){
-    h=`${logo}<h1>הפעלת התראות</h1><p>מה תקבלו: שינויים בלו״ז, הודעות מהמארגנים ומשימות חדשות. בלי התראות אפשר לפספס שינוי של הרגע האחרון.</p><button class="gbtn" id="pask">הפעלת התראות</button><p class="gsub">בחלון שייפתח לחצו על "אפשר".</p><button class="glink" id="pskip">להמשיך כרגע בלי התראות</button>`}
+    h=`${logo}<h1>הפעלת התראות</h1><p>מה תקבלו: שינויים בלו״ז, הודעות מהמארגנים ומשימות חדשות. בלי התראות אפשר לפספס שינוי של הרגע האחרון.</p><button class="gbtn" id="pask">הפעלת התראות</button><p class="gsub">בחלון שייפתח לחצו על "אפשר".</p><button class="glink" id="pskip">להמשיך כרגע בלי התראות</button><button class="glink" id="pdiag">בדיקת תקינות</button>`}
   else if(st==='denied'){
     h=`${logo}<h1>ההתראות כבויות בטלפון</h1><p>האפליקציה עובדת. כדי לקבל עדכונים על שינויים בלו״ז, מאפשרים התראות בהגדרות הטלפון:</p><ol class="pst">${(isIOS()?['פתחו <b>הגדרות</b> בטלפון','גללו אל האפליקציה "בודפשט"','בחרו <b>התראות</b> והפעילו "אפשר התראות"']:['לחצו לחיצה ארוכה על אייקון האפליקציה','בחרו <b>מידע על האפליקציה</b>, ואז <b>התראות</b>','הפעילו את ההתראות']).map(s=>`<li>${s}</li>`).join('')}</ol><button class="gbtn" id="pchk">הפעלתי, בדיקה מחדש</button><button class="glink" id="pskip">להמשיך כרגע בלי התראות</button>`}
   else{
@@ -4898,23 +4909,38 @@ async function loadMsg(){
   if(window.firebase&&firebase.messaging)return;
   await new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js';s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
 const tokId=t=>{let h=5381;for(let i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))>>>0;return 'tok_'+h.toString(36)+t.length};
-async function pushToken(){
+async function pushToken(loud){
   if(!('Notification' in window)||Notification.permission!=='granted'||!('serviceWorker' in navigator))return;
+  let step='load';
   try{
-    await loadMsg();if(!firebase.messaging.isSupported())return;
-    const reg=await navigator.serviceWorker.register('sw.js');await navigator.serviceWorker.ready;
-    const m=firebase.messaging(),token=await m.getToken({vapidKey:VAPID_KEY,serviceWorkerRegistration:reg});
-    if(!token)return;
+    await withTO(loadMsg(),15000,'msglib');step='support';if(!(await firebase.messaging.isSupported())){diag('push','unsupported');return}
+    step='sw';const reg=await navigator.serviceWorker.register('sw.js');await withTO(navigator.serviceWorker.ready,10000,'sw');
+    step='token';const m=firebase.messaging(),token=await withTO(m.getToken({vapidKey:VAPID_KEY,serviceWorkerRegistration:reg}),20000,'token');
+    if(!token){diag('push','no-token');return}diag('push','token');
     if(!PUSHFG){PUSHFG=1;m.onMessage(p=>{const d=p.data||{};toast((d.title?d.title+': ':'')+(d.body||''));try{reg.showNotification(d.title||'מבקשי ה׳',{body:d.body||'',icon:'icon-192.png',dir:'rtl',lang:'he',tag:d.tag})}catch(e){}})}
     const org=ROLE==='org', me=org?null:(typeof meG==='function'?meG():null), ppl=me&&typeof coupleOf==='function'?coupleOf(me):[];
     const key=token+'|'+ROLE;let prev='';try{prev=localStorage.getItem('tokSaved')||''}catch(e){}
     if(prev===key)return;
-    if(db){await db.doc('settings/'+tokId(token)).set({kind:'tok',token,role:org?'org':'guest',pids:ppl.map(p=>p._id),names:ppl.map(p=>p.name),by:org?'':ROLE.slice(6),orgName:org?(typeof ME!=='undefined'?ME:''):'',ts:Date.now()},{merge:true});try{localStorage.setItem('tokSaved',key)}catch(e){}}
-  }catch(e){console.warn('push',e)}}
+    step='save';if(!db){diag('push','token, no db');if(loud)toast('ההתראות אושרו, אבל אין חיבור לנתונים. סגרו ופתחו את האפליקציה');return}
+    if(db){await withTO(db.doc('settings/'+tokId(token)).set({kind:'tok',token,role:org?'org':'guest',pids:ppl.map(p=>p._id),names:ppl.map(p=>p.name),by:org?'':ROLE.slice(6),orgName:org?(typeof ME!=='undefined'?ME:''):'',ts:Date.now()},{merge:true}),15000,'save');diag('push','saved');try{localStorage.setItem('tokSaved',key)}catch(e){}}
+    return true;
+  }catch(e){console.warn('push',e);diag('push','fail@'+step);diagE('push '+step,e);if(loud)toast('ההתראות לא נרשמו ('+step+'). לחצו "בדיקת תקינות" ושלחו צילום מסך')}}
 let PUSHFG=0;
 async function askPush(){
-  try{const r=await Notification.requestPermission();if(r==='granted'){await pushToken();toast('ההתראות הופעלו')}}catch(e){}
+  try{const r=await Notification.requestPermission();diag('perm',r);if(r==='granted'){try{localStorage.removeItem('tokSaved')}catch(e){}if(await pushToken(true))toast('ההתראות הופעלו')}}catch(e){diagE('perm',e)}
   pgate()}
+async function showDiag(){
+  let d=document.getElementById('pdbox');if(!d){d=document.createElement('div');d.id='pdbox';d.setAttribute('dir','rtl');d.style.cssText='position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.92);color:#fff;overflow:auto;padding:max(20px,env(safe-area-inset-top)) 16px 30px;font:15px/1.5 system-ui';document.body.appendChild(d)}
+  let sw='אין';try{const r=await navigator.serviceWorker.getRegistration();sw=r?(r.active?'פעיל':'נרשם'):'לא רשום'}catch(e){sw='שגיאה'}
+  let sub='-';try{const r=await navigator.serviceWorker.getRegistration();const ps=r&&r.pushManager&&await r.pushManager.getSubscription();sub=ps?'יש':'אין'}catch(e){sub='שגיאה'}
+  const iv=(navigator.userAgent.match(/OS (\d+)_(\d+)/)||[]).slice(1).join('.');
+  const ok=v=>v?'✅':'❌';
+  const rows=[['מכשיר',IOSDEV?'אייפון iOS '+iv:'אחר'],['פתוח מהאייקון',ok(typeof isStandalone==='function'&&isStandalone())],['קישור המסע',ok(!!TRIP_KEY)],['חיבור לנתונים',ok(!!db)],
+    ['רשימת משתתפים',loaded.has('participants')?'✅ '+S.participants.length:'❌'],['מחובר בתור',ROLE?(ROLE==='org'?'מארגן':'משתתף'):'-'],
+    ['הרשאת התראות',('Notification' in window)?Notification.permission:'לא נתמך'],['שירות רקע',sw],['מנוי התראות',sub],['רישום אצלנו',(()=>{try{return localStorage.getItem('tokSaved')?'✅':'❌'}catch(e){return '?'}})()],
+    ['שלבים',Object.entries(DIAG.steps).map(([k,v])=>k+'='+v).join(' · ')||'-'],['שגיאות',DIAG.errs.join(' | ')||'אין'],['גרסה',window.APPV||'']];
+  d.innerHTML=`<h2 style="margin:0 0 12px">בדיקת תקינות</h2><p style="opacity:.8;margin:0 0 12px">צלמו את המסך ושלחו לשלומי.</p><table style="width:100%;border-collapse:collapse">${rows.map(r=>`<tr><td style="padding:6px 0;opacity:.75;white-space:nowrap;vertical-align:top">${r[0]}</td><td style="padding:6px 8px;word-break:break-all">${esc(String(r[1]))}</td></tr>`).join('')}</table>
+   <button class="gbtn" id="pdtest" style="margin-top:16px;width:100%">רישום התראות מחדש</button><button class="gbtn alt" id="pdclose" style="margin-top:10px;width:100%">סגירה</button>`}
 /* organizers: a gentle button, never blocking */
 function pushSync(){
   let b=document.getElementById('opush');
@@ -4925,6 +4951,9 @@ document.addEventListener('click',e=>{
   const T=e.target;
   if(T.closest('#pask')){askPush();return}
   if(T.closest('#pchk')){location.reload();return}
+  if(T.closest('#pdiag')){e.preventDefault();showDiag();return}
+  if(T.closest('#pdtest')){try{localStorage.removeItem('tokSaved')}catch(x){}pushToken(true).then(ok=>{if(ok)toast('נרשם בהצלחה');showDiag()});return}
+  if(T.closest('#pdclose')){const d=document.getElementById('pdbox');if(d)d.remove();return}
   if(T.closest('#pcopy')){const l=appLink();(navigator.clipboard?navigator.clipboard.writeText(l):Promise.reject()).then(()=>toast('הקישור הועתק. הדביקו אותו בדפדפן'),()=>prompt('העתיקו את הקישור:',l));return}
   if(T.closest('#pskip')){try{sessionStorage.setItem('skipInst','1')}catch(x){}pgate();return}
   if(T.closest('#pinst')&&DEFER){DEFER.prompt();DEFER.userChoice.finally(()=>{DEFER=null;pgate()});return}
@@ -4945,7 +4974,7 @@ setInterval(pgate,4000);
   let l=document.querySelector('link[rel="manifest"]');if(!l){l=document.createElement('link');l.rel='manifest';document.head.appendChild(l)}l.href=url;
 }catch(e){}})();
 
-const _pickMeBase=pickMe;pickMe=function(){if(GUEST()||!ROLE)return;_pickMeBase();const sh=document.querySelector('#scrim .sheet');if(sh&&ROLE==='org'){const hd=document.createElement('div');hd.className='ghead pm-h';hd.innerHTML='<span>תצוגה ויציאה</span>';sh.appendChild(hd);const b=document.createElement('button');b.className='btn';b.style.cssText='width:100%';b.textContent='👁 תצוגת משתתף (כך זה נראה להם)';b.onclick=()=>{closeSheet();setPrev(true)};sh.appendChild(b);const o=document.createElement('button');o.className='btn ghost';o.style.cssText='margin-top:10px;width:100%';o.textContent='🚪 יציאה וכניסה מחדש כמשתתף';o.onclick=()=>{closeSheet();logoutRole()};sh.appendChild(o)}};
+const _pickMeBase=pickMe;pickMe=function(){if(GUEST()||!ROLE)return;_pickMeBase();const sh=document.querySelector('#scrim .sheet');if(sh&&ROLE==='org'){const hd=document.createElement('div');hd.className='ghead pm-h';hd.innerHTML='<span>תצוגה ויציאה</span>';sh.appendChild(hd);const b=document.createElement('button');b.className='btn';b.style.cssText='width:100%';b.textContent='👁 תצוגת משתתף (כך זה נראה להם)';b.onclick=()=>{closeSheet();setPrev(true)};sh.appendChild(b);const o=document.createElement('button');o.className='btn ghost';o.style.cssText='margin-top:10px;width:100%';o.textContent='🚪 יציאה וכניסה מחדש כמשתתף';o.onclick=()=>{closeSheet();logoutRole()};sh.appendChild(o);const dg=document.createElement('button');dg.className='btn ghost';dg.style.cssText='margin-top:10px;width:100%';dg.textContent='🔧 בדיקת תקינות והתראות';dg.onclick=()=>{closeSheet();showDiag()};sh.appendChild(dg)}};
 document.body.classList.toggle('guest',GUEST());if(!ROLE||!TRIP_KEY)showGate();
 let SEEN_MARKED=false;const _r2=render;render=function(a){_r2(a);if(!SEEN_MARKED&&ROLE.startsWith('guest:')&&!PREV&&db&&loaded.has('participants')){SEEN_MARKED=true;let done=false;try{done=sessionStorage.getItem('seenMark')==='1'}catch(e){}if(!done){try{sessionStorage.setItem('seenMark','1')}catch(e){}const now=new Date().toISOString(),inst=isStandalone(),nt=('Notification' in window)?Notification.permission:'none',me=meG();
    gset('participants/'+ROLE.slice(6),{seenAt:now,lastAt:now,notif:nt,viaSpouse:false,...(inst?{inst:true}:{})});
@@ -4962,7 +4991,7 @@ render(true);
   // the log and the trash only grow: take the newest, not whichever 1000 Firestore returns first
   const NEWEST={activity:600,trash:300}, q=c=>NEWEST[c]?db.collection(c).orderBy('at','desc').limit(NEWEST[c]):db.collection(c).limit(1000);
   COLS.forEach(c=>q(c).onSnapshot(s=>{S[c]=s.docs.map(d=>({...d.data(),_id:d.id}));loaded.add(c);later()},
-    e=>{document.getElementById('banner').innerHTML=`<p class="banner">${e&&e.code==='permission-denied'?'אין גישה לנתונים. ודאו שעדכנתם את חוקי Firebase (ההוראות אצל Claude).':'החיבור נותק. רעננו את הדף.'}</p>`}));
+    e=>{diagE('listen '+c,e);document.getElementById('banner').innerHTML=`<p class="banner">${e&&e.code==='permission-denied'?'אין גישה לנתונים. ודאו שעדכנתם את חוקי Firebase (ההוראות אצל Claude).':'החיבור נותק. רעננו את הדף.'}</p>`}));
   if(!ME)setTimeout(()=>{if(!ME&&!document.getElementById('scrim'))pickMe()},1200);
 })();
 const netBanner=()=>{const b=document.getElementById('banner');if(!navigator.onLine)b.innerHTML='<p class="banner off">אין קליטה. רואים את המידע האחרון שנשמר בטלפון, ומה שתשנו יישלח לצוות כשתחזור הקליטה.</p>';else if(b.querySelector('.off'))b.innerHTML=''};
@@ -4975,7 +5004,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B='16527425d9';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='27efa340cc';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
