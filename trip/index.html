@@ -4154,16 +4154,18 @@ IX.sim='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=
 const IOS_=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const appUrl=(pkg,ios)=>/Android/i.test(navigator.userAgent)?`intent://#Intent;package=${pkg};S.browser_fallback_url=${encodeURIComponent('https://play.google.com/store/apps/details?id='+pkg)};end`:IOS_?ios:'https://play.google.com/store/apps/details?id='+pkg;
 const EXT={
-  gw:{t:'צ׳ק־אין באל על',ic:IX.ci,web:'https://www.elal.com/heb/',app:()=>appUrl('il.co.elal.mobile','https://apps.apple.com/il/app/id424006807'),
-    p:'הצ׳ק־אין לטיסות אל על נפתח 24 שעות לפני ההמראה. עושים אותו באתר או באפליקציה של אל על, ושומרים את כרטיס העלייה למטוס בטלפון.',
-    steps:['פותחים את האתר או האפליקציה של אל על','בוחרים "צ׳ק־אין" ומקלידים את מספר ההזמנה ושם המשפחה באנגלית','בוחרים מושבים, מאשרים, ושומרים את כרטיס העלייה למטוס']},
+  gw:{t:'צ׳ק־אין לטיסה',ic:IX.ci,web:'https://www.elal.com/heb/',app:()=>appUrl('il.co.elal.mobile','https://apps.apple.com/il/app/id424006807'),
+    p:'הצ׳ק־אין נפתח 24 שעות לפני ההמראה. עושים אותו באתר או באפליקציה של חברת התעופה, ושומרים את כרטיס העלייה למטוס בטלפון.',
+    steps:['פותחים את האתר או האפליקציה של חברת התעופה','בוחרים "צ׳ק־אין" ומקלידים את מספר ההזמנה ושם המשפחה באנגלית','בוחרים מושבים, מאשרים, ושומרים את כרטיס העלייה למטוס']},
   gb:{t:'ביטוח נסיעות',ic:IX.shield,web:'https://www.passportcard.co.il/travel-insurance/',app:()=>'https://pfs-personal.passportcard.co.il/',
     p:'מזמינים ביטוח נסיעות לחו״ל בפספורטכארד, באתר או באפליקציה. כדאי להזמין לפני הטיסה ולכלול את כל ימי המסע (19–22.11).',
     steps:['בוחרים יעד: הונגריה','תאריכים: 19.11 עד 22.11','ממלאים פרטים של כל נוסע ומשלמים']},
   gn:{t:'eSIM לגלישה בהונגריה',ic:IX.sim,web:'https://voyeglobal.com/he/esim/hungary/',app:()=>'https://voye-esim.app.link/LW3r4oRt84b',coupon:'REF-16C6181D',
     p:'כרטיס סים דיגיטלי (eSIM) של Voye לגלישה בהונגריה, בלי להחליף כרטיס בטלפון. יש הנחה עם קוד הקופון שלנו.',
     steps:['בוחרים חבילה להונגריה','בקופה מדביקים את קוד הקופון','מתקינים את ה־eSIM בטלפון לפני הטיסה, ומפעילים בנחיתה']}};
-const isElAl=f=>!!f&&(/^\s*LY/i.test(String(f.flightNo||''))||/אל ?על|el ?al/i.test(String(f.label||'')+' '+String(f.notes||'')));
+const isElAl=f=>!!f&&(/^\s*LY/i.test(String(f.flightNo||''))||/אל ?על|el ?al/i.test(String(f.label||'')+' '+String(f.notes||''))||!!CI_SITE[String(f.flightNo||'').replace(/\s+/g,'').slice(0,2).toUpperCase()]);
+/* airlines on a person's flights that have a check-in site (El Al, Arkia, ...) */
+const ciAirlines=ppl=>{const seen=new Set(),o=[];elalFlights(ppl).forEach(x=>{const c=/^\s*LY/i.test(String(x.f.flightNo||''))?'LY':String(x.f.flightNo||'').replace(/\s+/g,'').slice(0,2).toUpperCase();if(!seen.has(c)){seen.add(c);o.push(c)}});return o};
 const flyElAl=ppl=>['הלוך','חזור'].some(d=>flightGroups(ppl,d).some(g=>isElAl(g.f)));
 /* the trip programme, at a glance on the home screen: one column per day, tap to open that day */
 /* the trip programme: one slim gold full-width button on the home screen, under the flight card */
@@ -4172,7 +4174,7 @@ function progCard(){if(!PROG.length)return '';const f=PROG[0],l=PROG[PROG.length
 function prepHTML(ppl){
   const el=flyElAl(ppl), fl=el?elalFlights(ppl):[], ciN=fl.filter(x=>ciDoneFor(x.f,x.on)).length;
   const t=(k,ic,l,sub,ok,i)=>`<button class="gpt ${ok?'ok':''} ${GNEW[k]?'nw':''}" data-gnav="${k}" style="--i:${i}"><span class="gpt-i">${ic}</span><b>${l}</b><small>${sub}</small>${ok?'<em class="gpt-ok">✓</em>':''}</button>`;
-  const items=[el&&t('gw',IX.ci,'צ׳ק־אין',ciN?(ciN===fl.length?'בוצע':`${ciN} מתוך ${fl.length}`):'אל על',fl.length&&ciN===fl.length,0),
+  const items=[el&&t('gw',IX.ci,'צ׳ק־אין',ciN?(ciN===fl.length?'בוצע':`${ciN} מתוך ${fl.length}`):fl.map(x=>CI_SITE[/^\s*LY/i.test(String(x.f.flightNo||''))?'LY':String(x.f.flightNo||'').replace(/\s+/g,'').slice(0,2).toUpperCase()]).filter(Boolean).map(x=>x[0]).filter((v,i,a)=>a.indexOf(v)===i).join(' · ')||'אל על',fl.length&&ciN===fl.length,0),
     t('gb',IX.shield,'ביטוח','פספורטכארד',insDoneFor(ppl),1),t('gn',IX.sim,'eSIM','קוד הנחה',false,2)].filter(Boolean);
   return `<section class="gprep" aria-label="לפני הטיסה" style="--n:${items.length}">${items.join('')}</section>`}
 const PACK_DEF=['דרכון בתוקף','כרטיס אשראי ומעט מזומן','תפילין וציצית','בגדי שבת','מעיל חם ומטרייה (בנובמבר בבודפשט קר)','מטען לנייד ומתאם חשמל','תרופות אישיות','סידור או ספר','כרטיס העלייה למטוס בטלפון','אוזניות ומטען נייד','אוכל ושתייה לדרך','בגדים חמים לקרעסטיר'],PACK_MUST=[0,1,2,6];
@@ -4198,7 +4200,7 @@ function preTasks(ppl,ciL){const ins=ppl.length&&ppl.every(p=>p.insDone);
   const t=(ok,ic,ti,sub,body)=>`<div class="gtask pre ${ok?'done':''}"><div class="gth"><b>${ic} ${ti}</b><span class="pill ${ok?'p-ok':'p-warn'}">${ok?'בוצע ✓':sub}</span></div>${body}</div>`;
   let h=t(ins,'🛡','ביטוח נסיעות לחו״ל','עוד לא סומן',`<p>מזמינים בפספורטכארד ומסמנים כאן.</p>${extReport('gb',ppl)}<div class="gta"><button class="btn" data-gnav="gb">לפרטים והזמנה ›</button></div>`);
   if(flyElAl(ppl)&&!ciL.length){const fl=elalFlights(ppl),dn=fl.filter(x=>ciDoneFor(x.f,x.on)).length;
-    h+=t(dn===fl.length,'✈','צ׳ק־אין לטיסות',`${dn}/${fl.length}`,`<p>הצ׳ק־אין נפתח 24 שעות לפני כל טיסה. אחרי שעשיתם, מסמנים כאן.</p>${extReport('gw',ppl)}<div class="gta"><button class="btn" data-gnav="gw">לאתר ולאפליקציה של אל על ›</button></div>`)}
+    h+=t(dn===fl.length,'✈','צ׳ק־אין לטיסות',`${dn}/${fl.length}`,`<p>הצ׳ק־אין נפתח 24 שעות לפני כל טיסה. אחרי שעשיתם, מסמנים כאן.</p>${extReport('gw',ppl)}<div class="gta"><button class="btn" data-gnav="gw">לאתר ולאפליקציה של חברת התעופה ›</button></div>`)}
   return h}
 function boardHTML(ppl){const fb=flyBoard(ppl);if(fb.length){const at=(k,p)=>S.attendance.some(x=>x._id===k+'__'+p._id&&x.here);
     return fb.map(x=>`<section class="board"><div class="bd-h"><span class="bd-i">${x.dir==='הלוך'?'🛫':'🛬'}</span><span><small>טיסת ${x.dir} · <span class="ltr num">${esc(String(x.f.flightNo||''))}</span> · המראה <span class="num">${esc(x.f.dep||'')}</span></small><b>${x.on.every(p=>at(x.b,p))?'כולכם במטוס ✓ טיסה טובה!':x.on.every(p=>at(x.a,p))?'עליתם למטוס?':'הגעתם '+x.where+'?'}</b></span></div>
@@ -4282,7 +4284,7 @@ function extHTML(k,head,ppl){const x=EXT[k];
   return head(x.t)+`<section class="ext"><div class="ext-i">${x.ic}</div><p class="ext-p">${x.p}</p>${extReport(k,ppl||[])}
    ${x.coupon?`<div class="ext-c"><small>קוד קופון להנחה</small><b class="ltr num" id="cpn">${x.coupon}</b><button class="btn primary" data-copy="${x.coupon}">📋 העתקת הקוד</button></div>`:''}
    <ol class="ext-s">${x.steps.map(t=>`<li>${t}</li>`).join('')}</ol>
-   <div class="ext-a"><a class="btn primary" href="${x.app()}" target="_blank" rel="noopener">📱 פתיחה באפליקציה</a><a class="btn" href="${x.web}" target="_blank" rel="noopener">🌐 לאתר</a></div>
+   <div class="ext-a">${k==='gw'&&!(ciAirlines(ppl||[]).includes('LY')||PREV)?'':`<a class="btn primary" href="${x.app()}" target="_blank" rel="noopener">📱 פתיחה באפליקציה${k==='gw'?' של אל על':''}</a><a class="btn" href="${x.web}" target="_blank" rel="noopener">🌐 לאתר${k==='gw'?' אל על':''}</a>`}${k==='gw'?ciAirlines(ppl||[]).filter(c=>c!=='LY'&&CI_SITE[c]).map(c=>`<a class="btn primary" href="${CI_SITE[c][1]}" target="_blank" rel="noopener">🌐 לאתר ${CI_SITE[c][0]}</a>`).join(''):''}</div>
    <p class="note">אין לכם את האפליקציה? הכפתור פותח את החנות, ומשם אפשר להוריד.</p></section>`}
 const HANNA={name:'מסעדת חנה',q:'Hanna Glatt Kosher Restaurant Kazinczy utca 29 Budapest'};
 const ANDROID=/Android/i.test(navigator.userAgent);
