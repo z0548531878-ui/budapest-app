@@ -1213,6 +1213,7 @@ body.guest button:not(:disabled):active,body.guest .btn:active,body.guest a.gc:a
 .ghelp.g3 .sos{width:100%;justify-content:center}
 .gw.drv .gw-i{background:linear-gradient(150deg,#ffe9a8,#c99a3d)!important;color:#15110a;border:0}
 .gtask.pre .pill.p-warn{white-space:nowrap}
+.gcred{text-align:center;font-size:11.5px;color:#8f846b;margin:14px 0 4px;letter-spacing:.2px}
 .pm+.pm{border-top:1px dashed rgba(214,178,98,.22)}
 .pc .av{width:44px!important;height:44px!important;font-size:16px!important;flex:none;border-radius:50%!important;box-shadow:0 0 0 3px var(--a),0 8px 18px -8px var(--b)}
 .pc .av.nophoto{background:linear-gradient(160deg,#2a251a,#13110c)!important;color:var(--a)!important}
@@ -4640,7 +4641,7 @@ function guestHTML0(){
     const orgP=(nm,fb)=>{const x=S.participants.find(q=>String(q.name||'').includes(nm));return (x&&x.phone)||fb};
     const ORGS=[['שלומי זינגר',ph],['איציק שרייבר',orgP('איציק שרייבר','0543030492')],['יעל שרייבר',orgP('יעל שרייבר','0549251241')]].filter(o=>o[1]);
     const help=`<section class="ghelp g3" aria-label="עזרה"><small class="gh-t">צריכים עזרה? כתבו לנו בוואטסאפ</small>
-      <div class="gh-l">${ORGS.map(([n,t])=>`<a class="gh-w" href="${waLink(t)}" target="_blank" rel="noopener" aria-label="וואטסאפ ל${n}">${IX.wa||'💬'}<span>${n}</span></a>`).join('')}<a class="gh-w sos" href="tel:112" aria-label="חירום 112">112</a></div></section>`;
+      <div class="gh-l">${ORGS.map(([n,t])=>`<a class="gh-w" href="${waLink(t)}" target="_blank" rel="noopener" aria-label="וואטסאפ ל${n}">${IX.wa||'💬'}<span>${n}</span></a>`).join('')}<a class="gh-w sos" href="tel:112" aria-label="חירום 112">112</a></div></section><p class="gcred">פותח על ידי שלומי זינגר · כל הזכויות שמורות ©</p>`;
     return pv+`<div class="ghome">${SKY}<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(coupleLabel(ppl,me)||'')}</b>${dayMood()?`<span class="mood">${dayMood()}</span>`:''}</div></div>
      ${nowCard('data-gnav="gl"')}${voiceCard()}${chCard(1)}${ravCard()}${momentHTML()}${banner}${ciTasks(ppl).filter(c=>!c.done).map(ciCard).join('')}${TRIPDAY()?boardHTML(ppl)+(todayISO()==='2026-11-19'&&first&&Date.now()<depAt(first)+4*36e5?passBlock:'')+tripDayBlock(ppl):boardHTML(ppl)+passBlock+extraOut+ready}${prepHTML(ppl)}${way}
      <div class="gcb">
@@ -5400,7 +5401,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='f2715b62f8';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='e79da8ff74';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
