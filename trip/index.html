@@ -1110,6 +1110,10 @@ body.guest .btn,body.guest button.btn,body.guest a.btn{display:inline-flex;align
 #nav button.nw{color:#f6dc93!important}#nav button.nw svg{filter:drop-shadow(0 0 6px rgba(240,200,110,.9))}#nav button.nw::after{content:'';position:absolute;top:6px;inset-inline-end:calc(50% - 16px);width:8px;height:8px;border-radius:50%;background:#f6dc93;box-shadow:0 0 8px #f0c86e}
 .gc.nw{border-color:#f0c86e!important;box-shadow:0 0 0 1.5px #f0c86e,0 12px 30px -10px rgba(240,200,110,.7)!important}.gc.nw .gc-t{color:#ffe9a8}
 .gc-nw{position:absolute;top:10px;inset-inline-start:10px;z-index:3;font-size:11px;font-weight:900;color:#15110a;background:linear-gradient(180deg,#ffe9a8,#d6a94a);border-radius:99px;padding:2px 9px}
+.ext{display:grid;gap:14px;justify-items:center;text-align:center;padding:6px 2px}.ext-i{width:64px;height:64px;border-radius:20px;display:grid;place-items:center;background:var(--goldbtn,linear-gradient(180deg,#ffe9a8,#c99a3d));color:#15110a}.ext-i svg{width:34px;height:34px}
+.ext-p{margin:0;font-size:15.5px;line-height:1.6;color:#e9dfc4}.ext-s{margin:0;padding:0 22px 0 0;text-align:right;justify-self:stretch;display:grid;gap:6px;font-size:14.5px;color:#cfc3a6}
+.ext-c{justify-self:stretch;display:grid;gap:8px;justify-items:center;border:1.5px dashed #f0c86e;border-radius:20px;padding:14px;background:rgba(240,200,110,.08)}.ext-c small{color:var(--muted);font-weight:800}.ext-c b{font-size:24px;letter-spacing:.5px;font-variant-numeric:normal;color:#ffe9a8;user-select:all;-webkit-user-select:all}
+.ext-a{justify-self:stretch;display:grid;gap:10px}.ext-a .btn{width:100%;text-align:center;justify-content:center;text-decoration:none}
 .pm+.pm{border-top:1px dashed rgba(214,178,98,.22)}
 .pc .av{width:44px!important;height:44px!important;font-size:16px!important;flex:none;border-radius:50%!important;box-shadow:0 0 0 3px var(--a),0 8px 18px -8px var(--b)}
 .pc .av.nophoto{background:linear-gradient(160deg,#2a251a,#13110c)!important;color:var(--a)!important}
@@ -4006,6 +4010,29 @@ IX.car='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=
 IX.tools='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 12.5h18M10.5 12.5v2h3v-2"/></svg>';
 IX.ci='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4z"/><path d="M9.5 12l1.8 1.8 3.4-3.6"/></svg>';
 I.cam=IX.cam;I.car=IX.car;
+IX.shield='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v5c0 4.6-3 8.4-7 10-4-1.6-7-5.4-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>';
+IX.sim='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 3h7l4 4v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><rect x="9" y="11" width="6" height="6" rx="1"/></svg>';
+/* outside services: the website, and the app when it's on the phone (Android opens it straight away; otherwise the store page, which says "Open" when it's installed) */
+const IOS_=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const appUrl=(pkg,ios)=>/Android/i.test(navigator.userAgent)?`intent://#Intent;package=${pkg};S.browser_fallback_url=${encodeURIComponent('https://play.google.com/store/apps/details?id='+pkg)};end`:IOS_?ios:'https://play.google.com/store/apps/details?id='+pkg;
+const EXT={
+  gw:{t:'צ׳ק־אין באל על',ic:IX.ci,web:'https://www.elal.com/heb/',app:()=>appUrl('il.co.elal.mobile','https://apps.apple.com/il/app/id424006807'),
+    p:'הצ׳ק־אין לטיסות אל על נפתח 24 שעות לפני ההמראה. עושים אותו באתר או באפליקציה של אל על, ושומרים את כרטיס העלייה למטוס בטלפון.',
+    steps:['פותחים את האתר או האפליקציה של אל על','בוחרים "צ׳ק־אין" ומקלידים את מספר ההזמנה ושם המשפחה באנגלית','בוחרים מושבים, מאשרים, ושומרים את כרטיס העלייה למטוס']},
+  gb:{t:'ביטוח נסיעות',ic:IX.shield,web:'https://www.passportcard.co.il/travel-insurance/',app:()=>'https://pfs-personal.passportcard.co.il/',
+    p:'מזמינים ביטוח נסיעות לחו״ל בפספורטכארד, באתר או באפליקציה. כדאי להזמין לפני הטיסה ולכלול את כל ימי המסע (19–22.11).',
+    steps:['בוחרים יעד: הונגריה','תאריכים: 19.11 עד 22.11','ממלאים פרטים של כל נוסע ומשלמים']},
+  gn:{t:'eSIM לגלישה בהונגריה',ic:IX.sim,web:'https://voyeglobal.com/he/esim/hungary/',app:()=>'https://voye-esim.app.link/LW3r4oRt84b',coupon:'REF-16C6181D',
+    p:'כרטיס סים דיגיטלי (eSIM) של Voye לגלישה בהונגריה, בלי להחליף כרטיס בטלפון. יש הנחה עם קוד הקופון שלנו.',
+    steps:['בוחרים חבילה להונגריה','בקופה מדביקים את קוד הקופון','מתקינים את ה־eSIM בטלפון לפני הטיסה, ומפעילים בנחיתה']}};
+const isElAl=f=>!!f&&(/^\s*LY/i.test(String(f.flightNo||''))||/אל ?על|el ?al/i.test(String(f.label||'')+' '+String(f.notes||'')));
+const flyElAl=ppl=>['הלוך','חזור'].some(d=>flightGroups(ppl,d).some(g=>isElAl(g.f)));
+function extHTML(k,head){const x=EXT[k];
+  return head(x.t)+`<section class="ext"><div class="ext-i">${x.ic}</div><p class="ext-p">${x.p}</p>
+   ${x.coupon?`<div class="ext-c"><small>קוד קופון להנחה</small><b class="ltr num" id="cpn">${x.coupon}</b><button class="btn primary" data-copy="${x.coupon}">📋 העתקת הקוד</button></div>`:''}
+   <ol class="ext-s">${x.steps.map(t=>`<li>${t}</li>`).join('')}</ol>
+   <div class="ext-a"><a class="btn primary" href="${x.app()}" target="_blank" rel="noopener">📱 פתיחה באפליקציה</a><a class="btn" href="${x.web}" target="_blank" rel="noopener">🌐 לאתר</a></div>
+   <p class="note">אין לכם את האפליקציה? הכפתור פותח את החנות, ומשם אפשר להוריד.</p></section>`}
 const HANNA={name:'מסעדת חנה',q:'Hanna Glatt Kosher Restaurant Kazinczy utca 29 Budapest'};
 const ANDROID=/Android/i.test(navigator.userAgent);
 const BOLT_URL=ANDROID?'intent://#Intent;package=ee.mtakso.client;S.browser_fallback_url='+encodeURIComponent('https://play.google.com/store/apps/details?id=ee.mtakso.client')+';end':'https://bolt.eu/';
@@ -4339,6 +4366,9 @@ function guestHTML0(){
       ${cube('gm',I.chat,'הודעות','עדכונים מהמארגנים',un||'')}
       ${cube('gi',IX.cam,'תמונות מהמסע','מעלים, רואים ומשתפים',(()=>{const n=photoNew();return n||''})())}
       ${cube('gd',IX.car,'נסיעה משותפת לשדה','מתאמים הגעה יחד, הלוך וחזור',rideMine()||'')}
+      ${flyElAl(ppl)?cube('gw',IX.ci,'צ׳ק־אין באל על','באתר או באפליקציה, 24 שעות לפני הטיסה'):''}
+      ${cube('gb',IX.shield,'ביטוח נסיעות','הזמנה בפספורטכארד, באתר או באפליקציה')}
+      ${cube('gn',IX.sim,'eSIM לגלישה','Voye בהונגריה · קוד הנחה בפנים')}
       ${cube('gk',IX.tools,'כלים לדרך','שעון, זמנים, מטבע, ביטויים')}
       ${open?`<a class="gc gtrv" href="trivia/" style="--i:${n++}"><span class="gc-i">${I.spark}</span><span class="gc-t">טריוויה</span><span class="gc-s">משחק לאוטובוס. פתוח עכשיו!</span></a>`:`<button class="gc gtrv locked" data-glock style="--i:${n++}"><span class="gc-i">🔒</span><span class="gc-t">טריוויה</span><span class="gc-s">נפתח כשנחתים בבודפשט</span></button>`}
      </div>
@@ -4466,6 +4496,7 @@ function guestHTML0(){
      ${isPrevOrg()?'':`<button class="btn ghost gout2" id="pdiag">🔧 בדיקת תקינות והתראות</button><button class="btn ghost gout2" id="gout">🚪 יציאה מהחשבון</button>`}</section>`}
   if(GTAB==='gd')return head('נסיעה משותפת לשדה')+`<p class="note">מתאמים ביחד את הדרך לשדה: מי שיש לו מקום ברכב, מי שמחפש טרמפ, ומי שרוצה לחלוק מונית.</p>`+ridesHTML(ppl,me);
   if(GTAB==='gi')return head('תמונות מהמסע')+photosHTML();
+  if(EXT[GTAB]&&(GTAB!=='gw'||flyElAl(ppl)||PREV))return extHTML(GTAB,head);
   if(GTAB==='gk'){
     const rate=(()=>{try{return +localStorage.getItem('huf')||100}catch(e){return 100}})();
     let chk={};try{chk=JSON.parse(localStorage.getItem('chk')||'{}')}catch(e){}
@@ -4541,6 +4572,7 @@ document.addEventListener('click',e=>{
   if(!GUEST()){orgClick(e);return}
   const gd=T.closest('[data-gday]');if(gd){e.stopPropagation();e.preventDefault();V.filter.pd=gd.dataset.gday;render();window.scrollTo({top:0,behavior:'smooth'});return}
   const lk=T.closest('[data-glock]');if(lk){toast('המשחק ייפתח כשננחת בבודפשט 🛬');return}
+  const cp=T.closest('[data-copy]');if(cp){e.preventDefault();const v=cp.dataset.copy;(navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(()=>{toast('הקוד הועתק: '+v);cp.textContent='✓ הועתק'},()=>prompt('העתיקו את הקוד:',v));return}
   const n=T.closest('[data-gnav]');if(n){e.stopPropagation();e.preventDefault();GTAB=n.dataset.gnav;V.seg=null;render(true);window.scrollTo(0,0);return}
   const s=T.closest('[data-gseg]');if(s){V.seg=s.dataset.gseg;render();return}
   const s2=T.closest('[data-gseg2]');if(s2){GSEG=s2.dataset.gseg2;render();return}
@@ -5036,7 +5068,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='c397c8bb67';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='9e70d250ac';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
