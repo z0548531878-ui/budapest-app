@@ -1222,6 +1222,7 @@ body.guest button:not(:disabled):active,body.guest .btn:active,body.guest a.gc:a
  .nav button span,#nav button span{font-size:10px!important;white-space:nowrap;letter-spacing:-.2px}
 }
 .gcb>.gc:has(.gc-b) .gc-t,.gcb>.gc:has(.gc-b) .gc-s{padding-inline-end:46px!important}
+.cplc{border:1px solid rgba(214,178,98,.3);border-radius:18px;margin:0 0 10px;overflow:hidden;background:#12100b}.cplh{display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(214,178,98,.08);border-bottom:1px solid rgba(214,178,98,.18)}.cplh b{flex:1;font-size:15.5px}.cpla{font-weight:800;font-size:14px}.cplc .row{border-radius:0;margin:0;box-shadow:none}
 .pm+.pm{border-top:1px dashed rgba(214,178,98,.22)}
 .pc .av{width:44px!important;height:44px!important;font-size:16px!important;flex:none;border-radius:50%!important;box-shadow:0 0 0 3px var(--a),0 8px 18px -8px var(--b)}
 .pc .av.nophoto{background:linear-gradient(160deg,#2a251a,#13110c)!important;color:var(--a)!important}
@@ -2623,10 +2624,16 @@ const VIEWS={
    return head+incTog+`<div class="card" style="padding:14px;margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-weight:800"><span>שילמו <span class="num">${paidN}</span> מתוך <span class="num">${payers}</span> · נגבה <span class="num">${m.coll}%</span></span><span class="num">${ils(m.pIn)} / ${ils(m.pDue)}</span></div><div class="prog"><i data-w="${pct}%" style="width:0"></i></div></div>
     <div class="chips">${[['open',`עוד לא שילמו`],['paid','שילמו'],['all','כולם']].map(([k,l])=>`<button class="chip" data-filter="pay" data-val="${k}" aria-pressed="${f===k}">${l} <span class="num">${pc[k]}</span></button>`).join('')}<button class="chip" data-remind style="border-color:var(--ok);color:var(--ok)">תזכורת בוואטסאפ</button></div>
     <input class="search" id="q" type="search" placeholder="חיפוש שם" value="${esc(V.q)}">
-    ${card(rows.map(p=>{const c=p.status==='שולם'?'p-ok':p.status==='פטור'?'p-mute':p.status==='שולם חלקית'?'p-warn':'p-bad';
+    ${(()=>{const rowH=p=>{const c=p.status==='שולם'?'p-ok':p.status==='פטור'?'p-mute':p.status==='שולם חלקית'?'p-warn':'p-bad';
      const i=Math.min(rows.indexOf(p),14);return `<div class="row prow" style="--i:${i};--h:${PHUES[0]}" data-edit="participants/${p._id}" role="button" tabindex="0"><span class="av">${esc(famKey(p.name).last[0]||'?')}</span><div class="main"><div class="t"><span class="fn">${esc(famKey(p.name).first)}</span> <b class="ln">${esc(famKey(p.name).last)}</b>${p.baby?' <span title="מגיעים עם תינוק">👶</span>':''}</div>${p.status!=='לא שולם'&&(p.method||holderOf(p))?`<div class="m">${p.method?`<span>${esc(p.method)}</span>`:''}${holderOf(p)?`<span class="who">אצל ${esc(holderOf(p))}</span>`:''}</div>`:''}</div>
      <div class="end"><span class="amt num">${p.status==='פטור'?'—':p.status==='שולם חלקית'?`${ils(paidOf(p))} / ${ils(p.amount)}`:ils(p.amount)}</span></div>
-     <div class="acts"><button class="ab ${c.slice(2)}" data-pay="${p._id}" aria-label="${p.status==='לא שולם'?'רישום תשלום':esc(p.status)}: ${esc(p.name)}">${p.status==='שולם'?'✓':p.status==='פטור'?'—':'₪'}</button>${p.phone?`<a class="ab wa" href="${waLink(p.phone)}" target="_blank" rel="noopener" data-stop aria-label="וואטסאפ ל${esc(p.name)}">💬</a>`:''}</div></div>`}).join(''),f==='open'?'<b>כולם שילמו 🎉</b>':'<b>אין כאן אף אחד</b>')}`;
+     <div class="acts"><button class="ab ${c.slice(2)}" data-pay="${p._id}" aria-label="${p.status==='לא שולם'?'רישום תשלום':esc(p.status)}: ${esc(p.name)}">${p.status==='שולם'?'✓':p.status==='פטור'?'—':'₪'}</button>${p.phone?`<a class="ab wa" href="${waLink(p.phone)}" target="_blank" rel="noopener" data-stop aria-label="וואטסאפ ל${esc(p.name)}">💬</a>`:''}</div></div>`};
+     /* one card per couple: both names, what the couple owes together and what came in */
+     const seen={},cps=[];rows.forEach(p=>{const k=cKey(p);if(seen[k])return;seen[k]=1;cps.push(coupleOf(p).sort((a,b)=>(a.gender==='גבר'?0:1)-(b.gender==='גבר'?0:1)))});
+     if(!cps.length)return card('',f==='open'?'<b>כולם שילמו 🎉</b>':'<b>אין כאן אף אחד</b>');
+     return cps.map((c,ci)=>{const due=c.filter(x=>x.status!=='פטור').reduce((t,x)=>t+(+x.amount||0),0),got=c.reduce((t,x)=>t+paidOf(x),0),st=!due?['p-mute','פטור']:got>=due?['p-ok','שולם ✓']:got>0?['p-warn','חלקית']:['p-bad','לא שולם'];
+       if(c.length<2)return `<div class="cplc solo" style="--i:${Math.min(ci,14)}">${c.map(rowH).join('')}</div>`;
+       return `<div class="cplc" style="--i:${Math.min(ci,14)}"><div class="cplh"><b>${esc(coupleLabel(c,c[0]))}</b><span class="pill ${st[0]}">${st[1]}</span><span class="num cpla">${due?`${ils(got)} / ${ils(due)}`:'—'}</span></div>${c.map(rowH).join('')}</div>`}).join('')})()}`;
   }
   if(seg==='expenses'){
    const out=m.out, left=m.left, finN=S.expenses.filter(isFinal).length, noRec=S.expenses.filter(e=>+e.paid&&!e.receipt).length;
@@ -3233,7 +3240,9 @@ function cashSeg(head){
   const sel=rows.find(r=>r.n===who);
   if(sel){
     const mrow=(t,sub,amt,edit,sign)=>`<div class="row" data-edit="${edit}" role="button" tabindex="0"><div class="main"><div class="t">${esc(t)}</div>${sub?`<div class="m"><span>${esc(sub)}</span></div>`:''}</div><span class="amt num" style="color:${sign>0?'var(--ok)':'var(--bad)'}">${sign>0?'+':'−'}${ils(amt)}</span></div>`;
-    detail=`<div class="ghead"><span>נכנס ל${esc(sel.n)}</span><span class="num">${ils(sel.inn)}</span></div>`+card(sel.pin.sort((a,b)=>a.name.localeCompare(b.name,'he')).map(p=>mrow(p.name,p.status==='שולם חלקית'?`${p.method||''} · תשלום חלקי`:p.method,paidOf(p),'participants/'+p._id,1)).join('')+sel.din.map(d=>mrow('תרומה: '+d.donor,d.method,d.amount,'donations/'+d._id,1)).join(''),'<b>עוד לא נכנס כסף</b>')
+    detail=`<div class="ghead"><span>נכנס ל${esc(sel.n)}</span><span class="num">${ils(sel.inn)}</span></div>`+card((()=>{const g={};sel.pin.forEach(p=>{const k=cKey(p);(g[k]=g[k]||[]).push(p)});
+      return Object.values(g).map(ps=>{const c=coupleOf(ps[0]),m=[...new Set(ps.map(x=>x.method).filter(Boolean))].join(' · '),part=ps.some(x=>x.status==='שולם חלקית');
+        return mrow(coupleLabel(c,ps[0])||ps[0].name,[ps.length<c.length?'רק '+ps.map(x=>firstN(x.name)).join(' ו'):'',m,part?'תשלום חלקי':''].filter(Boolean).join(' · '),ps.reduce((t,x)=>t+paidOf(x),0),'participants/'+ps[0]._id,1)}).sort((a,b)=>a.localeCompare(b,'he')).join('')})()+sel.din.map(d=>mrow('תרומה: '+d.donor,d.method,d.amount,'donations/'+d._id,1)).join(''),'<b>עוד לא נכנס כסף</b>')
      +`<div class="ghead"><span>יצא מ${esc(sel.n)}</span><span class="num">${ils(sel.o)}</span></div>`+card(sel.out.map(e=>mrow(e.name,e.category,e.paid,'expenses/'+e._id,-1)).join(''),'<b>עוד לא שילם כלום</b>');
   }
   const unk=un.length+und.length;
@@ -5415,7 +5424,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='ce6e3a4b85';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='9cb7da3768';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
