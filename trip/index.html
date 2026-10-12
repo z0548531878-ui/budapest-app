@@ -4586,7 +4586,8 @@ document.addEventListener('click',async e=>{const v=document.getElementById('phv
   document.addEventListener('touchend',e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0;x0=null;const v=document.getElementById('phv');if(!v||Math.abs(dx)<50)return;const L=v._L||[],n=PHI+(dx>0?1:-1);if(n<0||n>=L.length)return;PHI=n;phShow(L)},{passive:true});
   document.addEventListener('keydown',e=>{if(e.key==='Escape')phClose()})})();
 const progDay=()=>{const t=todayISO(),def=t==='2026-11-20'?'fri':t==='2026-11-21'?'sat':'thu';return V.filter.pd||def};
-function guestHTML(){const h=guestHTML0();return GTAB==='gh'?h:h+`<button class="gback bot" data-gnav="gh"><span>›</span><b>חזרה למסך הבית</b></button>`}
+/* one back button per screen: the top one, which stays in view while scrolling */
+function guestHTML(){return guestHTML0()}
 function guestHTML0(){
   // until the trip's data arrives: the shape of the screen, not half-empty cards
   if(!ready('participants','settings','tasks'))return `<div class="gload" aria-busy="true" aria-label="טוען את נתוני המסע"><div class="skel shimmer" style="height:22px;width:45%"></div><div class="skel shimmer" style="height:150px"></div><div class="gl2"><div class="skel shimmer"></div><div class="skel shimmer"></div><div class="skel shimmer"></div><div class="skel shimmer"></div></div></div>`;
@@ -4667,7 +4668,7 @@ function guestHTML0(){
           ge:()=>cube('ge',IX.coin,'חשבון משותף','מי שילם, ומי חייב למי',(()=>{const b=me?Object.values(splitBal(me)).filter(v=>v<=-1).length:0;return b||''})())};
         const ord=TRIPDAY()?['gs','gm','gi','gx','gz','gp','gk','gd']:['gs','gm','gd','gp','gx','gz','gk','gi'];
         return ord.map(k=>C[k]()).join('')})()}
-      ${open?`<a class="gc gtrv" href="trivia/" style="--i:${n++}"><span class="gc-i">${I.spark}</span><span class="gc-t">טריוויה</span><span class="gc-s">משחק לאוטובוס. פתוח עכשיו!</span></a>`:`<button class="gc gtrv locked" data-glock style="--i:${n++}"><span class="gc-i">🔒</span><span class="gc-t">טריוויה</span><span class="gc-s">נפתח כשנחתים בבודפשט</span></button>`}
+      <a class="gc gtrv" href="trivia/?lock=1" style="--i:${n++}"><span class="gc-i">${I.spark}</span><span class="gc-t">טריוויה על גלגלים</span><span class="gc-s">${open?'כל המשחקים פתוחים. בהצלחה!':'משחק עצמאי פתוח · ראש בראש וקבוצתי ביום המסע'}</span></a>
      </div>
      ${flightGroups(ppl,'חזור').map(g=>guestFlightCard(g,ppl,'חזור')).join('')}
      ${help}</div>`}
@@ -5411,7 +5412,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='b27896d9f1';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='aefeabdd8d';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>

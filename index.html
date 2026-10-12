@@ -879,6 +879,7 @@ button,a,.btn,.answer-btn{touch-action:manipulation;}
 .q-photo.crop{overflow:hidden;}
 .q-photo.crop .crop-in{width:100%;transform-origin:50% 50%;}
 .q-photo.crop img{display:block;}
+#s-landing .btn.locked-trip{opacity:.55;filter:grayscale(.5);display:flex;flex-direction:column;align-items:center;gap:2px}#s-landing .btn.locked-trip .lk-note{font-size:13px;font-weight:800;opacity:.95}
 </style>
 </head>
 <body>
@@ -3202,6 +3203,7 @@ let soloState=null;
 let hostAlertedFor=null, playerRoomUnsub=null, playerListUnsub=null;
 
 function $(id){return document.getElementById(id);}
+const TRIP_LOCK=(()=>{try{const q=new URLSearchParams(location.search);if(q.get('lock')==='1')sessionStorage.setItem('tripLock','1');return sessionStorage.getItem('tripLock')==='1'&&Date.now()<Date.parse('2026-11-19T00:00:00+02:00')}catch(e){return false}})();
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active'); fxOnScreen(id);}
 function genId(){return Math.random().toString(36).slice(2,10);}
 // מנקה טקסט לפני שמכניסים אותו ל-HTML — כולל מירכאות, כי שמות נכנסים גם לתוך מאפיינים (title="...")
@@ -4127,8 +4129,8 @@ function init(){
   if(rp){ roomCode = rp.toUpperCase(); showScreen('s-pjoin'); }
   else if(params.get('join')){ roomCode = null; showScreen('s-pjoin'); }
   // נכנסו מהתראה — ישר למסך המתאים
-  else if(location.hash==='#duel') setTimeout(()=>{ try{ duelEntry(); }catch(e){} }, 200);
-  else if(location.hash==='#group'){ roomCode = null; renderPjoin(); showScreen('s-pjoin'); }
+  else if(location.hash==='#duel'&&!TRIP_LOCK) setTimeout(()=>{ try{ duelEntry(); }catch(e){} }, 200);
+  else if(location.hash==='#group'&&!TRIP_LOCK){ roomCode = null; renderPjoin(); showScreen('s-pjoin'); }
   pushBtnInit();
 }
 // ---------- התראות על משחקים (ראש בראש שמחכה ליריב, משחק קבוצתי שנפתח) ----------
@@ -4169,7 +4171,10 @@ $('btn-host').addEventListener('click', ()=>{
   if(entered.trim()!==HOST_PIN){ alert('קוד שגוי — רק המנחה המורשה יכול לפתוח חדר.'); return; }
   hostStart();
 });
-$('btn-join-manual').addEventListener('click', ()=>{ roomCode = null; renderPjoin(); showScreen('s-pjoin'); });
+function tripLockBtns(){if(!TRIP_LOCK)return;[['btn-duel','⚔️ משחק ראש בראש'],['btn-join-manual','👥 משחק קבוצתי']].forEach(([id,t])=>{const b=$(id);if(!b)return;b.classList.add('locked-trip');b.setAttribute('aria-disabled','true');b.innerHTML=t+'<small class="lk-note">🔒 ייפתח ביום המסע</small>'})}
+const tripLocked=()=>{if(!TRIP_LOCK)return false;try{alert('ייפתח ביום המסע 🚌\nבינתיים אפשר לשחק במשחק העצמאי');}catch(e){}return true};
+tripLockBtns();
+$('btn-join-manual').addEventListener('click', ()=>{ if(tripLocked())return; roomCode = null; renderPjoin(); showScreen('s-pjoin'); });
 document.addEventListener('visibilitychange', ()=>{
   if(document.visibilityState!=='visible' || role!=='player' || !roomCode || !playerId) return;
   lobbyBeat();
@@ -4182,7 +4187,7 @@ function renderPjoin(){
   entryWire('pjoin-name','btn-pjoin-go');
 }
 $('btn-solo').addEventListener('click', soloEntry);
-$('btn-duel').addEventListener('click', duelEntry);
+$('btn-duel').addEventListener('click', ()=>{ if(tripLocked())return; duelEntry(); });
 
 // ---------- Timer (bar) ----------
 function clearQTimer(){ if(timerHandle){clearInterval(timerHandle); timerHandle=null;} stopMusic(); document.body.classList.remove('tick-danger'); }
