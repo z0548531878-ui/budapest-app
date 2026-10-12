@@ -1682,7 +1682,7 @@ body.guest .ghome .greet b{font-size:36px;text-shadow:0 0 28px rgba(240,210,140,
 .ri-t{flex:1;min-width:0}.ri-t b{display:block;font-size:16px}.ri-t small{display:block;font-size:12.5px;color:var(--muted);margin-top:1px}
 .ri-c{font-size:20px;font-weight:900;color:var(--gold)}
 .ri.ok .ri-c{color:#0d2a1a;background:#7fd1a5;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:15px;animation:pop .5s cubic-bezier(.2,1.6,.4,1) both;animation-delay:calc(1s + var(--i,0)*150ms)}
-.ri.bad{border-color:rgba(255,160,120,.55);background:rgba(255,140,100,.08)}.ri.bad .ri-c{animation:nudge 1.4s ease-in-out infinite}
+.ri.bad{border-color:rgba(255,160,120,.55);background:rgba(255,140,100,.08)}.ri.mid{border-color:rgba(240,200,110,.6);background:rgba(240,200,110,.09)}.ri-p{font-style:normal;font-size:12px;font-weight:800;color:#f6dc93;background:rgba(240,200,110,.16);border-radius:99px;padding:1px 7px;margin-inline-start:4px}.ri.bad .ri-c{animation:nudge 1.4s ease-in-out infinite}
 @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}@keyframes nudge{50%{transform:translateX(-5px)}}
 .ri.rnav{background:transparent;border-style:dashed}
 @supports (animation-timeline:view()){
@@ -4290,11 +4290,15 @@ function guestHTML0(){
       return `<div class="gst">${pay}${pass}${nav}${todo}</div>`})();
     const ready=(()=>{
       const need=ppl.filter(x=>x.status!=='פטור'&&+x.amount>0),tot=need.reduce((a,x)=>a+(+x.amount||0),0),got=need.reduce((a,x)=>a+paidOf(x),0),dOp=[]/*donations are for organizers only*/.filter(d=>d.status!=='התקבל').reduce((a,d)=>a+(+d.amount||0),0),tripOk=!need.length||got>=tot,payOk=tripOk&&!dOp,passOk=ppl.every(x=>x.passport);
-      const items=[[payOk,'התשלום',payOk?(!need.length?'פטור, אין מה לשלם':`שולם ${ils(got)}`):`נותר לתשלום ${ils(Math.max(0,tot-got)+dOp)}${dOp?(tripOk?' (התרומה)':` (כולל תרומה ${ils(dOp)})`):''}`,'gf',IX.coin],[passOk,'צילום דרכון',passOk?'התקבל, תודה':ppl.filter(x=>!x.passport).map(x=>esc(firstN(x.name))).join(' ו')+' · לחצו לשליחה','gf',IX.pass]];
-      const ok=items.filter(x=>x[0]).length,pct=Math.round(ok/items.length*100),R=52,C=2*Math.PI*R;
-      return `<section class="rdy ${pct===100?'full':''}" aria-label="מה המארגנים צריכים מכם: ${ok} מתוך ${items.length} הושלמו"><div class="rdy-top"><div class="rdy-ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="${R}" fill="none" stroke="rgba(214,178,98,.18)" stroke-width="8"/><circle class="rg" cx="60" cy="60" r="${R}" fill="none" stroke="url(#rdg)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" style="--c:${C};--o:${C*(1-pct/100)}" transform="rotate(-90 60 60)"/><defs><linearGradient id="rdg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b8862f"/><stop offset="1" stop-color="#ffe9a8"/></linearGradient></defs></svg><b class="num">${pct}%</b></div>
-       <div class="rdy-h"><small>מה המארגנים צריכים מכם</small><b>${pct===100?'הכל התקבל ✓':ok+' מתוך '+items.length+' הושלמו'}</b><span>${pct===100?'התשלום והדרכון אצלנו':'תשלום וצילום דרכון'}</span></div></div>
-       <div class="rdy-l">${items.map(([o,l,sb,g,ic],i)=>{const t=o?'div':'button';return `<${t} class="ri ${o?'ok':'bad'}" ${o?'':`data-gnav="${g}"`} style="--i:${i}"><span class="ri-i">${ic}</span><span class="ri-t"><b>${l}</b><small>${sb}</small></span><span class="ri-c">${o?'✓':'‹'}</span></${t}>`}).join('')}
+      // each item counts by how much of it is done: half the payment, one passport of two
+      const pf=payOk?1:tot?Math.min(1,got/tot):0, hasP=ppl.filter(x=>x.passport), sf=ppl.length?hasP.length/ppl.length:1;
+      const nm=a=>a.map(x=>esc(firstN(x.name))).join(' ו');
+      const items=[[payOk,'התשלום',payOk?(!need.length?'פטור, אין מה לשלם':`שולם ${ils(got)}`):got>0?`שולם ${ils(got)} מתוך ${ils(tot)} · נותר ${ils(Math.max(0,tot-got))}`:`לתשלום ${ils(Math.max(0,tot-got))}`,'gf',IX.coin,pf],
+        [passOk,'צילום דרכון',passOk?'התקבל, תודה':hasP.length?`התקבל של ${nm(hasP)} · חסר של ${nm(ppl.filter(x=>!x.passport))}`:nm(ppl)+' · לחצו לשליחה','gf',IX.pass,sf]];
+      const ok=items.filter(x=>x[0]).length,pct=Math.round(items.reduce((a,x)=>a+x[5],0)/items.length*100),some=items.some(x=>x[5]>0),R=52,C=2*Math.PI*R;
+      return `<section class="rdy ${pct===100?'full':''}" aria-label="מה המארגנים צריכים מכם: ${pct}% הושלם"><div class="rdy-top"><div class="rdy-ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="${R}" fill="none" stroke="rgba(214,178,98,.18)" stroke-width="8"/><circle class="rg" cx="60" cy="60" r="${R}" fill="none" stroke="url(#rdg)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" style="--c:${C};--o:${C*(1-pct/100)}" transform="rotate(-90 60 60)"/><defs><linearGradient id="rdg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b8862f"/><stop offset="1" stop-color="#ffe9a8"/></linearGradient></defs></svg><b class="num">${pct}%</b></div>
+       <div class="rdy-h"><small>מה המארגנים צריכים מכם</small><b>${pct===100?'הכל התקבל ✓':ok?ok+' מתוך '+items.length+' הושלמו':some?'חלק כבר התקבל':'מחכים לכם'}</b><span>${pct===100?'התשלום והדרכון אצלנו':'תשלום וצילום דרכון'}</span></div></div>
+       <div class="rdy-l">${items.map(([o,l,sb,g,ic,f],i)=>{const t=o?'div':'button';return `<${t} class="ri ${o?'ok':f>0?'mid':'bad'}" ${o?'':`data-gnav="${g}"`} style="--i:${i}"><span class="ri-i">${ic}</span><span class="ri-t"><b>${l}${!o&&f>0?` <em class="ri-p num">${Math.round(f*100)}%</em>`:''}</b><small>${sb}</small></span><span class="ri-c">${o?'✓':'‹'}</span></${t}>`}).join('')}
 </div></section>`})();
     const way=`<section class="gway" aria-label="בדרכים">
       <a class="gw" style="--i:0" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener"><span class="gw-i">${IX.nav}</span><span class="gw-x"><b>ניווט למלון</b><small>הליכה במפות</small></span></a>
@@ -5011,7 +5015,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='a5ef982d78';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='d5a2eab543';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
