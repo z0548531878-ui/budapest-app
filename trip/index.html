@@ -4053,6 +4053,7 @@ let ROLE='';try{ROLE=localStorage.getItem('role')||''}catch(e){}
 /* an organizer session must carry a valid proof of the code; otherwise it falls back to the entry screen */
 if(ROLE==='org'){let pr='';try{pr=localStorage.getItem('orgProof')||''}catch(e){}setTimeout(async()=>{let ok=false;try{ok=!!pr&&(await sha(pr))===ORG_CHK}catch(e){}if(!ok&&ROLE==='org'){try{localStorage.removeItem('orgProof')}catch(e){}logoutRole()}},0)}
 let PREV=false;try{PREV=sessionStorage.getItem('prev')==='1'}catch(e){}
+let PREVID='';try{PREVID=sessionStorage.getItem('prevId')||''}catch(e){}
 const GUEST=()=>ROLE.startsWith('guest:')||(ROLE==='org'&&PREV);
 function setPrev(v){PREV=v;try{sessionStorage.setItem('prev',v?'1':'0')}catch(e){}GTAB='gh';V.seg=null;document.body.classList.toggle('guest',GUEST());render(true);window.scrollTo(0,0)}
 const normName=s=>String(s||'').replace(/[֑-ׇ]/g,'').replace(/["'׳״`’]/g,'').replace(/^הרב(נית)?\s+/,'').replace(/\s+/g,' ').trim();
@@ -4343,7 +4344,7 @@ const PLACES=[
 let GKIT='todo';
 let GTAB=(()=>{try{const m=location.hash.match(/tab=(g[a-z])\b/);return m&&GNAV.concat([['gm'],['gk'],['gx'],['gp'],['gf']]).some(n=>n[0]===m[1])?m[1]:'gh'}catch(e){return 'gh'}})(), GSEG='open', GGEN='all', GQ='';
 const DRAFT={annTitle:'',annText:'',reqText:'',reqCat:'אחר'};
-const meG=()=>{if(PREV&&ROLE==='org'){return S.participants.find(p=>p.name==='חיים פולק')||S.participants.find(p=>p.name==='שלומי זינגר')||null}return S.participants.find(p=>p._id===ROLE.slice(6))||null};
+const meG=()=>{if(PREV&&ROLE==='org'){return (PREVID&&S.participants.find(p=>p._id===PREVID))||S.participants.find(p=>p.name==='חיים פולק')||S.participants.find(p=>p.name==='שלומי זינגר')||null}return S.participants.find(p=>p._id===ROLE.slice(6))||null};
 const isPrevOrg=()=>PREV&&ROLE==='org';
 const landingMs=()=>{const f=S.flights.find(f=>f._id==='f1')||S.flights.find(f=>f.dir==='הלוך');if(!f)return 0;const a=(f.arr||'12:00').replace(/[^\d:]/g,'').padStart(5,'0');return new Date(`${f.date||'2026-11-19'}T${a}:00+01:00`).getTime()};
 const triviaOpen=()=>Date.now()>=landingMs();
@@ -4610,7 +4611,7 @@ function guestHTML0(){
   // until the trip's data arrives: the shape of the screen, not half-empty cards
   if(!ready('participants','settings','tasks'))return `<div class="gload" aria-busy="true" aria-label="טוען את נתוני המסע"><div class="skel shimmer" style="height:22px;width:45%"></div><div class="skel shimmer" style="height:150px"></div><div class="gl2"><div class="skel shimmer"></div><div class="skel shimmer"></div><div class="skel shimmer"></div><div class="skel shimmer"></div></div></div>`;
   const me=meG(), ppl=coupleOf(me);
-  const pv=isPrevOrg()?`<div class="prevbar">👁 כך זה נראה למשתתפים<button id="prevx">חזרה למארגן</button></div>`:'';
+  const pv=isPrevOrg()?`<div class="prevbar"><span>👁 כך זה נראה ל${esc((meG()||{}).name||'משתתפים')}</span><span style="display:flex;gap:6px"><button id="prevsw">החלפה</button><button id="prevx">חזרה למארגן</button></span></div>`:'';
   const head=(t,extra='')=>pv+`<button class="gback" data-gnav="gh"><span>›</span><b>חזרה למסך הבית</b></button><div class="page-title"><h2>${t}</h2>${extra}</div>`;
   if(GTAB==='gh'){
     const open=triviaOpen(), og=flightGroups(ppl,'הלוך'), openT=S.tasks.filter(t=>t.open==='כן'&&t.status!=='בוצע'&&!t.owner&&!t.claimBy).length, mineT=myTasks(ppl).filter(t=>t.status!=='בוצע').length, un=annUnread();
@@ -4901,6 +4902,7 @@ document.addEventListener('click',e=>{const s=e.target.closest&&e.target.closest
 document.addEventListener('click',e=>{
   const T=e.target;
   if(T.closest('#prevx')){setPrev(false);return}
+  if(T.closest('#prevsw')){prevPick();return}
   if(!GUEST()){orgClick(e);return}
   const gd=T.closest('[data-gday]');if(gd){e.stopPropagation();e.preventDefault();V.filter.pd=gd.dataset.gday;render();window.scrollTo({top:0,behavior:'smooth'});return}
   const lk=T.closest('[data-glock]');if(lk){toast('המשחק ייפתח כשננחת בבודפשט 🛬');return}
@@ -5404,7 +5406,15 @@ setInterval(pgate,4000);
   let l=document.querySelector('link[rel="manifest"]');if(!l){l=document.createElement('link');l.rel='manifest';document.head.appendChild(l)}l.href=url;
 }catch(e){}})();
 
-const _pickMeBase=pickMe;pickMe=function(){if(GUEST()||!ROLE)return;_pickMeBase();const sh=document.querySelector('#scrim .sheet');if(sh&&ROLE==='org'){const hd=document.createElement('div');hd.className='ghead pm-h';hd.innerHTML='<span>תצוגה ויציאה</span>';sh.appendChild(hd);const b=document.createElement('button');b.className='btn';b.style.cssText='width:100%';b.textContent='👁 תצוגת משתתף (כך זה נראה להם)';b.onclick=()=>{closeSheet();setPrev(true)};sh.appendChild(b);const o=document.createElement('button');o.className='btn ghost';o.style.cssText='margin-top:10px;width:100%';o.textContent='🚪 יציאה וכניסה מחדש כמשתתף';o.onclick=()=>{closeSheet();logoutRole()};sh.appendChild(o);const dg=document.createElement('button');dg.className='btn ghost';dg.style.cssText='margin-top:10px;width:100%';dg.textContent='🔧 בדיקת תקינות והתראות';dg.onclick=()=>{closeSheet();showDiag()};sh.appendChild(dg)}};
+function prevPick(){
+  const all=S.participants.slice().sort(famCmp);
+  sheet(`<h3>לראות כמו משתתף</h3><p class="note" style="margin-top:0">מקלידים שם ובוחרים. תראו בדיוק מה שהוא רואה.</p><input id="pvq" class="search" type="search" placeholder="חיפוש שם" autocomplete="off"><div id="pvl" style="margin-top:10px;max-height:52vh;overflow:auto"></div>`);
+  const draw=()=>{const q=(document.getElementById('pvq').value||'').trim().toLowerCase();const L=all.filter(x=>!q||String(x.name||'').toLowerCase().includes(q));
+    document.getElementById('pvl').innerHTML=L.length?L.map(x=>`<button class="btn ghost" data-pv="${esc(x._id)}" style="width:100%;justify-content:flex-start;margin-bottom:6px">${esc(x.name)}${x._id===PREVID?' ✓':''}</button>`).join(''):'<p class="note">לא נמצא</p>'};
+  draw();document.getElementById('pvq').addEventListener('input',draw);
+  document.getElementById('pvl').addEventListener('click',e=>{const b=e.target.closest('[data-pv]');if(!b)return;PREVID=b.dataset.pv;try{sessionStorage.setItem('prevId',PREVID)}catch(x){}closeSheet();setPrev(true)});
+  if(!('ontouchstart' in window))setTimeout(()=>{const q=document.getElementById('pvq');if(q)q.focus()},340)}
+const _pickMeBase=pickMe;pickMe=function(){if(GUEST()||!ROLE)return;_pickMeBase();const sh=document.querySelector('#scrim .sheet');if(sh&&ROLE==='org'){const hd=document.createElement('div');hd.className='ghead pm-h';hd.innerHTML='<span>תצוגה ויציאה</span>';sh.appendChild(hd);const b=document.createElement('button');b.className='btn';b.style.cssText='width:100%';b.textContent='👁 תצוגת משתתף (כך זה נראה להם)';b.onclick=()=>{closeSheet();prevPick()};sh.appendChild(b);const o=document.createElement('button');o.className='btn ghost';o.style.cssText='margin-top:10px;width:100%';o.textContent='🚪 יציאה וכניסה מחדש כמשתתף';o.onclick=()=>{closeSheet();logoutRole()};sh.appendChild(o);const dg=document.createElement('button');dg.className='btn ghost';dg.style.cssText='margin-top:10px;width:100%';dg.textContent='🔧 בדיקת תקינות והתראות';dg.onclick=()=>{closeSheet();showDiag()};sh.appendChild(dg)}};
 document.body.classList.toggle('guest',GUEST());if(!ROLE||!TRIP_KEY)showGate();
 let SEEN_MARKED=false;const _r2=render;render=function(a){_r2(a);if(!SEEN_MARKED&&ROLE.startsWith('guest:')&&!PREV&&db&&loaded.has('participants')){SEEN_MARKED=true;let done=false;try{done=sessionStorage.getItem('seenMark')==='1'}catch(e){}if(!done){try{sessionStorage.setItem('seenMark','1')}catch(e){}const now=new Date().toISOString(),inst=isStandalone(),nt=('Notification' in window)?Notification.permission:'none',me=meG();
    gset('participants/'+ROLE.slice(6),{seenAt:now,lastAt:now,notif:nt,viaSpouse:false,...(inst?{inst:true}:{})});
