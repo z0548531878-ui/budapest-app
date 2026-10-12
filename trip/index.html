@@ -1175,6 +1175,12 @@ body.guest button:not(:disabled):active,body.guest .btn:active,body.guest a.gc:a
 .cert-b{display:flex;align-items:center;gap:12px;width:100%;margin:12px 0;padding:14px;border-radius:20px;border:1.5px dashed #f0c86e;background:linear-gradient(120deg,rgba(240,200,110,.14),transparent);color:var(--ink);text-align:right}
 .cert-i{font-size:32px;animation:r2Bob 3s ease-in-out infinite}.cert-b b{display:block;font-size:17px;color:#ffe9a8}.cert-b small{color:var(--muted)}.cert-b>span:last-child{margin-inline-start:auto;color:var(--gold);font-size:22px}
 @media (prefers-reduced-motion:reduce){#phss .kb1,#phss .kb2,.mo-img,.cert-i,.ph-show span{animation:none!important}}
+.spl-bal{display:grid;gap:8px;margin:10px 0 14px}.sb{display:flex;align-items:center;gap:10px;padding:12px;border-radius:16px;border:1px solid rgba(214,178,98,.3);background:#14110b}.sb span{flex:1}.sb.in b{color:#7fd1a5}.sb.out b{color:#ffb46a}.sb.zero{justify-content:center;color:#a7d9bd}
+.spl-add{display:grid;gap:8px;padding:14px;border-radius:20px;border:1px solid rgba(214,178,98,.4);background:linear-gradient(160deg,#211b10,#0e0c09)}.spl-add h3{margin:0;font-size:17px;color:#f0d28c}.spl-add .search{margin:0}
+.spl-amt{display:flex;gap:8px;align-items:center}.spl-amt input{flex:1}.spl-c{display:flex;flex-wrap:wrap;gap:6px;max-height:180px;overflow:auto}
+.spl-l{display:grid;gap:6px}.sl{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;border:1px solid rgba(214,178,98,.22)}.sl>div{flex:1;display:grid}.sl small{color:var(--muted);font-size:12.5px}.sl-x{border:0;background:none;color:var(--muted);font-size:15px}
+.ocr{display:grid;gap:8px;margin:10px 0}.ocr .btn{width:100%}#ocrR{font-size:14px;color:var(--muted)}#ocrR small{display:block;margin-top:6px}
+.ocr-r{display:flex;align-items:center;justify-content:center;gap:12px;padding:12px;border-radius:16px;border:1px solid #f0c86e;background:rgba(240,200,110,.08);color:#e9dfc4;animation:pop .35s both}.ocr-r .big{font-size:28px;color:#ffe9a8}
 .pm+.pm{border-top:1px dashed rgba(214,178,98,.22)}
 .pc .av{width:44px!important;height:44px!important;font-size:16px!important;flex:none;border-radius:50%!important;box-shadow:0 0 0 3px var(--a),0 8px 18px -8px var(--b)}
 .pc .av.nophoto{background:linear-gradient(160deg,#2a251a,#13110c)!important;color:var(--a)!important}
@@ -4113,6 +4119,33 @@ function boardHTML(ppl){const ses=rollCur();if(!ses)return '';const mine=ppl.fil
   const on=p=>S.attendance.some(a=>a._id===ses.k+'__'+p._id&&a.here);
   return `<section class="board" aria-label="${esc(ses.l)}"><div class="bd-h"><span class="bd-i">🚌</span><span><small>ספירה פתוחה עכשיו</small><b>${esc(ses.l)}</b></span></div>
    <div class="bd-l">${mine.map(p=>on(p)?`<div class="bd-b ok">✓ ${esc(firstN(p.name))} כאן</div>`:`<button class="btn primary bd-b" data-board="${p._id}">${mine.length>1?esc(firstN(p.name))+': ':''}אני כאן ✋</button>`).join('')}</div></section>`}
+/* shared expenses: one couple pays, several couples share; balances in shekels */
+const cKey=p=>{const c=coupleOf(p).map(x=>x._id).sort();return c[0]||''};
+function couplesAll(){const seen={},out=[];S.participants.slice().sort(famCmp).forEach(p=>{const k=cKey(p);if(!k||seen[k])return;seen[k]=1;const c=coupleOf(p);out.push({k,ppl:c,l:coupleLabel(c,p)})});return out}
+const hufRate=()=>{try{return +localStorage.getItem('huf')||100}catch(e){return 100}};
+const splits=()=>S.settings.filter(x=>x.kind==='split'&&!x.hidden);
+function splitBal(me){const mk=cKey(me),bal={};
+  splits().forEach(x=>{const w=x.with||[];if(!w.length)return;const share=(+x.ils||0)/w.length;
+    if(x.by===mk)w.forEach(k=>{if(k!==mk)bal[k]=(bal[k]||0)+share});else if(w.includes(mk))bal[x.by]=(bal[x.by]||0)-share});
+  return bal}
+let SPL={with:null,q:''};
+function splitHTML(head,me){const mk=cKey(me),C=couplesAll(),nm=k=>(C.find(c=>c.k===k)||{}).l||'זוג',bal=splitBal(me);
+  if(!SPL.with)SPL.with=[mk];
+  const mine=splits().filter(x=>x.by===mk||(x.with||[]).includes(mk)).sort((a,b)=>(b.at||0)-(a.at||0));
+  const rows=Object.entries(bal).filter(([k,v])=>Math.abs(v)>=1).sort((a,b)=>b[1]-a[1]);
+  const fmt=v=>'₪'+Math.round(Math.abs(v)).toLocaleString('he-IL');
+  const cand=C.filter(c=>c.k!==mk&&(!SPL.q||c.l.includes(SPL.q)));
+  return head('חשבון משותף')+`<p class="note">יצאתם למונית או קניתם משהו ביחד עם זוגות אחרים? רושמים כאן מי שילם, והחשבון מתחלק שווה בשווה בין הזוגות.</p>
+   <section class="spl-bal">${rows.length?rows.map(([k,v])=>`<div class="sb ${v>0?'in':'out'}"><span>${esc(nm(k))}</span><b class="num">${v>0?'חייבים לכם':'אתם חייבים'} ${fmt(v)}</b>${v<0?`<button class="btn ghost" data-spl-settle="${k}" data-v="${Math.round(-v)}">סגרתי ✓</button>`:''}</div>`).join(''):'<div class="sb zero"><b>אין חובות פתוחים 👌</b></div>'}</section>
+   <section class="spl-add"><h3>הוצאה חדשה ששילמתם</h3>
+    <input id="splT" class="search" type="text" placeholder="על מה? למשל: מונית לשדה" value="${esc(SPL.t||'')}">
+    <div class="spl-amt"><input id="splA" class="search num" type="number" inputmode="decimal" placeholder="סכום" value="${esc(SPL.a||'')}"><div class="seg"><button data-spl-cur="₪" aria-pressed="${(SPL.cur||'₪')==='₪'}">₪</button><button data-spl-cur="HUF" aria-pressed="${SPL.cur==='HUF'}">פורינט</button></div></div>
+    <b class="chk-h">מתחלקים עם (${SPL.with.length} זוגות כולל אתכם)</b>
+    <input id="splQ" class="search" type="search" placeholder="חיפוש זוג" value="${esc(SPL.q)}">
+    <div class="spl-c">${cand.map(c=>`<button class="chip" data-spl-w="${c.k}" aria-pressed="${SPL.with.includes(c.k)}">${esc(c.l)}</button>`).join('')}</div>
+    <button class="btn primary" data-spl-add style="width:100%">➕ הוספה וחלוקה</button></section>
+   ${mine.length?`<div class="ghead"><span>ההוצאות שלכם</span><span class="num">${mine.length}</span></div><div class="spl-l">${mine.map(x=>`<div class="sl"><div><b>${esc(x.title||(x.settle?'סגירת חוב':'הוצאה'))}</b><small>${x.settle?'העברה':'שילמו: '+esc(nm(x.by))} · ${(x.with||[]).length} זוגות · ${new Date(x.at||0).toLocaleDateString('he-IL',{day:'numeric',month:'numeric'})}</small></div><b class="num">${x.cur==='HUF'?Math.round(x.amount).toLocaleString('he-IL')+' Ft':'₪'+Math.round(x.amount).toLocaleString('he-IL')}</b>${x.by===mk?`<button class="sl-x" data-spl-del="${x._id}" aria-label="מחיקה">✕</button>`:''}</div>`).join('')}</div>`:''}
+   <p class="note">פורינט מומר לשקלים לפי השער שבכלים לדרך (עכשיו: ${hufRate()} פורינט לשקל).</p>`}
 const elalFlights=ppl=>['הלוך','חזור'].flatMap(d=>flightGroups(ppl,d).filter(g=>isElAl(g.f)).map(g=>({dir:d,f:g.f,on:ppl.filter(p=>g.names.includes(firstN(p.name)))})));
 const ciDoneFor=(f,on)=>on.length&&on.every(p=>ciDoneOf(p).includes(f._id));
 const insDoneFor=ppl=>ppl.length&&ppl.every(p=>p.insDone);
@@ -4510,8 +4543,9 @@ function guestHTML0(){
           gi:()=>cube('gi',IX.cam,'תמונות מהמסע','מעלים, רואים ומשתפים',(()=>{const n=photoNew();return n||''})()),
           gx:()=>cube('gx',IX.food,'מסעדות ואטרקציות','איפה אוכלים כשר, ומה כדאי לראות'),
           gz:()=>cube('gz',IX.pin,'קרעסטיר','על רבי ישעיה׳לה ועל הציון'),
-          gk:()=>cube('gk',IX.tools,'כלים לדרך','שעון, זמנים, מטבע, ביטויים')};
-        const ord=TRIPDAY()?['gs','gm','gi','gx','gz','gp','gk','gd']:['gs','gm','gd','gp','gx','gz','gk','gi'];
+          gk:()=>cube('gk',IX.tools,'כלים לדרך','שעון, זמנים, מטבע, ביטויים'),
+          ge:()=>cube('ge',IX.coin,'חשבון משותף','מי שילם, ומי חייב למי',(()=>{const b=me?Object.values(splitBal(me)).filter(v=>v<=-1).length:0;return b||''})())};
+        const ord=TRIPDAY()?['gs','gm','gi','gx','ge','gz','gp','gk','gd']:['gs','gm','gd','gp','gx','gz','gk','ge','gi'];
         return ord.map(k=>C[k]()).join('')})()}
       ${open?`<a class="gc gtrv" href="trivia/" style="--i:${n++}"><span class="gc-i">${I.spark}</span><span class="gc-t">טריוויה</span><span class="gc-s">משחק לאוטובוס. פתוח עכשיו!</span></a>`:`<button class="gc gtrv locked" data-glock style="--i:${n++}"><span class="gc-i">🔒</span><span class="gc-t">טריוויה</span><span class="gc-s">נפתח כשנחתים בבודפשט</span></button>`}
      </div>
@@ -4641,6 +4675,7 @@ function guestHTML0(){
   if(GTAB==='gd')return head('נסיעה משותפת לשדה')+`<p class="note">מתאמים ביחד את הדרך לשדה: מי שיש לו מקום ברכב, מי שמחפש טרמפ, ומי שרוצה לחלוק מונית.</p>`+ridesHTML(ppl,me);
   if(GTAB==='gi')return head('תמונות מהמסע')+photosHTML();
   if(GTAB==='gc')return packHTML(head);
+  if(GTAB==='ge')return splitHTML(head,me);
   if(EXT[GTAB]&&(GTAB!=='gw'||flyElAl(ppl)||PREV))return extHTML(GTAB,head,ppl);
   if(GTAB==='gk'){
     const rate=(()=>{try{return +localStorage.getItem('huf')||100}catch(e){return 100}})();
@@ -4660,6 +4695,7 @@ function guestHTML0(){
      </div>
      <div class="tk-c wide" ${at()}><span class="tk-e">💱</span><small>ממיר מטבע · שקל לפורינט הונגרי</small>
       <div class="conv"><label><span class="cv-l">שקלים ₪</span><input id="cvI" type="number" inputmode="decimal" value="100"></label><span>=</span><label class="cv-out"><span class="cv-l">פורינט (HUF)</span><input id="cvH" type="text" inputmode="decimal" readonly></label></div>
+      <div class="ocr"><button class="btn primary" data-ocr type="button">📷 צילום מחיר בפורינט</button><input id="ocrF" type="file" accept="image/*" capture="environment" hidden><div id="ocrR" aria-live="polite"></div></div>
       <label class="rate">שער: כמה פורינט לשקל <input id="cvR" type="number" inputmode="decimal" value="${rate}"></label><small class="cv-n">חישוב משוער. אפשר לעדכן את השער לפי מה שרואים בצ׳יינג׳.</small></div>
      <button class="tk-c wide" data-gnav="gc" ${at()}><span class="tk-e">🧳</span><small>מה אורזים · <span class="num">${packStat().n}/${packStat().t}</span></small><b class="tk-t">רשימת אריזה אישית, עם הוספת פריטים משלכם</b><span class="more">פתיחה ›</span></button>
      <div class="tk-c wide" ${at()}><span class="tk-e">🗣</span><small>ביטויים בהונגרית · לחצו כדי לשמוע</small><div class="tk-ph">${phr.map((p,i)=>`<button data-say="${esc(p[1])}" style="--j:${i}"><b>${p[0]}</b><span class="ltr">${p[1]}</span><small>${p[2]}</small></button>`).join('')}</div></div>
@@ -4708,6 +4744,17 @@ document.addEventListener('input',e=>{
   if(e.target.id==='trQ'){const q=e.target.value.trim();document.querySelectorAll('.trrow').forEach(r=>r.hidden=!!q&&!r.textContent.includes(q))}
   if(/^rd(From|Time|Seats)$/.test(e.target.id)){const el=document.getElementById('rdSum');if(el)el.innerHTML=rdSumTxt(RFORM,rideDir()==='out')}
 });
+document.addEventListener('change',async e=>{if(e.target.id!=='ocrF'||!e.target.files[0])return;const out=document.getElementById('ocrR'),f=e.target.files[0];e.target.value='';
+  out.innerHTML='<span class="gspin"></span> קורא את המחיר מהתמונה…';
+  try{if(!window.Tesseract)await new Promise((ok,no)=>{const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';sc.onload=ok;sc.onerror=no;document.head.appendChild(sc)});
+    const small=await shrinkImg(f,1400,.85);const r=await Tesseract.recognize(small.d,'eng',{tessedit_char_whitelist:'0123456789., FtHUF'});
+    const nums=(r.data.text.match(/\d{1,3}(?:[ .,]\d{3})+|\d+/g)||[]).map(t=>+t.replace(/[ .,]/g,'')).filter(n=>n>=10&&n<10000000);
+    if(!nums.length){out.innerHTML='לא זיהינו מספר. נסו לצלם קרוב יותר, רק את המחיר.';return}
+    const huf=Math.max(...nums),ils=huf/hufRate();
+    out.innerHTML=`<div class="ocr-r"><b class="num">${huf.toLocaleString('he-IL')} Ft</b><span>≈</span><b class="num big">₪${ils<10?ils.toFixed(1):Math.round(ils).toLocaleString('he-IL')}</b></div>${nums.length>1?`<small>מספרים נוספים שזוהו: ${nums.filter(n=>n!==huf).slice(0,4).map(n=>`<button class="chip" data-ocrn="${n}">${n.toLocaleString('he-IL')}</button>`).join(' ')}</small>`:''}`}
+  catch(x){out.innerHTML='הקריאה לא הצליחה. בדקו שיש אינטרנט ונסו שוב.'}});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-ocrn]');if(!b)return;const huf=+b.dataset.ocrn,ils=huf/hufRate(),r=document.querySelector('.ocr-r');if(r)r.innerHTML=`<b class="num">${huf.toLocaleString('he-IL')} Ft</b><span>≈</span><b class="num big">₪${ils<10?ils.toFixed(1):Math.round(ils).toLocaleString('he-IL')}</b>`});
+document.addEventListener('input',e=>{if(e.target.id==='splT')SPL.t=e.target.value;if(e.target.id==='splA')SPL.a=e.target.value;if(e.target.id==='splQ'){SPL.q=e.target.value.trim();render()}});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='pkNew'){e.preventDefault();const b=document.querySelector('[data-pkadd]');if(b)b.click()}});
 document.addEventListener('change',e=>{const cx=e.target.closest('[data-chkx]');if(cx){const {x}=packLoad();if(x[+cx.dataset.chkx])x[+cx.dataset.chkx].on=cx.checked;try{localStorage.setItem('chkx',JSON.stringify(x))}catch(z){}packSync();render();return}
   const c=e.target.closest('[data-chk]');if(c){packSync();setTimeout(()=>{if(GUEST()&&GTAB==='gc')render()},0);let o={};try{o=JSON.parse(localStorage.getItem('chk')||'{}')}catch(x){}o[c.dataset.chk]=c.checked;try{localStorage.setItem('chk',JSON.stringify(o))}catch(x){}
@@ -4741,6 +4788,17 @@ document.addEventListener('click',e=>{
   if(T.closest('[data-moment]')){const m=momentNow();if(m){photosSub();PHI=0;phShow([{_id:m.pid,th:m.th,byName:m.byName,ts:m.at,by:''}])}return}
   if(T.closest('[data-cert]')){certMake();return}
   const bd=T.closest('[data-board]');if(bd){if(blockPrev())return;const ses=rollCur();if(!ses)return;const pid=bd.dataset.board;gset('attendance/'+ses.k+'__'+pid,{session:ses.k,pid,here:true}).then(ok=>{if(ok)toast('סומן. תודה!')});return}
+  if(T.closest('[data-spl-w],[data-spl-cur]')){const a=document.getElementById('splT'),b=document.getElementById('splA');if(a)SPL.t=a.value;if(b)SPL.a=b.value}
+  const sw=T.closest('[data-spl-w]');if(sw){const k=sw.dataset.splW,w=SPL.with;const i=w.indexOf(k);if(i>=0)w.splice(i,1);else w.push(k);render();return}
+  const sc=T.closest('[data-spl-cur]');if(sc){SPL.cur=sc.dataset.splCur;render();return}
+  if(T.closest('[data-spl-add]')){if(blockPrev())return;const me=meG(),mk=cKey(me),t=(document.getElementById('splT').value||'').trim(),a=+document.getElementById('splA').value;
+    if(!(a>0)){toast('כתבו סכום');return}const w=[...new Set([mk,...SPL.with])];if(w.length<2){toast('בחרו לפחות זוג אחד נוסף');return}
+    const cur=SPL.cur||'₪',ils=cur==='HUF'?a/hufRate():a,id='split_'+Date.now().toString(36);
+    gset('settings/'+id,{kind:'split',by:mk,title:t.slice(0,60),amount:a,cur,ils,with:w,at:Date.now(),byName:firstN(me.name)}).then(ok=>{if(ok){toast('נרשם וחולק ✓');SPL={with:[mk],q:'',cur};render()}});return}
+  const sst=T.closest('[data-spl-settle]');if(sst){if(blockPrev())return;const me=meG(),mk=cKey(me),v=+sst.dataset.v;if(!confirm('לסמן שהעברתם ₪'+v+'?'))return;
+    gset('settings/split_'+Date.now().toString(36),{kind:'split',settle:true,by:mk,title:'סגירת חוב',amount:v,cur:'₪',ils:v*2,with:[mk,sst.dataset.splSettle],at:Date.now()}).then(ok=>{if(ok)toast('נסגר ✓')});return}
+  const sdl=T.closest('[data-spl-del]');if(sdl){if(blockPrev())return;if(!confirm('למחוק את ההוצאה?'))return;gset('settings/'+sdl.dataset.splDel,{hidden:true});return}
+  if(T.closest('[data-ocr]')){document.getElementById('ocrF').click();return}
   if(T.closest('[data-pkadd]')){const i=document.getElementById('pkNew'),v=(i&&i.value||'').trim();if(!v)return;const {x}=packLoad();x.push({t:v.slice(0,60),on:false});try{localStorage.setItem('chkx',JSON.stringify(x))}catch(z){}packSync();render();setTimeout(()=>{const n=document.getElementById('pkNew');if(n)n.focus()},50);return}
   const pkd=T.closest('[data-chkxdel]');if(pkd){e.preventDefault();const {x}=packLoad();x.splice(+pkd.dataset.chkxdel,1);try{localStorage.setItem('chkx',JSON.stringify(x))}catch(z){}packSync();render();return}
   const ins=T.closest('[data-g-ins],[data-g-insu]');if(ins){if(blockPrev())return;const on=ins.hasAttribute('data-g-ins');ppl.forEach(p=>gset('participants/'+p._id,{insDone:on}));if(on)toast('נרשם. נסיעה בטוחה!');return}
@@ -5227,7 +5285,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='5c97340164';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='396aa29951';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
