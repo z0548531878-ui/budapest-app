@@ -2255,6 +2255,33 @@ body:not(.guest) #view [role=button].main{min-height:40px}
 .chlock span{font-size:34px}.chlock b{font-size:19px;color:#f0d28c}.chlock p{margin:0;color:var(--muted);line-height:1.6}
 .chorg{margin:0 0 10px;padding:10px 12px;border-radius:14px;border:1px dashed rgba(214,178,98,.5);background:rgba(214,178,98,.08);font-size:13.5px;line-height:1.5;color:#e9c46f}
 /* end polish */
+/* ===== splash v4: the logo inside a gold ring that draws itself, one shine across it, then the name rises in.
+   Plays once on the very first launch; later launches keep the short fade. Nothing repeats. ===== */
+.splash{gap:0!important;background:radial-gradient(60% 45% at 50% 44%,#1c160b,#050504 72%)!important}
+.splash .sp-logo{position:relative;width:min(62vw,250px);height:min(62vw,250px);z-index:1}
+.splash .sp-logo img{width:100%!important;height:100%!important;transform:none;border-radius:50%;box-shadow:0 0 70px rgba(217,178,95,.38)!important}
+.splash .sp-ring{position:absolute;inset:-10px;width:calc(100% + 20px);height:calc(100% + 20px);transform:rotate(-90deg);overflow:visible}
+.splash .sp-ring circle{fill:none;stroke:#e9c46f;stroke-width:1.2;stroke-linecap:round;stroke-dasharray:302;stroke-dashoffset:0}
+.splash .sp-shine{position:absolute;inset:0;border-radius:50%;overflow:hidden;pointer-events:none}
+.splash .sp-shine::after{content:"";position:absolute;top:-10%;bottom:-10%;width:40%;left:-60%;background:linear-gradient(105deg,transparent,rgba(255,240,200,.55),transparent);transform:skewX(-16deg);opacity:0}
+.splash .sp-t{display:block;z-index:1;margin-top:26px;font-family:var(--display);font-size:clamp(26px,8vw,32px);font-weight:900;color:#e9c46f}
+.splash .sp-line{display:block;z-index:1;width:120px;height:1.5px;margin:12px 0 10px;background:linear-gradient(90deg,transparent,#e9c46f,transparent)}
+.splash .sp-s{display:block!important;z-index:1;font-family:var(--body);font-size:15px;font-weight:700;color:#a69a7d!important}
+@media (prefers-reduced-motion:no-preference){
+ .splash:not(.quick):not(.go) :is(.sp-logo,.sp-t,.sp-line,.sp-s){opacity:0}
+ .splash.go:not(.quick) .sp-logo img{animation:spLogo .8s cubic-bezier(.2,.8,.2,1) both!important}
+ .splash.go:not(.quick) .sp-ring circle{animation:spRing 1s .15s cubic-bezier(.6,0,.2,1) both}
+ .splash.go:not(.quick) .sp-shine::after{animation:spShine .8s .75s ease-out both}
+ .splash.go:not(.quick) .sp-t{animation:spRise .6s .5s cubic-bezier(.2,.8,.2,1) both}
+ .splash.go:not(.quick) .sp-line{animation:spLine .6s .75s cubic-bezier(.2,.8,.2,1) both}
+ .splash.go:not(.quick) .sp-s{animation:spRise .6s .85s cubic-bezier(.2,.8,.2,1) both}
+}
+@keyframes spLogo{from{opacity:0;transform:scale(.86)}to{opacity:1;transform:none}}
+@keyframes spRing{from{stroke-dashoffset:302}to{stroke-dashoffset:0}}
+@keyframes spShine{0%{left:-60%;opacity:1}100%{left:130%;opacity:1}}
+@keyframes spRise{from{opacity:0;transform:translateY(10px);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+@keyframes spLine{from{opacity:0;transform:scaleX(0)}to{opacity:1;transform:none}}
+.splash.quick .sp-ring circle,.splash.quick .sp-shine{display:none}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -2273,7 +2300,7 @@ body:not(.guest) #view [role=button].main{min-height:40px}
 <nav class="nav" dir="rtl" lang="he"><div class="nav-in" id="nav"></div></nav>
 <div id="sheetRoot" dir="rtl" lang="he"></div>
 <input type="file" id="rsFile" accept="application/json,.json" hidden>
-<div class="splash" id="splash" dir="rtl" lang="he"><span class="rays"></span><span class="dust"></span><img src="logo.webp" alt=""><span>שבת גיבוש בודפשט</span><small>שיעור מבקשי ה׳ · מסע גיבוש הונגריה</small></div>
+<div class="splash" id="splash" dir="rtl" lang="he"><span class="rays"></span><span class="dust"></span><div class="sp-logo"><svg class="sp-ring" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48"/></svg><img src="logo.webp" alt=""><i class="sp-shine"></i></div><b class="sp-t">מסע גיבוש הונגריה</b><i class="sp-line"></i><small class="sp-s">שיעור מבקשי ה׳ · ט׳–י״ב כסלו</small></div>
 
 <script>
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -5539,7 +5566,7 @@ render(true);
 (()=>{const sp=document.getElementById('splash');let seen=false;try{seen=sessionStorage.getItem('splash')==='1';sessionStorage.setItem('splash','1')}catch(e){}
   // the full opening only on the very first launch; afterwards a short fade, so a quick check isn't a wait
   let first=true;try{first=!localStorage.getItem('splashSeen');localStorage.setItem('splashSeen','1')}catch(e){}
-  if(seen||reduce){sp.remove();return}if(!first)sp.classList.add('quick');const im=sp.querySelector('img');const start=()=>{sp.classList.add('go');setTimeout(()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),first?420:260)},first?1100:380)};if(im&&!im.complete){let d=0;const f=()=>{if(!d){d=1;start()}};im.addEventListener('load',f);im.addEventListener('error',f);setTimeout(f,700)}else start()})();
+  if(seen||reduce){sp.remove();return}if(!first)sp.classList.add('quick');const im=sp.querySelector('img');const start=()=>{sp.classList.add('go');setTimeout(()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),first?420:260)},first?1700:380)};if(im&&!im.complete){let d=0;const f=()=>{if(!d){d=1;start()}};im.addEventListener('load',f);im.addEventListener('error',f);setTimeout(f,700)}else start()})();
 (async()=>{
   db=await initFire();
   if(!db){document.getElementById('banner').innerHTML='<p class="banner">חסר הקישור המלא של הצוות. פתחו את האפליקציה מהקישור ששלומי שלח (הוא מסתיים ב-#k=…).</p>';return}
