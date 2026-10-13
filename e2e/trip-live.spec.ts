@@ -247,7 +247,9 @@ test('PCHECK-1 passport check: paste names and expiry, a short or expired one is
   await expect(page.locator('.pcrow', { hasText: 'בני לוי' })).toContainText('פג תוקף');
   // the hotel list: the room with the English names as in the passports
   await page.getByRole('button', { name: /רשימה למלון/ }).click();
-  await expect(page.getByRole('dialog').locator('#hotelTxt')).toHaveValue(/Room 401 \(floor 4\): COHEN AVI \/ LEVI BENI/);
+  // one line per guest under the room, with the passport details the hotel asks for ('?' where still missing)
+  await expect(page.getByRole('dialog').locator('#hotelTxt')).toHaveValue(/Room 401 \(floor 4\):\n  COHEN AVI \| Passport \? \| \? \| Born \?\n  LEVI BENI \| Passport/);
+  await expect(page.getByRole('dialog').locator('#hotelTxt')).toHaveValue(/NOT ASSIGNED TO A ROOM:\n  LEVI GADI .*\n  NOBODY /);
   expect(errors).toEqual([]);
 });
 
