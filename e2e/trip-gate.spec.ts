@@ -117,3 +117,17 @@ test('the expenses viewer sees only the expenses and their breakdown, and cannot
   expect(await page.evaluate(`save('expenses','${id}',{name:'x'})`)).toBe(false);
   expect(await page.evaluate(`remove('expenses','${id}')`)).toBe(false);
 });
+
+test('"switch user" in settings signs out and opens an empty name screen', async ({ browser, db }) => {
+  await seedBigTrip(db);
+  const { page } = await openTrip(browser, db);
+  await page.evaluate(() => { localStorage.setItem('nogate', '1'); sessionStorage.setItem('skipInst', '1'); localStorage.setItem('role', 'guest:p2'); });
+  await page.reload();
+  await expect.poll(() => page.evaluate('loaded.has("participants")')).toBe(true);
+  await page.locator('#setBtn').click();
+  await page.getByRole('dialog').getByRole('button', { name: /החלפת משתמש/ }).click();
+  await expect(page.locator('#gname')).toBeVisible();
+  await expect(page.locator('#gname')).toHaveValue('');
+  expect(await page.evaluate('ROLE')).toBe('');
+  expect(await page.evaluate(() => localStorage.getItem('lastG'))).toBeNull();
+});
