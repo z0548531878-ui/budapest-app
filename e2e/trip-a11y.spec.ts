@@ -35,10 +35,14 @@ test('A11Y-1 every screen and sheet passes axe (WCAG 2.1 AA)', async ({ browser,
   const found: string[] = [];
   found.push(...await axe(page, 'home'));
   for (const tab of ['משימות', 'תקציב', 'לו״ז', 'תובנות']) {
-    await page.locator('#nav').getByRole('button', { name: tab }).click();
+    if (tab === 'תקציב' || tab === 'תובנות') {
+      await page.locator('#nav').getByRole('button', { name: 'בית' }).click();
+      await page.locator('.hjump').getByRole('button', { name: new RegExp('^' + tab) }).click();
+    } else await page.locator('#nav').getByRole('button', { name: tab }).click();
     found.push(...await axe(page, tab));
   }
-  await page.locator('#nav').getByRole('button', { name: 'תקציב' }).click();
+  await page.locator('#nav').getByRole('button', { name: 'בית' }).click();
+  await page.locator('.hjump').getByRole('button', { name: /^תקציב/ }).click();
   for (const seg of ['הוצאות', 'הכנסות', 'תרומות', 'קופות']) {
     await page.getByRole('button', { name: new RegExp('^' + seg) }).click();
     found.push(...await axe(page, 'כסף/' + seg));

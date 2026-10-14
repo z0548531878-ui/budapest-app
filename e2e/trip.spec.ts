@@ -21,7 +21,13 @@ async function seed(db: Db) {
   await put('donations/d2', { donor: 'קרן חסד', amount: 500, status: 'התחייב', purpose: 'כללי', order: 2 });
 }
 
-const nav = (page: Page, name: string) => page.locator('#nav').getByRole('button', { name }).click();
+// budget and insights open from the tiles on home; the rest are tabs in the bottom bar
+const nav = async (page: Page, name: string) => {
+  const tile = ({ 'תקציב': 'תקציב', 'תובנות': 'תובנות וכלים' } as Record<string, string>)[name];
+  if (!tile) return page.locator('#nav').getByRole('button', { name }).click();
+  await page.locator('#nav').getByRole('button', { name: 'בית' }).click();
+  await page.locator('.hjump').getByRole('button', { name: new RegExp('^' + tile) }).click();
+};
 const sheet = (page: Page) => page.getByRole('dialog');
 const sub = (page: Page, name: string) => page.evaluate(n => (window as any).go('more', { sub: n }), name);
 const settings = (page: Page) => sub(page, 'settings');
