@@ -34,6 +34,7 @@
 .chbar .search{flex:1;margin:0}.chb{width:44px;height:44px;border-radius:50%;border:1px solid rgba(214,178,98,.4);background:#1b1812;color:#e2c277;font-size:18px;cursor:pointer}
 .chbar .search{font-size:18px}.chhot{color:#f6dc93!important;font-weight:800}.chhot svg{filter:drop-shadow(0 0 6px rgba(246,220,147,.7))}.chhot.ur svg{animation:chpulse 1.3s ease-in-out infinite}@keyframes chpulse{50%{transform:scale(1.28)}}.chhot .badge{background:#ff3b30;color:#fff;transform:scale(1.2)}
 .chb.go{background:linear-gradient(180deg,#f6dc93,#c99a3d);color:#15110a;border:0}.chrec b{flex:1;color:#ff8b7a}
+.kg-r{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(214,178,98,.12)}.kg-r small{color:var(--muted);margin-inline-start:6px}.kg-t{border-bottom:0;font-weight:800;color:#f6dc93}.kgh{margin:16px 0 6px}
 </style>
 </head>
 <body>
@@ -5339,11 +5340,12 @@ SUB.kits=function(){
    <div class="kcard2"><h4>מה צריך לעשות עכשיו</h4><div class="krems">${rem}</div></div>
    <div class="kcard2"><h4>מי אחראי על כל הערכה</h4><p class="note" style="margin:0 0 8px">אחראי לפריט מסוים אפשר לקבוע בעריכת הפריט, והוא גובר על האחראי של הערכה.</p>${own('buyer','🛒 קנייה')}${own('packer','🧳 אריזה')}${own('placer','📍 הנחה במקום')}${mt[cur]?`<p class="note" style="margin:8px 0 0">${esc(mt[cur])}</p>`:''}</div>
    <div class="chips">${[['all','הכול'],...KSTAGES.map(([k,l])=>[k,'לא '+l])].map(([k,l])=>`<button class="chip" data-kfilter="${k}" aria-pressed="${f===k}">${l}</button>`).join('')}</div>
-   <div class="kitems">${rows.map((x,i)=>{const sh=x.shop?` · ${esc(x.shop)}`:'',w=kwhere(x);
+   ${(()=>{const g={};all.forEach(x=>{if(x.grp){const o=g[x.grp]=g[x.grp]||{n:0,c:0};o.n++;o.c+=+x.cost||0}});const ks=Object.keys(g);return ks.length>1?`<div class="kcard2 kgrp"><h4>הוצאות לפי תחום</h4>${ks.map(k=>`<div class="kg-r"><span>${esc(k)} <small class="num">${g[k].n}</small></span><b class="num">${ils(g[k].c)}</b></div>`).join('')}<div class="kg-r kg-t"><span>סה״כ</span><b class="num">${ils(ks.reduce((t,k)=>t+g[k].c,0)+all.filter(x=>!x.grp).reduce((t,x)=>t+(+x.cost||0),0))}</b></div></div>`:''})()}
+   <div class="kitems">${(()=>{let lg=null;const gs={};all.forEach(x=>{if(x.grp)gs[x.grp]=(gs[x.grp]||0)+(+x.cost||0)});return rows.map((x,i)=>{const gh=x.grp&&x.grp!==lg&&f==='all'?`<div class="ghead kgh"><span>${esc(x.grp)}</span><span class="num">${ils(gs[x.grp])}</span></div>`:'';if(f==='all')lg=x.grp||null;const sh=x.shop?` · ${esc(x.shop)}`:'',w=kwhere(x);
      const o=(r,e)=>{const n=String(x[r]||'').trim()||kown(cur,r).join(', ');return n?`<span class="who">${e} ${esc(n)}</span>`:''};
-     return `<div class="kit" style="--i:${Math.min(i,12)}"><button class="ktop" data-edit="packing/${x._id}"><span class="kq num">${esc(x.qty)}×</span><span class="main"><b>${esc(x.item)}</b><small>${+x.per?`<b class="kper">${esc(x.per)} לחדר · סה״כ ${esc(x.qty)}</b> · `:''}${w==='בבודפשט'?'🇭🇺 בבודפשט':'🇮🇱 בארץ'}${sh}${x.notes?` · ${esc(x.notes)}`:''}</small></span><span class="kc num">${+x.cost?ils(x.cost):'—'}</span></button>
+     return gh+`<div class="kit" style="--i:${Math.min(i,12)}"><button class="ktop" data-edit="packing/${x._id}"><span class="kq num">${esc(x.qty)}×</span><span class="main"><b>${esc(x.item)}</b><small>${+x.per?`<b class="kper">${esc(x.per)} לחדר · סה״כ ${esc(x.qty)}</b> · `:''}${w==='בבודפשט'?'🇭🇺 בבודפשט':'🇮🇱 בארץ'}${sh}${x.notes?` · ${esc(x.notes)}`:''}</small></span><span class="kc num">${+x.cost?ils(x.cost):'—'}</span></button>
       <div class="kst">${KSTAGES.map(([k,l,em])=>k==='placed'&&kitOf(x)==='ערכה לחדר'?(()=>{const rp=roomsPlaced();return `<button class="${kst(x,k)?'on':''}" data-go="more" data-opts='{"sub":"rooms"}' aria-label="הנחה בחדרים: ${rp.n} מתוך ${rp.t}. פתיחת מסך החדרים"><span>${kst(x,k)?'✓':em}</span><span class="num">${rp.n}/${rp.t}</span> חדרים</button>`})():`<button class="${kst(x,k)?'on':''}" data-kst="${x._id}|${k}" aria-pressed="${kst(x,k)}"><span>${kst(x,k)?'✓':em}</span>${l}</button>`).join('')}</div>
-      <div class="kwho">${o('buyer','🛒')}${o('packer','🧳')}${o('placer','📍')}</div></div>`}).join('')||`<div class="card"><div class="empty"><b>${f==='all'?'אין פריטים בערכה':'הכול בוצע בשלב הזה 🎉'}</b></div></div>`}</div>
+      <div class="kwho">${o('buyer','🛒')}${o('packer','🧳')}${o('placer','📍')}</div></div>`}).join('')})()||`<div class="card"><div class="empty"><b>${f==='all'?'אין פריטים בערכה':'הכול בוצע בשלב הזה 🎉'}</b></div></div>`}</div>
    <p class="note">כדי להוסיף מוצר לערכה לחצו על ה-+.</p>`;
 };
 
@@ -5799,7 +5801,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='acd39b03fa';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='1adbd71c02';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
