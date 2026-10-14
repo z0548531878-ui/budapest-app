@@ -2424,6 +2424,9 @@ const RETURN_GROUPS=['מוצ״ש','ראשון צהריים','ראשון ערב',
 const DOC_CATS=['עלון','משחק','תפריטים','הדפסות','ספקים והזמנות','טיסות','אחר'];
 const TASK_CATS=['כספים','לינה','קרעסטיר','אוטובוס','שבת','קניות','מזכרות ודפוס','משתתפים','אחר'];
 const EXP_CATS=['לינה','אוכל','הסעות','מזכרות ודפוס','הפקה','אוטובוס','חדרים','סט קוויטל','קרעסטיר','שבת','אחר'];
+const CATLBL={'חדרים':'ערכת חדר','סט קוויטל':'ערכת קוויטל','אוטובוס':'ערכת אוטובוס'};
+const xInfo=()=>{const ex=S.expenses.filter(e=>S.packing.some(x=>x.item&&x.exp===e._id)).map(e=>e._id),cn={};S.expenses.forEach(e=>{const k=e.category||'אחר';cn[k]=(cn[k]||0)+1});return {ex,cats:Object.keys(cn).filter(k=>cn[k]>1)}};
+const xAllOpen=()=>{const {ex,cats}=xInfo();return (ex.length>0||cats.length>0)&&ex.every(i=>V.xo&&V.xo[i])&&cats.every(k=>V.co&&V.co[k])};
 
 const outGroups=()=>{const s=S.settings.find(x=>x._id==='trip');return (s&&s.outboundGroups)||['קבוצתי','נפרד']};
 const F={
@@ -2778,15 +2781,17 @@ const VIEWS={
    const st=e=>e.status==='שולם'?['ok','שולם ✓']:e.status==='מקדמה'?['w',`מקדמה ${ils(e.paid)} · נשאר ${ils(Math.max(0,(+e.estimate||0)-(+e.paid||0)))}`]:['m',isFinal(e)?'לא שולם · סכום סופי':'לא שולם · הערכה'];
    return head+`<div class="card" style="padding:14px;margin-bottom:6px"><div class="mt3" style="margin-top:0"><div><span>סה״כ</span><b class="num">${ils(m.est)}</b></div><div><span>שולם</span><b class="num pos">${ils(out)}</b></div><div><span>נשאר לשלם</span><b class="num">${ils(left)}</b></div></div>
     <p class="note" style="margin:10px 2px 0"><span class="num">${finN}</span> מתוך <span class="num">${S.expenses.length}</span> סכומים סופיים. השאר הערכה.${noRec?` · <b style="color:var(--warn)">${noRec} תשלומים בלי קבלה</b>`:''}</p></div>`
-    +`<div class="chips">${[['all','הכל'],['open','לא שולם במלואו'],['paid','שולם'],['fix','לטיפול']].map(([k,l])=>`<button class="chip" data-filter="exs" data-val="${k}" aria-pressed="${xs===k}">${l} <span class="num">${xn(k)}</span></button>`).join('')}<button class="chip" data-xall="1" aria-pressed="${(()=>{const a=S.expenses.filter(e=>S.packing.some(x=>x.item&&x.exp===e._id));return a.length>0&&a.every(e=>V.xo&&V.xo[e._id])})()}">פתיחת כל הפירוט</button></div>`
-    +(Object.keys(g).length?'':card('','<b>אין הוצאות בסינון הזה</b>'))+[...EXP_CATS,...Object.keys(g).filter(c=>!EXP_CATS.includes(c))].filter(c=>g[c]).map(c=>`<div class="ghead"><span>${c}</span><span class="num">${ils(g[c].reduce((s,x)=>s+(+x.estimate||0),0))}</span></div>`+card(g[c].map(e=>{const [k,l]=st(e);
+    +`<div class="chips">${[['all','הכל'],['open','לא שולם במלואו'],['paid','שולם'],['fix','לטיפול']].map(([k,l])=>`<button class="chip" data-filter="exs" data-val="${k}" aria-pressed="${xs===k}">${l} <span class="num">${xn(k)}</span></button>`).join('')}<button class="chip" data-xall="1" aria-pressed="${xAllOpen()}">פתיחת כל הפירוט</button></div>`
+    +(Object.keys(g).length?'':card('','<b>אין הוצאות בסינון הזה</b>'))+[...EXP_CATS,...Object.keys(g).filter(c=>!EXP_CATS.includes(c))].filter(c=>g[c]).map(c=>{const multi=g[c].length>1,open=!multi||xs!=='all'||!!(V.co&&V.co[c]),lbl=CATLBL[c]||c,tot=ils(g[c].reduce((s,x)=>s+(+x.estimate||0),0));
+     const headRow=`<div class="row erow cathead" data-ct="${esc(c)}" role="button" tabindex="0" aria-expanded="${open}"><div class="main"><div class="t">${esc(lbl)}</div><div class="est m">${g[c].length} פריטים</div></div><div class="end" style="flex-direction:row;align-items:center;gap:8px"><span class="amt num">${tot}</span><span aria-hidden="true" style="color:var(--muted);font-size:16px">${open?'▾':'‹'}</span></div></div>`;
+     return (multi?'':`<div class="ghead"><span>${esc(lbl)}</span><span class="num">${tot}</span></div>`)+card((multi?headRow:'')+((!multi||open)?g[c].map(e=>{const [k,l]=st(e);
      const it=S.packing.filter(x=>x.item&&x.exp===e._id),isOpen=!!(V.xo&&V.xo[e._id]);
      const subs=(it.length&&isOpen)?(()=>{const sm=it.reduce((t,x)=>t+(+x.cost||0),0),rest=(+e.estimate||0)-sm;
       const li=x=>{const on=kst(x,'ordered');return `<div class="row ${on?'done':''}" data-edit="packing/${x._id}" role="button" tabindex="0" style="min-height:0;padding:6px 14px 6px 8px"><button class="check ${on?'on':''}" data-toggle="packing/${x._id}" aria-label="סימון שהוזמן / נקנה" style="width:26px;height:26px">${on?CHECK:''}</button><div class="main"><div class="m" style="font-size:14px">${esc(x.item)}${x.qty?' · '+esc(x.qty)+' יח׳':''}${+x.cost&&+x.qty>1?' · '+ils(Math.round(x.cost/x.qty*10)/10)+' ליחידה':''}</div></div><div class="end"><span class="num" style="font-size:14px">${ils(+x.cost||0)}</span></div></div>`};
       const ln=(a,b)=>`<div class="row" data-edit="expenses/${e._id}" style="min-height:0;padding:5px 18px 5px 8px;opacity:.88"><div class="main"><div class="m" style="font-size:14px">${a}</div></div><div class="end"><span class="num" style="font-size:14px">${b}</span></div></div>`;
       return it.slice().sort((p,q)=>(p.order||0)-(q.order||0)).map(li).join('')+(Math.abs(rest)>=1?ln('• '+(rest>0?'יתרה לא מפורטת':'חריגה מההוצאה'),ils(Math.abs(rest))):'')})():'';
      return `<div class="row erow" ${it.length?`data-xt="${e._id}" aria-expanded="${isOpen}"`:`data-edit="expenses/${e._id}"`} role="button" tabindex="0"><div class="main"><div class="t">${esc(e.name)}</div><div class="est ${k}">${l}${+e.paid&&!e.receipt?' · <span style="color:var(--warn)">חסרה קבלה</span>':''}</div></div>
-     <div class="end"><span class="amt num">${+e.estimate?ils(e.estimate):'—'}</span>${it.length?`<button class="pill p-gold" data-edit="expenses/${e._id}" aria-label="עריכת ההוצאה" style="margin-inline-start:8px">✎</button><span aria-hidden="true" style="color:var(--muted);margin-inline-start:8px;font-size:16px">${isOpen?'▾':'‹'}</span>`:''}</div></div>`+subs}).join(''))).join('');
+     <div class="end" style="flex-direction:row;align-items:center;gap:8px"><span class="amt num">${+e.estimate?ils(e.estimate):'—'}</span>${it.length?`<button class="pill p-gold" data-edit="expenses/${e._id}" aria-label="עריכת ההוצאה">✎</button><span aria-hidden="true" style="color:var(--muted);font-size:16px">${isOpen?'▾':'‹'}</span>`:''}</div></div>`+subs}).join(''):''))}).join('');
   }
   return head+incTog+`<div class="card" style="padding:14px;margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-weight:800"><span>התקבלו</span><span class="num">${ils(m.dIn)} / ${ils(m.dAll)}</span></div><div class="prog"><i data-w="${m.dAll?Math.round(m.dIn/m.dAll*100):0}%" style="width:0"></i></div></div>` +(()=>{const dn=V.filter.dn||'all',dm={all:()=>true,wait:d=>d.status!=='התקבל',got:d=>d.status==='התקבל'};
    const list=S.donations.filter(d=>dm[dn](d));
@@ -3059,7 +3064,8 @@ view.addEventListener('click',e=>{
   const ut=t.closest('[data-untrash]');if(ut){restoreTrash(ut.dataset.untrash);return}
   if(t.id==='cpTeam'){copy(location.origin+location.pathname+'#k='+TRIP_KEY);return}
   if(t.id==='saveTeam'){const v=document.getElementById('teamIn').value.split(',').map(s=>s.trim()).filter(Boolean);save('settings','trip',{...strip(find('settings','trip')||{}),team:v}).then(ok=>ok&&toast('הצוות נשמר'));return}
-  const xa=t.closest('[data-xall]');if(xa){const ids=S.expenses.filter(e=>S.packing.some(x=>x.item&&x.exp===e._id)).map(e=>e._id);V.xo=V.xo||{};const all=ids.length>0&&ids.every(i=>V.xo[i]);ids.forEach(i=>{V.xo[i]=!all});render(false);return}
+  const xa=t.closest('[data-xall]');if(xa){const {ex,cats}=xInfo();V.xo=V.xo||{};V.co=V.co||{};const all=xAllOpen();ex.forEach(i=>{V.xo[i]=!all});cats.forEach(k=>{V.co[k]=!all});render(false);return}
+  const ct=t.closest('[data-ct]');if(ct&&!t.closest('[data-edit],[data-toggle]')){V.co=V.co||{};V.co[ct.dataset.ct]=!V.co[ct.dataset.ct];render(false);return}
   const xt=t.closest('[data-xt]');if(xt&&!t.closest('[data-edit]')){V.xo=V.xo||{};V.xo[xt.dataset.xt]=!V.xo[xt.dataset.xt];render(false);return}
   const ed=t.closest('[data-edit]');if(ed){const [c,id]=ed.dataset.edit.split('/');editor(c,id)}
 });
@@ -5806,7 +5812,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='54171251e7';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='404c76c952';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
