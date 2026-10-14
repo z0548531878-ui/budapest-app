@@ -5112,7 +5112,7 @@ function guestHTML0(){
      ${ppl.map(person).join('')}
      <div class="pa-acts"><a class="pa-a soft" href="${waLink(sh)}" target="_blank" rel="noopener">${IX.wa}<span><b>שאלה לשלומי</b><small>וואטסאפ למארגן המסע</small></span></a></div>
      ${isPrevOrg()?'':`<button class="btn ghost gout2" id="pdiag">🔧 בדיקת תקינות והתראות</button><button class="btn ghost gout2" id="gout">🚪 יציאה מהחשבון</button>`}</section>`}
-  if(GTAB==='gv'&&canExp())return head('הוצאות והכנסות')+expTabs()+(EXPV==='inc'?incHTML():expHTML());
+  if(GTAB==='gv'&&canExp())return head('הוצאות והכנסות')+expTabs()+(EXPV==='inc'?incHTML():EXPV==='exp'?expHTML():vSum());
   if(GTAB==='gy')return head('צ׳אט המסע')+chatHTML();
   if(GTAB==='gd')return head('נסיעה משותפת לשדה')+`<p class="note">מתאמים ביחד את הדרך לשדה: מי שיש לו מקום ברכב, מי שמחפש טרמפ, ומי שרוצה לחלוק מונית.</p>`+ridesHTML(ppl,me);
   if(GTAB==='gi')return head('תמונות מהמסע')+photosHTML();
@@ -5147,8 +5147,11 @@ function guestHTML0(){
       <a class="tk-c tk-sos" href="tel:112" ${at()}><span class="tk-e">🚨</span><b class="tk-t">112 · חירום באירופה</b></a>
      </div></section>`}
   return head('')}
-let EXPV='exp';
-function expTabs(){return `<div class="seg s2 sub">${[['exp','הוצאות'],['inc','הכנסות']].map(([k,l])=>`<button data-vseg="${k}" aria-pressed="${EXPV===k}">${l}</button>`).join('')}</div>`}
+let EXPV='sum';
+function expTabs(){return `<div class="seg s3 sub">${[['sum','סיכום'],['inc','הכנסות'],['exp','הוצאות']].map(([k,l])=>`<button data-vseg="${k}" aria-pressed="${EXPV===k}">${l}</button>`).join('')}</div>`}
+// read-only twin of the organisers' summary tab: same numbers, its rows switch the viewer's own tabs
+function vSum(){if(!loaded.has('participants')||!loaded.has('expenses')||!loaded.has('donations'))return skel(6);
+  return `<p class="vwnote">👁 צפייה בלבד. אי אפשר לשנות כאן דבר.</p>`+moneySum('').replace(/data-seg="(participants|donations)"/g,'data-vseg="inc"').replace(/data-seg="expenses"/g,'data-vseg="exp"')}
 function incHTML(){
   if(!loaded.has('participants')||!loaded.has('donations'))return skel(6);
   const m=money(),pay=S.participants.filter(x=>x.status!=='פטור').slice().sort((a,b)=>String(a.name).localeCompare(String(b.name),'he')),dn=S.donations.slice().sort((a,b)=>(+b.amount||0)-(+a.amount||0));
@@ -5841,7 +5844,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='3726b9a9b6';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='82e599e88e';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
