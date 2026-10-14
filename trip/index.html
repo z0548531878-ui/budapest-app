@@ -5168,9 +5168,20 @@ function expHTML(){
   return `<p class="vwnote">👁 צפייה בלבד. אי אפשר לשנות כאן דבר.</p>
    <div class="card" style="padding:14px;margin-bottom:6px"><div class="mt3" style="margin-top:0"><div><span>סה״כ</span><b class="num">${ils(est)}</b></div><div><span>שולם</span><b class="num pos">${ils(paid)}</b></div><div><span>נשאר לשלם</span><b class="num">${ils(Math.max(0,est-paid))}</b></div></div></div>`
    +(L.length?'':card('','<b>עוד אין הוצאות</b>'))
-   +[...EXP_CATS,...Object.keys(g).filter(c=>!EXP_CATS.includes(c))].filter(c=>g[c]).map(c=>`<div class="ghead"><span>${esc(c)}</span><span class="num">${ils(g[c].reduce((t,x)=>t+(+x.estimate||0),0))}</span></div>`+card(g[c].map(e=>{const [k,l]=st(e);
-     return `<div class="row erow" data-vexp="${esc(e._id)}" role="button" tabindex="0"><div class="main"><div class="t">${esc(e.name)}</div><div class="m"><span class="pill ${k}">${l}</span>${+e.paid?`<span class="num">שולם ${ils(e.paid)}</span>`:''}</div></div><div class="end"><span class="amt num">${+e.estimate?ils(e.estimate):'—'}</span></div></div>`}).join(''))).join('');
+   +[...EXP_CATS,...Object.keys(g).filter(c=>!EXP_CATS.includes(c))].filter(c=>g[c]).map(c=>`<div class="ghead"><span>${esc(c)}</span><span class="num">${ils(g[c].reduce((t,x)=>t+(+x.estimate||0),0))}</span></div>`+card((()=>{const seen={},rows=[];g[c].forEach(e=>{if(e.kg){if(seen[e.kg])return;seen[e.kg]=1;const m=g[c].filter(x=>x.kg===e.kg);rows.push(`<div class="row erow" data-vgrp="${esc(c+'|'+e.kg)}" role="button" tabindex="0"><div class="main"><div class="t">${esc(e.kg)}</div><div class="m"><span>${m.length} הוצאות</span></div></div><div class="end"><span class="amt num">${ils(m.reduce((t,x)=>t+(+x.estimate||0),0))}</span></div></div>`);return}rows.push(vExpRow(e,st))});return rows.join('')})())).join('');
 }
+function vExpRow(e,st){const [k,l]=st(e);
+     return `<div class="row erow" data-vexp="${esc(e._id)}" role="button" tabindex="0"><div class="main"><div class="t">${esc(e.name)}</div><div class="m"><span class="pill ${k}">${l}</span>${+e.paid?`<span class="num">שולם ${ils(e.paid)}</span>`:''}</div></div><div class="end"><span class="amt num">${+e.estimate?ils(e.estimate):'—'}</span></div></div>`}
+// read-only item list: quantity first, grouped by topic (grp)
+function vItems(mem){const ids=new Set(mem.map(e=>e._id)),it=S.packing.filter(x=>x.item&&ids.has(x.exp)).sort((p,q)=>(p.order||0)-(q.order||0));
+  const li=x=>`<div class="vwr"><span>${x.qty?`<b class="num">${esc(x.qty)}</b> × `:''}${esc(x.item)}</span><b class="num">${ils(+x.cost||0)}</b></div>`;
+  const keys=[...new Set(it.map(x=>x.grp||''))],order=keys.filter(Boolean).concat(keys.includes('')?['']:[]);
+  let h=keys.length>1?order.map(k=>{const a=it.filter(x=>(x.grp||'')===k);return `<div class="ghead"><span>${esc(k||'אחר')}</span><span class="num">${ils(a.reduce((t,x)=>t+(+x.cost||0),0))}</span></div><div class="vwl">${a.map(li).join('')}</div>`}).join(''):(it.length?`<div class="vwl">${it.map(li).join('')}</div>`:'');
+  const rest=mem.map(e=>{const mi=it.filter(x=>x.exp===e._id),sm=mi.reduce((t,x)=>t+(+x.cost||0),0),r=(+e.estimate||0)-sm;return !mi.length?`<div class="vwr"><span>• ${esc(e.name)}</span><b class="num">${ils(+e.estimate||0)}</b></div>`:(Math.abs(r)>=1&&+e.estimate?`<div class="vwr"><span>${r>0?'יתרה לא מפורטת':'חריגה מההוצאה'}${mem.length>1?' – '+esc(e.name):''}</span><b class="num">${ils(Math.abs(r))}</b></div>`:'')}).join('');
+  return h+(rest?`<div class="vwl">${rest}</div>`:'')}
+function grpDetail(key){const [c,kg]=key.split('|'),mem=S.expenses.filter(e=>(e.category||'אחר')===c&&e.kg===kg);if(!mem.length)return;
+  const tot=mem.reduce((t,x)=>t+(+x.estimate||0),0),paid=mem.reduce((t,x)=>t+(+x.paid||0),0);
+  sheet(`<h3>${esc(kg)}</h3><p class="vwnote">צפייה בלבד</p><div class="vwl"><div class="vwr"><span>סכום</span><b class="num">${ils(tot)}</b></div><div class="vwr"><span>שולם בפועל</span><b class="num">${ils(paid)}</b></div></div>`+vItems(mem))}
 function expDetail(id){
   const e=S.expenses.find(x=>x._id===id);if(!e)return;
   const it=S.packing.filter(x=>x.item&&x.exp===e._id),sm=it.reduce((t,x)=>t+(+x.cost||0),0),rest=(+e.estimate||0)-sm;
@@ -5183,10 +5194,10 @@ function expDetail(id){
     ${row('מי שילם',esc(e.paidBy||''))}
     ${row('קבלה',e.receipt?'יש':'אין')}
     ${e.notes?`<div class="vwr col"><span>הערות</span><p>${esc(e.notes).replace(/\n/g,'<br>')}</p></div>`:''}</div>
-    ${it.length?`<div class="ghead"><span>פירוט פריטים</span><span class="num">${ils(sm)}</span></div><div class="vwl">${it.map(x=>`<div class="vwr"><span>${esc(x.item)}${x.qty?` · <span class="num">${esc(x.qty)}</span> יח׳`:''}</span><b class="num">${ils(+x.cost||0)}</b></div>`).join('')}${Math.abs(rest)>=1&&+e.estimate?`<div class="vwr"><span>${rest>0?'יתרה לא מפורטת':'חריגה מההוצאה'}</span><b class="num">${ils(Math.abs(rest))}</b></div>`:''}</div>`:''}`);
+    ${it.length?`<div class="ghead"><span>פירוט פריטים</span><span class="num">${ils(sm)}</span></div>`+vItems([e]):''}`);
 }
-document.addEventListener('click',e=>{const sg=e.target.closest&&e.target.closest('[data-vseg]');if(sg&&canExp()){e.stopPropagation();EXPV=sg.dataset.vseg;render();return}const r=e.target.closest&&e.target.closest('[data-vexp]');if(r&&canExp()){e.stopPropagation();expDetail(r.dataset.vexp)}},true);
-document.addEventListener('keydown',e=>{if(e.key!=='Enter')return;const r=e.target.closest&&e.target.closest('[data-vexp]');if(r&&canExp())expDetail(r.dataset.vexp)});
+document.addEventListener('click',e=>{const sg=e.target.closest&&e.target.closest('[data-vseg]');if(sg&&canExp()){e.stopPropagation();EXPV=sg.dataset.vseg;render();return}const gr=e.target.closest&&e.target.closest('[data-vgrp]');if(gr&&canExp()){e.stopPropagation();grpDetail(gr.dataset.vgrp);return}const r=e.target.closest&&e.target.closest('[data-vexp]');if(r&&canExp()){e.stopPropagation();expDetail(r.dataset.vexp)}},true);
+document.addEventListener('keydown',e=>{if(e.key!=='Enter')return;const gr=e.target.closest&&e.target.closest('[data-vgrp]');if(gr&&canExp()){grpDetail(gr.dataset.vgrp);return}const r=e.target.closest&&e.target.closest('[data-vexp]');if(r&&canExp())expDetail(r.dataset.vexp)});
 const _renderBase=render;
 let _lastScr='',_lastDay='';
 render=function(anim){
@@ -5830,7 +5841,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='7ffb7b8c63';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='3726b9a9b6';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
