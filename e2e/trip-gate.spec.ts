@@ -1,6 +1,7 @@
 // The participant's entry gate on a phone: in-app browser, old iPhone, add to home screen, notifications.
 // SHOTS=1 also saves a picture of each screen to SHOTS_OUT (default /tmp/shots).
 import { test, expect, openTrip, TRIP_KEY } from './helpers';
+import { seedBigTrip } from './trip-seed';
 
 const OUT = process.env.SHOTS_OUT || '/tmp/shots';
 const UA = {
@@ -57,4 +58,39 @@ test('inside the installed app the name screen keeps the paste-the-link box clos
   await page.reload();
   await expect(page.locator('#gname')).toBeVisible();
   await expect(page.locator('#gkey')).toBeHidden();
+});
+
+test('a returning participant sees their name, and the birth date goes in three boxes', async ({ browser, db }) => {
+  await seedBigTrip(db);
+  const { page } = await openTrip(browser, db);
+  await page.evaluate(() => { localStorage.setItem('nogate', '1'); sessionStorage.setItem('skipInst', '1'); localStorage.setItem('lastG', JSON.stringify({ id: 'p2', name: 'גלעד מור' })); });
+  await page.reload();
+  await expect.poll(() => page.evaluate('loaded.has("participants") && S.participants.some(p => p._id === "p2")')).toBe(true);
+  await page.evaluate(async () => { const ev = (0, eval); await ev('db').doc('participants/p2').set({ dobH: await ev('dobHash')('p2', '1985-03-15') }, { merge: true }); });
+  await expect.poll(() => page.evaluate('!!S.participants.find(p => p._id === "p2").dobH')).toBe(true);
+  await page.evaluate('logoutRole()');
+  await expect(page.locator('#gate h1')).toHaveText('ברוך שובך');
+  await expect(page.locator('#gate .gwho')).toContainText('גלעד מור');
+  await expect(page.locator('#gate .gcd')).toBeVisible();
+  await page.locator('#ggo').click();
+  await expect(page.locator('#gdd')).toBeFocused();
+  await page.keyboard.type('15'); await page.keyboard.type('03'); await page.keyboard.type('1985');
+  await page.keyboard.press('Enter');
+  await expect.poll(() => page.evaluate('ROLE')).toBe('guest:p2');
+  // five tabs, home on the right edge, the + in the middle
+  await expect(page.locator('#nav button')).toHaveCount(5);
+  await expect(page.locator('#nav button').first()).toHaveAttribute('data-gnav', 'gh');
+  await expect(page.locator('#nav button').nth(2)).toHaveAttribute('data-gnav', 'gadd');
+  await expect(page.locator('#setBtn')).toBeVisible();
+});
+
+test('"not me" clears the remembered name and shows the empty name field', async ({ browser, db }) => {
+  const { page } = await openTrip(browser, db);
+  await page.evaluate(() => { localStorage.setItem('nogate', '1'); localStorage.setItem('lastG', JSON.stringify({ id: 'p2', name: 'גלעד מור' })); });
+  await page.reload();
+  await page.evaluate('logoutRole()');
+  await page.locator('#gnotme').click();
+  await expect(page.locator('#gname')).toBeVisible();
+  await expect(page.locator('#gname')).toHaveValue('');
+  expect(await page.evaluate(() => localStorage.getItem('lastG'))).toBeNull();
 });
