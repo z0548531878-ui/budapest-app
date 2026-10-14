@@ -2362,14 +2362,12 @@ body[data-sky="night"] .skyfx .stars{opacity:1}
 #ptr.go svg{animation:ptrGo .75s ease-in forwards}
 @keyframes ptrGo{0%{transform:rotate(-90deg)}30%{transform:rotate(-90deg) translateX(-4px)}100%{transform:rotate(-120deg) translate(160px,-40px);opacity:0}}
 @media (prefers-reduced-motion:reduce){#ptr.go svg{animation:none}}
-/* expenses viewer */
-body.viewer #nav,body.viewer .nav,body.viewer #fab,body.viewer #ideaBtn,body.viewer #actBtn,body.viewer #meBtn,body.viewer #setBtn,body.viewer #banner .syncbar{display:none!important}
-body.viewer #view{padding-bottom:30px}
+/* viewer: the organizers' app, look but don't touch */
+body.viewer #fab,body.viewer #ideaBtn,body.viewer #meBtn,body.viewer .sheet-acts,body.viewer #del,body.viewer [data-idea],body.viewer .qact,body.viewer .sync .btns{display:none!important}
+body.viewer .nav-in{grid-template-columns:repeat(4,1fr)!important}
+body.viewer #sheetRoot .sheet button:not(.sh-x):not([data-dismiss]):not([data-close]),body.viewer #view .check,body.viewer #view [data-toggle],body.viewer #view [data-pay]{pointer-events:none}
+.vwbar{margin:10px 0 4px;padding:9px 14px;border-radius:12px;border:1px dashed rgba(214,178,98,.5);background:rgba(214,178,98,.07);color:#f6dc93;font-size:14px;font-weight:700;text-align:center}
 .vwnote{margin:2px 2px 10px;font-size:13.5px;color:#d9b45f}
-.vwl{display:flex;flex-direction:column;border:1px solid rgba(214,178,98,.2);border-radius:14px;overflow:hidden;margin-bottom:12px}
-.vwr{display:flex;justify-content:space-between;gap:12px;padding:11px 14px;border-bottom:1px solid rgba(214,178,98,.12);font-size:15px}
-.vwr:last-child{border-bottom:0}.vwr span{color:var(--muted)}.vwr b{text-align:end}
-.vwr.col{flex-direction:column;gap:4px}.vwr.col p{margin:0;line-height:1.5}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -2593,7 +2591,8 @@ function hintScroll(){
 
 function renderNav(){
   const myOpen=S.tasks.filter(t=>t.status!=='בוצע'&&t.status!=='ממתין'&&mine(t)).length, idx=NAV.findIndex(n=>n[0]===V.tab);
-  document.getElementById('nav').innerHTML=`<span class="ind${idx<0||idx===2?' h':''}" style="transform:translateX(calc(${-idx} * (100% + 8px)))"></span>`+NAV.map(([k,l])=>`<button data-nav="${k}" ${k==='chat'?`class="chhot${V.tab!=='chat'&&chUnread()?' ur':''}" `:''}${V.tab===k?'aria-current="page"':''}${k==='add'?' aria-label="הוספה"':''}>${I[k]}${l}${k==='tasks'&&myOpen?`<span class="badge num">${myOpen}</span>`:''}${k==='more'?(n=>n?`<span class="badge num insb">${n}</span>`:'')(insights().L.filter(x=>x.lvl==='bad').length):''}${k==='chat'&&V.tab!=='chat'&&chUnread()?`<span class="badge num">${chUnread()}</span>`:''}</button>`).join('');
+  const NAVX=ROLE==='exp'?NAV.filter(n=>n[0]!=='add'):NAV;
+  document.getElementById('nav').innerHTML=`<span class="ind${idx<0||idx===2||ROLE==='exp'?' h':''}" style="transform:translateX(calc(${-idx} * (100% + 8px)))"></span>`+NAVX.map(([k,l])=>`<button data-nav="${k}" ${k==='chat'?`class="chhot${V.tab!=='chat'&&chUnread()?' ur':''}" `:''}${V.tab===k?'aria-current="page"':''}${k==='add'?' aria-label="הוספה"':''}>${I[k]}${l}${k==='tasks'&&myOpen?`<span class="badge num">${myOpen}</span>`:''}${k==='more'?(n=>n?`<span class="badge num insb">${n}</span>`:'')(insights().L.filter(x=>x.lvl==='bad').length):''}${k==='chat'&&V.tab!=='chat'&&chUnread()?`<span class="badge num">${chUnread()}</span>`:''}</button>`).join('');
   document.getElementById('meBtn').innerHTML=`<i>${esc(ME?ME[0]:'?')}</i><span>${esc(ME||'מי אני?')}</span>`;
   document.getElementById('fab').hidden=true;
 }
@@ -3169,6 +3168,7 @@ function openSettings(){
   const it=(at,ic,l,sub,cls)=>`<button class="setit${cls?' '+cls:''}" ${at}><span class="ic">${ic}</span><span class="main"><b>${l}</b>${sub?`<small>${sub}</small>`:''}</span></button>`;
   let h;
   if(GUEST())h=`<h3>הגדרות</h3><div class="setlist">${it('id="pdiag"','🔔','התראות ובדיקת תקינות','מה מגיע לטלפון ואם הכול עובד')}${(()=>{const ph=orgPhone();return ph?`<a class="setit" href="${waLink(ph)}" target="_blank" rel="noopener"><span class="ic">💬</span><span class="main"><b>שאלה לשלומי</b><small>וואטסאפ למארגן המסע</small></span></a>`:''})()}${isPrevOrg()?'':it('data-switch','🔄','החלפת משתמש','יציאה מהשם שלכם וכניסה בשם אחר','out')}</div>`;
+  else if(ROLE==='exp')h=`<h3>הגדרות</h3><p class="vwnote">👁 כניסת צפייה בלבד. אפשר לראות הכול, אי אפשר לשנות.</p><div class="setlist">${it('data-set="guide"','❓','איך זה עובד','')}${it('data-switch','🔄','החלפת משתמש','יציאה מהחשבון וכניסה מחדש','out')}</div>`;
   else h=`<h3>הגדרות</h3><div class="setlist">${it('data-set="me"','👤','מי אני',ME?esc(ME):'עוד לא נבחר')}${it('data-set="settings"','💾','צוות, גיבוי וייצוא','שיתוף עם הצוות, אקסל, שחזור')}${it('data-set="settings"','🗑','נמחקו לאחרונה',trashed().length?trashed().length+' פריטים':'')}${it('data-set="guide"','❓','איך זה עובד','')}${it('data-switch','🔄','החלפת משתמש','יציאה מהחשבון וכניסה מחדש','out')}</div>`;
   sheet(h);
   const r=document.getElementById('sheetRoot');
@@ -3438,7 +3438,7 @@ let DOBBUSY=false;
 async function dobSync(){if(GUEST()||!db||DOBBUSY||!(window.crypto&&crypto.subtle))return;DOBBUSY=true;try{for(const p of (S.participants||[])){if(!p.birthDate)continue;const h=await dobHash(p._id,p.birthDate);if(p.dobH!==h){p.dobH=h;await db.collection('participants').doc(p._id).set({dobH:h},{merge:true})}}}catch(e){diagE('dob',e)}DOBBUSY=false}
 const PDK=['passNo','nationality','birthDate'];let PD={},PDSUB=false,PDMIG=false;
 function pdOverlay(){if(GUEST())return;(S.participants||[]).forEach(p=>{const x=PD[p._id];if(x)PDK.forEach(k=>{if(x[k])p[k]=x[k]})})}
-function pdSub(){if(PDSUB||!db||GUEST()||ROLE==='exp')return;PDSUB=true;db.doc('photobig/pp_all').onSnapshot(d=>{PD=d.exists?d.data():{};pdOverlay();dobSync();later()},e=>{PDSUB=false;diagE('pd',e)})}
+function pdSub(){if(PDSUB||!db||GUEST())return;PDSUB=true;db.doc('photobig/pp_all').onSnapshot(d=>{PD=d.exists?d.data():{};pdOverlay();dobSync();later()},e=>{PDSUB=false;diagE('pd',e)})}
 // older records kept these fields on the participant itself: move them to the private doc and remove them there
 function pdMigrate(){if(GUEST()||!db||PDMIG)return;const mv=(S.participants||[]).filter(p=>PDK.some(k=>p[k]));if(!mv.length)return;PDMIG=true;
   const upd={},bt=db.batch();mv.forEach(p=>{upd[p._id]=Object.fromEntries(PDK.filter(k=>p[k]).map(k=>[k,p[k]]));bt.set(db.collection('participants').doc(p._id),Object.fromEntries(PDK.filter(k=>k in p).map(k=>[k,firebase.firestore.FieldValue.delete()])),{merge:true})});
@@ -4182,7 +4182,12 @@ async function initFire(){
   // keep a copy of everything on the phone, so the app still opens with all the data where there's no signal.
   // On iPhone the installed app is a single window, and its storage can hang: never wait more than 3 seconds for it
   try{if(fs.enablePersistence){await withTO(fs.enablePersistence(IOSDEV?{}:{synchronizeTabs:true}),3000,'cache');diag('cache','ok')}}catch(e){diag('cache','off');diagE('cache',e)}
-  const w={collection:c=>root.collection(c),doc:p=>{const [c,id]=p.split('/');return root.collection(c).doc(id)},batch:()=>fs.batch(),fs};
+  // the viewer (look, don't touch): every write is refused here, whichever screen asks for it
+  const no=()=>{toast('צפייה בלבד. אי אפשר לשנות דבר');return Promise.reject(new Error('read-only'))};
+  const ro=(o,ms)=>{ms.forEach(m=>{const f=o[m];if(typeof f==='function')o[m]=function(...a){return ROLE==='exp'?no():f.apply(this,a)}});return o};
+  const roDoc=d=>ro(d,['set','update','delete']),roCol=c=>{ro(c,['add']);const d=c.doc;c.doc=function(...a){return roDoc(d.apply(this,a))};return c};
+  ro(fs,['runTransaction']);
+  const w={collection:c=>roCol(root.collection(c)),doc:p=>{const [c,id]=p.split('/');return roDoc(root.collection(c).doc(id))},batch:()=>ro(fs.batch(),['commit']),fs};
   try{await withTO(maybeSeed(w),8000,'seed')}catch(e){diagE('seed',e);if(e&&e.code==='permission-denied')return w}
   diag('db','ok');
   return w;
@@ -4223,7 +4228,7 @@ const later=()=>{if(rq)return;if(V.sub==='notes'&&document.querySelector('#sortB
   rq=setTimeout(()=>requestAnimationFrame(()=>{rq=0;const all=COLS.every(c=>loaded.has(c));render(all&&!firstAll);if(all&&!firstAll)setTimeout(autoApply,800);if(all)firstAll=true}),firstAll?90:0)};
 /* ===== entrance: participants (by name) / organizers (by code) ===== */
 /* organizer code: PBKDF2-SHA256 (600000 rounds, own salt). The page keeps only a SHA-256 of the derived key, the device keeps the derived key as proof */
-// a second code, given to one person, opens the expenses only, to read
+// a second code, given to one person (Chaim Bloch), opens the organizers' app to look at, never to change
 const EXP_CHK='9818f18b011bb76715d39be860511a176ff0be56b67d0bd1e8608d14a2059e5d';
 const ORG_SALT='d77742f9a791ee7608fc6c191780aab0',ORG_ITER=600000,ORG_CHK='03405cce2969b704a54459c83029018c6135020db7fbc4e6be183df159c91347';
 async function orgDerive(code){const enc=new TextEncoder(),salt=new Uint8Array(ORG_SALT.match(/../g).map(h=>parseInt(h,16)));const base=await crypto.subtle.importKey('raw',enc.encode(code),'PBKDF2',false,['deriveBits']);const bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt,iterations:ORG_ITER,hash:'SHA-256'},base,256);return [...new Uint8Array(bits)].map(x=>x.toString(16).padStart(2,'0')).join('')}
@@ -4253,7 +4258,7 @@ function matchGuest(inp){
   const part2=S.participants.filter(p=>{const f=nskel(p.name).split(' '),tk=k.split(' ');return tk.length>=2&&tk.every(t=>f.includes(t))});return part2.length===1?part2[0]:null;
 }
 async function sha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
-function setRole(r){if(/^guest:/.test(r)){const p=S.participants.find(x=>'guest:'+x._id===r);try{if(p)localStorage.setItem('lastG',JSON.stringify({id:p._id,name:p.name}))}catch(e){}}ROLE=r;PREV=false;try{sessionStorage.setItem('prev','0')}catch(e){}try{localStorage.setItem('role',r)}catch(e){}const g=document.getElementById('gate');if(g)g.remove();document.body.classList.toggle('guest',GUEST());if(ROLE==='org'&&!GUEST())setTimeout(()=>{try{pdSub();pdOverlay()}catch(e){}},0);if(typeof pickMe==='function'&&GUEST()){}render(true);window.scrollTo(0,0)}
+function setRole(r){if(/^guest:/.test(r)){const p=S.participants.find(x=>'guest:'+x._id===r);try{if(p)localStorage.setItem('lastG',JSON.stringify({id:p._id,name:p.name}))}catch(e){}}ROLE=r;PREV=false;try{sessionStorage.setItem('prev','0')}catch(e){}try{localStorage.setItem('role',r)}catch(e){}const g=document.getElementById('gate');if(g)g.remove();document.body.classList.toggle('guest',GUEST());if(!GUEST())setTimeout(()=>{try{pdSub();pdOverlay()}catch(e){}},0);if(typeof pickMe==='function'&&GUEST()){}render(true);window.scrollTo(0,0)}
 function logoutRole(){ROLE='';try{localStorage.removeItem('role');localStorage.removeItem('me');localStorage.removeItem('orgProof');localStorage.removeItem('expProof')}catch(e){}document.body.classList.remove('viewer');ME='';document.body.classList.remove('guest');showGate()}
 /* the entry buttons say they're working, and can't be pressed twice */
 function gBusy(b,t){if(!b)return;if(t){b.dataset.t=b.textContent;b.disabled=true;b.setAttribute('aria-busy','true');b.innerHTML=`<span class="gspin" aria-hidden="true"></span>${esc(t)}`}else if(b.dataset.t!=null){b.disabled=false;b.removeAttribute('aria-busy');b.textContent=b.dataset.t;delete b.dataset.t}}
@@ -5119,46 +5124,13 @@ function guestHTML0(){
       <a class="tk-c tk-sos" href="tel:112" ${at()}><span class="tk-e">🚨</span><b class="tk-t">112 · חירום באירופה</b></a>
      </div></section>`}
   return head('')}
-/* ===== expenses viewer: read only, expenses and their breakdown, nothing else ===== */
-function expView(){
-  const v=document.getElementById('view');document.getElementById('nav').innerHTML='';document.getElementById('fab').hidden=true;
-  if(!loaded.has('expenses')){v.innerHTML=`<div class="page-title"><h2>הוצאות המסע</h2></div>${skel(6)}`;return}
-  const L=S.expenses.slice(),est=L.reduce((t,e)=>t+(+e.estimate||0),0),paid=L.reduce((t,e)=>t+(+e.paid||0),0);
-  const g={};L.forEach(e=>{(g[e.category||'אחר']=g[e.category||'אחר']||[]).push(e)});
-  const st=e=>e.status==='שולם'?['p-ok','שולם']:e.status==='מקדמה'?['p-warn','מקדמה']:['p-mute','לא שולם'];
-  v.innerHTML=`<div class="page-title"><h2>הוצאות המסע</h2></div><p class="vwnote">👁 צפייה בלבד. אי אפשר לשנות כאן דבר.</p>
-   <div class="card" style="padding:14px;margin-bottom:6px"><div class="mt3" style="margin-top:0"><div><span>סה״כ</span><b class="num">${ils(est)}</b></div><div><span>שולם</span><b class="num pos">${ils(paid)}</b></div><div><span>נשאר לשלם</span><b class="num">${ils(Math.max(0,est-paid))}</b></div></div></div>`
-   +(L.length?'':card('','<b>עוד אין הוצאות</b>'))
-   +[...EXP_CATS,...Object.keys(g).filter(c=>!EXP_CATS.includes(c))].filter(c=>g[c]).map(c=>`<div class="ghead"><span>${esc(c)}</span><span class="num">${ils(g[c].reduce((t,x)=>t+(+x.estimate||0),0))}</span></div>`+card(g[c].map(e=>{const [k,l]=st(e);
-     return `<div class="row erow" data-vexp="${esc(e._id)}" role="button" tabindex="0"><div class="main"><div class="t">${esc(e.name)}</div><div class="m"><span class="pill ${k}">${l}</span>${+e.paid?`<span class="num">שולם ${ils(e.paid)}</span>`:''}</div></div><div class="end"><span class="amt num">${+e.estimate?ils(e.estimate):'—'}</span></div></div>`}).join(''))).join('')
-   +`<div style="text-align:center;margin:26px 0 10px"><button class="btn ghost" id="vwOut">יציאה</button></div>`;
-  v.dataset.scr='expview';
-}
-function expDetail(id){
-  const e=S.expenses.find(x=>x._id===id);if(!e)return;
-  const it=S.packing.filter(x=>x.item&&x.exp===e._id),sm=it.reduce((t,x)=>t+(+x.cost||0),0),rest=(+e.estimate||0)-sm;
-  const row=(l,val)=>val===''||val==null?'':`<div class="vwr"><span>${l}</span><b>${val}</b></div>`;
-  sheet(`<h3>${esc(e.name)}</h3><p class="vwnote">צפייה בלבד</p><div class="vwl">
-    ${row('סכום',+e.estimate?`<span class="num">${ils(e.estimate)}</span>${e.final?'':' <small>(הערכה)</small>'}`:'—')}
-    ${row('שולם בפועל',`<span class="num">${ils(+e.paid||0)}</span>`)}
-    ${row('מצב',esc(e.status||'לא שולם'))}
-    ${row('תחום',esc(e.category||''))}
-    ${row('מי שילם',esc(e.paidBy||''))}
-    ${row('קבלה',e.receipt?'יש':'אין')}
-    ${e.notes?`<div class="vwr col"><span>הערות</span><p>${esc(e.notes).replace(/\n/g,'<br>')}</p></div>`:''}</div>
-    ${it.length?`<div class="ghead"><span>פירוט פריטים</span><span class="num">${ils(sm)}</span></div><div class="vwl">${it.map(x=>`<div class="vwr"><span>${esc(x.item)}${x.qty?` · <span class="num">${esc(x.qty)}</span> יח׳`:''}</span><b class="num">${ils(+x.cost||0)}</b></div>`).join('')}${Math.abs(rest)>=1&&+e.estimate?`<div class="vwr"><span>${rest>0?'יתרה לא מפורטת':'חריגה מההוצאה'}</span><b class="num">${ils(Math.abs(rest))}</b></div>`:''}</div>`:''}`);
-}
-document.addEventListener('click',e=>{if(ROLE!=='exp')return;const t=e.target;
-  const r=t.closest('[data-vexp]');if(r){e.stopPropagation();expDetail(r.dataset.vexp);return}
-  if(t.closest('#vwOut')){logoutRole();return}
-  // anything else that edits is ignored for the viewer
-  if(t.closest('[data-edit],[data-toggle],[data-pay],#fab,#nav')){e.stopPropagation();e.preventDefault()}},true);
-document.addEventListener('keydown',e=>{if(ROLE!=='exp'||e.key!=='Enter')return;const r=e.target.closest&&e.target.closest('[data-vexp]');if(r)expDetail(r.dataset.vexp)});
 const _renderBase=render;
+function viewerMark(){if(ROLE!=='exp')return;const v=document.getElementById('view');if(v&&!v.querySelector('.vwbar')){const b=document.createElement('div');b.className='vwbar';b.textContent='👁 צפייה בלבד · אי אפשר לשנות דבר';v.prepend(b)}}
+new MutationObserver(()=>{if(ROLE!=='exp')return;document.querySelectorAll('#sheetRoot input:not([type=search]),#sheetRoot textarea,#sheetRoot select,#view textarea,#view input:not([type=search]):not([type=file])').forEach(x=>{if(!x.disabled)x.disabled=true})}).observe(document.body,{childList:true,subtree:true});
 let _lastScr='',_lastDay='';
 render=function(anim){
-  if(ROLE==='exp'){document.body.classList.remove('guest');document.body.classList.add('viewer');expView();return}
-  document.body.classList.remove('viewer');
+  document.body.classList.toggle('viewer',ROLE==='exp');
+  if(ROLE==='exp')setTimeout(viewerMark,0);
   if(!GUEST()){document.body.classList.remove('guest');{const mb=document.getElementById('meBtn');if(mb&&mb.dataset.g){delete mb.dataset.g;mb.onclick=()=>pickMe()}}_renderBase(anim);const v=document.getElementById('view');if(v)v.dataset.scr=(V.tab==='more'&&V.sub?V.sub:V.tab)||'';return}
   document.body.classList.add('guest');
   const p=ROLE.startsWith('guest:')?S.participants.find(p=>p._id===ROLE.slice(6)):1;
@@ -5728,7 +5700,7 @@ function shabbatState(){const n=budNow();let z;try{z=zmanim(n.d)}catch(e){return
   if(n.d==='2026-11-20'){const c=toMin(candleTm())||Math.round(z.shk-18);if(n.m>=600&&n.m<c)return {pre:1,left:c-n.m,at:hm(c)};if(n.m>=c)return {pre:0}}
   if(n.d==='2026-11-21'&&n.m<z.tz)return {pre:0,out:hm(z.tz)};return null}
 function shabbatPaint(){const st=shabbatState(),v=document.getElementById('view');if(!v)return;let c=v.querySelector('.shabc');
-  if(!st||ROLE==='exp'){if(c)c.remove();return}
+  if(!st){if(c)c.remove();return}
   const h=`<div class="candles" aria-hidden="true"><i></i><i></i></div><div class="sc-t"><b>${st.pre?'מתכוננים לשבת':'שבת שלום'}</b><span>${st.pre?`הדלקת נרות בבודפשט בעוד ${inMin(st.left).replace('בעוד ','')} · <span class="num">${st.at}</span>`:st.out?`צאת השבת <span class="num">${st.out}</span>`:'שבת שלום ומבורך לכל המשתתפים'}</span></div>`;
   if(!c){const hello=v.querySelector('.hello');if(!hello)return;c=document.createElement('section');c.className='shabc';c.setAttribute('aria-label','שבת');hello.after(c)}
   if(c.innerHTML!==h)c.innerHTML=h;document.body.classList.toggle('shab',!st.pre)}
@@ -5798,7 +5770,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='f2c0f1f72c';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='d54e9d29b6';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
