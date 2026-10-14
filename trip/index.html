@@ -2325,6 +2325,43 @@ body.guest #meBtn span small{font-size:11px}
 .gdob .gin{width:100%;box-sizing:border-box;padding:0 6px;font-variant-numeric:tabular-nums}
 .gdob small{font-size:12.5px;color:#a69a7d}
 .glink.gorg{color:#d6b262;text-decoration:underline;text-underline-offset:4px}
+/* home animations: sky by Budapest time, plane in the air, now progress, Shabbat card, pull to refresh */
+.top>:not(.skyfx):not(.sky){position:relative;z-index:1}
+.skyfx{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;border-radius:inherit;transition:opacity 1.2s}
+.skyfx::before{content:"";position:absolute;inset:0;opacity:0;transition:opacity 1.5s,background 1.5s}
+body[data-sky="dusk"] .skyfx::before{opacity:1;background:radial-gradient(120% 90% at 18% 110%,rgba(232,128,64,.32),transparent 60%),linear-gradient(180deg,rgba(60,36,80,.25),transparent)}
+body[data-sky="night"] .skyfx::before{opacity:1;background:linear-gradient(180deg,rgba(10,14,40,.55),rgba(10,14,40,.1))}
+body[data-sky="day"] .skyfx::before{opacity:1;background:radial-gradient(90% 80% at 14% -10%,rgba(255,226,150,.16),transparent 60%)}
+.skyfx .orb{position:absolute;left:47%;width:20px;height:20px;border-radius:50%;transition:top 1.5s,background 1.5s,box-shadow 1.5s;top:6px;background:#ffe7a6;box-shadow:0 0 26px 6px rgba(255,214,120,.45);opacity:.85}
+body[data-sky="dusk"] .skyfx .orb{top:70%;background:#ffab66;box-shadow:0 0 30px 8px rgba(255,140,70,.45)}
+body[data-sky="night"] .skyfx .orb{top:8px;width:16px;height:16px;background:#efe8d2;box-shadow:0 0 18px 3px rgba(239,232,210,.35),inset -6px -2px 0 rgba(10,14,40,.35)}
+.skyfx .stars{position:absolute;inset:0;opacity:0;transition:opacity 1.5s}
+body[data-sky="night"] .skyfx .stars{opacity:1}
+.skyfx .stars b{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff6dc;box-shadow:0 0 4px #fff6dc}
+@media (prefers-reduced-motion:no-preference){.skyfx .stars b{animation:skTw 2.6s ease-in-out infinite}.top .sky{animation:skDrift 22s ease-in-out infinite alternate}}
+@keyframes skTw{50%{opacity:.2}}
+@keyframes skDrift{to{transform:translateX(-10px)}}
+.pass.air .pass-route .plane{animation:none!important;transition:transform 1.2s cubic-bezier(.4,0,.2,1)}
+.air-lb{margin:6px 0 2px;font-size:13px;font-weight:800;color:#f6dc93}
+.nc-bar{height:6px;border-radius:6px;background:rgba(214,178,98,.16);margin-top:8px;overflow:hidden}
+.nc-bar i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#c99a3d,#f6dc93);position:relative;overflow:hidden;transition:width 1s}
+@media (prefers-reduced-motion:no-preference){.nc-bar i::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);animation:ncSh 2.2s infinite}}
+@keyframes ncSh{from{transform:translateX(100%)}to{transform:translateX(-100%)}}
+.shabc{display:flex;align-items:center;gap:14px;margin:14px 0 4px;padding:14px 16px;border-radius:20px;border:1px solid rgba(255,190,90,.45);background:radial-gradient(90% 120% at 85% 100%,rgba(255,170,60,.18),transparent 70%),linear-gradient(160deg,#1c170e,#0e0c09)}
+.shabc .sc-t{display:grid;gap:2px}.shabc b{font-size:19px;color:#f6dc93;font-family:var(--display)}.shabc span{font-size:13.5px;color:#cfc3a6}
+.candles{display:flex;gap:12px;align-items:flex-end;height:52px;flex:none;padding-top:16px}
+.candles i{width:9px;height:30px;border-radius:2px;background:linear-gradient(#f4ecd8,#cfc3a4);position:relative}
+.candles i::before{content:"";position:absolute;bottom:100%;left:50%;width:10px;height:16px;margin-left:-5px;border-radius:50% 50% 45% 45%;background:radial-gradient(ellipse at 50% 70%,#fff6c8 0 25%,#ffb43c 55%,transparent 72%);transform-origin:50% 100%}
+.candles i::after{content:"";position:absolute;bottom:calc(100% + 2px);left:50%;width:40px;height:40px;margin-left:-20px;border-radius:50%;background:radial-gradient(rgba(255,180,60,.28),transparent 70%)}
+@media (prefers-reduced-motion:no-preference){.candles i::before{animation:cFl .2s infinite alternate}.candles i:nth-child(2)::before{animation-duration:.26s}}
+@keyframes cFl{from{transform:scaleY(1) rotate(-2deg)}to{transform:scaleY(1.12) rotate(2deg)}}
+#ptr{position:fixed;top:calc(env(safe-area-inset-top,0px) + 6px);left:50%;z-index:60;width:42px;height:42px;margin-left:-21px;border-radius:50%;display:grid;place-items:center;background:#16130d;border:1px solid rgba(214,178,98,.5);color:#f6dc93;box-shadow:0 8px 20px -8px #000;transform:translateY(calc(var(--d,0) * .6px)) rotate(calc(var(--d,0) * -1.4deg));opacity:calc(var(--d,0) / 80)}
+#ptr svg{width:22px;height:22px;transform:rotate(-90deg)}
+#ptr.ready{background:linear-gradient(180deg,#f6dc93,#c99a3d);color:#15110a}
+#ptr.back{transition:transform .25s,opacity .25s;--d:0}
+#ptr.go svg{animation:ptrGo .75s ease-in forwards}
+@keyframes ptrGo{0%{transform:rotate(-90deg)}30%{transform:rotate(-90deg) translateX(-4px)}100%{transform:rotate(-120deg) translate(160px,-40px);opacity:0}}
+@media (prefers-reduced-motion:reduce){#ptr.go svg{animation:none}}
 /* expenses viewer */
 body.viewer #nav,body.viewer .nav,body.viewer #fab,body.viewer #ideaBtn,body.viewer #actBtn,body.viewer #meBtn,body.viewer #setBtn,body.viewer #banner .syncbar{display:none!important}
 body.viewer #view{padding-bottom:30px}
@@ -5667,6 +5704,46 @@ function confetti(){const box=document.createElement('div');box.className='cfx';
   for(let i=0;i<70;i++){const e=document.createElement('i');e.style.cssText=`left:${Math.random()*100}%;background:${col[i%col.length]};--dx:${(Math.random()-.5)*160}px;--r:${Math.random()*720-360}deg;animation-delay:${Math.random()*.5}s;animation-duration:${1.8+Math.random()*1.4}s;width:${6+Math.random()*6}px;height:${8+Math.random()*8}px`;box.appendChild(e)}
   document.body.appendChild(box);setTimeout(()=>box.remove(),4200);try{navigator.vibrate&&navigator.vibrate([20,40,20])}catch(e){}toast('מוכנים לטיסה! 🎉')}
 const _rp=render;render=function(a){_rp(a);pgate()};
+
+/* ===== home animations: a sky that follows Budapest's clock, the plane on the flight, a progress bar for what's on now,
+   a Shabbat card, and pull-to-refresh with a plane taking off. Everything stays still under reduced motion. ===== */
+function skyNow(){const n=budNow();let z;try{z=zmanim(n.d)}catch(e){return 'day'}if(!z||!isFinite(z.netz)||!isFinite(z.shk))return 'day';
+  return n.m<z.netz-40||n.m>z.shk+45?'night':n.m<z.netz+40||n.m>z.shk-50?'dusk':'day'}
+function skyPaint(){const t=document.querySelector('header.top');if(!t)return;let fx=t.querySelector('.skyfx');
+  if(!fx){fx=document.createElement('div');fx.className='skyfx';fx.setAttribute('aria-hidden','true');
+    fx.innerHTML='<i class="orb"></i><span class="stars">'+[[12,18,0],[24,40,.7],[38,12,1.4],[52,30,.3],[66,16,2],[78,44,1.1],[88,22,.5],[30,62,1.8],[60,58,.9],[94,60,2.3]].map(([x,y,d])=>`<b style="left:${x}%;top:${y}%;animation-delay:${d}s"></b>`).join('')+'</span>';t.prepend(fx)}
+  const k=skyNow();if(document.body.dataset.sky!==k)document.body.dataset.sky=k}
+const arrAt=f=>{const d=(f&&f.date)||'2026-11-19',t=((f&&f.arr)||'11:15').replace(/[^\d:]/g,'')||'11:15';return new Date(`${d}T${t.padStart(5,'0')}:00+01:00`).getTime()};
+function planePaint(){document.querySelectorAll('.pass').forEach(ps=>{const st=ps.querySelector('.pass-stub[data-f]'),f=(st&&S.flights.find(x=>x._id===st.dataset.f))||S.flights.find(x=>x._id==='f1')||S.flights.find(x=>x.dir==='הלוך');
+  const pl=ps.querySelector('.pass-route .plane');if(!f||!pl)return;const a=depAt(f),b=arrAt(f),now=Date.now();
+  if(now>=a&&now<b&&b>a){const p=Math.min(1,Math.max(0,(now-a)/(b-a)));ps.classList.add('air');pl.style.transform=`translateX(${-(1-p)*138}px)`;
+    let lb=ps.querySelector('.air-lb');if(!lb){lb=document.createElement('div');lb.className='air-lb';ps.querySelector('.pass-route').after(lb)}
+    const m=Math.max(0,Math.round((b-now)/6e4));lb.textContent=`✈ בדרך לבודפשט · נחיתה ${m<1?'עכשיו':m<60?`בעוד ${m} דק׳`:`בעוד ${Math.floor(m/60)} שע׳ ו־${m%60} דק׳`}`}
+  else if(ps.classList.contains('air')){ps.classList.remove('air');pl.style.transform='';const lb=ps.querySelector('.air-lb');if(lb)lb.remove()}})}
+function nowBarPaint(){const c=document.querySelector('.nowc');if(!c)return;const z=nowNext();const row=c.querySelector('.nc-row.now');if(!row||!z||!z.cur||!z.nxt)return;
+  const p=Math.round(Math.min(1,Math.max(0,(z.now-z.cur.mi)/Math.max(1,z.nxt.mi-z.cur.mi)))*100);let bar=row.querySelector('.nc-bar');
+  if(!bar){bar=document.createElement('div');bar.className='nc-bar';bar.setAttribute('role','progressbar');bar.setAttribute('aria-label','כמה עבר מהפריט הנוכחי');bar.innerHTML='<i></i>';row.appendChild(bar)}
+  bar.setAttribute('aria-valuenow',p);bar.firstChild.style.width=p+'%'}
+function shabbatState(){const n=budNow();let z;try{z=zmanim(n.d)}catch(e){return null}
+  if(n.d==='2026-11-20'){const c=toMin(candleTm())||Math.round(z.shk-18);if(n.m>=600&&n.m<c)return {pre:1,left:c-n.m,at:hm(c)};if(n.m>=c)return {pre:0}}
+  if(n.d==='2026-11-21'&&n.m<z.tz)return {pre:0,out:hm(z.tz)};return null}
+function shabbatPaint(){const st=shabbatState(),v=document.getElementById('view');if(!v)return;let c=v.querySelector('.shabc');
+  if(!st||ROLE==='exp'){if(c)c.remove();return}
+  const h=`<div class="candles" aria-hidden="true"><i></i><i></i></div><div class="sc-t"><b>${st.pre?'מתכוננים לשבת':'שבת שלום'}</b><span>${st.pre?`הדלקת נרות בבודפשט בעוד ${inMin(st.left).replace('בעוד ','')} · <span class="num">${st.at}</span>`:st.out?`צאת השבת <span class="num">${st.out}</span>`:'שבת שלום ומבורך לכל המשתתפים'}</span></div>`;
+  if(!c){const hello=v.querySelector('.hello');if(!hello)return;c=document.createElement('section');c.className='shabc';c.setAttribute('aria-label','שבת');hello.after(c)}
+  if(c.innerHTML!==h)c.innerHTML=h;document.body.classList.toggle('shab',!st.pre)}
+function homeFx(){try{skyPaint();planePaint();nowBarPaint();shabbatPaint()}catch(e){console.warn('homeFx',e)}}
+{const _hf=render;render=function(a){_hf(a);homeFx()}}
+setInterval(homeFx,30000);
+/* pull to refresh: only inside the installed app, where the phone has none of its own */
+(()=>{let y0=null,dy=0,el=null;const T=80;
+  const ok=()=>isStandalone()&&!document.getElementById('scrim')&&!document.getElementById('gate')&&!document.getElementById('pgate')&&window.scrollY<=0;
+  document.addEventListener('touchstart',e=>{if(e.touches.length!==1||!ok()){y0=null;return}y0=e.touches[0].clientY;dy=0},{passive:true});
+  document.addEventListener('touchmove',e=>{if(y0==null)return;dy=e.touches[0].clientY-y0;if(dy<=0||window.scrollY>0){if(el)el.style.setProperty('--d','0');return}
+    if(!el){el=document.createElement('div');el.id='ptr';el.setAttribute('aria-hidden','true');el.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/></svg>';document.body.appendChild(el)}
+    const d=Math.min(dy,130);el.style.setProperty('--d',String(d));el.classList.toggle('ready',d>=T)},{passive:true});
+  document.addEventListener('touchend',()=>{if(y0==null||!el){y0=null;return}const go=dy>=T;y0=null;
+    if(go){el.classList.add('go');setTimeout(()=>location.reload(),reduce?50:750)}else{const x=el;el=null;x.classList.add('back');setTimeout(()=>x.remove(),250)}},{passive:true})})();
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,a,.btn,[role=button],label.toggle,label.pkr');if(!b||b.disabled||!e.isTrusted)return;
   try{if(navigator.vibrate)navigator.vibrate(8)}catch(x){}
   if(!reduce&&document.body.classList.contains('guest')){const d=document.createElement('i');d.className='tapfx';d.style.left=e.clientX+'px';d.style.top=e.clientY+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),450)}},{capture:true});
@@ -5721,7 +5798,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='8f6f88dd2b';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='f2c0f1f72c';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
