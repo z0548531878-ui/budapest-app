@@ -2423,7 +2423,7 @@ const TRIP_DAYS=[{d:'2026-11-19',k:'יום חמישי',s:'ה׳ 19.11',l:'קרע�
 const RETURN_GROUPS=['מוצ״ש','ראשון צהריים','ראשון ערב','שלישי בוקר','עצמאי'];
 const DOC_CATS=['עלון','משחק','תפריטים','הדפסות','ספקים והזמנות','טיסות','אחר'];
 const TASK_CATS=['כספים','לינה','קרעסטיר','אוטובוס','שבת','קניות','מזכרות ודפוס','משתתפים','אחר'];
-const EXP_CATS=['לינה','אוכל','ערכת פינת קפה','אלכוהול','הסעות','מזכרות ודפוס','הפקה','אוטובוס','חדרים','סט קוויטל','קרעסטיר','שבת','אחר'];
+const EXP_CATS=['לינה','סעודות שבת וטועמיה','ערכת פינת קפה','אלכוהול','הסעות','מזכרות ודפוס','הפקה','אוטובוס','חדרים','סט קוויטל','קרעסטיר','שבת','אחר'];
 const KITCATS=['חדרים','סט קוויטל','אוטובוס','ערכת פינת קפה','אלכוהול'];
 const CATLBL={'חדרים':'ערכת חדר','סט קוויטל':'ערכת קוויטל','אוטובוס':'ערכת אוטובוס'};
 const xInfo=()=>{const ex=S.expenses.filter(e=>S.packing.some(x=>x.item&&x.exp===e._id)).map(e=>e._id),cn={};S.expenses.forEach(e=>{const k=e.category||'אחר';cn[k]=(cn[k]||0)+1});return {ex,cats:Object.keys(cn).filter(k=>cn[k]>1&&KITCATS.includes(k))}};
@@ -5813,7 +5813,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='0538074db1';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='70f75fc841';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
