@@ -2430,7 +2430,7 @@ const xInfo=()=>{const ex=S.expenses.filter(e=>S.packing.some(x=>x.item&&x.exp==
 const xAllOpen=()=>{const {ex,cats,gs}=xInfo();return (ex.length>0||cats.length>0)&&ex.every(i=>V.xo&&V.xo[i])&&cats.every(k=>V.co&&V.co[k])&&gs.every(k=>V.go&&V.go[k])};
 const xBlock=mem=>{const ids=new Set(mem.map(e=>e._id)),pd={};mem.forEach(e=>{pd[e._id]=e.status==='שולם'});
  const it=S.packing.filter(x=>x.item&&ids.has(x.exp)).sort((p,q)=>(p.order||0)-(q.order||0));
- const li=x=>{const on=kst(x,'ordered');return `<div class="row ${on?'done':''}" data-edit="packing/${x._id}" role="button" tabindex="0" style="min-height:0;padding:6px 14px 6px 8px"><button class="check ${on?'on':''}" data-toggle="packing/${x._id}" aria-label="סימון שהוזמן / נקנה" style="width:26px;height:26px">${on?CHECK:''}</button><div class="main"><div class="m" style="font-size:14px">${x.qty?'<b class="num">'+esc(x.qty)+'</b> × ':''}${esc(x.item)}${+x.cost&&+x.qty>1?'<span style="color:var(--muted)"> · '+ils(Math.round(x.cost/x.qty*10)/10)+' ליחידה</span>':''}${pd[x.exp]?'<span style="color:var(--ok,#2e7d32)"> · שולם ✓</span>':''}</div></div><div class="end"><span class="num" style="font-size:14px">${ils(+x.cost||0)}</span></div></div>`};
+ const li=x=>{const on=kst(x,'ordered');return `<div class="row ${on?'done':''}" data-edit="packing/${x._id}" role="button" tabindex="0" style="min-height:0;padding:6px 14px 6px 8px"><button class="check ${on?'on':''}" data-toggle="packing/${x._id}" aria-label="סימון שהוזמן / נקנה" style="width:26px;height:26px">${on?CHECK:''}</button><div class="main"><div class="m" style="font-size:14px">${x.qty?`<span style="white-space:nowrap"><button class="pill" data-q="packing/${x._id}" data-d="-1" aria-label="הפחתת כמות" style="padding:0 7px;min-width:24px">−</button><b class="num" data-q="packing/${x._id}" data-d="set" style="padding:0 5px">${esc(x.qty)}</b><button class="pill" data-q="packing/${x._id}" data-d="1" aria-label="הוספת כמות" style="padding:0 7px;min-width:24px">+</button></span> × `:''}${esc(x.item)}${+x.cost&&+x.qty>1?'<span style="color:var(--muted)"> · '+ils(Math.round(x.cost/x.qty*10)/10)+' ליחידה</span>':''}${pd[x.exp]?'<span style="color:var(--ok,#2e7d32)"> · שולם ✓</span>':''}</div></div><div class="end"><span class="num" style="font-size:14px">${ils(+x.cost||0)}</span></div></div>`};
  const ln=(a,b,e)=>`<div class="row" data-edit="expenses/${e._id}" style="min-height:0;padding:5px 18px 5px 8px;opacity:.88"><div class="main"><div class="m" style="font-size:14px">${a}</div></div><div class="end"><span class="num" style="font-size:14px">${b}</span></div></div>`;
  const keys=[...new Set(it.map(x=>x.grp||''))],useSec=keys.length>1;
  const order=keys.filter(Boolean).concat(keys.includes('')?['']:[]);
@@ -3033,6 +3033,7 @@ view.addEventListener('click',e=>{
   if(t.closest&&t.closest('.guidecard h4')){t.closest('.guidecard').classList.toggle('open');return}
   if(t.id==='guideOk'){guideDone=true;try{localStorage.setItem('guideDone','1')}catch(_){}render(true);return}
   const cp=t.closest('[data-copy]');if(cp){e.stopPropagation();copy(cp.dataset.copy);return}
+  const qb=t.closest('[data-q]');if(qb){e.stopPropagation();qtyChg(qb.dataset.q,qb.dataset.d);return}
   const tg=t.closest('[data-toggle]');if(tg){e.stopPropagation();toggle(tg.dataset.toggle,tg);return}
   const pay=t.closest('[data-pay]');if(pay){e.stopPropagation();paySheet(pay.dataset.pay);return}
   const dn=t.closest('[data-don]');if(dn){e.stopPropagation();const d=find('donations',dn.dataset.don);if(d){const prev=d.status;save('donations',d._id,{...strip(d),status:prev==='התקבל'?'התחייב':'התקבל'}).then(ok=>ok&&toast(prev==='התקבל'?'סומן כהתחייבות':'סומן שהתקבל',()=>save('donations',d._id,strip(d))))}return}
@@ -3880,6 +3881,10 @@ function toggle(path,btn){const [c,id]=path.split('/'),d=find(c,id);if(!d)return
   if(btn){btn.classList.toggle('on');btn.innerHTML=btn.classList.contains('on')?CHECK:'';try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}}
   if(btn&&(next==='בוצע'||next===true))burst(btn);
   save(c,id,{...strip(d),[key]:next,...(c==='rooms'?{kitBy:next?(TEAM_FULL[ME]||ME||''):'',kitAt:next?new Date().toISOString():''}:{})}).then(ok=>{if(ok&&(next==='בוצע'||next===true))toast(c==='tasks'?'בוצע. כל הכבוד':'סומן',()=>save(c,id,strip(d)))})}
+// changing the quantity moves the price in proportion (unit price stays), and linkSync moves the expense by the difference
+function qtyChg(path,d){const [c,id]=path.split('/'),x=find(c,id);if(!x)return;const q=+x.qty||0;let n;
+  if(d==='set'){const v=prompt('כמות חדשה',q);if(v===null)return;n=Math.round(+v);if(!(n>=1))return}else n=Math.max(1,q+(+d));
+  if(n===q)return;const u=q>0&&+x.cost?(+x.cost)/q:0;save(c,id,{...strip(x),qty:n,cost:u?Math.round(u*n*100)/100:x.cost})}
 let toastT;
 function toast(m,undo){document.querySelectorAll('.toast').forEach(x=>x.remove());clearTimeout(toastT);
   const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.innerHTML=`<span>${esc(m)}</span>${undo?'<button>ביטול</button>':''}`;document.body.appendChild(t);
@@ -5822,7 +5827,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='a8f3a0080c';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='c42c5d9695';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
