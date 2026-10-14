@@ -2791,7 +2791,7 @@ const VIEWS={
       const ln=(a,b)=>`<div class="row" data-edit="expenses/${e._id}" style="min-height:0;padding:5px 18px 5px 8px;opacity:.88"><div class="main"><div class="m" style="font-size:14px">${a}</div></div><div class="end"><span class="num" style="font-size:14px">${b}</span></div></div>`;
       return it.slice().sort((p,q)=>(p.order||0)-(q.order||0)).map(li).join('')+(Math.abs(rest)>=1?ln('• '+(rest>0?'יתרה לא מפורטת':'חריגה מההוצאה'),ils(Math.abs(rest))):'')})():'';
      return `<div class="row erow" ${it.length?`data-xt="${e._id}" aria-expanded="${isOpen}"`:`data-edit="expenses/${e._id}"`} role="button" tabindex="0"><div class="main"><div class="t">${esc(e.name)}</div><div class="est ${k}">${l}${+e.paid&&!e.receipt?' · <span style="color:var(--warn)">חסרה קבלה</span>':''}</div></div>
-     <div class="end" style="flex-direction:row;align-items:center;gap:8px"><span class="amt num">${+e.estimate?ils(e.estimate):'—'}</span>${it.length?`<button class="pill p-gold" data-edit="expenses/${e._id}" aria-label="עריכת ההוצאה">✎</button><span aria-hidden="true" style="color:var(--muted);font-size:16px">${isOpen?'▾':'‹'}</span>`:''}</div></div>`+subs}).join(''):''))}).join('');
+     <div class="end" style="flex-direction:row;align-items:center;gap:8px"><span class="amt num">${+e.estimate?ils(e.estimate):'—'}</span>${it.length?`<button class="pill p-gold" data-edit="expenses/${e._id}">פירוט הערכה</button><span aria-hidden="true" style="color:var(--muted);font-size:16px">${isOpen?'▾':'‹'}</span>`:''}</div></div>`+subs}).join(''):''))}).join('');
   }
   return head+incTog+`<div class="card" style="padding:14px;margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-weight:800"><span>התקבלו</span><span class="num">${ils(m.dIn)} / ${ils(m.dAll)}</span></div><div class="prog"><i data-w="${m.dAll?Math.round(m.dIn/m.dAll*100):0}%" style="width:0"></i></div></div>` +(()=>{const dn=V.filter.dn||'all',dm={all:()=>true,wait:d=>d.status!=='התקבל',got:d=>d.status==='התקבל'};
    const list=S.donations.filter(d=>dm[dn](d));
@@ -5812,7 +5812,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='404c76c952';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='540225592b';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
