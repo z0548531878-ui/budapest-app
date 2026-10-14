@@ -2285,6 +2285,13 @@ body:not(.guest) #view [role=button].main{min-height:40px}
 
 /* settings gear (top left), its sheet, the + chooser and the budget/insights tiles on home */
 .top h1{flex:1;min-width:0}
+/* the trip title stays on one line; the personal-area pill is a touch smaller to make room for the gear */
+.top h1{white-space:nowrap!important}
+body.guest #meBtn{min-height:46px!important;padding:3px 10px 3px 4px!important;gap:7px!important}
+body.guest #meBtn i{width:36px!important;height:36px!important;font-size:17px!important}
+body.guest #meBtn span b{font-size:14px}
+body.guest #meBtn span small{font-size:11px}
+@media(max-width:430px){body.guest .top .logo{width:60px!important;height:60px!important}body.guest #meBtn{padding:3px 8px 3px 3px!important;gap:6px!important}body.guest #meBtn i{width:34px!important;height:34px!important}body.guest #meBtn span b{font-size:13.5px}body.guest #meBtn span small{font-size:10.5px}body.guest .top{gap:8px!important}}
 .top .gearbtn svg{width:20px;height:20px;transition:transform .5s cubic-bezier(.3,1.3,.5,1)}
 .top .gearbtn:active svg{transform:rotate(90deg)}
 .setlist{display:flex;flex-direction:column;gap:6px;margin-top:6px}
@@ -5662,7 +5669,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='1c26b5debe';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='8a19500963';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
