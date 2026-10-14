@@ -3131,11 +3131,13 @@ document.getElementById('ideaBtn').onclick=()=>updSheet(curScope());
 function openSettings(){
   const it=(at,ic,l,sub,cls)=>`<button class="setit${cls?' '+cls:''}" ${at}><span class="ic">${ic}</span><span class="main"><b>${l}</b>${sub?`<small>${sub}</small>`:''}</span></button>`;
   let h;
-  if(GUEST())h=`<h3>הגדרות</h3><div class="setlist">${it('id="pdiag"','🔔','התראות ובדיקת תקינות','מה מגיע לטלפון ואם הכול עובד')}${(()=>{const ph=orgPhone();return ph?`<a class="setit" href="${waLink(ph)}" target="_blank" rel="noopener"><span class="ic">💬</span><span class="main"><b>שאלה לשלומי</b><small>וואטסאפ למארגן המסע</small></span></a>`:''})()}${isPrevOrg()?'':it('id="gout"','🚪','יציאה מהחשבון','','out')}</div>`;
-  else h=`<h3>הגדרות</h3><div class="setlist">${it('data-set="me"','👤','מי אני',ME?esc(ME):'עוד לא נבחר')}${it('data-set="settings"','💾','צוות, גיבוי וייצוא','שיתוף עם הצוות, אקסל, שחזור')}${it('data-set="settings"','🗑','נמחקו לאחרונה',trashed().length?trashed().length+' פריטים':'')}${it('data-set="guide"','❓','איך זה עובד','')}</div>`;
+  if(GUEST())h=`<h3>הגדרות</h3><div class="setlist">${it('id="pdiag"','🔔','התראות ובדיקת תקינות','מה מגיע לטלפון ואם הכול עובד')}${(()=>{const ph=orgPhone();return ph?`<a class="setit" href="${waLink(ph)}" target="_blank" rel="noopener"><span class="ic">💬</span><span class="main"><b>שאלה לשלומי</b><small>וואטסאפ למארגן המסע</small></span></a>`:''})()}${isPrevOrg()?'':it('data-switch','🔄','החלפת משתמש','יציאה מהשם שלכם וכניסה בשם אחר','out')}</div>`;
+  else h=`<h3>הגדרות</h3><div class="setlist">${it('data-set="me"','👤','מי אני',ME?esc(ME):'עוד לא נבחר')}${it('data-set="settings"','💾','צוות, גיבוי וייצוא','שיתוף עם הצוות, אקסל, שחזור')}${it('data-set="settings"','🗑','נמחקו לאחרונה',trashed().length?trashed().length+' פריטים':'')}${it('data-set="guide"','❓','איך זה עובד','')}${it('data-switch','🔄','החלפת משתמש','יציאה מהחשבון וכניסה מחדש','out')}</div>`;
   sheet(h);
   const r=document.getElementById('sheetRoot');
   r.querySelectorAll('[data-set]').forEach(b=>b.onclick=()=>{const k=b.dataset.set;closeSheet();if(k==='me'){setTimeout(()=>pickMe(),60);return}go('more',{sub:k})});
+  // switching user forgets the remembered name too, so the entry screen opens empty
+  const sw=r.querySelector('[data-switch]');if(sw)sw.onclick=()=>{closeSheet();try{localStorage.removeItem('lastG')}catch(e){}logoutRole();if(document.getElementById('gate')&&TRIP_KEY)showGate('new')};
 }
 document.getElementById('setBtn').onclick=openSettings;
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -5719,7 +5721,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='9d055adeb7';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='8f6f88dd2b';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
