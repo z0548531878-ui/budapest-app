@@ -94,3 +94,26 @@ test('"not me" clears the remembered name and shows the empty name field', async
   await expect(page.locator('#gname')).toHaveValue('');
   expect(await page.evaluate(() => localStorage.getItem('lastG'))).toBeNull();
 });
+
+test('the expenses viewer sees only the expenses and their breakdown, and cannot change anything', async ({ browser, db }) => {
+  await seedBigTrip(db);
+  const { page } = await openTrip(browser, db);
+  await page.evaluate(() => { localStorage.setItem('nogate', '1'); sessionStorage.setItem('skipInst', '1'); });
+  await page.reload();
+  await expect.poll(() => page.evaluate('loaded.has("expenses") && S.expenses.length > 0')).toBe(true);
+  // the real session needs the viewer code; tests enter directly, as they do for organizers
+  await page.evaluate("setRole('exp')");
+  await expect(page.locator('#view h2')).toHaveText('הוצאות המסע');
+  await expect(page.locator('#nav button')).toHaveCount(0);
+  await expect(page.locator('#setBtn')).toBeHidden();
+  await expect(page.locator('#ideaBtn')).toBeHidden();
+  const n = await page.evaluate('S.expenses.length');
+  await expect(page.locator('[data-vexp]')).toHaveCount(n as number);
+  await page.locator('[data-vexp]').first().click();
+  await expect(page.getByRole('dialog')).toContainText('צפייה בלבד');
+  await expect(page.getByRole('dialog').locator('input, textarea, select')).toHaveCount(0);
+  // writes are refused even when called directly
+  const id = await page.evaluate('S.expenses[0]._id');
+  expect(await page.evaluate(`save('expenses','${id}',{name:'x'})`)).toBe(false);
+  expect(await page.evaluate(`remove('expenses','${id}')`)).toBe(false);
+});
