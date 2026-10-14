@@ -95,36 +95,26 @@ test('"not me" clears the remembered name and shows the empty name field', async
   expect(await page.evaluate(() => localStorage.getItem('lastG'))).toBeNull();
 });
 
-test('the viewer sees the organizers app but cannot change anything', async ({ browser, db }) => {
+test('only Chaim Bloch gets a read-only expenses tile in his participant app', async ({ browser, db }) => {
   await seedBigTrip(db);
+  await db.put('trips/test-trip-key-0123456789abcdef/participants/pcb', { name: 'חיים בלוך', status: 'שולם', amount: 0, order: 99 });
   const { page } = await openTrip(browser, db);
-  await page.evaluate(() => { localStorage.setItem('nogate', '1'); sessionStorage.setItem('skipInst', '1'); });
+  await page.evaluate(() => { localStorage.setItem('nogate', '1'); sessionStorage.setItem('skipInst', '1'); localStorage.setItem('role', 'guest:p2'); });
   await page.reload();
   await expect.poll(() => page.evaluate('COLS.every(c => loaded.has(c))')).toBe(true);
-  // the real session needs the viewer code; tests enter directly, as they do for organizers
-  await page.evaluate("setRole('exp')");
-  await expect(page.locator('.vwbar')).toContainText('צפייה בלבד');
-  // the organizers' tabs, without the +
-  await expect(page.locator('#nav button')).toHaveCount(4);
-  await expect(page.locator('#nav [data-nav="add"]')).toHaveCount(0);
-  await page.locator('.hjump').getByRole('button', { name: /^תקציב/ }).click();
-  await expect(page.locator('.vwbar')).toBeVisible();
-  // an edit sheet opens to read, with no save and no typing
-  await page.getByRole('button', { name: /^הוצאות/ }).click();
-  await page.locator('.erow[data-edit]').first().click();
+  // another participant has no such tile
+  await expect(page.locator('.gc[data-gnav="gv"]')).toHaveCount(0);
+  await page.evaluate("setRole('guest:pcb')");
+  await page.locator('.gc[data-gnav="gv"]').click();
+  await expect(page.locator('.page-title h2')).toHaveText('הוצאות המסע');
+  const n = await page.evaluate('S.expenses.length');
+  await expect(page.locator('[data-vexp]')).toHaveCount(n as number);
+  await page.locator('[data-vexp]').first().click();
   const sh = page.getByRole('dialog');
-  await expect(sh).toBeVisible();
-  await expect(sh.locator('.sheet-acts')).toBeHidden();
-  expect(await sh.locator('input:not([type=search]):not([disabled]), textarea:not([disabled])').count()).toBe(0);
-  // writes are refused, through the app and straight at the database
-  const id = await page.evaluate('S.expenses[0]._id');
-  expect(await page.evaluate(`save('expenses','${id}',{name:'x'})`)).toBe(false);
-  expect(await page.evaluate(`remove('expenses','${id}')`)).toBe(false);
-  const err = await page.evaluate(() => (0, eval)('db').doc('notes/vw').set({ text: 'x' }).then(() => 'wrote', (e: Error) => e.message));
-  expect(err).toBe('read-only');
-  // the organizer's session still writes
-  await page.evaluate("setRole('org')");
-  expect(await page.evaluate(() => (0, eval)('db').doc('notes/vw').set({ text: 'x' }).then(() => 'wrote', (e: Error) => e.message))).toBe('wrote');
+  await expect(sh).toContainText('צפייה בלבד');
+  await expect(sh.locator('input, textarea, select, .sheet-acts')).toHaveCount(0);
+  // still a participant: the organizers' tabs are not there
+  await expect(page.locator('#nav [data-nav="money"]')).toHaveCount(0);
 });
 
 test('"switch user" in settings signs out and opens an empty name screen', async ({ browser, db }) => {
