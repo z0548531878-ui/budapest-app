@@ -1,0 +1,39 @@
+# Safety net for GitHub Pages: sometimes a push to main doesn't start a Pages build, and the site stays on
+# the old version. After each push to main, wait for the automatic build; if none built this commit, request one.
+name: Make sure the site updates
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  pages: write
+  contents: read
+concurrency:
+  group: pages-ensure
+  cancel-in-progress: true
+jobs:
+  ensure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Wait for the Pages build of this commit, request one if it never started
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          for i in $(seq 1 20); do
+            sleep 30
+            built=$(gh api "repos/$REPO/pages/builds/latest" --jq '.commit + " " + .status' || echo "")
+            echo "latest build: $built"
+            case "$built" in "$SHA built") echo "Site is on $SHA"; exit 0 ;; esac
+          done
+          echo "No Pages build for $SHA after 10 minutes, requesting one"
+          gh api -X POST "repos/$REPO/pages/builds"
+          for i in $(seq 1 10); do
+            sleep 30
+            built=$(gh api "repos/$REPO/pages/builds/latest" --jq '.commit + " " + .status' || echo "")
+            echo "latest build: $built"
+            case "$built" in "$SHA built") echo "Site is on $SHA"; exit 0 ;; esac
+          done
+          echo "::error::The site did not update to $SHA"; exit 1
