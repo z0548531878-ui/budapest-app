@@ -3925,8 +3925,15 @@ function linkSync(c,id,data,prev){
   if(c==='expenses'&&data.status==='שולם'&&prev.status!=='שולם'){
     S.packing.filter(x=>x.item&&x.exp===id&&!kst(x,'ordered')).forEach(x=>commit(db.doc('packing/'+x._id).set({ordered:true},{merge:true})))}
   if(c==='packing'&&data.exp&&data.exp===prev.exp&&(+data.cost||0)!==(+prev.cost||0)){
-    const e=find('expenses',data.exp);if(e&&!e.final&&e.status!=='שולם')commit(db.doc('expenses/'+e._id).set({estimate:(+e.estimate||0)+(+data.cost||0)-(+prev.cost||0)},{merge:true}))}
+    const e=find('expenses',data.exp);if(e&&(!e.final||e.auto)&&e.status!=='שולם')commit(db.doc('expenses/'+e._id).set({estimate:(+e.estimate||0)+(+data.cost||0)-(+prev.cost||0)},{merge:true}))}
 }
+// expenses flagged auto always equal the sum of their linked items (final amount, not an estimate)
+let autoSyncAt=0;
+function autoSumSync(){
+  if(!db||ROLE!=='org'||PREV||!loaded.has('packing')||!loaded.has('expenses'))return;
+  S.expenses.filter(e=>e.auto&&e.status!=='שולם').forEach(e=>{const it=S.packing.filter(x=>x.item&&x.exp===e._id);if(!it.length)return;
+    const sm=Math.round(it.reduce((t,x)=>t+(+x.cost||0),0)*100)/100;if(Math.abs((+e.estimate||0)-sm)>=0.01)commit(db.doc('expenses/'+e._id).set({estimate:sm,final:true},{merge:true}))})}
+setInterval(autoSumSync,4000);
 async function add(c,data){
   if(!db){toast('אין עדיין חיבור לנתוני המסע. פתחו את האפליקציה מהקישור של הצוות');return false}
   data.order=Math.max(0,...S[c].map(x=>+x.order||0))+1;
@@ -5844,7 +5851,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='82e599e88e';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='f41eb8dfc6';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
