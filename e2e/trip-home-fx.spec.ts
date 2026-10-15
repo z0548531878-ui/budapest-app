@@ -34,3 +34,11 @@ test('on Friday the Shabbat card counts down to candle lighting, then says Shabb
   page = await open(browser, db, '2026-11-21T10:05:00+01:00', 'org');
   await expect(page.locator('.shabc')).toContainText('שבת שלום');
 });
+
+test('home says when the data was last updated, and warns when it is old', async ({ browser, db }) => {
+  const page = await open(browser, db, '2026-10-15T12:00:00+03:00');
+  await page.evaluate(() => { (0, eval)('LASTSYNC=Date.now()-3*6e4;syncPaint()'); });
+  await expect(page.locator('.syncago')).toHaveText('המידע עודכן לפני 3 דק׳');
+  await page.evaluate(() => { (0, eval)('LASTSYNC=Date.now()-40*6e4;syncPaint()'); });
+  await expect(page.locator('.syncago.stale')).toContainText('לפני 40 דק׳');
+});

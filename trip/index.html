@@ -2365,6 +2365,8 @@ body[data-sky="night"] .skyfx .stars{opacity:1}
 @keyframes ptrGo{0%{transform:rotate(-90deg)}30%{transform:rotate(-90deg) translateX(-4px)}100%{transform:rotate(-120deg) translate(160px,-40px);opacity:0}}
 @media (prefers-reduced-motion:reduce){#ptr.go svg{animation:none}}
 .vwnote{margin:2px 2px 10px;font-size:13.5px;color:#d9b45f}
+.syncago{margin:2px 2px 8px;font-size:12.5px;color:#a69a7d}
+.syncago.stale{color:#e0b45c;font-weight:700}
 /* long lists: rows off screen skip layout and paint until scrolled near */
 .pcrow{content-visibility:auto;contain-intrinsic-size:auto 340px}
 .prow{content-visibility:auto;contain-intrinsic-size:auto 76px}
@@ -5214,6 +5216,18 @@ function expDetail(id){
 }
 document.addEventListener('click',e=>{const sg=e.target.closest&&e.target.closest('[data-vseg]');if(sg&&canExp()){e.stopPropagation();EXPV=sg.dataset.vseg;render();return}const gr=e.target.closest&&e.target.closest('[data-vgrp]');if(gr&&canExp()){e.stopPropagation();grpDetail(gr.dataset.vgrp);return}const r=e.target.closest&&e.target.closest('[data-vexp]');if(r&&canExp()){e.stopPropagation();expDetail(r.dataset.vexp)}},true);
 document.addEventListener('keydown',e=>{if(e.key!=='Enter')return;const gr=e.target.closest&&e.target.closest('[data-vgrp]');if(gr&&canExp()){grpDetail(gr.dataset.vgrp);return}const r=e.target.closest&&e.target.closest('[data-vexp]');if(r&&canExp())expDetail(r.dataset.vexp)});
+/* "last updated": when this phone last got data from the server, shown on home and when there's no signal */
+let LASTSYNC=0;try{LASTSYNC=+localStorage.getItem('lastSync')||0}catch(e){}
+let _syncW=0;function syncMark(){LASTSYNC=Date.now();if(Date.now()-_syncW>15000){_syncW=Date.now();try{localStorage.setItem('lastSync',String(LASTSYNC))}catch(e){}}}
+function syncAgo(){if(!LASTSYNC)return '';const m=Math.floor((Date.now()-LASTSYNC)/6e4);if(m<1)return 'עכשיו';if(m<60)return `לפני ${m} דק׳`;const d=new Date(LASTSYNC),t=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;return new Date().toDateString()===d.toDateString()?`היום ב־${t}`:`${d.getDate()}.${d.getMonth()+1} ב־${t}`}
+function syncPaint(){const v=document.getElementById('view');if(!v)return;const home=v.querySelector('.hello');let el=v.querySelector('.syncago');
+  if(!home||!LASTSYNC){if(el)el.remove();return}
+  const stale=!navigator.onLine||Date.now()-LASTSYNC>10*6e4,t=`${stale?'⚠️ ':''}המידע עודכן ${syncAgo()}`;
+  if(!el){el=document.createElement('div');el.className='syncago';el.setAttribute('role','status');home.after(el)}
+  if(el.textContent!==t)el.textContent=t;el.classList.toggle('stale',stale)}
+setInterval(()=>{try{syncPaint()}catch(e){}},30000);
+/* a short buzz on the + and on confirm buttons (phones that support it; iPhone ignores it) */
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-nav="add"],[data-gnav="gadd"],.btn.primary,.gbtn,#fab');if(t&&navigator.vibrate&&!t.disabled){try{navigator.vibrate(12)}catch(x){}}},true);
 const _renderBase=render;
 let _lastScr='',_lastDay='';
 render=function(anim){
@@ -5793,7 +5807,7 @@ function shabbatPaint(){const st=shabbatState(),v=document.getElementById('view'
   const h=`<div class="candles" aria-hidden="true"><i></i><i></i></div><div class="sc-t"><b>${st.pre?'מתכוננים לשבת':'שבת שלום'}</b><span>${st.pre?`הדלקת נרות בבודפשט בעוד ${inMin(st.left).replace('בעוד ','')} · <span class="num">${st.at}</span>`:st.out?`צאת השבת <span class="num">${st.out}</span>`:'שבת שלום ומבורך לכל המשתתפים'}</span></div>`;
   if(!c){const hello=v.querySelector('.hello');if(!hello)return;c=document.createElement('section');c.className='shabc';c.setAttribute('aria-label','שבת');hello.after(c)}
   if(c.innerHTML!==h)c.innerHTML=h;document.body.classList.toggle('shab',!st.pre)}
-function homeFx(){try{skyPaint();planePaint();nowBarPaint();shabbatPaint()}catch(e){console.warn('homeFx',e)}}
+function homeFx(){try{skyPaint();planePaint();nowBarPaint();shabbatPaint();syncPaint()}catch(e){console.warn('homeFx',e)}}
 {const _hf=render;render=function(a){_hf(a);homeFx()}}
 setInterval(homeFx,30000);
 /* pull to refresh: only inside the installed app, where the phone has none of its own */
@@ -5844,12 +5858,12 @@ render(true);
   if(!db){document.getElementById('banner').innerHTML='<p class="banner">חסר הקישור המלא של הצוות. פתחו את האפליקציה מהקישור ששלומי שלח (הוא מסתיים ב-#k=…).</p>';return}
   // the log and the trash only grow: take the newest, not whichever 1000 Firestore returns first
   const NEWEST={activity:600,trash:300}, q=c=>NEWEST[c]?db.collection(c).orderBy('at','desc').limit(NEWEST[c]):db.collection(c).limit(1000);
-  COLS.forEach(c=>q(c).onSnapshot(s=>{S[c]=s.docs.map(d=>({...d.data(),_id:d.id}));if(c==='participants'){pdMigrate();pdOverlay();dobSync()}loaded.add(c);later()},
+  COLS.forEach(c=>q(c).onSnapshot(s=>{if(s.metadata&&s.metadata.fromCache===false)syncMark();S[c]=s.docs.map(d=>({...d.data(),_id:d.id}));if(c==='participants'){pdMigrate();pdOverlay();dobSync()}loaded.add(c);later()},
     e=>{diagE('listen '+c,e);document.getElementById('banner').innerHTML=`<p class="banner">${e&&e.code==='permission-denied'?'אין גישה לנתונים. ודאו שעדכנתם את חוקי Firebase (ההוראות אצל Claude).':'החיבור נותק. רעננו את הדף.'}</p>`}));
   pdSub();
   if(!ME)setTimeout(()=>{if(!ME&&ROLE==='org'&&!document.getElementById('scrim'))pickMe()},1200);
 })();
-const netBanner=()=>{const b=document.getElementById('banner');if(!navigator.onLine)b.innerHTML='<p class="banner off">אין קליטה. רואים את המידע האחרון שנשמר בטלפון, ומה שתשנו יישלח לצוות כשתחזור הקליטה.</p>';else if(b.querySelector('.off'))b.innerHTML=''};
+const netBanner=()=>{const b=document.getElementById('banner');if(!navigator.onLine)b.innerHTML=`<p class="banner off">אין קליטה. רואים את המידע האחרון שנשמר בטלפון${LASTSYNC?` (עודכן ${esc(syncAgo())})`:''}, ומה שתשנו יישלח לצוות כשתחזור הקליטה.</p>`;else if(b.querySelector('.off'))b.innerHTML=''};
 addEventListener('offline',netBanner);addEventListener('online',()=>{netBanner();toast('הקליטה חזרה. השינויים נשלחים')});netBanner();
 // the app's files are kept on the phone too, so it opens with no signal at all
 // smooth wheel scrolling on computers (Lenis); phones keep their own native scrolling
@@ -5859,7 +5873,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='5279665946';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='92bd79958e';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
