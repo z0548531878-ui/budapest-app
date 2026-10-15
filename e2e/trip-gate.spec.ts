@@ -106,7 +106,8 @@ test('only Chaim Bloch gets a read-only expenses tile in his participant app', a
   await expect(page.locator('.gc[data-gnav="gv"]')).toHaveCount(0);
   await page.evaluate("setRole('guest:pcb')");
   await page.locator('.gc[data-gnav="gv"]').click();
-  await expect(page.locator('.page-title h2')).toHaveText('הוצאות המסע');
+  await expect(page.locator('.page-title h2')).toHaveText('הוצאות והכנסות');
+  await page.locator('.seg [data-vseg="exp"]').click();
   const n = await page.evaluate('S.expenses.length');
   await expect(page.locator('[data-vexp]')).toHaveCount(n as number);
   await page.locator('[data-vexp]').first().click();
