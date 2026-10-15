@@ -4651,7 +4651,7 @@ const DRAFT={annTitle:'',annText:'',reqText:'',reqCat:'אחר'};
 const meG=()=>{if(PREV&&ROLE==='org'){return (PREVID&&S.participants.find(p=>p._id===PREVID))||S.participants.find(p=>p.name==='חיים פולק')||S.participants.find(p=>p.name==='שלומי זינגר')||null}return S.participants.find(p=>p._id===ROLE.slice(6))||null};
 const isPrevOrg=()=>PREV&&ROLE==='org';
 // Chaim Bloch, and only him, can look at the trip's expenses (read only) from his participant app
-const canExp=()=>{const m=meG();return !!m&&/^חיים\s+בלוך$/.test(String(m.name||'').replace(/^הרב(נית)?\s+/,'').trim())};
+const canExp=()=>{const m=meG();return !!m&&/^(חיים\s+בלוך|שוקי\s+קובלר)$/.test(String(m.name||'').replace(/^הרב(נית)?\s+/,'').trim())};
 const landingMs=()=>{const f=S.flights.find(f=>f._id==='f1')||S.flights.find(f=>f.dir==='הלוך');if(!f)return 0;const a=(f.arr||'12:00').replace(/[^\d:]/g,'').padStart(5,'0');return new Date(`${f.date||'2026-11-19'}T${a}:00+01:00`).getTime()};
 const triviaOpen=()=>Date.now()>=landingMs();
 const firstN=n=>String(n||'').replace(/^הרב(נית)?\s+/,'').split(' ')[0];
@@ -5851,7 +5851,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='c1771d4971';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='c985eaabc3';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
