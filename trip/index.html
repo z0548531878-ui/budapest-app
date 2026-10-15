@@ -4211,7 +4211,7 @@ async function initFire(){
   try{firebase.initializeApp(FB_CFG)}catch(e){}
   const fs=firebase.firestore(), root=fs.collection('trips').doc(TRIP_KEY);
   // iPhone: the streaming connection often stalls inside an installed web app; long polling always gets through
-  if(IOSDEV){try{fs.settings({experimentalForceLongPolling:true,merge:true})}catch(e){diagE('settings',e)}}
+  try{fs.settings(IOSDEV?{experimentalForceLongPolling:true,merge:true}:{experimentalAutoDetectLongPolling:true,merge:true})}catch(e){diagE('settings',e)}
   // keep a copy of everything on the phone, so the app still opens with all the data where there's no signal.
   // On iPhone the installed app is a single window, and its storage can hang: never wait more than 3 seconds for it
   try{if(fs.enablePersistence){await withTO(fs.enablePersistence(IOSDEV?{}:{synchronizeTabs:true}),3000,'cache');diag('cache','ok')}}catch(e){diag('cache','off');diagE('cache',e)}
@@ -5851,7 +5851,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='f41eb8dfc6';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='c1771d4971';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
