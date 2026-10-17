@@ -2426,7 +2426,7 @@ const I={
  gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2.5 12h3M18.5 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>',
 };
 const TRIP_DAYS=[{d:'2026-11-19',k:'יום חמישי',s:'ה׳ 19.11',l:'קרעסטיר'},{d:'2026-11-20',k:'יום שישי',s:'ו׳ 20.11',l:'ערב שבת'},{d:'2026-11-21',k:'שבת',s:'שבת 21.11',l:'ויצא',sh:1},{d:'2026-11-22',k:'יום ראשון',s:'א׳ 22.11',l:'חזרה'}];
-const RETURN_GROUPS=['מוצ״ש','ראשון צהריים','ראשון ערב','שלישי בוקר','עצמאי'];
+const RETURN_GROUPS=['מוצ״ש','ראשון צהריים','ראשון ערב','שלישי בוקר','עצמאי'];const retGroups=()=>{const s=S.settings.find(x=>x._id==='trip');return (s&&s.returnGroups)||RETURN_GROUPS};
 const DOC_CATS=['עלון','משחק','תפריטים','הדפסות','ספקים והזמנות','טיסות','אחר'];
 const TASK_CATS=['כספים','לינה','קרעסטיר','אוטובוס','שבת','קניות','מזכרות ודפוס','משתתפים','אחר'];
 const EXP_CATS=['מלון','סעודות שבת וטועמיה','ערכת פינת קפה','אלכוהול','אוטובוס לקרעסטיר','מזכרות ודפוס','הפקה','סט קוויטל','קרעסטיר','שבת','אחר'];
@@ -2456,7 +2456,7 @@ const F={
  participants:{one:'משתתף',fields:[{k:'name',l:'שם',t:'text'},{k:'phone',l:'טלפון',t:'tel'},{k:'gender',l:'מין',t:'seg',o:['גבר','אישה']},{k:'notes',l:'הערות',t:'textarea'},
    {k:'amount',l:'סכום (₪)',t:'number',sec:'pay',secL:'תשלום'},{k:'status',l:'מצב התשלום',t:'seg',o:['לא שולם','שולם חלקית','שולם','פטור']},{k:'paidAmt',l:'כמה שולם עד עכשיו (₪)',t:'number',when:['status','שולם חלקית']},{k:'method',l:'איך שילם',t:'chips',o:['אשראי','העברה לאיציק','מזומן לאיציק','העברה לשלומי','מזומן לשלומי'],when:['status',['שולם','שולם חלקית']]},{k:'holder',l:'אצל מי הכסף',t:'seg',o:['שלומי','איציק'],when:['status',['שולם','שולם חלקית']]},
    {k:'passport',l:'צילום דרכון התקבל',t:'toggle',sec:'pass',secL:'דרכון'},{k:'nameEn',l:'שם באנגלית, כמו בדרכון',t:'text',ph:'COHEN AVI'},{k:'passExp',l:'תוקף הדרכון',t:'date'},{k:'passUrl',l:'קישור לצילום הדרכון (בתיקיית הדרייב)',t:'text',ph:'https://drive.google.com/…'},
-   {k:'outbound',l:'טיסת הלוך',t:'chips',o:()=>outGroups(),sec:'fly',secL:'טיסות'},{k:'returnGroup',l:'טיסת חזור',t:'chips',o:RETURN_GROUPS},{k:'insDone',l:'דיווח: הזמין ביטוח נסיעות',t:'toggle'},
+   {k:'outbound',l:'טיסת הלוך',t:'chips',o:()=>outGroups(),sec:'fly',secL:'טיסות'},{k:'returnGroup',l:'טיסת חזור',t:'chips',o:()=>retGroups()},{k:'insDone',l:'דיווח: הזמין ביטוח נסיעות',t:'toggle'},
    {k:'nusach',l:'נוסח',t:'seg',o:['אשכנז','ספרד','עדות המזרח'],sec:'fam',secL:'משפחה וצרכים'},{k:'baby',l:'👶 מגיעים עם תינוק/ת',t:'toggle'},{k:'babyNote',l:'פרטים על התינוק (גיל, עגלה, עריסה בחדר…)',t:'text',when:['baby',true]},
    {k:'kitter',l:'מסדר את הערכות בחדרים',h:'יראה אצלו מסך לעדכון חדרים',t:'toggle',sec:'roles',secL:'תפקידים'},{k:'carry',l:'מה סוחב (מזוודה/ציוד)',t:'text'},{k:'duties',l:'תפקידים ומשימות שלו',t:'text'}],def:{amount:1750,status:'לא שולם',outbound:'קבוצתי'},secClosed:1,
    sum:{pay:d=>`${d.status||'לא שולם'}${d.status==='שולם חלקית'?` · ${ils(+d.paidAmt||0)} מתוך ${ils(+d.amount||0)}`:d.status!=='פטור'&&+d.amount?' · '+ils(+d.amount):''}`,pass:d=>[d.passport?'התקבל ✓':'עוד לא התקבל',d.passExp?'בתוקף עד '+d.passExp.split('-').reverse().map(Number).join('.'):''].filter(Boolean).join(' · '),
@@ -5873,7 +5873,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='03bc536359';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='14ae2e22';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
