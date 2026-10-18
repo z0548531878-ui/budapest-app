@@ -3379,7 +3379,9 @@ async function decryptBlob(j){const b=s=>Uint8Array.from(atob(s),c=>c.charCodeAt
   return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b(j.iv)},key,b(j.ct))))}
 // update batches never touch the log or the trash: the rules refuse it, and one refused op sinks the whole batch
 const opOk=o=>o&&o.c&&o.id&&((COLS.includes(o.c)&&o.c!=='activity'&&o.c!=='trash')||(o.c==='photobig'&&o.id==='pp_all'));
-async function applyOps(ops){const ok=ops.filter(opOk);
+// deleteWhere: delete every doc in o.c whose fields equal all of o.w (for items whose ids Claude does not know)
+const expandOps=ops=>ops.flatMap(o=>o&&o.op==='deleteWhere'&&o.c&&o.w?(S[o.c]||[]).filter(x=>Object.entries(o.w).every(([k,v])=>x[k]===v)).map(x=>({op:'delete',c:o.c,id:x._id})):[o]);
+async function applyOps(ops){const ok=expandOps(ops).filter(opOk);
   for(let i=0;i<ok.length;i+=200){const bt=db.batch();ok.slice(i,i+200).forEach(o=>{const ref=db.collection(o.c).doc(o.id);if(o.op==='delete'){trashIn(bt,o.c,o.id,find(o.c,o.id));bt.delete(ref)}else if(o.op==='update')bt.set(ref,o.d||{},{merge:true});else bt.set(ref,o.d||{})});await bt.commit()}
   return ok.length}
 async function autoApply(){
@@ -3390,6 +3392,7 @@ async function autoApply(){
     // which updates were applied comes from the server, not the copy on the phone: it may predate updates another phone applied
     const st=(await db.doc('settings/claude').get({source:'server'})).data()||{}, done=new Set(st.applied||[]);
     const todo=all.filter(b=>b&&b.id&&!done.has(b.id));if(!todo.length)return;
+    if(todo.some(b=>(b.ops||[]).some(o=>o&&o.op==='deleteWhere'&&!loaded.has(o.c))))return;
     let n=0;const notes=[];
     for(const b of todo){n+=await applyOps(b.ops||[]);if(b.note)notes.push(b.note);
       const now=new Date().toISOString();
@@ -5873,7 +5876,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='14ae2e22';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='a2b1f11a';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
