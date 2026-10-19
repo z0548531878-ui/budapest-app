@@ -1,5 +1,17 @@
 {
-  "description": "Impeccable design detector: immediate-tier checks after Edit/Write on UI files, full-rule deep pass on Stop.",
+  "extraKnownMarketplaces": {
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "ponytail@ponytail": true
+  },
   "hooks": {
     "SessionStart": [
       {
