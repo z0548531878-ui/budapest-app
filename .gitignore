@@ -2,3 +2,5 @@ node_modules/
 test-results/
 playwright-report/
 firestore-debug.log
+.claude/skills/impeccable/scripts/bin/
+.claude/settings.local.json
