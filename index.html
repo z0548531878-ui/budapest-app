@@ -4511,7 +4511,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-19h';
+const APP_VERSION = '2026-10-19i';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -4544,7 +4544,7 @@ function init(){
   if(rp){ roomCode = rp.toUpperCase(); showScreen('s-pjoin'); }
   else if(params.get('join')){ roomCode = null; showScreen('s-pjoin'); }
   // נכנסו מהתראה — ישר למסך המתאים
-  else if(location.hash==='#duel'&&!TRIP_LOCK) setTimeout(()=>{ try{ duelEntry(); }catch(e){} }, 200);
+  else if(location.hash==='#duel') setTimeout(()=>{ try{ duelEntry(); }catch(e){} }, 200);
   else if(location.hash==='#group'&&!TRIP_LOCK){ roomCode = null; renderPjoin(); showScreen('s-pjoin'); }
   pushBtnInit();
 }
@@ -4586,7 +4586,7 @@ $('btn-host').addEventListener('click', ()=>{
   if(entered.trim()!==HOST_PIN){ alert('קוד שגוי — רק המנחה המורשה יכול לפתוח חדר.'); return; }
   hostStart();
 });
-function tripLockBtns(){if(!TRIP_LOCK)return;['btn-duel','btn-join-manual'].forEach(id=>{const b=$(id);if(!b)return;b.classList.add('locked-trip');b.setAttribute('aria-disabled','true');const sm=b.querySelector('.cta-t small');if(sm){sm.className='lk-note';sm.textContent='🔒 ייפתח ביום המסע'}})}
+function tripLockBtns(){if(!TRIP_LOCK)return;['btn-join-manual'].forEach(id=>{const b=$(id);if(!b)return;b.classList.add('locked-trip');b.setAttribute('aria-disabled','true');const sm=b.querySelector('.cta-t small');if(sm){sm.className='lk-note';sm.textContent='🔒 ייפתח ביום המסע'}})}
 const tripLocked=()=>{if(!TRIP_LOCK)return false;try{alert('ייפתח ביום המסע 🚌\nבינתיים אפשר לשחק במשחק העצמאי');}catch(e){}return true};
 tripLockBtns();
 $('btn-join-manual').addEventListener('click', ()=>{ if(tripLocked())return; roomCode = null; renderPjoin(); showScreen('s-pjoin'); });
@@ -4602,7 +4602,7 @@ function renderPjoin(){
   entryWire('pjoin-name','btn-pjoin-go');
 }
 $('btn-solo').addEventListener('click', soloEntry);
-$('btn-duel').addEventListener('click', ()=>{ if(tripLocked())return; duelEntry(); });
+$('btn-duel').addEventListener('click', ()=>{ duelEntry(); });
 
 // ---------- Timer (bar) ----------
 function clearQTimer(){ if(timerHandle){clearInterval(timerHandle); timerHandle=null;} stopMusic(); document.body.classList.remove('tick-danger'); }
