@@ -1020,6 +1020,9 @@ const firebaseConfig = {
 const QUESTION_MS = 11000;
 const BASE_POINTS = 10;
 const SPEED_POINTS = 2; // נקודות על כל שנייה שנשארה בשעון
+// משחק עצמאי: 15 שניות, 15 נק' לתשובה נכונה + נקודה לכל שנייה שנשארה
+const SOLO_QUESTION_MS = 15000, SOLO_BASE_POINTS = 15, SOLO_SPEED_POINTS = 1;
+const qCfg = p=>p==='s' ? {ms:SOLO_QUESTION_MS, base:SOLO_BASE_POINTS, speed:SOLO_SPEED_POINTS} : {ms:QUESTION_MS, base:BASE_POINTS, speed:SPEED_POINTS};
 const HOST_PIN = '2026'; // <-- שנו כאן לקוד סודי משלכם! רק מי שיודע אותו יוכל לפתוח חדר כמנחה
 const REVEAL_MS = 2200;
 const INTRO_MS = 2500;
@@ -3545,7 +3548,7 @@ function qCardHtml(num,total,q){
     ${q.img && q.img.indexOf('sign:')===0 ? `<div class="q-sign">${SIGN_SVG[q.img.slice(5)]||''}</div>` : q.img ? (q.img.indexOf('flagcdn')>=0 ? `<div class="q-flag"><img src="${esc(q.img)}" data-u="${esc(q.img)}" alt="דגל" draggable="false" onerror="qImgFail(this)"></div>` : (q.crop ? `<div class="q-photo crop"><div class="crop-in" style="transform:scale(${parseFloat(q.crop.split('|')[1])||1})"><img src="${esc(q.img)}" data-u="${esc(q.img)}" alt="תמונה" draggable="false" style="object-fit:cover;object-position:${esc(q.crop.split('|')[0])}" onerror="this.closest('.q-photo').classList.add('err');qImgFail(this)"></div><span class="q-credit">📷 ויקישיתוף</span></div>` : `<div class="q-photo"><img src="${esc(q.img)}" data-u="${esc(q.img)}" alt="תמונה" draggable="false" onerror="this.parentNode.classList.add('err');qImgFail(this)"><span class="q-credit">📷 ויקישיתוף</span></div>`)) : ''}
     <div class="question-text">${esc(q.q)}</div></div>`;
 }
-function clockHtml(prefix){ return `<div class="timer-bar qanim" id="${prefix}-clock-wrap"><div class="tb-head"><span class="tb-icon">⏱️</span><span class="tb-worth" id="${prefix}-worth">💰 תשובה נכונה שווה עכשיו <b>${worthAt(0)}</b><i>נק'</i></span><span class="tb-num" id="${prefix}-timer-num">${QUESTION_MS/1000}</span></div><div class="tb-track"><div class="tb-fill" id="${prefix}-timer-ring"></div><div class="tb-ticks"></div></div></div>`; }
+function clockHtml(prefix){ return `<div class="timer-bar qanim" id="${prefix}-clock-wrap"><div class="tb-head"><span class="tb-icon">⏱️</span><span class="tb-worth" id="${prefix}-worth">💰 תשובה נכונה שווה עכשיו <b>${worthAt(0,prefix)}</b><i>נק'</i></span><span class="tb-num" id="${prefix}-timer-num">${qCfg(prefix).ms/1000}</span></div><div class="tb-track"><div class="tb-fill" id="${prefix}-timer-ring"></div><div class="tb-ticks"></div></div></div>`; }
 function answerTag(q){ return q.type==='poll' ? '✓ בחירת הרוב' : '✓ התשובה הנכונה'; }
 // שורות טבלת שיאים ממסמכי Firestore: רק מי שיש לו ניקוד, מהגבוה לנמוך; בשוויון — מי שסיים מהר יותר
 function rankedDocs(snap){ return snap.docs.map(d=>({id:d.id, ...d.data()})).filter(r=>(r.best||0)>0).sort((a,b)=>(b.best||0)-(a.best||0) || (a.bestMs??1e12)-(b.bestMs??1e12)); }
@@ -4164,6 +4167,7 @@ function readFullName(id){
 // הוראות קצרות לכל סוג משחק — המספרים נלקחים מההגדרות של המשחק עצמו, כך שתמיד יתאימו
 function modeRules(mode){
   const sec = QUESTION_MS/1000, pts = `נכונה = ${BASE_POINTS} נק' + ${SPEED_POINTS} נק' לכל שנייה שנשארה — מי שעונה מיד מקבל ${worthAt(0)}! המהירות קובעת`;
+  const soloPts = `נכונה = ${SOLO_BASE_POINTS} נק' + נקודה לכל שנייה שנשארה — מי שעונה מיד מקבל ${worthAt(0,'s')}! המהירות קובעת`;
   return {
     group: {title:'משחק קבוצתי 👥', items:[
       ['📲','נכנסים',`רושמים שם ושם משפחה ונכנסים לחדר ההמתנה. עד ${MAX_PLAYERS} משתתפים.`],
@@ -4186,8 +4190,8 @@ function modeRules(mode){
     solo: {title:'משחק עצמאי 🎯', items:[
       ['📝','נרשמים פעם אחת','עם שם ושם משפחה — ומהפעם הבאה נכנסים ישר.'],
       ['❓',`${SOLO_COUNT} שאלות בסבב`,`אקראיות מתוך ${ROUND_POOL_SIZE.toLocaleString('en-US')}, מכל הנושאים, ובכל סבב שאלות אחרות.`],
-      ['⚡',`${sec} שניות לשאלה`,'עונים פעם אחת — אי אפשר להחליף.'],
-      ['🏆','ניקוד', pts + '. תשובות נכונות ברצף? 🔥 תג רצף.'],
+      ['⚡',`${SOLO_QUESTION_MS/1000} שניות לשאלה`,'עונים פעם אחת — אי אפשר להחליף.'],
+      ['🏆','ניקוד', soloPts + '. תשובות נכונות ברצף? 🔥 תג רצף.'],
       ['👑','שיאים','השיא האישי שלכם מול שיא המשחק וטבלת השיאים של כולם.']
     ]}
   }[mode];
@@ -4281,7 +4285,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-19b';
+const APP_VERSION = '2026-10-19c';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -4369,12 +4373,12 @@ $('btn-duel').addEventListener('click', ()=>{ if(tripLocked())return; duelEntry(
 function clearQTimer(){ if(timerHandle){clearInterval(timerHandle); timerHandle=null;} stopMusic(); document.body.classList.remove('tick-danger'); }
 // מונה "כמה שווה התשובה עכשיו" — מדגיש שמהירות = נקודות
 const worthLocks = {};
-function worthAt(ms){ return BASE_POINTS + SPEED_POINTS*Math.max(0, Math.floor((QUESTION_MS-ms)/1000)); }
-function lockWorth(prefix, startedAt, ms, html, cls){ worthLocks[prefix] = {at:startedAt, v:worthAt(ms), html, cls}; paintWorth(prefix, startedAt, ms); }
+function worthAt(ms, p){ const c=qCfg(p), left=Math.max(0,c.ms-ms)/1000; return c.base + c.speed*(p==='s' ? Math.ceil(left) : Math.floor(left)); } // עצמאי: לפי השניות שמוצגות בשעון
+function lockWorth(prefix, startedAt, ms, html, cls){ worthLocks[prefix] = {at:startedAt, v:worthAt(ms,prefix), html, cls}; paintWorth(prefix, startedAt, ms); }
 function paintWorth(prefix, startedAt, elapsed){
   const el=$(prefix+'-worth'); if(!el) return;
   const lk = worthLocks[prefix] && worthLocks[prefix].at===startedAt ? worthLocks[prefix] : null;
-  const v = lk ? lk.v : worthAt(elapsed);
+  const v = lk ? lk.v : worthAt(elapsed,prefix);
   const key = lk ? 'L'+v+(lk.html||'') : String(v);
   if(el.dataset.k===key) return;
   const dropped = !lk && el.dataset.k && el.dataset.k!==key;
@@ -4384,10 +4388,10 @@ function paintWorth(prefix, startedAt, elapsed){
   el.innerHTML = lk ? (lk.html || `🔒 ננעל — אם צדקתם תקבלו <b>${v}</b><i>נק'</i>`) : `💰 תשובה נכונה שווה עכשיו <b>${v}</b><i>נק'</i>`;
   if(dropped){ el.classList.remove('drop'); void el.offsetWidth; el.classList.add('drop'); }
 }
-function speedBreakHtml(pts){
+function speedBreakHtml(pts, p){
   if(!pts) return '';
-  const sp = pts-BASE_POINTS;
-  return `<div class="speed-break">${BASE_POINTS} על תשובה נכונה + <b>${sp}</b> בונוס מהירות ⚡${sp>=SPEED_POINTS*8?' — מהיר כברק!':sp<=SPEED_POINTS*2?' — בפעם הבאה מהר יותר!':''}</div>`;
+  const c = qCfg(p), sp = pts-c.base;
+  return `<div class="speed-break">${c.base} על תשובה נכונה + <b>${sp}</b> בונוס מהירות ⚡${sp>=c.speed*8?' — מהיר כברק!':sp<=c.speed*2?' — בפעם הבאה מהר יותר!':''}</div>`;
 }
 function mountQTimer(startedAt, ringId, numId, wrapId, onExpire){
   clearQTimer();
@@ -4395,8 +4399,9 @@ function mountQTimer(startedAt, ringId, numId, wrapId, onExpire){
   let expired = false;
   function tick(){
     const elapsed = Date.now()-startedAt;
-    const remain = Math.max(0, QUESTION_MS-elapsed);
-    const pct = (remain/QUESTION_MS)*100;
+    const qms = qCfg(numId.replace('-timer-num','')).ms;
+    const remain = Math.max(0, qms-elapsed);
+    const pct = (remain/qms)*100;
     const fillEl=$(ringId), numEl=$(numId), wrapEl=wrapId?$(wrapId):null;
     if(fillEl) fillEl.style.width = pct+'%';
     const secs = Math.ceil(remain/1000);
@@ -5158,7 +5163,7 @@ function renderSoloHome(){
       <div class="rec-card top"><div class="rec-ic">👑</div><div class="rec-label">שיא המשחק</div><div class="rec-num" id="sh-top">${g ? gb : (soloTopLoaded ? '—' : '...')}</div><div class="rec-name">${g ? (iHold ? 'זה אתם! 🎉' : esc(g.name)) : (soloTopLoaded ? 'עדיין לא נקבע' : 'טוען...')}</div></div>
     </div>
     <div class="sh-progress"><div class="shp-bar"><div class="shp-fill" style="--w:${pct}%"></div></div><div class="shp-txt">${goal}</div></div>
-    <button class="btn btn-primary btn-xl sh-go" id="sh-start"><span class="sh-go-main">▶ התחילו סבב חדש</span><span class="sh-go-sub">${SOLO_COUNT} שאלות · ${QUESTION_MS/1000} שניות לשאלה</span></button>
+    <button class="btn btn-primary btn-xl sh-go" id="sh-start"><span class="sh-go-main">▶ התחילו סבב חדש</span><span class="sh-go-sub">${SOLO_COUNT} שאלות · ${SOLO_QUESTION_MS/1000} שניות לשאלה</span></button>
     <div class="solo-lb">${soloHomeBoardHtml()}</div>
     <div class="sh-actions">
       <button class="sh-act" data-rules="solo"><span>📖</span>הוראות</button>
@@ -5409,9 +5414,9 @@ function soloReveal(choice){
   const elapsed = Date.now()-s.startedAt;
   const right = choice===q.c;
   (s.picks = s.picks || [])[s.i] = choice;
-  s.totalMs = (s.totalMs||0) + Math.min(QUESTION_MS, elapsed);
+  s.totalMs = (s.totalMs||0) + Math.min(SOLO_QUESTION_MS, elapsed);
   let pts = 0;
-  if(right){ pts = worthAt(elapsed); s.score += pts; s.correct++; s.streak=(s.streak||0)+1; playHappyChime(); }
+  if(right){ pts = worthAt(elapsed,'s'); s.score += pts; s.correct++; s.streak=(s.streak||0)+1; playHappyChime(); }
   else { s.streak=0; playSadTone(); }
   const box = $('s-answers');
   if(box) box.querySelectorAll('.answer-btn').forEach((b,i)=>{
@@ -5429,7 +5434,7 @@ function soloReveal(choice){
     const c = fxCenter(box && box.querySelectorAll('.answer-btn')[q.c]);
     fxConfetti(c.x, c.y, s.streak>=3 ? 120 : 70); fxFloatText(c.x, c.y-40, '+'+pts);
     if(elapsed<=FAST_ANSWER_MS) fxFlash();
-    if(note) note.insertAdjacentHTML('afterend', speedBreakHtml(pts));
+    if(note) note.insertAdjacentHTML('afterend', speedBreakHtml(pts,'s'));
     if(s.streak>=2 && note) note.insertAdjacentHTML('beforebegin', streakHtml(s.streak));
     if(s.streak>0 && s.streak%5===0) fxFireworks(1600);
   }
