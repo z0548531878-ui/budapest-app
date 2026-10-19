@@ -877,6 +877,7 @@ button,a,.btn,.answer-btn{touch-action:manipulation;}
 @media (max-height:780px){ .q-photo img{height:150px;} }
 @media (max-height:700px){ .q-photo img{height:118px;} }
 .q-flag img{height:128px;image-rendering:auto;}
+.q-logo img{animation:none !important;padding:12px 18px;box-sizing:border-box;aspect-ratio:auto;min-width:150px;}
 @media (max-height:780px){ .q-flag img{height:100px;} }
 .q-sign svg{width:136px;height:136px;shape-rendering:geometricPrecision;}
 @media (max-height:780px){ .q-sign svg{width:108px;height:108px;} }
@@ -1042,7 +1043,7 @@ const CURRENT_ROOM_DOC = 'current'; // מסמך שמצביע על החדר הפ�
 const LOBBY_MAX_AGE_MS = 12*60*60*1000; // חדר המתנה ישן מ-12 שעות לא ממוחזר — נפתח חדש
 const SOLO_REVEAL_MS = 1100;
 
-const T1='בודפשט והונגריה', T2='עולם תורני, הלכה ומנהג', T3='היסטוריה יהודית וגדולי ישראל', T4='ידע כללי, מדע וטבע', T5='מקרא, מסורת ופולקלור', T6='תחבורה, תעופה וחלל', T7='פוליטיקה ומדינה', T8='ערים בישראל', T9='ארצות העולם', T10='טיולים ונופים', T11='חשבון ומספרים', T12='מוזיקה ושירה יהודית', T13='אדמו"רים ורבנים', T14='סקרים מהמסע', T15='ספורט ומשחקים', T16='חידות והיגיון', T17='דגלים של מדינות', T18='מקומות מפורסמים', T19='תמרורים', T20='זיהוי בתמונה', T21='אישים מפורסמים', T22='כלכלה וכסף', T23='אקטואליה', T24='בית ואוכל';
+const T1='בודפשט והונגריה', T2='עולם תורני, הלכה ומנהג', T3='היסטוריה יהודית וגדולי ישראל', T4='ידע כללי, מדע וטבע', T5='מקרא, מסורת ופולקלור', T6='תחבורה, תעופה וחלל', T7='פוליטיקה ומדינה', T8='ערים בישראל', T9='ארצות העולם', T10='טיולים ונופים', T11='חשבון ומספרים', T12='מוזיקה ושירה יהודית', T13='אדמו"רים ורבנים', T14='סקרים מהמסע', T15='ספורט ומשחקים', T16='חידות והיגיון', T17='דגלים של מדינות', T18='מקומות מפורסמים', T19='תמרורים', T20='זיהוי בתמונה', T21='אישים מפורסמים', T22='כלכלה וכסף', T23='אקטואליה', T24='בית ואוכל', T25='סמלי רכב';
 
 const GROUP_DEFAULT = [
  {topic:T1, type:'trivia', q:'באיזו שנה אוחדו בודה, פשט ואובודה לעיר אחת?', a:['1848','1900','1873','1920'], c:2},
@@ -3635,6 +3636,7 @@ function topicIcon(topic){
   if(topic===T22) return '💰';
   if(topic===T23) return '📰';
   if(topic===T24) return '🍲';
+  if(topic===T25) return '🚗';
   return '';
 }
 function animateCount(el, target, ms){
@@ -3777,7 +3779,7 @@ function qCardHtml(num,total,q){
   return `<div class="q-card qanim"><div class="q-num">שאלה ${num} מתוך ${total}</div>
     <div class="q-topic">${topicIcon(q.topic)} ${esc(q.topic||'')}</div>
     ${q.type==='poll' ? '<div style="text-align:center;"><span class="qtag poll">🗳️ סקר — מי שבוחר כמו הרוב זוכה</span></div>' : ''}
-    ${q.img && q.img.indexOf('sign:')===0 ? `<div class="q-sign">${SIGN_SVG[q.img.slice(5)]||''}</div>` : q.img ? (q.img.indexOf('flagcdn')>=0 ? `<div class="q-flag"><img src="${esc(q.img)}" data-u="${esc(q.img)}" alt="דגל" draggable="false" onerror="qImgFail(this)"></div>` : (q.crop ? `<div class="q-photo crop"><div class="crop-in" style="transform:scale(${parseFloat(q.crop.split('|')[1])||1})"><img src="${esc(q.img)}" data-u="${esc(q.img)}" alt="תמונה" draggable="false" style="object-fit:cover;object-position:${esc(q.crop.split('|')[0])}" onerror="this.closest('.q-photo').classList.add('err');qImgFail(this)"></div><span class="q-credit">📷 ויקישיתוף</span></div>` : `<div class="q-photo"><img src="${esc(q.img)}" data-u="${esc(q.img)}" alt="תמונה" draggable="false" onerror="this.parentNode.classList.add('err');qImgFail(this)"><span class="q-credit">📷 ויקישיתוף</span></div>`)) : ''}
+    ${q.img && q.img.indexOf('sign:')===0 ? `<div class="q-sign">${SIGN_SVG[q.img.slice(5)]||''}</div>` : q.img ? (q.img.indexOf('flagcdn')>=0 || q.topic===T25 ? `<div class="q-flag${q.topic===T25?' q-logo':''}"><img src="${esc(q.img)}" data-u="${esc(q.img)}" alt="${q.topic===T25?'סמל':'דגל'}" draggable="false" onerror="qImgFail(this)"></div>` : (q.crop ? `<div class="q-photo crop"><div class="crop-in" style="transform:scale(${parseFloat(q.crop.split('|')[1])||1})"><img src="${esc(q.img)}" data-u="${esc(q.img)}" alt="תמונה" draggable="false" style="object-fit:cover;object-position:${esc(q.crop.split('|')[0])}" onerror="this.closest('.q-photo').classList.add('err');qImgFail(this)"></div><span class="q-credit">📷 ויקישיתוף</span></div>` : `<div class="q-photo"><img src="${esc(q.img)}" data-u="${esc(q.img)}" alt="תמונה" draggable="false" onerror="this.parentNode.classList.add('err');qImgFail(this)"><span class="q-credit">📷 ויקישיתוף</span></div>`)) : ''}
     <div class="question-text">${esc(q.q)}</div></div>`;
 }
 function clockHtml(prefix){ return `<div class="timer-bar qanim" id="${prefix}-clock-wrap"><div class="tb-head"><span class="tb-icon">⏱️</span><span class="tb-worth" id="${prefix}-worth">💰 תשובה נכונה שווה עכשיו <b>${worthAt(0,prefix)}</b><i>נק'</i></span><span class="tb-num" id="${prefix}-timer-num">${qCfg(prefix).ms/1000}</span></div><div class="tb-track"><div class="tb-fill" id="${prefix}-timer-ring"></div><div class="tb-ticks"></div></div></div>`; }
@@ -5539,9 +5541,9 @@ function soloMarkSeen(keys){
   try{ localStorage.setItem(soloSeenKey(), JSON.stringify(merged.slice(-SEEN_CAP))); }catch(e){}
   const p = soloProfile(); if(p) seenSave('solo_' + p.id, merged);
 }
-// בכל סבב (עצמאי וראש בראש): 3 דגלים, 3 מקומות מפורסמים, 3 תמרורים ותמונת אישיות אחת —
+// בכל סבב (עצמאי וראש בראש): 3 דגלים, 3 מקומות מפורסמים, 3 תמרורים, תמונת אישיות אחת ו-2 סמלי רכב —
 // פזורים לאורך הסבב (לא ברצף), ושאלות הטקסט מכל הנושאים, בלי שני נושאים זהים צמודים.
-const ROUND_IMG_MIX = [[T17,3],[T18,3],[T19,3],[T21,1]];
+const ROUND_IMG_MIX = [[T17,3],[T18,3],[T19,3],[T21,1],[T25,2]];
 // שאלות על הונגריה ובודפשט לא נכנסות למשחק העצמאי ולראש בראש
 const HU_RE = /הונגר|בודפשט|בלטון|דנובה|פורינט/;
 function roundExcluded(q){ return q.topic===T1 || HU_RE.test(q.q) || HU_RE.test(q.a[0]||''); }
