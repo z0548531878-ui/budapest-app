@@ -4285,7 +4285,7 @@ function renderLandingBest(){
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-19c';
+const APP_VERSION = '2026-10-19d';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -4298,6 +4298,15 @@ function checkForNewVersion(){
     const u = new URL(location.href); u.searchParams.set('v', m[1]); location.replace(u.toString());
   }).catch(()=>{});
 }
+// גם כשחוזרים לאפליקציה שנשארה פתוחה ברקע — בודקים שוב (רק כשלא באמצע משחק)
+let lastVerCheck = Date.now();
+function maybeCheckVersion(){
+  if(document.visibilityState!=='visible' || Date.now()-lastVerCheck < 60000) return;
+  if(soloState || (typeof duel!=='undefined' && duel && duel.v) || (role && role!=='solo' && curState && curState.phase && curState.phase!=='lobby' && curState.phase!=='ended')) return;
+  lastVerCheck = Date.now(); checkForNewVersion();
+}
+document.addEventListener('visibilitychange', maybeCheckVersion);
+setInterval(maybeCheckVersion, 5*60000);
 function init(){
   checkForNewVersion();
   renderPjoin();
