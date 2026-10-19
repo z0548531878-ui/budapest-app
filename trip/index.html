@@ -35,6 +35,7 @@
 .chbar .search{font-size:18px}.chhot{color:#f6dc93!important;font-weight:800}.chhot svg{filter:drop-shadow(0 0 6px rgba(246,220,147,.7))}.chhot.ur svg{animation:chpulse 1.3s ease-in-out infinite}@keyframes chpulse{50%{transform:scale(1.28)}}.chhot .badge{background:#ff3b30;color:#fff;transform:scale(1.2)}
 .chb.go{background:linear-gradient(180deg,#f6dc93,#c99a3d);color:#15110a;border:0}.chrec b{flex:1;color:#ff8b7a}
 .kg-r{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(214,178,98,.12)}.kg-r small{color:var(--muted);margin-inline-start:6px}.kg-t{border-bottom:0;font-weight:800;color:#f6dc93}.kgh{margin:16px 0 6px}
+html.orgro body::after{content:'👁 צפייה בלבד';position:fixed;top:calc(env(safe-area-inset-top,0px) + 6px);left:10px;z-index:9999;font:700 12px/1 Heebo,sans-serif;padding:6px 10px;border-radius:999px;background:rgba(201,162,75,.95);color:#1a1307;pointer-events:none}
 </style>
 </head>
 <body>
@@ -3385,7 +3386,7 @@ async function applyOps(ops){const ok=expandOps(ops).filter(opOk);
   for(let i=0;i<ok.length;i+=200){const bt=db.batch();ok.slice(i,i+200).forEach(o=>{const ref=db.collection(o.c).doc(o.id);if(o.op==='delete'){trashIn(bt,o.c,o.id,find(o.c,o.id));bt.delete(ref)}else if(o.op==='update')bt.set(ref,o.d||{},{merge:true});else bt.set(ref,o.d||{})});await bt.commit()}
   return ok.length}
 async function autoApply(){
-  if(autoBusy||!db||!TRIP_KEY||!loaded.has('settings')||ROLE!=='org'||PREV)return;autoBusy=true;
+  if(autoBusy||!db||!TRIP_KEY||!loaded.has('settings')||ROLE!=='org'||PREV||ORG_RO)return;autoBusy=true;
   try{
     const r=await fetch('updates.enc?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;
     const all=(await decryptBlob(await r.json())).batches||[];
@@ -3914,7 +3915,7 @@ function pendUI(){let el=document.getElementById('syncpill');if(!el){el=document
   if(PEND>0){el.style.display='block';el.textContent=navigator.onLine?`⏳ ${PEND} שינויים בדרך לשרת`:`📵 ${PEND} שינויים נשמרו בטלפון, יישלחו כשתחזור הקליטה`;PENDSHOWN=true}
   else if(PENDSHOWN){PENDSHOWN=false;el.style.display='block';el.textContent='✓ הכל נשמר בשרת';clearTimeout(PENDT);PENDT=setTimeout(()=>{if(!PEND)el.style.display='none'},1800)}}
 addEventListener('online',pendUI);addEventListener('offline',pendUI);
-function commit(p,del){PEND++;const t=setTimeout(pendUI,1500);const done=()=>{PEND--;clearTimeout(t);pendUI()};p.then(done,err=>{done();toast(failMsg(err,del))})}  // (a write the SDK refuses outright, e.g. an undefined field, throws at once: callers catch that)
+function commit(p,del){PEND++;const t=setTimeout(pendUI,1500);const done=()=>{PEND--;clearTimeout(t);pendUI()};p.then(done,err=>{done();if(!(err&&err.code==='ro'))toast(failMsg(err,del))})}  // (a write the SDK refuses outright, e.g. an undefined field, throws at once: callers catch that)
 async function save(c,id,data){
   if(c==='packing')data=normPack(data,find(c,id));
   if(!db){toast('אין עדיין חיבור לנתוני המסע. פתחו את האפליקציה מהקישור של הצוות');return false}
@@ -4267,7 +4268,7 @@ const later=()=>{if(rq)return;if(V.sub==='notes'&&document.querySelector('#sortB
   rq=setTimeout(()=>requestAnimationFrame(()=>{rq=0;const all=COLS.every(c=>loaded.has(c));render(all&&!firstAll);if(all&&!firstAll)setTimeout(autoApply,800);if(all)firstAll=true}),firstAll?90:0)};
 /* ===== entrance: participants (by name) / organizers (by code) ===== */
 /* organizer code: PBKDF2-SHA256 (600000 rounds, own salt). The page keeps only a SHA-256 of the derived key, the device keeps the derived key as proof */
-const ORG_SALT='d77742f9a791ee7608fc6c191780aab0',ORG_ITER=600000,ORG_CHK='03405cce2969b704a54459c83029018c6135020db7fbc4e6be183df159c91347';
+const ORG_SALT='d77742f9a791ee7608fc6c191780aab0',ORGV_CHK='d67be17297aa14c90626a9afb7970efad25c894c7d140ee7e4cf304ee33f9cd4',ORG_ITER=600000,ORG_CHK='03405cce2969b704a54459c83029018c6135020db7fbc4e6be183df159c91347';
 async function orgDerive(code){const enc=new TextEncoder(),salt=new Uint8Array(ORG_SALT.match(/../g).map(h=>parseInt(h,16)));const base=await crypto.subtle.importKey('raw',enc.encode(code),'PBKDF2',false,['deriveBits']);const bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt,iterations:ORG_ITER,hash:'SHA-256'},base,256);return [...new Uint8Array(bits)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 const orgLock=()=>{try{return JSON.parse(localStorage.getItem('orgLock')||'{}')}catch(e){return {}}};
 /* a participant who opens the link in the phone's browser (for example after deleting the home-screen icon) starts logged out:
@@ -4280,8 +4281,18 @@ if(['guest:p02','guest:p13','guest:p17'].includes(ROLE)){ROLE='';try{localStorag
 /* an organizer session must carry a valid proof of the code; otherwise it falls back to the entry screen */
 // the viewer code was retired: a phone still holding that session goes back to the entry screen
 if(ROLE==='exp'){ROLE='';try{localStorage.removeItem('role');localStorage.removeItem('expProof')}catch(e){}}
-if(ROLE==='org'){let pr='';try{pr=localStorage.getItem('orgProof')||''}catch(e){}setTimeout(async()=>{let ok=false;try{ok=!!pr&&(await sha(pr))===ORG_CHK}catch(e){}if(!ok&&ROLE==='org'){try{localStorage.removeItem('orgProof')}catch(e){}logoutRole()}},0)}
+if(ROLE==='org'){let pr='';try{pr=localStorage.getItem('orgProof')||''}catch(e){}setTimeout(async()=>{let ok=false;try{const h=pr?await sha(pr):'';ok=h===ORG_CHK||h===ORGV_CHK;if(ok)setRO(h===ORGV_CHK)}catch(e){}if(!ok&&ROLE==='org'){try{localStorage.removeItem('orgProof')}catch(e){}logoutRole()}},0)}
 let PREV=false;try{PREV=sessionStorage.getItem('prev')==='1'}catch(e){}
+/* read-only organizer (own code): sees everything organizers see, every write is refused on the phone */
+let ORG_RO=false;try{ORG_RO=localStorage.getItem('orgRO')==='1'}catch(e){}
+let RO_TAP=0;addEventListener('pointerdown',()=>{RO_TAP=Date.now()},true);
+function setRO(v){ORG_RO=!!v;try{v?localStorage.setItem('orgRO','1'):localStorage.removeItem('orgRO')}catch(e){}document.documentElement.classList.toggle('orgro',ORG_RO&&ROLE==='org')}
+function roRefuse(){if(Date.now()-RO_TAP<2500){RO_TAP=0;try{toast('👁 מצב צפייה: אי אפשר לשנות דברים באפליקציה')}catch(e){}}const er=new Error('read-only');er.code='ro';return Promise.reject(er)}
+(function roPatch(){const F=window.firebase&&firebase.firestore;if(!F||!F.DocumentReference){setTimeout(roPatch,300);return}
+  const wrap=(P,m)=>{if(!P||!P[m]||P[m].__ro)return;const o=P[m];P[m]=function(...a){return ORG_RO&&ROLE==='org'?roRefuse():o.apply(this,a)};P[m].__ro=1};
+  ['set','update','delete'].forEach(m=>wrap(F.DocumentReference.prototype,m));wrap(F.CollectionReference.prototype,'add');wrap(F.WriteBatch.prototype,'commit');
+  if(F.Firestore&&F.Firestore.prototype)wrap(F.Firestore.prototype,'runTransaction');
+  document.documentElement.classList.toggle('orgro',ORG_RO&&ROLE==='org')})();
 let PREVID='';try{PREVID=sessionStorage.getItem('prevId')||''}catch(e){}
 const GUEST=()=>ROLE.startsWith('guest:')||(ROLE==='org'&&PREV);
 function setPrev(v){PREV=v;try{sessionStorage.setItem('prev',v?'1':'0')}catch(e){}GTAB='gh';V.seg=null;document.body.classList.toggle('guest',GUEST());render(true);window.scrollTo(0,0)}
@@ -4297,7 +4308,7 @@ function matchGuest(inp){
 }
 async function sha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 function setRole(r){if(/^guest:/.test(r)){const p=S.participants.find(x=>'guest:'+x._id===r);try{if(p)localStorage.setItem('lastG',JSON.stringify({id:p._id,name:p.name}))}catch(e){}}ROLE=r;PREV=false;try{sessionStorage.setItem('prev','0')}catch(e){}try{localStorage.setItem('role',r)}catch(e){}const g=document.getElementById('gate');if(g)g.remove();document.body.classList.toggle('guest',GUEST());if(!GUEST())setTimeout(()=>{try{pdSub();pdOverlay()}catch(e){}},0);if(typeof pickMe==='function'&&GUEST()){}render(true);window.scrollTo(0,0)}
-function logoutRole(){ROLE='';try{localStorage.removeItem('role');localStorage.removeItem('me');localStorage.removeItem('orgProof');localStorage.removeItem('expProof')}catch(e){}document.body.classList.remove('viewer');ME='';document.body.classList.remove('guest');showGate()}
+function logoutRole(){ROLE='';setRO(false);try{localStorage.removeItem('role');localStorage.removeItem('me');localStorage.removeItem('orgProof');localStorage.removeItem('expProof')}catch(e){}document.body.classList.remove('viewer');ME='';document.body.classList.remove('guest');showGate()}
 /* the entry buttons say they're working, and can't be pressed twice */
 function gBusy(b,t){if(!b)return;if(t){b.dataset.t=b.textContent;b.disabled=true;b.setAttribute('aria-busy','true');b.innerHTML=`<span class="gspin" aria-hidden="true"></span>${esc(t)}`}else if(b.dataset.t!=null){b.disabled=false;b.removeAttribute('aria-busy');b.textContent=b.dataset.t;delete b.dataset.t}}
 function lockMsg(msg,ms){const m=Math.max(1,Math.ceil(ms/60000));msg.className='gmsg glock';msg.innerHTML=`<b>הכניסה ננעלה זמנית</b>אחרי כמה קודים שגויים. אפשר לנסות שוב בעוד ${m} ${m===1?'דקה':'דקות'}. אם שכחתם את הקוד, בקשו אותו ממארגן אחר.`}
@@ -4385,7 +4396,7 @@ function showGate(step){
     const go=async()=>{if(busy)return;const msg=document.getElementById('gmsg'),v=document.getElementById('gcode').value.trim().toLowerCase();if(!v)return;
       const L=orgLock(),now=Date.now();if(L.until&&now<L.until){lockMsg(msg,L.until-now);return}
       const b=document.getElementById('ggo');busy=true;msg.textContent='';msg.className='gmsg';gBusy(b,'בודקים…');let d='';try{d=await orgDerive(v)}catch(e){}busy=false;gBusy(b);
-      if(d&&(await sha(d))===ORG_CHK){try{localStorage.setItem('orgProof',d);localStorage.removeItem('orgLock')}catch(e){}msg.textContent='';setRole('org');return}
+      const dh=d?await sha(d):'';if(dh===ORG_CHK||dh===ORGV_CHK){try{localStorage.setItem('orgProof',d);localStorage.removeItem('orgLock')}catch(e){}setRO(dh===ORGV_CHK);msg.textContent='';setRole('org');return}
       const n=(L.n||0)+1,lock=n>=5?now+Math.min(60,5*Math.pow(2,Math.floor(n/5)-1))*60000:0;try{localStorage.setItem('orgLock',JSON.stringify({n,until:lock}))}catch(e){}
       if(lock){lockMsg(msg,lock-now);return}msg.textContent=`הקוד שגוי (נשארו ${5-n%5} ניסיונות לפני נעילה)`};
     document.getElementById('gshow').onclick=e=>{const i=document.getElementById('gcode'),on=i.type==='password';i.type=on?'text':'password';e.currentTarget.textContent=on?'הסתרה':'הצגה';e.currentTarget.setAttribute('aria-pressed',String(on));i.focus()};
@@ -5876,7 +5887,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='a2b1f11a';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='f4659aca';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
