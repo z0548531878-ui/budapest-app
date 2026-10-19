@@ -4268,7 +4268,7 @@ const later=()=>{if(rq)return;if(V.sub==='notes'&&document.querySelector('#sortB
   rq=setTimeout(()=>requestAnimationFrame(()=>{rq=0;const all=COLS.every(c=>loaded.has(c));render(all&&!firstAll);if(all&&!firstAll)setTimeout(autoApply,800);if(all)firstAll=true}),firstAll?90:0)};
 /* ===== entrance: participants (by name) / organizers (by code) ===== */
 /* organizer code: PBKDF2-SHA256 (600000 rounds, own salt). The page keeps only a SHA-256 of the derived key, the device keeps the derived key as proof */
-const ORG_SALT='d77742f9a791ee7608fc6c191780aab0',ORGV_CHK='d67be17297aa14c90626a9afb7970efad25c894c7d140ee7e4cf304ee33f9cd4',ORG_ITER=600000,ORG_CHK='03405cce2969b704a54459c83029018c6135020db7fbc4e6be183df159c91347';
+const ORG_SALT='d77742f9a791ee7608fc6c191780aab0',ORGV_CHK='disabled',ORG_ITER=600000,ORG_CHK='03405cce2969b704a54459c83029018c6135020db7fbc4e6be183df159c91347';
 async function orgDerive(code){const enc=new TextEncoder(),salt=new Uint8Array(ORG_SALT.match(/../g).map(h=>parseInt(h,16)));const base=await crypto.subtle.importKey('raw',enc.encode(code),'PBKDF2',false,['deriveBits']);const bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt,iterations:ORG_ITER,hash:'SHA-256'},base,256);return [...new Uint8Array(bits)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 const orgLock=()=>{try{return JSON.parse(localStorage.getItem('orgLock')||'{}')}catch(e){return {}}};
 /* a participant who opens the link in the phone's browser (for example after deleting the home-screen icon) starts logged out:
@@ -4673,7 +4673,9 @@ const DRAFT={annTitle:'',annText:'',reqText:'',reqCat:'אחר'};
 const meG=()=>{if(PREV&&ROLE==='org'){return (PREVID&&S.participants.find(p=>p._id===PREVID))||S.participants.find(p=>p.name==='חיים פולק')||S.participants.find(p=>p.name==='שלומי זינגר')||null}return S.participants.find(p=>p._id===ROLE.slice(6))||null};
 const isPrevOrg=()=>PREV&&ROLE==='org';
 // Chaim Bloch, and only him, can look at the trip's expenses (read only) from his participant app
-const canExp=()=>{const m=meG();return !!m&&/^(חיים\s+בלוך)$/.test(String(m.name||'').replace(/^הרב(נית)?\s+/,'').trim())};
+const canExp=()=>{const m=meG();return !!m&&(!!m.producer||/^(חיים\s+בלוך)$/.test(String(m.name||'').replace(/^הרב(נית)?\s+/,'').trim()))};
+/* field producer (participant with producer:true): extra read-only screens for kits, rooms and suppliers */
+const isProd=()=>{const m=meG();return !!m&&!!m.producer};
 const landingMs=()=>{const f=S.flights.find(f=>f._id==='f1')||S.flights.find(f=>f.dir==='הלוך');if(!f)return 0;const a=(f.arr||'12:00').replace(/[^\d:]/g,'').padStart(5,'0');return new Date(`${f.date||'2026-11-19'}T${a}:00+01:00`).getTime()};
 const triviaOpen=()=>Date.now()>=landingMs();
 const firstN=n=>String(n||'').replace(/^הרב(נית)?\s+/,'').split(' ')[0];
@@ -5007,6 +5009,9 @@ function guestHTML0(){
         const C={gs:()=>me&&me.kitter?cube('gs',I.box,'סידור ערכות בחדרים',(()=>{const rp=roomsPlaced();return rp.t?`הונחו ${rp.n} מתוך ${rp.t} חדרים`:'עדכון באיזה חדר סידרתם'})(),(()=>{const rp=roomsPlaced();return rp.t-rp.n||''})()):'',
           gt:()=>cube('gt',I.tasks,'משימות',mineT?(mineT===1?'משימה אחת שלכם':mineT+' משימות שלכם'):openT?openT+' פתוחות לעזרה':'עזרה לצוות במסע',pendOpen()||''),
           gv:()=>canExp()?cube('gv',I.money,'הוצאות והכנסות','צפייה בלבד',''):'',
+          gkt:()=>isProd()?cube('gkt',I.box,'ערכות','מה יש בכל ערכה ומה הסטטוס',''):'',
+          grm:()=>isProd()?cube('grm',I.bed,'חדרים','מי בכל חדר ואיפה הערכה',''):'',
+          gcn:()=>isProd()?cube('gcn',I.phone,'ספקים ואנשי קשר','טלפונים של הספקים בשטח',''):'',
           gm:()=>cube('gm',I.chat,'הודעות','עדכונים מהמארגנים',un||''),
           gd:()=>cube('gd',IX.car,'נסיעה משותפת לשדה','מתאמים הגעה יחד, הלוך וחזור',rideMine()||''),
           gp:()=>cube('gp',I.people,'משתתפים','מי בא איתנו, ואיך מתקשרים'),
@@ -5015,7 +5020,7 @@ function guestHTML0(){
           gz:()=>cube('gz',IX.pin,'קרעסטיר','על רבי ישעיה׳לה ועל הציון'),
           gk:()=>cube('gk',IX.tools,'כלים לדרך','שעון, זמנים, מטבע, ביטויים'),
           ge:()=>cube('ge',IX.coin,'חשבון משותף','מי שילם, ומי חייב למי',(()=>{const b=me?Object.values(splitBal(me)).filter(v=>v<=-1).length:0;return b||''})())};
-        const ord=TRIPDAY()?['gs','gv','gt','gm','gi','gx','gz','gp','gk','gd']:['gs','gv','gt','gm','gd','gp','gx','gz','gk','gi'];
+        const ord=TRIPDAY()?['gs','gkt','grm','gcn','gv','gt','gm','gi','gx','gz','gp','gk','gd']:['gs','gkt','grm','gcn','gv','gt','gm','gd','gp','gx','gz','gk','gi'];
         return ord.map(k=>C[k]()).join('')})()}
       <a class="gc gtrv" href="trivia/?lock=1" style="--i:${n++}"><span class="gc-i">${I.spark}</span><span class="gc-t">טריוויה על גלגלים</span><span class="gc-s">${open?'כל המשחקים פתוחים. בהצלחה!':'משחק עצמאי פתוח · ראש בראש וקבוצתי ביום המסע'}</span></a>
      </div>
@@ -5142,6 +5147,13 @@ function guestHTML0(){
      <div class="pa-acts"><a class="pa-a soft" href="${waLink(sh)}" target="_blank" rel="noopener">${IX.wa}<span><b>שאלה לשלומי</b><small>וואטסאפ למארגן המסע</small></span></a></div>
      ${isPrevOrg()?'':`<button class="btn ghost gout2" id="pdiag">🔧 בדיקת תקינות והתראות</button><button class="btn ghost gout2" id="gout">🚪 יציאה מהחשבון</button>`}</section>`}
   if(GTAB==='gv'&&canExp())return head('הוצאות והכנסות')+expTabs()+(EXPV==='inc'?incHTML():EXPV==='exp'?expHTML():vSum());
+  if(GTAB==='gkt'&&isProd()){const by={};S.packing.filter(x=>x.item).forEach(x=>{const k=x.kit||x.list||'כללי';(by[k]=by[k]||[]).push(x)});
+    const st=x=>[x.ordered?'הוזמן':'',x.arrived?'הגיע':'',x.packed?'נארז':'',x.placed?'הונח':'',x.done?'✓':''].filter(Boolean).join(' · ');
+    return head('ערכות')+`<p class="vwnote">👁 צפייה בלבד</p>`+Object.keys(by).sort().map(k=>`<h3 class="pa-h">${esc(k)} <small class="num">(${by[k].length})</small></h3><div class="vwl">${by[k].sort((a,b)=>(a.order||0)-(b.order||0)).map(x=>`<div class="vwr"><span><b style="color:var(--text,#f4ead2)">${esc(x.item)}</b>${[x.where,x.buyer&&('קונה: '+x.buyer),x.placer&&('מניח: '+x.placer),x.notes].filter(Boolean).map(t=>`<br><small>${esc(t)}</small>`).join('')}${st(x)?`<br><small style="color:#d9b45f">${st(x)}</small>`:''}</span><b class="num">${x.per?esc(x.per)+' לחדר':'× '+esc(x.qty||'')}</b></div>`).join('')}</div>`).join('')}
+  if(GTAB==='grm'&&isProd()){const R=S.rooms.slice().sort((a,b)=>(a.order||0)-(b.order||0));
+    return head('חדרים')+`<p class="vwnote">👁 צפייה בלבד · ${R.length} חדרים</p><div class="vwl">${R.map(r=>`<div class="vwr"><span><b style="color:var(--text,#f4ead2)">${esc(r.occupants||'')}</b>${[r.type,r.floor&&('קומה '+r.floor),r.notes].filter(Boolean).map(t=>`<br><small>${esc(t)}</small>`).join('')}</span><b class="num">${r.roomNumber?'חדר '+esc(r.roomNumber):'—'}${r.kitReady||r.placed?'<br><small style="color:#7fc48a">ערכה ✓</small>':''}</b></div>`).join('')}</div>`}
+  if(GTAB==='gcn'&&isProd()){const C=S.contacts.slice().sort((a,b)=>(a.order||0)-(b.order||0));
+    return head('ספקים ואנשי קשר')+`<div class="vwl">${C.map(c=>`<div class="vwr"><span><b style="color:var(--text,#f4ead2)">${esc(c.name||'')}</b>${[c.role,c.person,c.notes].filter(Boolean).map(t=>`<br><small>${esc(t)}</small>`).join('')}</span><b>${c.phone?`<a href="tel:${esc(String(c.phone).replace(/[^\d+]/g,''))}">${esc(c.phone)}</a><br><a href="${waLink(c.phone)}" target="_blank" rel="noopener"><small>וואטסאפ</small></a>`:''}</b></div>`).join('')}</div>`}
   if(GTAB==='gy')return head('צ׳אט המסע')+chatHTML();
   if(GTAB==='gd')return head('נסיעה משותפת לשדה')+`<p class="note">מתאמים ביחד את הדרך לשדה: מי שיש לו מקום ברכב, מי שמחפש טרמפ, ומי שרוצה לחלוק מונית.</p>`+ridesHTML(ppl,me);
   if(GTAB==='gi')return head('תמונות מהמסע')+photosHTML();
@@ -5887,7 +5899,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='f4659aca';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='10a53c8e';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
