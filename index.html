@@ -877,6 +877,9 @@ button,a,.btn,.answer-btn{touch-action:manipulation;}
 @media (max-height:780px){ .q-photo img{height:150px;} }
 @media (max-height:700px){ .q-photo img{height:118px;} }
 .q-flag img{height:128px;image-rendering:auto;}
+.who-line{text-align:center;font-size:15px;color:var(--muted,#bdb39a);margin:6px 0 8px;}
+.who-line b{color:var(--gold-light,#F3D98B);}
+.who-change{background:none;border:0;color:#8FDCE8;font:inherit;font-weight:700;text-decoration:underline;cursor:pointer;padding:2px 4px;}
 .q-logo img{animation:none !important;padding:12px 18px;box-sizing:border-box;aspect-ratio:auto;min-width:150px;}
 @media (max-height:780px){ .q-flag img{height:100px;} }
 .q-sign svg{width:136px;height:136px;shape-rendering:geometricPrecision;}
@@ -4649,6 +4652,7 @@ function duelEntry(){
   entryWire('duel-name','duel-go');
   $('duel-go').addEventListener('click', ()=>{ const n=readFullName('duel-name'); if(!n) return; duelStart(n); });
   $('duel-back').addEventListener('click', duelLeave);
+  if(nm && autoName()) duelStart(autoName());
 }
 // ---- חדר המתנה של אחד על אחד: רואים מי ממתין, שולחים הזמנה, והמשחק מתחיל רק כשהשני מאשר ----
 // מסמך אחד: rooms/duel_lobby = { players:{id:{name,hb,busy}}, inv:{מוזמן:{from,fromName,at,st,code}} }
@@ -5004,6 +5008,8 @@ function duelAnswer(k, btn){
 }
 
 // ---------- שם מלא אחד לכל המשחקים ----------
+// שם מלא תקין שכבר נשמר (משם ומשפחה) — מי שנרשם פעם אחת נכנס ישר לחדר ההמתנה בלי להירשם שוב
+function autoName(){ const n = String(savedFullName()||'').trim().replace(/\s+/g,' '); return n.split(' ').length>=2 ? n : ''; }
 function savedFullName(){ try{ return localStorage.getItem('trivia_full_name') || (soloProfile() && soloProfile().name) || ''; }catch(e){ return ''; } }
 function readFullName(id){
   const el=$(id); const v=(el.value||'').trim().replace(/\s+/g,' ');
@@ -5123,17 +5129,31 @@ let lastTouchEnd=0;
 document.addEventListener('touchend', e=>{ const now=Date.now(); if(now-lastTouchEnd<300 && !(e.target.closest && e.target.closest('input,textarea'))) e.preventDefault(); lastTouchEnd=now; }, {passive:false});
 // ---------- Solo best ----------
 function soloBest(){ return Number(localStorage.getItem('trivia_solo_best')||0); }
+function wireWho(){
+  const b = $('who-change'); if(!b) return;
+  b.addEventListener('click', ()=>{
+    const v = (prompt('השם המלא שלכם (שם ושם משפחה):', autoName()) || '').trim().replace(/\s+/g,' ');
+    if(!v) return;
+    if(v.split(' ').length<2){ alert('נא לכתוב שם ושם משפחה (למשל: משה כהן)'); return; }
+    try{ localStorage.setItem('trivia_full_name', v); }catch(e){}
+    try{ const h=pushHost(); if(h && h.trvPushName) h.trvPushName(v); }catch(e){}
+    renderLandingBest();
+  });
+}
 function renderLandingBest(){
   const el = $('solo-best-note');
   if(!el) return;
   const p = soloProfile(), b = soloBest();
-  if(!p){ el.innerHTML=''; return; }
-  el.innerHTML = `<div class="pb-badge"><span class="pb-medal">🏅</span><span class="pb-txt"><span class="pb-name">${esc(p.name)}</span><span class="pb-line">השיא שלכם: <b class="pb-num">0</b> נקודות</span></span></div>`;
+  const nm = autoName();
+  const who = nm ? `<div class="who-line">משחקים בתור <b>${esc(nm)}</b> · <button type="button" class="who-change" id="who-change">✏️ החלפת שם</button></div>` : '';
+  if(!p){ el.innerHTML = who; wireWho(); return; }
+  el.innerHTML = who + `<div class="pb-badge"><span class="pb-medal">🏅</span><span class="pb-txt"><span class="pb-name">${esc(p.name)}</span><span class="pb-line">השיא שלכם: <b class="pb-num">0</b> נקודות</span></span></div>`;
+  wireWho();
   const n = el.querySelector('.pb-num');
   setTimeout(()=>animateCount(n, b, 1100), $('s-landing').classList.contains('active') ? 1100 : 0);
 }
 
-const APP_VERSION = '2026-10-20i';
+const APP_VERSION = '2026-10-20j';
 // טלפונים שומרים לפעמים עותק ישן של האתר — בודקים אם יש גרסה חדשה ואם כן טוענים אותה
 function checkForNewVersion(){
   if(location.protocol.indexOf('http')!==0) return;
@@ -5211,7 +5231,7 @@ $('btn-host').addEventListener('click', ()=>{
 function tripLockBtns(){if(!TRIP_LOCK)return;['btn-join-manual'].forEach(id=>{const b=$(id);if(!b)return;b.classList.add('locked-trip');b.setAttribute('aria-disabled','true');const sm=b.querySelector('.cta-t small');if(sm){sm.className='lk-note';sm.textContent='🔒 ייפתח ביום המסע'}})}
 const tripLocked=()=>{if(!TRIP_LOCK)return false;try{alert('ייפתח ביום המסע 🚌\nבינתיים אפשר לשחק במשחק העצמאי');}catch(e){}return true};
 tripLockBtns();
-$('btn-join-manual').addEventListener('click', ()=>{ if(tripLocked())return; roomCode = null; renderPjoin(); showScreen('s-pjoin'); });
+$('btn-join-manual').addEventListener('click', ()=>{ if(tripLocked())return; roomCode = null; renderPjoin(); showScreen('s-pjoin'); if(autoName()) joinGame(); });
 document.addEventListener('visibilitychange', ()=>{
   if(document.visibilityState!=='visible' || role!=='player' || !roomCode || !playerId) return;
   lobbyBeat();
@@ -5932,7 +5952,7 @@ async function soloSyncMine(){
 function globalBest(){ return soloTop.length ? {best:soloTop[0].best||0, name:soloTop[0].name||'', id:soloTop[0].id} : null; }
 function soloEntry(){
   ensureAudio();
-  if(soloProfile()) soloHome(); else soloRegister();
+  if(soloProfile()) soloHome(); else { soloRegister(); if(autoName() && $('sr-name').value.trim()) soloDoRegister(); }
 }
 function soloRegister(){
   role='solo'; soloState=null;
