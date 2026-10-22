@@ -1,6 +1,6 @@
 import { test, expect, openPlayer, enterName, type Db } from './helpers';
 
-const SOLO = 'solo_players_s5';
+const SOLO = 'solo_players_s7';
 
 test.describe('F01 solo game', () => {
   test('F01-H1 register, play a full round, the score is saved to the leaderboard', async ({ browser, db }) => {
