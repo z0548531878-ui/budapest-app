@@ -61,6 +61,7 @@ test.describe('F01 solo game', () => {
     await enterName(page, 'דנה לוי');
     await page.getByRole('button', { name: /התחילו סבב חדש/ }).click();
     await expect(page.getByText('שאלה 1 מתוך 30')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => document.body.classList.contains('q-reading'))).toBe(false); // the reading second is over
     // a frantic tap: every answer, twice, in the same instant
     const after = await page.evaluate(() => {
       const bs = [...document.querySelectorAll('#s-answers .answer-btn')] as HTMLButtonElement[];

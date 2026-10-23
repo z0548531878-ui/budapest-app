@@ -91,6 +91,8 @@ button:focus-visible,[tabindex]:focus-visible{outline:3px solid #FFF3C4 !importa
 .answers{display:flex;flex-direction:column;gap:10px;}
 .answer-btn{text-align:right;background:var(--asphalt-2);border:2px solid #3A404C;border-radius:12px;padding:15px 16px;color:var(--ink);font-family:inherit;font-size:15.5px;font-weight:500;cursor:pointer;}
 .answer-btn:disabled{cursor:default;}
+body.q-reading .answers .answer-btn{pointer-events:none;opacity:.6;filter:saturate(.7);transition:opacity .25s,filter .25s;}
+body.q-reading .timer-bar .tb-worth{opacity:.55;}
 .answer-btn.correct{border-color:var(--go-green);background:rgba(61,190,114,.14);color:var(--go-green);font-weight:700;}
 .answer-btn.wrong{border-color:var(--stop-red);background:rgba(228,87,46,.14);color:var(--stop-red);font-weight:700;}
 .answer-btn.dim{opacity:.4;}
@@ -1040,6 +1042,8 @@ const firebaseConfig = {
 (function(){
 "use strict";
 const QUESTION_MS = 11000;
+// שנייה לקריאת השאלה לפני שהשעון מתחיל לרוץ (בכל המצבים). בזמן הזה אי אפשר לענות
+const READ_MS = 1000;
 const BASE_POINTS = 10;
 const SPEED_POINTS = 2; // נקודות על כל שנייה שנשארה בשעון
 // משחק עצמאי: 15 שניות, 15 נק' לתשובה נכונה + נקודה לכל שנייה שנשארה
@@ -5560,7 +5564,7 @@ function duelRender(){
       if(v['a1_'+i] && v['a2_'+i]) duelAdvance('question', i);
       return;
     }
-    duel.qi=i; duel.startLocal=Date.now(); duel.locked=false;
+    duel.qi=i; duel.startLocal=Date.now()+READ_MS; duel.locked=false;
     const q = duelQuestion(v, i);
     body.innerHTML = `<div id="d-header">${duelHeadHtml(v)}</div>
       ${progressHtml(i, v.qs.length)}
@@ -5630,7 +5634,7 @@ function duelRender(){
 function duelLockButtons(){ duel && (duel.locked=true); const box=$('d-answers'); if(box) box.querySelectorAll('.answer-btn').forEach(b=>b.disabled=true); }
 function duelAnswer(k, btn){
   if(!duel || duel.locked || !duel.v || duel.v.status!=='question') return;
-  const i = duel.v.i, ms = Date.now()-duel.startLocal; if(ms>=QUESTION_MS) return;
+  const i = duel.v.i, ms = Date.now()-duel.startLocal; if(ms>=QUESTION_MS || ms<0) return;
   duel.locked = true;
   const q = duelQuestion(duel.v, i);
   const voided = acHit(duel, i, 'away') || acHit(duel, i, 'copy');
@@ -5886,7 +5890,7 @@ $('btn-solo').addEventListener('click', soloEntry);
 $('btn-duel').addEventListener('click', ()=>{ duelEntry(); });
 
 // ---------- Timer (bar) ----------
-function clearQTimer(){ if(timerHandle){clearInterval(timerHandle); timerHandle=null;} stopMusic(); document.body.classList.remove('tick-danger'); }
+function clearQTimer(){ if(timerHandle){clearInterval(timerHandle); timerHandle=null;} stopMusic(); document.body.classList.remove('tick-danger'); document.body.classList.remove('q-reading'); }
 
 // מונה "כמה שווה התשובה עכשיו" — מדגיש שמהירות = נקודות
 const worthLocks = {};
@@ -5915,7 +5919,8 @@ function mountQTimer(startedAt, ringId, numId, wrapId, onExpire){
   if(startedAt!==lastBeepStartedAt){ lastBeepStartedAt=startedAt; lastBeepSec=null; }
   let expired = false;
   function tick(){
-    const elapsed = Date.now()-startedAt;
+    const raw = Date.now()-startedAt, elapsed = Math.max(0, raw);
+    document.body.classList.toggle('q-reading', raw < 0);
     const qms = qCfg(numId.replace('-timer-num','')).ms;
     const remain = Math.max(0, qms-elapsed);
     const pct = (remain/qms)*100;
@@ -5954,7 +5959,7 @@ async function watchdogTick(isFallback){
     await run(hostNext);
   } else if(curState.phase==='intermission' && elapsed>=INTRO_MS+buf){
     const qi = curState.qIndex;
-    await run(()=>roomRef().update({phase:'question', qIndex:qi, questionStartedAt:Date.now(), phaseAt:Date.now(), revealWinners:null}));
+    await run(()=>roomRef().update({phase:'question', qIndex:qi, questionStartedAt:Date.now()+READ_MS, phaseAt:Date.now(), revealWinners:null}));
   } else if(curState.phase==='standings' && elapsed>=STANDINGS_MS+buf){
     await run(advanceFromStandings);
   } else if(curState.phase==='question' && !isFallback && curState.questionStartedAt && Date.now()-curState.questionStartedAt>=QUESTION_MS+2000){
@@ -6061,7 +6066,7 @@ function goToQuestion(idx){
   if(topic && topic!==prevTopic){
     return roomRef().update({phase:'intermission', qIndex:idx, introTopic:topic, revealWinners:null, phaseAt:Date.now()});
   }
-  return roomRef().update({phase:'question', qIndex:idx, questionStartedAt:Date.now(), phaseAt:Date.now(), revealWinners:null});
+  return roomRef().update({phase:'question', qIndex:idx, questionStartedAt:Date.now()+READ_MS, phaseAt:Date.now(), revealWinners:null});
 }
 
 function topicCountFrom(idx){ let n=0; const t=QUESTIONS[idx] && QUESTIONS[idx].topic; while(QUESTIONS[idx+n] && QUESTIONS[idx+n].topic===t) n++; return n; }
@@ -6376,6 +6381,7 @@ function lockPlayerAnswers(q){
 function selectAnswer(choice, btnEl){
   if(curState.phase!=='question') return;
   if(Date.now()-curState.questionStartedAt >= QUESTION_MS) return;
+  if(Date.now() < curState.questionStartedAt) return; // עדיין בשנייה של הקריאה
   const now = Date.now();
   myChoiceForQ = choice; myAnswerTime = now;
   lockWorth('p', curState.questionStartedAt, now-curState.questionStartedAt);
@@ -6556,7 +6562,7 @@ function playerLeave(){
 //    בחירה עקבית ברמז המוסתר, או הרבה יציאות והעתקות. כל סבב כזה נרשם ב-rooms/cheat_log לבדיקה
 const AC_DEV = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
 const AC_BOT = !!navigator.webdriver && !AC_DEV;
-const AC_READ_MS = 700;
+const AC_READ_MS = 150; // השעון מתחיל אחרי שנייה של קריאה — תשובה מתחת ל-0.15 שנ' מרגע שהשעון התחיל היא כבר לא תגובה אנושית
 let acQuietUntil = 0;
 function acLive(){
   if(role==='solo' && soloState && !soloState.locked && soloState.startedAt && soloState.qs) return {st:soloState, i:soloState.i, q:soloState.qs[soloState.i]};
@@ -7010,7 +7016,7 @@ function soloShowQuestion(){
   const s = soloState; if(!s) return;
   if(!imgOk(s.qs[s.i])) soloSwapQ(s, s.i);
   const q = s.qs[s.i];
-  s.locked=false; s.startedAt=Date.now(); fxFadeOut();
+  s.locked=false; s.startedAt=Date.now()+READ_MS; fxFadeOut();
   const body = $('solo-body');
   body.innerHTML = `<div id="s-header">${soloHeaderInner()}</div>
     ${progressHtml(s.i, s.qs.length)}
@@ -7025,6 +7031,7 @@ function soloShowQuestion(){
 }
 function soloReveal(choice){
   const s = soloState; if(!s || s.locked) return;
+  if(choice!==null && Date.now() < s.startedAt) return; // עדיין בשנייה של הקריאה
   s.locked = true; clearQTimer();
   const q = s.qs[s.i];
   const elapsed = Date.now()-s.startedAt;
