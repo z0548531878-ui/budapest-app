@@ -32,7 +32,7 @@ test.describe('F02 duel', () => {
     const room = (await db.list('rooms')).find(r => r.id.startsWith('D'))!.data;
     await expect(a.page.locator('.duel-final .dp').first().locator('.ds')).toHaveText(String(room.s1));
     await expect(b.page.locator('.duel-final .dp').first().locator('.ds')).toHaveText(String(room.s2));
-    await expect.poll(async () => (await db.list('duel_players_s1')).length).toBe(2);
+    await expect.poll(async () => (await db.list('duel_players_s2')).length).toBe(2);
     for (const p of [a, b]) expect(p.errors).toEqual([]);
   });
 

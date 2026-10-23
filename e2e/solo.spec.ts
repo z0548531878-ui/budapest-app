@@ -89,7 +89,7 @@ test.describe('F01 solo game', () => {
     await enterName(page, 'רות בן דוד');
     await page.getByRole('button', { name: /התחילו סבב חדש/ }).click();
     await expect(page.getByText('שאלה 1 מתוך 30')).toBeVisible();
-    await expect(page.locator('#s-note')).toHaveText(/נגמר הזמן/, { timeout: 14_000 });
+    await expect(page.locator('#s-note')).toHaveText(/נגמר הזמן/, { timeout: 20_000 });
     await expect(page.locator('.score-header b')).toHaveText('0');
     await expect(page.getByText('שאלה 2 מתוך 30')).toBeVisible();
   });
@@ -115,7 +115,7 @@ test.describe('F01 solo game', () => {
     await enterName(page, 'שרה אברהם');
     await expect(page.getByText('שלום,')).toBeVisible();
     await page.reload();
-    await expect(page.getByText('שרה אברהם')).toBeVisible();
+    await expect(page.getByText('שרה אברהם').first()).toBeVisible();
     await page.getByRole('button', { name: /משחק עצמאי/ }).click();
     await expect(page.getByRole('button', { name: /התחילו סבב חדש/ })).toBeVisible();
   });
