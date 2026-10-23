@@ -891,6 +891,17 @@ button,a,.btn,.answer-btn{touch-action:manipulation;}
 .q-photo.crop{overflow:hidden;}
 .q-photo.crop .crop-in{width:100%;transform-origin:50% 50%;}
 .q-photo.crop img{display:block;}
+/* תמונות ברורות בכל טלפון: הגובה לפי המסך (ולא קטן מדי בטלפון נמוך או עם תצוגה מוגדלת), בלי טשטוש באנימציה, ונגיעה מגדילה למסך מלא */
+.q-photo img{height:clamp(170px,32svh,300px);cursor:zoom-in;animation:photoIn2 .45s ease-out backwards !important;filter:none !important;}
+@media (max-height:780px){ .q-photo img{height:clamp(160px,27svh,210px);} }
+@media (max-height:700px){ .q-photo img{height:clamp(150px,24svh,180px);} }
+.q-flag img{cursor:zoom-in;}
+@keyframes photoIn2{from{opacity:0;}to{opacity:1;}}
+.q-photo::after{content:"🔍";position:absolute;top:6px;left:8px;width:28px;height:28px;display:grid;place-items:center;font-size:15px;background:rgba(0,0,0,.55);border-radius:50%;pointer-events:none;}
+.q-photo.err::after{display:none;}
+.img-zoom{position:fixed;inset:0;z-index:60;background:rgba(5,4,2,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px;cursor:zoom-out;animation:photoIn2 .2s ease-out both;}
+.img-zoom img{max-width:100%;max-height:calc(100% - 44px);object-fit:contain;border-radius:12px;background:#fff1;}
+.img-zoom .iz-hint{color:#e9dfc4;font-size:15px;font-weight:700;}
 #s-landing .btn.locked-trip{opacity:.55;filter:grayscale(.5);display:flex;flex-direction:column;align-items:center;gap:2px}#s-landing .btn.locked-trip .lk-note{font-size:13px;font-weight:800;opacity:.95}
 /* ===== כניסה משודרגת: כפתורי משחק עם עיגול אייקון ושורת הסבר ===== */
 #s-landing .btn.cta{display:flex;align-items:center;gap:14px;padding:14px 18px;min-height:86px;text-align:right;border-radius:22px;background:linear-gradient(180deg,#F6DE93 0%,#E2B947 55%,#C99A2E 100%);box-shadow:0 6px 0 #8A6E1E,inset 0 1px 0 rgba(255,255,255,.6),inset 0 -2px 0 rgba(0,0,0,.08);}
@@ -5307,7 +5318,17 @@ $('btn-solo').addEventListener('click', soloEntry);
 $('btn-duel').addEventListener('click', ()=>{ duelEntry(); });
 
 // ---------- Timer (bar) ----------
-function clearQTimer(){ if(timerHandle){clearInterval(timerHandle); timerHandle=null;} stopMusic(); document.body.classList.remove('tick-danger'); }
+function clearQTimer(){ if(timerHandle){clearInterval(timerHandle); timerHandle=null;} stopMusic(); document.body.classList.remove('tick-danger'); closeImgZoom(); }
+// נגיעה בתמונה של שאלה — מוצגת על כל המסך (הזמן ממשיך לרוץ); נסגרת בנגיעה או כשהשאלה נגמרת
+function closeImgZoom(){ document.querySelectorAll('.img-zoom').forEach(x=>x.remove()); }
+document.addEventListener('click', e=>{
+  const im = e.target && e.target.closest && e.target.closest('.q-photo img, .q-flag img'); if(!im) return;
+  closeImgZoom();
+  const ov = document.createElement('div'); ov.className = 'img-zoom'; ov.setAttribute('role','dialog'); ov.setAttribute('aria-label','התמונה בגדול');
+  const big = document.createElement('img'); big.src = im.currentSrc || im.src; big.alt = im.alt || ''; big.draggable = false;
+  const hint = document.createElement('div'); hint.className = 'iz-hint'; hint.textContent = 'נגיעה לסגירה · הזמן ממשיך לרוץ ⏱️';
+  ov.append(big, hint); ov.addEventListener('click', closeImgZoom); document.body.appendChild(ov);
+});
 // מונה "כמה שווה התשובה עכשיו" — מדגיש שמהירות = נקודות
 const worthLocks = {};
 function worthAt(ms, p){ const c=qCfg(p), left=Math.max(0,c.ms-ms)/1000; return c.base + c.speed*(p==='s' ? Math.ceil(left) : Math.floor(left)); } // עצמאי: לפי השניות שמוצגות בשעון
