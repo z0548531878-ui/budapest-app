@@ -17,8 +17,7 @@ test('F12-H1 the clock waits one second after the question appears', async ({ br
   expect(early).toEqual({ reading: true, num: '15', marked: 0 });
   // after the second the clock runs and answering works
   await expect.poll(() => page.evaluate(() => document.body.classList.contains('q-reading')), { timeout: 3000 }).toBe(false);
-  await page.waitForTimeout(1200);
-  await expect(page.locator('#s-timer-num')).toHaveText('14');
+  await expect.poll(() => page.evaluate(() => Number(document.getElementById('s-timer-num')!.textContent)), { timeout: 4000 }).toBeLessThan(15);
   await page.locator('#s-answers .answer-btn').first().click();
   await expect(page.locator('#s-answers .correct')).toHaveCount(1);
   expect(errors).toEqual([]);

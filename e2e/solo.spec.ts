@@ -16,6 +16,9 @@ test.describe('F01 solo game', () => {
       await expect(page.getByText(`שאלה ${i} מתוך 30`)).toBeVisible();
       const answers = page.locator('#s-answers').getByRole('button');
       await expect(answers.first()).toBeEnabled();
+      // a person reads, then taps: wait out the reading second and a human reaction time
+      await expect.poll(() => page.evaluate(() => document.body.classList.contains('q-reading'))).toBe(false);
+      await page.waitForTimeout(150);
       await answers.first().click();
       // read the result in one go, as soon as the answer registers: the next question replaces these nodes 1.1s later
       const got = await page.waitForFunction(() => {
