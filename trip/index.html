@@ -4306,6 +4306,21 @@ function matchGuest(inp){
   const fuzzy=S.participants.filter(p=>nskel(p.name)===k);if(fuzzy.length===1)return fuzzy[0];
   const part2=S.participants.filter(p=>{const f=nskel(p.name).split(' '),tk=k.split(' ');return tk.length>=2&&tk.every(t=>f.includes(t))});return part2.length===1?part2[0]:null;
 }
+/* the trivia game shows only the trip's people in its record tables: publish "fingerprints" of the names (never the names themselves).
+   Must match rosterHash/rosterVariants in the game (../index.html) */
+const ROSTER_SALT='trivia-roster-v1|';
+function rosterHash(s){let h1=0xdeadbeef,h2=0x41c6ce57;s=ROSTER_SALT+s;for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);h1=Math.imul(h1^c,2654435761);h2=Math.imul(h2^c,1597334677)}
+  h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);return (h2>>>0).toString(36)+(h1>>>0).toString(36)}
+let ROSTER_SIG='',ROSTER_T=0;
+function rosterPublish(){clearTimeout(ROSTER_T);ROSTER_T=setTimeout(async()=>{try{
+  if(!db||!db.fs||!S.participants||S.participants.length<5)return;
+  const set=new Set();
+  S.participants.forEach(p=>[normName(p.name),nskel(p.name)].forEach((n,k)=>{if(!n)return;set.add(rosterHash('f'+k+'|'+n));const t=n.split(' ');
+    for(let i=0;i<t.length;i++)for(let j=i+1;j<t.length;j++)set.add(rosterHash('p'+k+'|'+[t[i],t[j]].sort().join(' ')))}));
+  const h=[...set].sort(),sig=h.join(',');if(sig===ROSTER_SIG)return;
+  const ref=db.fs.collection('rooms').doc('trip_roster'),d=await ref.get();
+  if(!(d.exists&&(d.data().h||[]).join(',')===sig))await ref.set({h,n:S.participants.length,at:Date.now()});
+  ROSTER_SIG=sig}catch(e){diagE('roster',e)}},3000)}
 async function sha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 function setRole(r){if(/^guest:/.test(r)){const p=S.participants.find(x=>'guest:'+x._id===r);try{if(p)localStorage.setItem('lastG',JSON.stringify({id:p._id,name:p.name}))}catch(e){}}ROLE=r;PREV=false;try{sessionStorage.setItem('prev','0')}catch(e){}try{localStorage.setItem('role',r)}catch(e){}const g=document.getElementById('gate');if(g)g.remove();document.body.classList.toggle('guest',GUEST());if(!GUEST())setTimeout(()=>{try{pdSub();pdOverlay()}catch(e){}},0);if(typeof pickMe==='function'&&GUEST()){}render(true);window.scrollTo(0,0)}
 function logoutRole(){ROLE='';setRO(false);try{localStorage.removeItem('role');localStorage.removeItem('me');localStorage.removeItem('orgProof');localStorage.removeItem('expProof')}catch(e){}document.body.classList.remove('viewer');ME='';document.body.classList.remove('guest');showGate()}
@@ -5884,7 +5899,7 @@ render(true);
   if(!db){document.getElementById('banner').innerHTML='<p class="banner">חסר הקישור המלא של הצוות. פתחו את האפליקציה מהקישור ששלומי שלח (הוא מסתיים ב-#k=…).</p>';return}
   // the log and the trash only grow: take the newest, not whichever 1000 Firestore returns first
   const NEWEST={activity:600,trash:300}, q=c=>NEWEST[c]?db.collection(c).orderBy('at','desc').limit(NEWEST[c]):db.collection(c).limit(1000);
-  COLS.forEach(c=>q(c).onSnapshot(s=>{if(s.metadata&&s.metadata.fromCache===false)syncMark();S[c]=s.docs.map(d=>({...d.data(),_id:d.id}));if(c==='participants'){pdMigrate();pdOverlay();dobSync()}loaded.add(c);later()},
+  COLS.forEach(c=>q(c).onSnapshot(s=>{if(s.metadata&&s.metadata.fromCache===false)syncMark();S[c]=s.docs.map(d=>({...d.data(),_id:d.id}));if(c==='participants'){pdMigrate();pdOverlay();dobSync();rosterPublish()}loaded.add(c);later()},
     e=>{diagE('listen '+c,e);document.getElementById('banner').innerHTML=`<p class="banner">${e&&e.code==='permission-denied'?'אין גישה לנתונים. ודאו שעדכנתם את חוקי Firebase (ההוראות אצל Claude).':'החיבור נותק. רעננו את הדף.'}</p>`}));
   pdSub();
   if(!ME)setTimeout(()=>{if(!ME&&ROLE==='org'&&!document.getElementById('scrim'))pickMe()},1200);

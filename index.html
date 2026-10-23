@@ -4993,7 +4993,21 @@ const LB_HIDDEN = new Set(['שלומי זינגר','טסט טסט'].map(n=>soloN
 // שמות בדיקה (טסט / test) לא נכנסים לטבלאות
 const LB_JUNK = /טסט|test/i;
 const lbShown = d => !LB_HIDDEN.has(d.id) && !LB_JUNK.test(String((d.name!==undefined ? d.name : (d.data && d.data().name)) || d.id || ''));
-function rankedDocs(snap){ return snap.docs.map(d=>({id:d.id, ...d.data()})).filter(r=>(r.best||0)>0 && lbShown(r)).sort((a,b)=>(b.best||0)-(a.best||0) || (a.bestMs??1e12)-(b.bestMs??1e12)); }
+// טבלאות השיאים מציגות רק את מי שברשימת המסע (לפי השם). מי שלא ברשימה יכול לשחק ורואה את עצמו בטבלה —
+// אבל אחרים לא רואים אותו. הרשימה מגיעה מאפליקציית המסע כ"טביעות אצבע" של השמות בלבד (rooms/trip_roster)
+const ROSTER_SALT = 'trivia-roster-v1|';
+function rosterHash(s){ let h1=0xdeadbeef, h2=0x41c6ce57; s = ROSTER_SALT + s;
+  for(let i=0;i<s.length;i++){ const c=s.charCodeAt(i); h1=Math.imul(h1^c,2654435761); h2=Math.imul(h2^c,1597334677); }
+  h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909); h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);
+  return (h2>>>0).toString(36)+(h1>>>0).toString(36); }
+const rosterNorm = s=>String(s||'').replace(/[\u0591-\u05C7]/g,'').replace(/["'׳״`’]/g,'').replace(/^הרב(נית)?\s+/,'').replace(/\s+/g,' ').trim();
+const rosterSkel = s=>rosterNorm(s).replace(/[יו]/g,'');
+// הצורות שבהן שם של שחקן יכול להתאים לשם ברשימה: מלא, בלי י/ו, ושם פרטי+משפחה בכל סדר
+function rosterVariants(name){ const out=[]; [rosterNorm(name), rosterSkel(name)].forEach((n,k)=>{ if(!n) return; out.push('f'+k+'|'+n); const t=n.split(' '); if(t.length===2) out.push('p'+k+'|'+t.slice().sort().join(' ')); }); return out; }
+let TRIP_ROSTER = null, rosterP = null;
+function rosterLoad(){ if(!rosterP) rosterP = (async()=>{ try{ const d = await db.collection('rooms').doc('trip_roster').get(); const h = d.exists && d.data().h; TRIP_ROSTER = Array.isArray(h) && h.length >= 5 ? new Set(h) : null; }catch(e){ TRIP_ROSTER = null; } })(); return rosterP; }
+function onTrip(name){ return !TRIP_ROSTER || rosterVariants(name).some(v=>TRIP_ROSTER.has(rosterHash(v))); }
+function rankedDocs(snap, meId){ return snap.docs.map(d=>({id:d.id, ...d.data()})).filter(r=>(r.best||0)>0 && lbShown(r) && (r.id===meId || onTrip(r.name||r.id))).sort((a,b)=>(b.best||0)-(a.best||0) || (a.bestMs??1e12)-(b.bestMs??1e12)); }
 // הודעה לקורא מסך (תוצאת תשובה וכו') דרך אזור אחד קבוע בדף
 function announce(msg){ const el=$('sr-live'); if(!el) return; el.textContent=''; setTimeout(()=>{ el.textContent=msg; }, 60); }
 function rankLabel(i){ return i<3 ? ['🥇','🥈','🥉'][i] : String(i+1); }
@@ -5242,11 +5256,21 @@ function duelQuestion(v, i){
   const c = order.indexOf(q.c), wrong = order.map((_,k)=>k).filter(k=>k!==c);
   return {topic:q.topic, type:'trivia', q:q.q, img:q.img, crop:q.crop, a:order.map(k=>q.a[k]), c, bait: wrong[Math.floor(r()*wrong.length)]};
 }
-function duelPickQs(exclude, history){
-  const keys = SOLO_QUESTIONS.map(qKey), ex = exclude || new Set();
-  let avail = SOLO_QUESTIONS.map((_,i)=>i).filter(i=>!ex.has(keys[i]));
-  if(avail.length < DUEL_Q_COUNT*3) avail = SOLO_QUESTIONS.map((_,i)=>i); // כל המאגר נוצל — מתחילים מחדש
+// שאלות לראש בראש: לא מה ששני השחקנים כבר ראו (לפי השם — גם במשחק העצמאי וגם בראש בראש קודמים).
+// כשהמאגר נגמר — עדיין לא חוזרים על מה שהופיע להם ב-15 המשחקים האחרונים
+function duelPickQs(exclude, history, recent){
+  const Q = SOLO_QUESTIONS, keys = Q.map(qKey), idxOf = new Map(keys.map((k,i)=>[k,i]));
+  const blockC = new Set((recent||[]).map(k=>idxOf.get(k)).filter(i=>i!==undefined).map(i=>qConcept(Q[i])).filter(Boolean));
+  const pick = set => Q.map((_,i)=>i).filter(i=>!set.has(keys[i]) && !blockC.has(qConcept(Q[i])));
+  let avail = pick(exclude || new Set());
+  if(avail.length < DUEL_Q_COUNT*3) avail = pick(new Set(recent||[]));
+  if(avail.length < DUEL_Q_COUNT*3) avail = Q.map((_,i)=>i);
   return composeRound(avail, DUEL_Q_COUNT, history);
+}
+// מוסיף שאלות להיסטוריה של שחקן לפי השם (בענן), כדי שלא יחזרו אצלו — גם בלי פרופיל עצמאי במכשיר
+async function seenAddFor(name, keys){
+  if(!name) return; const id = 'solo_' + soloNameKey(name);
+  const remote = await seenLoad(id); seenSave(id, mergeRecent(remote, keys));
 }
 function duelMe(){
   let id=null; try{ id=sessionStorage.getItem('trivia_duel_pid'); }catch(e){}
@@ -5411,8 +5435,12 @@ async function dlobAccept(iv){
   let code=null;
   // שאלות שכבר הופיעו בכל משחקי ראש בראש, ושאלות שהשחקן הזה כבר ראה — לא נבחרות שוב
   const duelSeen = await seenLoad('duel');
-  const exclude = new Set(duelSeen.concat(localSeen()));
-  const qs = duelPickQs(exclude, duelSeen.concat(localSeen()));
+  const fromName = ((dlob.v && (dlob.v.players||{})[iv.from]) || {}).name || iv.fromName || '';
+  const [hisSeen, mySeen] = await Promise.all([seenLoad('solo_' + soloNameKey(fromName)), seenLoad('solo_' + soloNameKey(me.name||''))]);
+  const personal = mergeRecent(mergeRecent(hisSeen, mySeen), localSeen());
+  const W = SOLO_COUNT*SOLO_NO_REPEAT_ROUNDS;
+  const recent = hisSeen.slice(-W).concat(mySeen.slice(-W), localSeen().slice(-W));
+  const qs = duelPickQs(new Set(duelSeen.concat(personal)), mergeRecent(duelSeen, personal), recent);
   try{
     code = await db.runTransaction(async tx=>{
       const d=await tx.get(dlobRef()); if(!d.exists) return null;
@@ -5439,7 +5467,7 @@ function duelAttach(code, slot, me){
   duel.gone = setInterval(duelCheckOpponent, 2000);
   duel.unsub = duelRef().onSnapshot(snap=>{ if(!duel || !snap.exists) return; duel.v = snap.data();
     const ohb = duel.v['hb'+(3-duel.slot)]; if(ohb!==duel.opHb){ duel.opHb = ohb; duel.opSeenAt = Date.now(); } // לפי השעון של המכשיר הזה בלבד
-    if(!duel.preloaded && duel.v.qs){ duel.preloaded=true; preloadImgs(duel.v.qs.map(i=>SOLO_QUESTIONS[i])); soloMarkSeen(duel.v.qs.map(i=>qKey(SOLO_QUESTIONS[i]))); } duelRender(); });
+    if(!duel.preloaded && duel.v.qs){ duel.preloaded=true; preloadImgs(duel.v.qs.map(i=>SOLO_QUESTIONS[i])); const ks = duel.v.qs.map(i=>qKey(SOLO_QUESTIONS[i])); soloMarkSeen(ks); const mn = duelNames(duel.v).me; if(mn && mn.name && !(soloProfile() && soloProfile().id===soloNameKey(mn.name))) seenAddFor(mn.name, ks).catch(()=>{}); } duelRender(); });
 }
 function duelStop(){
   if(!duel) return;
@@ -5490,11 +5518,12 @@ async function duelSaveAndShowBoard(name, score, st, res){
   }catch(e){}
   let top=[], mine=null, rank=null;
   try{
+    await rosterLoad();
     const snap = await duelPlayersRef().orderBy('best','desc').limit(300).get();
-    top = rankedDocs(snap);
+    top = rankedDocs(snap, id);
     const idx = top.findIndex(r=>r.id===id);
     if(idx>=0){ rank = idx+1; mine = top[idx]; }
-    else { const md = await ref.get(); mine = md.exists ? md.data() : null; if(mine && mine.best>0){ const hi = await duelPlayersRef().where('best','>',mine.best).get(); rank = hi.docs.filter(lbShown).length+1; } }
+    else { const md = await ref.get(); mine = md.exists ? md.data() : null; if(mine && mine.best>0){ const hi = await duelPlayersRef().where('best','>',mine.best).get(); rank = hi.docs.filter(x=>lbShown(x) && onTrip(x.data().name||x.id)).length+1; } }
   }catch(e){}
   const box = $('duel-lb'); if(!box || duel!==d0 || !top.length) return;
   box.innerHTML = lbBoxHtml('🏆 טבלת השיאים — ראש בראש', top.map((r,k)=>({rank:k+1, name:r.name, score:r.best, sub:soloRowSub(r), me:r.id===id})));
@@ -6590,16 +6619,18 @@ function soloRowSub(r){ return r && r.bestCorrect!=null ? statSub(r.bestCorrect,
 function soloPlayersRef(){ return db.collection(SOLO_SEASON === 1 ? 'solo_players' : 'solo_players_s' + SOLO_SEASON); }
 async function soloFetchTop(){
   try{
-    const snap = await soloPlayersRef().orderBy('best','desc').limit(SOLO_TOP_N).get();
-    soloTop = rankedDocs(snap);
+    await rosterLoad();
+    const me = soloProfile(), mine = soloBest();
+    const snap = await soloPlayersRef().orderBy('best','desc').limit(300).get();
+    const all = rankedDocs(snap, me && me.id);
+    soloTop = all.slice(0, SOLO_TOP_N);
     soloTopLoaded = true;
-    // המקום שלי בטבלה הכללית = כמה שחקנים יש עם שיא גבוה משלי + 1
-    const mine = soloBest(), me = soloProfile();
+    // המקום שלי — בין משתתפי המסע (ואני)
     soloMyRank = null;
     if(me && mine>0){
-      const inTop = soloTop.findIndex(r=>r.id===me.id);
-      if(inTop>=0) soloMyRank = inTop+1;
-      else { const higher = await soloPlayersRef().where('best','>',mine).get(); soloMyRank = higher.docs.filter(lbShown).length + 1; try{ const d = await soloPlayersRef().doc(me.id).get(); soloMine = d.exists ? d.data() : null; }catch(e){} }
+      const idx = all.findIndex(r=>r.id===me.id);
+      if(idx>=0){ soloMyRank = idx+1; soloMine = all[idx]; }
+      else { soloMyRank = all.filter(r=>(r.best||0)>mine).length + 1; try{ const d = await soloPlayersRef().doc(me.id).get(); soloMine = d.exists ? d.data() : null; }catch(e){} }
     }
   }catch(e){}
   return soloTop;
@@ -7059,9 +7090,9 @@ function soloEnd(){
   $('s-again').addEventListener('click', soloStart);
   $('s-home').addEventListener('click', soloQuit);
   $('s-review').addEventListener('click', ()=>openRoundReview(s));
-  (bad.length ? Promise.resolve() : soloSaveResult(s.score, {bestCorrect:s.correct, bestQ:s.qs.length, bestMs:s.totalMs})).then(()=>soloPlayersRef().orderBy('best','desc').limit(300).get()).then(snap=>{
+  (bad.length ? Promise.resolve() : soloSaveResult(s.score, {bestCorrect:s.correct, bestQ:s.qs.length, bestMs:s.totalMs})).then(rosterLoad).then(()=>soloPlayersRef().orderBy('best','desc').limit(300).get()).then(snap=>{
     // שאילתה אחת לטבלה המלאה — ממנה גם עשרת הראשונים והמקום שלי למסך הבית (במקום שאילתה נוספת)
-    const all = rankedDocs(snap), idx = p ? all.findIndex(r=>r.id===p.id) : -1;
+    const all = rankedDocs(snap, p && p.id), idx = p ? all.findIndex(r=>r.id===p.id) : -1;
     soloTop = all.slice(0, SOLO_TOP_N); soloTopLoaded = true;
     if(idx>=0){ soloMyRank = idx+1; soloMine = all[idx]; }
     const box=$('s-end-lb'); if(!box || soloState!==s) return;
