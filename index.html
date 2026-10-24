@@ -204,7 +204,7 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
 .bar-row.win .bar-label{color:#8FF5B6;font-weight:900;font-size:14.5px;}
 .bar-row.win .bar-fill{background:#3DBE72;}
 .end-btn{background:transparent;border:1.5px solid rgba(228,87,46,.7);color:#FF9C80;border-radius:12px;padding:11px;font-family:inherit;font-weight:700;font-size:13.5px;cursor:pointer;width:100%;margin-top:10px;}
-.skip-q{display:flex;align-items:center;justify-content:center;gap:8px;margin:12px auto 0;min-height:44px;padding:9px 18px;border-radius:999px;border:1.5px dashed rgba(233,206,124,.55);background:rgba(233,206,124,.07);color:var(--ink);font-family:inherit;font-size:14.5px;font-weight:700;cursor:pointer;}
+.skip-q{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 auto 10px;min-height:40px;padding:7px 18px;border-radius:999px;border:1.5px dashed rgba(233,206,124,.55);background:rgba(233,206,124,.07);color:var(--ink);font-family:inherit;font-size:14.5px;font-weight:700;cursor:pointer;}
 .skip-q small{font-weight:500;color:var(--ink-dim);}
 .skip-q:disabled{opacity:.35;cursor:default;}
 .skip-btn{background:transparent;border:1px solid #3A404C;color:var(--ink-dim);border-radius:12px;padding:9px;font-family:inherit;font-size:12.5px;cursor:pointer;width:100%;margin-top:10px;}
@@ -4814,7 +4814,25 @@ let hostAlertedFor=null, playerRoomUnsub=null, playerListUnsub=null;
 
 function $(id){return document.getElementById(id);}
 const TRIP_LOCK=(()=>{try{const q=new URLSearchParams(location.search);if(q.get('lock')==='1')sessionStorage.setItem('tripLock','1');return sessionStorage.getItem('tripLock')==='1'&&Date.now()<Date.parse('2026-11-19T00:00:00+02:00')}catch(e){return false}})();
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active'); fxOnScreen(id);}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active'); fxOnScreen(id); if(id==='s-landing') appUpdateMaybe();}
+// ---- עדכון אוטומטי: גם אפליקציה שפתוחה כבר שעות מקבלת את הגרסה החדשה ----
+// בכל עדכון מעלים את APP_BUILD ואת version.json לאותו ערך. הטעינה מחדש קורית רק במסך הפתיחה — אף פעם באמצע משחק
+const APP_BUILD = '2026-10-24-2';
+let appNewBuild = null;
+function appUpdateCheck(){
+  if(/^(localhost|127\.)/.test(location.hostname) && !window.__testUpdate) return;
+  fetch('version.json?t=' + Date.now(), {cache:'no-store'}).then(r=>r.ok ? r.json() : null).then(j=>{
+    if(j && j.v && j.v !== APP_BUILD){ appNewBuild = j.v; appUpdateMaybe(); }
+  }).catch(()=>{});
+}
+function appUpdateMaybe(){
+  if(!appNewBuild) return;
+  const land = document.getElementById('s-landing'); if(!land || !land.classList.contains('active')) return;
+  try{ if(sessionStorage.getItem('appReloadFor') === appNewBuild) return; sessionStorage.setItem('appReloadFor', appNewBuild); }catch(e){}
+  const u = new URL(location.href); u.searchParams.set('v', appNewBuild); location.replace(u.href); // כתובת חדשה = הדף מהשרת, לא מהזיכרון
+}
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) appUpdateCheck(); });
+setTimeout(appUpdateCheck, 8000); setInterval(appUpdateCheck, 5*60*1000);
 function genId(){return Math.random().toString(36).slice(2,10);}
 // מנקה טקסט לפני שמכניסים אותו ל-HTML — כולל מירכאות, כי שמות נכנסים גם לתוך מאפיינים (title="...")
 const ESC_MAP = {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'};
@@ -7026,9 +7044,9 @@ function soloShowQuestion(){
     ${progressHtml(s.i, s.qs.length)}
     ${qCardHtml(s.i+1, s.qs.length, q)}
     ${clockHtml('s')}
+    ${(s.skips||0) < SOLO_SKIPS ? `<button class="skip-q" id="s-skipq">🔄 החליפו שאלה <small>(נשארו ${SOLO_SKIPS-(s.skips||0)})</small></button>` : ''}
     <div class="answers" id="s-answers">${q.a.map((t,i)=>`<button class="answer-btn" data-i="${i}"><span class="opt-letter">${letterFor(i)}</span><span class="opt-text">${esc(t)}</span></button>`).join('')}</div>
     <div class="center-note" id="s-note">⚡ ענו מהר — כל שנייה שווה נקודה!</div>
-    ${(s.skips||0) < SOLO_SKIPS ? `<button class="skip-q" id="s-skipq">🔄 החליפו שאלה <small>(נשארו ${SOLO_SKIPS-(s.skips||0)})</small></button>` : ''}
     <button class="skip-btn" id="s-quit">🏠 יציאה למסך הבית</button>`;
   body.querySelectorAll('.answer-btn').forEach(b=>b.addEventListener('click', ev=>{ if(!acTrusted(ev, soloState)) return; if(soloState && !soloState.locked) pressFeedback(b); soloReveal(Number(b.dataset.i)); }));
   const sk = $('s-skipq'); if(sk) sk.addEventListener('click', ev=>{ if(!acTrusted(ev, soloState)) return; soloSkipQ(); });

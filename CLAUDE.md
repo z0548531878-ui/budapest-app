@@ -10,3 +10,6 @@ Save tokens. Every session, every reply:
 - Lists over paragraphs. Show only changed code, not whole files.
 - Reply in the user's language (Hebrew if they write Hebrew).
 - If the `caveman` skill/plugin is available, use it.
+
+## Releasing the game
+- Every change to `index.html` that users should get: bump `APP_BUILD` in `index.html` and `version.json` to the same new value. Open apps reload on the home screen when they differ.
