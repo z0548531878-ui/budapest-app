@@ -21,3 +21,10 @@ test('F14-H1 a newer version reloads the home screen once', async ({ browser, db
   await page.waitForTimeout(1500);
   expect(page.url()).toContain('v=9999-new'); // no reload loop
 });
+
+test('F14-H2 the installed app loads the game at the current version', async ({ browser, db }) => {
+  const v = JSON.parse(readFileSync(join(__dirname, '..', 'version.json'), 'utf8')).v;
+  const { page } = await openPlayer(browser, db, { path: '/play/index.html' });
+  await expect.poll(() => page.locator('#game').getAttribute('src')).toContain('v=' + v);
+  await expect(page.frameLocator('#game').getByRole('button', { name: /משחק עצמאי/ })).toBeVisible();
+});

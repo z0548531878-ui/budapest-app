@@ -61,7 +61,10 @@
 (function(){
   // המשחק נמצא בדף הראשי של האתר (תיקייה אחת למעלה). ?app=1 אומר לו לא לחזור לכאן.
   var f=document.getElementById('game'), q=location.search?location.search+'&app=1':'?app=1';
-  f.src='../'+q+location.hash;
+  // תמיד הגרסה האחרונה: שואלים את השרת מה הגרסה (קובץ זעיר, בלי זיכרון) ומוסיפים אותה לכתובת — כתובת חדשה נטענת מהשרת
+  var go=function(v){ if(go.done) return; go.done=1; f.src='../'+q+(v?'&v='+encodeURIComponent(v):'')+location.hash; };
+  try{ fetch('../version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){ return r.ok?r.json():null; }).then(function(j){ go(j&&j.v); }).catch(function(){ go(''); }); }catch(e){ go(''); }
+  setTimeout(function(){ go(String(Date.now()).slice(0,-5)); }, 2500); // אין תשובה תוך 2.5 שנ' — עדיין לא מהזיכרון הישן
 
   var ua=navigator.userAgent, ios=/iPhone|iPad|iPod/i.test(ua) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1), android=/Android/i.test(ua);
   var inApp=/FBAN|FBAV|FB_IAB|Instagram|WhatsApp|Telegram|Line\/|MicroMessenger|Snapchat|TikTok|; wv\)/i.test(ua) || (ios && !/Safari\//.test(ua));
