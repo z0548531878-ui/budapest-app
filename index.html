@@ -4817,7 +4817,7 @@ const TRIP_LOCK=(()=>{try{const q=new URLSearchParams(location.search);if(q.get(
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active'); fxOnScreen(id); if(id==='s-landing') appUpdateMaybe();}
 // ---- עדכון אוטומטי: גם אפליקציה שפתוחה כבר שעות מקבלת את הגרסה החדשה ----
 // בכל עדכון מעלים את APP_BUILD ואת version.json לאותו ערך. הטעינה מחדש קורית רק במסך הפתיחה — אף פעם באמצע משחק
-const APP_BUILD = '2026-10-25-1';
+const APP_BUILD = '2026-10-25-2';
 let appNewBuild = null;
 function appUpdateCheck(){
   if(/^(localhost|127\.)/.test(location.hostname) && !window.__testUpdate) return;
@@ -5032,7 +5032,19 @@ function rosterVariants(name){ const out=[]; [rosterNorm(name), rosterSkel(name)
 let TRIP_ROSTER = null, rosterP = null;
 function rosterLoad(){ if(!rosterP) rosterP = (async()=>{ try{ const d = await db.collection('rooms').doc('trip_roster').get(); const h = d.exists && d.data().h; TRIP_ROSTER = Array.isArray(h) && h.length >= 5 ? new Set(h) : null; }catch(e){ TRIP_ROSTER = null; } })(); return rosterP; }
 function onTrip(name){ return !TRIP_ROSTER || rosterVariants(name).some(v=>TRIP_ROSTER.has(rosterHash(v))); }
-function rankedDocs(snap, meId){ return snap.docs.map(d=>({id:d.id, ...d.data()})).filter(r=>(r.best||0)>0 && lbShown(r) && (r.id===meId || onTrip(r.name||r.id))).sort((a,b)=>(b.best||0)-(a.best||0) || (a.bestMs??1e12)-(b.bestMs??1e12)); }
+// תיקוני שיאים שהמארגנים ביקשו (השרת לא מאפשר להוריד שיא, אז התיקון נעשה כאן בתצוגה).
+// התיקון חל רק על השיא שנקבע לפני until. שיא אמיתי חדש אחרי זה — נספר כרגיל.
+// שיא בין הערך המתוקן לערך הישן שבשרת נשמר בשדה adj (כי בשדה best השרת לא מקבל מספר נמוך יותר)
+const BOARD_FIX = {
+  'מוישי ויינר': {until: Date.parse('2026-10-24T22:40:00Z'), best:724, bestCorrect:26, bestQ:30, bestMs:83000},
+};
+function boardFix(r){
+  const f = r && BOARD_FIX[r.id]; if(!f || (r.bestAt||0) > f.until) return r;
+  const o = {...r, best:f.best, bestCorrect:f.bestCorrect, bestQ:f.bestQ, bestMs:f.bestMs};
+  const a = r.adj; if(a && (a.best > o.best || (a.best===o.best && a.bestMs < o.bestMs))) Object.assign(o, a);
+  return o;
+}
+function rankedDocs(snap, meId){ return snap.docs.map(d=>boardFix({id:d.id, ...d.data()})).filter(r=>(r.best||0)>0 && lbShown(r) && (r.id===meId || onTrip(r.name||r.id))).sort((a,b)=>(b.best||0)-(a.best||0) || (a.bestMs??1e12)-(b.bestMs??1e12)); }
 // הודעה לקורא מסך (תוצאת תשובה וכו') דרך אזור אחד קבוע בדף
 function announce(msg){ const el=$('sr-live'); if(!el) return; el.textContent=''; setTimeout(()=>{ el.textContent=msg; }, 60); }
 function rankLabel(i){ return i<3 ? ['🥇','🥈','🥉'][i] : String(i+1); }
@@ -6665,7 +6677,8 @@ async function soloSyncMine(){
   const p = soloProfile(); if(!p) return;
   try{
     const d = await soloPlayersRef().doc(p.id).get();
-    if(d.exists){ const b = d.data().best||0; if(b > soloBest()) localStorage.setItem('trivia_solo_best', String(b)); }
+    if(d.exists){ const r = d.data(), fx = boardFix({id:p.id, ...r}), b = fx.best||0;
+      if(b > soloBest() || (fx!==r && BOARD_FIX[p.id] && !(r.bestAt > BOARD_FIX[p.id].until))) localStorage.setItem('trivia_solo_best', String(b)); }
   }catch(e){}
 }
 function globalBest(){ return soloTop.length ? {best:soloTop[0].best||0, name:soloTop[0].name||'', id:soloTop[0].id} : null; }
@@ -6796,13 +6809,15 @@ async function soloSaveResult(score, st){
     const ref = soloPlayersRef().doc(p.id);
     await db.runTransaction(async tx=>{
       const d = await tx.get(ref);
-      const cur = d.exists ? (d.data().best||0) : 0, curMs = d.exists ? d.data().bestMs : null;
+      const raw = d.exists ? d.data() : null, fx = raw ? boardFix({id:p.id, ...raw}) : null;
+      const cur = fx ? (fx.best||0) : 0, curMs = fx ? fx.bestMs : null;
       // שיא חדש — או אותו ניקוד אבל מהר יותר — שומרים גם כמה נכונות ובכמה זמן
       const better = score>cur || (score>0 && score===cur && (curMs==null || (st && st.bestMs<curMs)));
       if(d.exists){
         const upd = {name:p.name, games:FV.increment(1), lastPlayedAt:Date.now()};
         // השיא הקודם נשמר בשדה prev — כדי שאפשר יהיה לבטל שיא אחד אחורה (ב-Firebase: להעתיק את prev חזרה)
-        if(better){ const o = d.data(); if((o.best||0) > 0) upd.prev = {best:o.best||0, bestCorrect:o.bestCorrect??null, bestQ:o.bestQ??null, bestMs:o.bestMs??null, bestAt:o.bestAt??null};
+        if(better && fx!==null && fx.best!==(raw.best||0) && score <= (raw.best||0)){ upd.adj = {best:score, ...(st||{}), bestAt:Date.now()}; }
+        else if(better){ const o = fx; if((o.best||0) > 0) upd.prev = {best:o.best||0, bestCorrect:o.bestCorrect??null, bestQ:o.bestQ??null, bestMs:o.bestMs??null, bestAt:o.bestAt??null};
           upd.best=score; upd.bestAt=Date.now(); Object.assign(upd, st||{}); }
         tx.update(ref, upd);
       } else {
