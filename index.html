@@ -4817,7 +4817,7 @@ const TRIP_LOCK=(()=>{try{const q=new URLSearchParams(location.search);if(q.get(
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active'); fxOnScreen(id); if(id==='s-landing') appUpdateMaybe();}
 // ---- עדכון אוטומטי: גם אפליקציה שפתוחה כבר שעות מקבלת את הגרסה החדשה ----
 // בכל עדכון מעלים את APP_BUILD ואת version.json לאותו ערך. הטעינה מחדש קורית רק במסך הפתיחה — אף פעם באמצע משחק
-const APP_BUILD = '2026-10-25-2';
+const APP_BUILD = '2026-10-25-3';
 let appNewBuild = null;
 function appUpdateCheck(){
   if(/^(localhost|127\.)/.test(location.hostname) && !window.__testUpdate) return;
@@ -5036,7 +5036,7 @@ function onTrip(name){ return !TRIP_ROSTER || rosterVariants(name).some(v=>TRIP_
 // התיקון חל רק על השיא שנקבע לפני until. שיא אמיתי חדש אחרי זה — נספר כרגיל.
 // שיא בין הערך המתוקן לערך הישן שבשרת נשמר בשדה adj (כי בשדה best השרת לא מקבל מספר נמוך יותר)
 const BOARD_FIX = {
-  'מוישי ויינר': {until: Date.parse('2026-10-24T22:40:00Z'), best:724, bestCorrect:26, bestQ:30, bestMs:83000},
+  'משה וינר': {until: Date.parse('2026-10-24T23:10:00Z'), best:724, bestCorrect:26, bestQ:30, bestMs:83000}, // מוישי ויינר
 };
 function boardFix(r){
   const f = r && BOARD_FIX[r.id]; if(!f || (r.bestAt||0) > f.until) return r;
