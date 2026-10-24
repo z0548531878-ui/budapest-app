@@ -1,0 +1,28 @@
+# Reads (public) leaderboard rows to check a name — read only, no secrets
+name: Board peek
+on:
+  workflow_dispatch:
+    inputs:
+      q: { description: 'part of a name', required: true }
+permissions: { contents: read }
+jobs:
+  peek:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          for col in solo_players_s7 duel_players_s2; do
+            echo "== $col"
+            curl -s "https://firestore.googleapis.com/v1/projects/budapest-983e4/databases/(default)/documents/$col?pageSize=300" > rows.json
+            python3 - "$col" <<'PY'
+          import json,sys,os
+          q=os.environ['Q']; d=json.load(open('rows.json'))
+          rows=[]
+          for doc in d.get('documents',[]):
+              f=doc['fields']; v=lambda k:(f.get(k,{}).get('integerValue') or f.get(k,{}).get('stringValue') or f.get(k,{}).get('doubleValue'))
+              rows.append((int(v('best') or 0), doc['name'].split('/')[-1], v('name'), v('bestCorrect'), v('bestMs'), v('bestAt'), 'adj' in f))
+          rows.sort(reverse=True)
+          for i,r in enumerate(rows):
+              if q in (r[1] or '') or q in (r[2] or '') or i<8: print(i+1, r)
+          PY
+          done
+        env: { Q: '${{ inputs.q }}' }
