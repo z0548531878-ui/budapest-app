@@ -22,7 +22,7 @@ jobs:
               rows.append((int(v('best') or 0), doc['name'].split('/')[-1], v('name'), v('bestCorrect'), v('bestMs'), v('bestAt'), 'adj' in f))
           rows.sort(reverse=True)
           for i,r in enumerate(rows):
-              if q in (r[1] or '') or q in (r[2] or '') or i<8: print(i+1, r)
+              if q in (r[1] or '') or q in (r[2] or '') or i<8: print('::notice::'+sys.argv[1]+' '+str(i+1)+' '+json.dumps(r,ensure_ascii=False))
           PY
           done
         env: { Q: '${{ inputs.q }}' }
