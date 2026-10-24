@@ -204,6 +204,9 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
 .bar-row.win .bar-label{color:#8FF5B6;font-weight:900;font-size:14.5px;}
 .bar-row.win .bar-fill{background:#3DBE72;}
 .end-btn{background:transparent;border:1.5px solid rgba(228,87,46,.7);color:#FF9C80;border-radius:12px;padding:11px;font-family:inherit;font-weight:700;font-size:13.5px;cursor:pointer;width:100%;margin-top:10px;}
+.skip-q{display:flex;align-items:center;justify-content:center;gap:8px;margin:12px auto 0;min-height:44px;padding:9px 18px;border-radius:999px;border:1.5px dashed rgba(233,206,124,.55);background:rgba(233,206,124,.07);color:var(--ink);font-family:inherit;font-size:14.5px;font-weight:700;cursor:pointer;}
+.skip-q small{font-weight:500;color:var(--ink-dim);}
+.skip-q:disabled{opacity:.35;cursor:default;}
 .skip-btn{background:transparent;border:1px solid #3A404C;color:var(--ink-dim);border-radius:12px;padding:9px;font-family:inherit;font-size:12.5px;cursor:pointer;width:100%;margin-top:10px;}
 .topic-icon{font-size:72px;text-align:center;margin-top:30px;animation:correctPop .6s cubic-bezier(.2,1.4,.4,1) both;}
 .board-row .rank{width:30px;text-align:center;}
@@ -5686,9 +5689,10 @@ function modeRules(mode){
     solo: {title:'משחק עצמאי 🎯', items:[
       ['📝','נרשמים פעם אחת','עם שם ושם משפחה — ומהפעם הבאה נכנסים ישר.'],
       ['❓',`${SOLO_COUNT} שאלות בסבב`,`אקראיות מתוך ${ROUND_POOL_SIZE.toLocaleString('en-US')}, מכל הנושאים, ובכל סבב שאלות אחרות.`],
-      ['⚡',`${SOLO_QUESTION_MS/1000} שניות לשאלה`,'עונים פעם אחת — אי אפשר להחליף.'],
+      ['⚡',`${SOLO_QUESTION_MS/1000} שניות לשאלה`,'עונים פעם אחת — אי אפשר לשנות תשובה.'],
       ['🏆','ניקוד', soloPts + '. תשובות נכונות ברצף? 🔥 תג רצף.'],
       ['👑','שיאים','השיא האישי שלכם מול שיא המשחק וטבלת השיאים של כולם.'],
+      ['🔄','החלפת שאלה','פעמיים בכל סבב אפשר להחליף שאלה שלא בא לכם עליה — בלי לאבד נקודות.'],
       ['🚫','משחק הוגן','יציאה מהמשחק או העתקת שאלה באמצע — השאלה לא נספרת. סבב עם עזרה של AI או של תוכנה לא נכנס לטבלת השיאים.']
     ]}
   }[mode];
@@ -7024,15 +7028,30 @@ function soloShowQuestion(){
     ${clockHtml('s')}
     <div class="answers" id="s-answers">${q.a.map((t,i)=>`<button class="answer-btn" data-i="${i}"><span class="opt-letter">${letterFor(i)}</span><span class="opt-text">${esc(t)}</span></button>`).join('')}</div>
     <div class="center-note" id="s-note">⚡ ענו מהר — כל שנייה שווה נקודה!</div>
+    ${(s.skips||0) < SOLO_SKIPS ? `<button class="skip-q" id="s-skipq">🔄 החליפו שאלה <small>(נשארו ${SOLO_SKIPS-(s.skips||0)})</small></button>` : ''}
     <button class="skip-btn" id="s-quit">🏠 יציאה למסך הבית</button>`;
   body.querySelectorAll('.answer-btn').forEach(b=>b.addEventListener('click', ev=>{ if(!acTrusted(ev, soloState)) return; if(soloState && !soloState.locked) pressFeedback(b); soloReveal(Number(b.dataset.i)); }));
+  const sk = $('s-skipq'); if(sk) sk.addEventListener('click', ev=>{ if(!acTrusted(ev, soloState)) return; soloSkipQ(); });
   $('s-quit').addEventListener('click', ()=>{ const st=soloState; if(st && (st.i>0 || st.locked) && !acConfirm('לצאת מהסבב? הניקוד של הסבב הזה לא יישמר.')) return; soloQuit(); });
   mountQTimer(s.startedAt, 's-timer-ring', 's-timer-num', 's-clock-wrap', ()=>soloReveal(null));
+}
+// החלפת שאלה במשחק העצמאי: פעמיים בכל סבב, בלי לאבד נקודות. השאלה החדשה מאותו נושא ולא כזו שכבר הופיעה
+const SOLO_SKIPS = 2;
+function soloSkipQ(){
+  const s = soloState; if(!s || s.locked || (s.skips||0) >= SOLO_SKIPS) return;
+  const before = s.qs[s.i];
+  soloSwapQ(s, s.i); if(s.qs[s.i]===before) return; // אין שאלה חלופית
+  s.skips = (s.skips||0) + 1; s.acQ = null;
+  clearQTimer(); try{ soloMarkSeen([qKey(s.qs[s.i])]); }catch(e){}
+  preloadImgs([s.qs[s.i]]);
+  soloShowQuestion();
+  announce('השאלה הוחלפה');
 }
 function soloReveal(choice){
   const s = soloState; if(!s || s.locked) return;
   if(choice!==null && Date.now() < s.startedAt) return; // עדיין בשנייה של הקריאה
   s.locked = true; clearQTimer();
+  const skb = $('s-skipq'); if(skb) skb.disabled = true;
   const q = s.qs[s.i];
   const elapsed = Date.now()-s.startedAt;
   const right = choice===q.c;
