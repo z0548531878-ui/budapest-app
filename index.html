@@ -4817,7 +4817,7 @@ const TRIP_LOCK=(()=>{try{const q=new URLSearchParams(location.search);if(q.get(
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active'); fxOnScreen(id); if(id==='s-landing') appUpdateMaybe();}
 // ---- עדכון אוטומטי: גם אפליקציה שפתוחה כבר שעות מקבלת את הגרסה החדשה ----
 // בכל עדכון מעלים את APP_BUILD ואת version.json לאותו ערך. הטעינה מחדש קורית רק במסך הפתיחה — אף פעם באמצע משחק
-const APP_BUILD = '2026-10-24-2';
+const APP_BUILD = '2026-10-25-1';
 let appNewBuild = null;
 function appUpdateCheck(){
   if(/^(localhost|127\.)/.test(location.hostname) && !window.__testUpdate) return;
@@ -6801,7 +6801,9 @@ async function soloSaveResult(score, st){
       const better = score>cur || (score>0 && score===cur && (curMs==null || (st && st.bestMs<curMs)));
       if(d.exists){
         const upd = {name:p.name, games:FV.increment(1), lastPlayedAt:Date.now()};
-        if(better){ upd.best=score; upd.bestAt=Date.now(); Object.assign(upd, st||{}); }
+        // השיא הקודם נשמר בשדה prev — כדי שאפשר יהיה לבטל שיא אחד אחורה (ב-Firebase: להעתיק את prev חזרה)
+        if(better){ const o = d.data(); if((o.best||0) > 0) upd.prev = {best:o.best||0, bestCorrect:o.bestCorrect??null, bestQ:o.bestQ??null, bestMs:o.bestMs??null, bestAt:o.bestAt??null};
+          upd.best=score; upd.bestAt=Date.now(); Object.assign(upd, st||{}); }
         tx.update(ref, upd);
       } else {
         tx.set(ref, {name:p.name, best:score, ...(st||{}), games:1, createdAt:Date.now(), lastPlayedAt:Date.now()});
