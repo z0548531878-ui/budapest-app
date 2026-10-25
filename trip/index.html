@@ -3434,24 +3434,42 @@ function cashBook(){
   const own=S.expenses.filter(e=>+e.paid&&!ppl.includes(payerOf(e)));
   return {rows,un,und,own};
 }
+// payment method buckets for the cash book: card / bit / transfer / cash / not written
+const PMK=[['card','💳 אשראי'],['bit','📱 ביט'],['xfer','🏦 העברה'],['cash','💵 מזומן'],['unk','❓ לא צוין']];
+const pmKind=m=>{m=String(m||'');return /ביט|bit/i.test(m)?'bit':/מזומן/.test(m)?'cash':/העברה/.test(m)?'xfer':/אשראי|כרטיס/.test(m)?'card':m.trim()?'xfer':'unk'};
+const pmLbl=k=>(PMK.find(x=>x[0]===k)||['',''])[1];
 function cashSeg(head){
-  const {rows,un,und,own}=cashBook(), who=V.filter.who||'';
-  const card1=r=>`<button class="cashcard ${who===r.n?'on':''}" data-filter="who" data-val="${who===r.n?'':esc(r.n)}"><span class="av">${esc(r.n[0])}</span><div class="main"><b>${esc(r.n)}</b><span>נכנס <span class="num">${ils(r.inn)}</span> · יצא <span class="num">${ils(r.o)}</span></span><span>💵 מזומן <span class="num">${r.sp.cash<0?'−':''}${ils(Math.abs(r.sp.cash))}</span> · 💳 אשראי/העברה <span class="num">${r.sp.acct<0?'−':''}${ils(Math.abs(r.sp.acct))}</span>${Math.abs(r.sp.unk)>=1?` · לא צוין איך <span class="num">${r.sp.unk<0?'−':''}${ils(Math.abs(r.sp.unk))}</span>`:''}</span>${r.cnt?`<span class="gap ${Math.abs(r.gap)<1?'ok':'bad'}">${Math.abs(r.gap)<1?'הספירה תואמת ✓':`פער בספירה: <span class="num">${r.gap<0?'−':'+'}${ils(Math.abs(r.gap))}</span>`} · ${fmtDate((r.cnt.at||'').slice(0,10))}</span>`:''}</div><div class="bal num ${r.bal<0?'neg':''}">${r.bal<0?'−':''}${ils(Math.abs(r.bal))}<small>יתרה</small></div></button>`;
-  let detail='';
-  const sel=rows.find(r=>r.n===who);
-  if(sel){
-    const mrow=(t,sub,amt,edit,sign)=>`<div class="row" data-edit="${edit}" role="button" tabindex="0"><div class="main"><div class="t">${esc(t)}</div>${sub?`<div class="m"><span>${esc(sub)}</span></div>`:''}</div><span class="amt num" style="color:${sign>0?'var(--ok)':'var(--bad)'}">${sign>0?'+':'−'}${ils(amt)}</span></div>`;
-    detail=`<div class="ghead"><span>נכנס ל${esc(sel.n)}</span><span class="num">${ils(sel.inn)}</span></div>`+card((()=>{const g={};sel.pin.forEach(p=>{const k=cKey(p);(g[k]=g[k]||[]).push(p)});
-      return Object.values(g).map(ps=>{const c=coupleOf(ps[0]),m=[...new Set(ps.map(x=>x.method).filter(Boolean))].join(' · '),part=ps.some(x=>x.status==='שולם חלקית');
-        return mrow(coupleLabel(c,ps[0])||ps[0].name,[ps.length<c.length?'רק '+ps.map(x=>firstN(x.name)).join(' ו'):'',m,part?'תשלום חלקי':''].filter(Boolean).join(' · '),ps.reduce((t,x)=>t+paidOf(x),0),'participants/'+ps[0]._id,1)}).sort((a,b)=>a.localeCompare(b,'he')).join('')})()+sel.din.map(d=>mrow('תרומה: '+d.donor,d.method,d.amount,'donations/'+d._id,1)).join(''),'<b>עוד לא נכנס כסף</b>')
-     +`<div class="ghead"><span>יצא מ${esc(sel.n)}</span><span class="num">${ils(sel.o)}</span></div>`+card(sel.out.map(e=>mrow(e.name,e.category,e.paid,'expenses/'+e._id,-1)).join(''),'<b>עוד לא שילם כלום</b>');
-  }
+  const {rows,un,und,own}=cashBook(), who=V.filter.who||'', cm=V.filter.cm||'', ct=V.filter.ct||'';
+  const sgn=v=>(v<0?'−':'')+ils(Math.abs(v));
+  const card1=r=>`<button class="cashcard ${who===r.n?'on':''}" data-filter="who" data-val="${who===r.n?'':esc(r.n)}"><span class="av">${esc(r.n[0])}</span><div class="main"><b>${esc(r.n)}</b><span>נכנס <span class="num">${ils(r.inn)}</span> · יצא <span class="num">${ils(r.o)}</span></span>${r.cnt?`<span class="gap ${Math.abs(r.gap)<1?'ok':'bad'}">${Math.abs(r.gap)<1?'הספירה תואמת ✓':`פער בספירה: <span class="num">${r.gap<0?'−':'+'}${ils(Math.abs(r.gap))}</span>`} · ${fmtDate((r.cnt.at||'').slice(0,10))}</span>`:''}</div><div class="bal num ${r.bal<0?'neg':''}">${sgn(r.bal)}<small>יתרה</small></div></button>`;
+  // every money movement of the selected people, as one list
+  const sel=who?rows.filter(r=>r.n===who):rows;
+  const mv=[];
+  sel.forEach(r=>{const g={};r.pin.forEach(p=>{const k=cKey(p)+'|'+pmKind(p.method);(g[k]=g[k]||[]).push(p)});
+    Object.values(g).forEach(ps=>{const c=coupleOf(ps[0]),part=ps.some(x=>x.status==='שולם חלקית');
+      mv.push({h:r.n,dir:1,k:pmKind(ps[0].method),t:coupleLabel(c,ps[0])||ps[0].name,sub:[ps.length<c.length?'רק '+ps.map(x=>firstN(x.name)).join(' ו'):'',ps[0].method||'',part?'תשלום חלקי':''].filter(Boolean).join(' · '),amt:ps.reduce((t,x)=>t+paidOf(x),0),edit:'participants/'+ps[0]._id})});
+    r.din.forEach(d=>mv.push({h:r.n,dir:1,k:pmKind(d.method),t:'תרומה: '+d.donor,sub:d.method||'',amt:+d.amount||0,edit:'donations/'+d._id}));
+    r.out.forEach(e=>mv.push({h:r.n,dir:-1,k:pmKind(e.method),t:e.name,sub:[e.category,e.method].filter(Boolean).join(' · '),amt:+e.paid||0,edit:'expenses/'+e._id}))});
+  // totals per method for the selected people (before the method/type filters)
+  const tot={};PMK.forEach(([k])=>tot[k]={i:0,o:0});mv.forEach(m=>tot[m.k][m.dir>0?'i':'o']+=m.amt);
+  const TI=mv.filter(m=>m.dir>0).reduce((t,m)=>t+m.amt,0),TO=mv.filter(m=>m.dir<0).reduce((t,m)=>t+m.amt,0);
+  const sumBox=`<div class="card" style="padding:14px 16px;margin:12px 0"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><b>${who?'בקופה של '+esc(who):'סה״כ בשתי הקופות'}</b><b class="num" style="font-size:22px;color:${TI-TO<0?'var(--bad)':'var(--gold2)'}">${sgn(TI-TO)}</b></div>
+    <div class="m" style="margin:2px 0 10px;color:var(--muted);font-size:13.5px">נכנס <span class="num">${ils(TI)}</span> · יצא <span class="num">${ils(TO)}</span></div>
+    <div class="vwl" style="margin:0">${PMK.filter(([k])=>tot[k].i||tot[k].o).map(([k,l])=>`<div class="vwr"><span>${l}<br><small>נכנס ${ils(tot[k].i)} · יצא ${ils(tot[k].o)}</small></span><b class="num" style="color:${tot[k].i-tot[k].o<0?'var(--bad)':'inherit'}">${sgn(tot[k].i-tot[k].o)}</b></div>`).join('')||'<div class="vwr"><span>אין עדיין תנועות</span></div>'}</div></div>`;
+  const chips=(key,opts,cur)=>`<div class="chips">${opts.map(([v,l])=>`<button class="chip" data-filter="${key}" data-val="${esc(v)}" aria-pressed="${cur===v}">${l}</button>`).join('')}</div>`;
+  const usedK=PMK.filter(([k])=>tot[k].i||tot[k].o);
+  const flt=chips('who',[['','שתי הקופות'],...rows.map(r=>[r.n,'אצל '+r.n])],who)+chips('ct',[['','הכנסות והוצאות'],['in','⬇ הכנסות'],['out','⬆ הוצאות']],ct)+chips('cm',[['','כל אמצעי התשלום'],...usedK],cm);
+  const L=mv.filter(m=>(!cm||m.k===cm)&&(!ct||(ct==='in'?m.dir>0:m.dir<0))).sort((a,b)=>b.dir-a.dir||a.t.localeCompare(b.t,'he'));
+  const LI=L.filter(m=>m.dir>0).reduce((t,m)=>t+m.amt,0),LO=L.filter(m=>m.dir<0).reduce((t,m)=>t+m.amt,0);
+  const mrow=m=>`<div class="row" data-edit="${m.edit}" role="button" tabindex="0"><div class="main"><div class="t">${esc(m.t)}</div><div class="m"><span>${esc([who?'':m.h,m.sub].filter(Boolean).join(' · '))}</span></div></div><span class="amt num" style="color:${m.dir>0?'var(--ok)':'var(--bad)'}">${m.dir>0?'+':'−'}${ils(m.amt)}</span></div>`;
+  const list=`<div class="ghead"><span>${[ct==='in'?'הכנסות':ct==='out'?'הוצאות':'תנועות',cm?pmLbl(cm):''].filter(Boolean).join(' · ')} <small class="num">(${L.length})</small></span><span class="num">${ct==='out'?'−'+ils(LO):ct==='in'?ils(LI):sgn(LI-LO)}</span></div>`+card(L.map(mrow).join(''),'<b>אין תנועות בסינון הזה</b>');
   const unk=un.length+und.length;
   const ownBy={};own.forEach(e=>{const k=payerOf(e)||'';(ownBy[k]=ownBy[k]||[]).push(e)});
-  return head+`<p class="note">לחיצה על כרטיס מראה את הפירוט של אותו אחד. "אצל מי הכסף" נקבע בכרטיס המשתתף, ובהוצאות לפי "מי שילם".</p><div class="cashgrid">${rows.map(card1).join('')}</div>
-   <div style="display:flex;gap:8px;margin:10px 0 4px"><button class="btn" id="countBtn">ספירת קופה</button><button class="btn" data-export>ייצוא לאקסל</button></div>${detail}
-   ${own.length?Object.entries(ownBy).map(([k,es])=>`<div class="ghead"><span>${k?`${esc(k)} ${vb(k,'שילם מכיסו · להחזיר לו','שילמה מכיסה · להחזיר לה')}`:'שולם, אבל לא רשום מי שילם'}</span><span class="num">${ils(es.reduce((s,e)=>s+(+e.paid||0),0))}</span></div>`+card(es.map(e=>`<div class="row" data-edit="expenses/${e._id}" role="button" tabindex="0"><div class="main"><div class="t">${esc(e.name)}</div><div class="m"><span>${esc(e.category||'')}</span></div></div><span class="amt num">${ils(e.paid)}</span></div>`).join(''))).join(''):''}
-   ${unk?`<div class="ghead"><span>שולם, אבל לא רשום אצל מי הכסף</span><span class="num">${unk}</span></div>`+card(un.map(p=>`<div class="row" data-edit="participants/${p._id}" role="button" tabindex="0"><div class="main"><div class="t">${esc(p.name)}</div><div class="m"><span>${esc(p.method||'לא ידוע איך שילם')}</span></div></div><span class="amt num">${ils(paidOf(p))}</span></div>`).join('')+und.map(d=>`<div class="row" data-edit="donations/${d._id}" role="button" tabindex="0"><div class="main"><div class="t">תרומה: ${esc(d.donor)}</div></div><span class="amt num">${ils(d.amount)}</span></div>`).join('')):''}`;
+  return head+`<div class="cashgrid">${rows.map(card1).join('')}</div>${sumBox}${flt}
+   <div style="display:flex;gap:8px;margin:2px 0 8px"><button class="btn" id="countBtn">ספירת קופה</button><button class="btn" data-export>ייצוא לאקסל</button></div>${list}
+   ${own.length?Object.entries(ownBy).map(([k,es])=>`<div class="ghead"><span>${k?`${esc(k)} ${vb(k,'שילם מכיסו · להחזיר לו','שילמה מכיסה · להחזיר לה')}`:'שולם, אבל לא רשום מי שילם'}</span><span class="num">${ils(es.reduce((s,e)=>s+(+e.paid||0),0))}</span></div>`+card(es.map(e=>`<div class="row" data-edit="expenses/${e._id}" role="button" tabindex="0"><div class="main"><div class="t">${esc(e.name)}</div><div class="m"><span>${esc([e.category,e.method].filter(Boolean).join(' · '))}</span></div></div><span class="amt num">${ils(e.paid)}</span></div>`).join(''))).join(''):''}
+   ${unk?`<div class="ghead"><span>שולם, אבל לא רשום אצל מי הכסף</span><span class="num">${unk}</span></div>`+card(un.map(p=>`<div class="row" data-edit="participants/${p._id}" role="button" tabindex="0"><div class="main"><div class="t">${esc(p.name)}</div><div class="m"><span>${esc(p.method||'לא ידוע איך שילם')}</span></div></div><span class="amt num">${ils(paidOf(p))}</span></div>`).join('')+und.map(d=>`<div class="row" data-edit="donations/${d._id}" role="button" tabindex="0"><div class="main"><div class="t">תרומה: ${esc(d.donor)}</div></div><span class="amt num">${ils(d.amount)}</span></div>`).join('')):''}
+   <p class="note">"אצל מי הכסף" נקבע בכרטיס המשתתף ובתרומה, ובהוצאות לפי "מי שילם". אמצעי התשלום לפי "איך שילם" / "איך שולם".</p>`;
 }
 
 
@@ -5917,7 +5935,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='0e192404';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='ceb872af';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
