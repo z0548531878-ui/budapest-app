@@ -2453,7 +2453,7 @@ const F={
    {k:'category',l:'תחום',t:'chips',o:TASK_CATS,sec:'more',secL:'פרטים נוספים'},{k:'priority',l:'עדיפות',t:'seg',o:['רגילה','גבוהה']},{k:'notes',l:'הערות',t:'textarea'},
    {k:'open',l:'להציע למשתתפים לקחת',h:'המשימה תופיע אצל המשתתפים בלשונית "פתוחות" עם כפתור "אני לוקח/ת". מי שלוקח ממתין לאישור שלכם. משאירים בלי אחראי.',t:'seg',o:['לא','כן']}],def:{status:'לביצוע',priority:'רגילה',category:'אחר'},
    sum:{more:d=>[d.category&&d.category!=='אחר'?d.category:'',d.priority==='גבוהה'?'עדיפות גבוהה':'',d.open==='כן'?'פתוחה למשתתפים':'',d.notes?'יש הערות':''].filter(Boolean).join(' · ')}},
- expenses:{one:'הוצאה',g:1,fields:[{k:'name',l:'על מה',t:'text'},{k:'estimate',l:'סכום (₪)',t:'number',half:1},{k:'paid',l:'שולם בפועל (₪)',t:'number',half:1},{k:'final',l:'הסכום סופי',t:'toggle'},{k:'status',l:'מצב',t:'seg',o:['לא שולם','מקדמה','שולם']},{k:'receipt',l:'יש קבלה',t:'toggle'},{k:'paidBy',l:'מי שילם',t:'owner'},{k:'category',l:'תחום',t:'chips',o:EXP_CATS},{k:'notes',l:'הערות',t:'textarea'}],def:{status:'לא שולם',category:'אחר',estimate:0,paid:0,final:false}},
+ expenses:{one:'הוצאה',g:1,fields:[{k:'name',l:'על מה',t:'text'},{k:'estimate',l:'סכום (₪)',t:'number',half:1},{k:'paid',l:'שולם בפועל (₪)',t:'number',half:1},{k:'final',l:'הסכום סופי',t:'toggle'},{k:'status',l:'מצב',t:'seg',o:['לא שולם','מקדמה','שולם']},{k:'receipt',l:'יש קבלה',t:'toggle'},{k:'paidBy',l:'מי שילם',t:'owner'},{k:'method',l:'איך שולם',t:'chips',o:['אשראי','מזומן','העברה'],when:['status',['שולם','מקדמה']]},{k:'category',l:'תחום',t:'chips',o:EXP_CATS},{k:'notes',l:'הערות',t:'textarea'}],def:{status:'לא שולם',category:'אחר',estimate:0,paid:0,final:false}},
  participants:{one:'משתתף',fields:[{k:'name',l:'שם',t:'text'},{k:'phone',l:'טלפון',t:'tel'},{k:'gender',l:'מין',t:'seg',o:['גבר','אישה']},{k:'notes',l:'הערות',t:'textarea'},
    {k:'amount',l:'סכום (₪)',t:'number',sec:'pay',secL:'תשלום'},{k:'status',l:'מצב התשלום',t:'seg',o:['לא שולם','שולם חלקית','שולם','פטור']},{k:'paidAmt',l:'כמה שולם עד עכשיו (₪)',t:'number',when:['status','שולם חלקית']},{k:'method',l:'איך שילם',t:'chips',o:['אשראי','העברה לאיציק','מזומן לאיציק','העברה לשלומי','מזומן לשלומי'],when:['status',['שולם','שולם חלקית']]},{k:'holder',l:'אצל מי הכסף',t:'seg',o:['שלומי','איציק'],when:['status',['שולם','שולם חלקית']]},
    {k:'passport',l:'צילום דרכון התקבל',t:'toggle',sec:'pass',secL:'דרכון'},{k:'nameEn',l:'שם באנגלית, כמו בדרכון',t:'text',ph:'COHEN AVI'},{k:'passExp',l:'תוקף הדרכון',t:'date'},{k:'passUrl',l:'קישור לצילום הדרכון (בתיקיית הדרייב)',t:'text',ph:'https://drive.google.com/…'},
@@ -2799,7 +2799,7 @@ const VIEWS={
    const out=m.out, left=m.left, finN=S.expenses.filter(isFinal).length, noRec=S.expenses.filter(e=>+e.paid&&!e.receipt).length;
    const xs=V.filter.exs||'all',xm={all:()=>true,open:e=>e.status!=='שולם',paid:e=>e.status==='שולם',fix:e=>!isFinal(e)||(+e.paid&&!e.receipt)},xn=k=>S.expenses.filter(xm[k]).length;
    const g={};S.expenses.slice().sort(byOrder).filter(e=>xm[xs](e)).forEach(e=>{const k=e.category||'אחר';(g[k]=g[k]||[]).push(e)});
-   const st=e=>e.status==='שולם'?['ok','שולם ✓']:e.status==='מקדמה'?['w',`מקדמה ${ils(e.paid)} · נשאר ${ils(Math.max(0,(+e.estimate||0)-(+e.paid||0)))}`]:['m',isFinal(e)?'לא שולם · סכום סופי':'לא שולם · הערכה'];
+   const st=e=>e.status==='שולם'?['ok','שולם ✓'+(e.method?' · '+e.method:'')]:e.status==='מקדמה'?['w',`מקדמה ${ils(e.paid)}${e.method?' ('+e.method+')':''} · נשאר ${ils(Math.max(0,(+e.estimate||0)-(+e.paid||0)))}`]:['m',isFinal(e)?'לא שולם · סכום סופי':'לא שולם · הערכה'];
    return head+`<div class="card" style="padding:14px;margin-bottom:6px"><div class="mt3" style="margin-top:0"><div><span>סה״כ</span><b class="num">${ils(m.est)}</b></div><div><span>שולם</span><b class="num pos">${ils(out)}</b></div><div><span>נשאר לשלם</span><b class="num">${ils(left)}</b></div></div>
     <p class="note" style="margin:10px 2px 0"><span class="num">${finN}</span> מתוך <span class="num">${S.expenses.length}</span> סכומים סופיים. השאר הערכה.${noRec?` · <b style="color:var(--warn)">${noRec} תשלומים בלי קבלה</b>`:''}</p></div>`
     +`<div class="chips">${[['all','הכל'],['open','לא שולם במלואו'],['paid','שולם'],['fix','לטיפול']].map(([k,l])=>`<button class="chip" data-filter="exs" data-val="${k}" aria-pressed="${xs===k}">${l} <span class="num">${xn(k)}</span></button>`).join('')}<button class="chip" data-xall="1" aria-pressed="${xAllOpen()}">פתיחת כל הפירוט</button></div>`
@@ -5253,7 +5253,7 @@ function expDetail(id){
     ${row('שולם בפועל',`<span class="num">${ils(+e.paid||0)}</span>`)}
     ${row('מצב',esc(e.status||'לא שולם'))}
     ${row('תחום',esc(e.category||''))}
-    ${row('מי שילם',esc(e.paidBy||''))}
+    ${row('מי שילם',esc(e.paidBy||''))}${row('איך שולם',esc(e.method||''))}
     ${row('קבלה',e.receipt?'יש':'אין')}
     ${e.notes?`<div class="vwr col"><span>הערות</span><p>${esc(e.notes).replace(/\n/g,'<br>')}</p></div>`:''}</div>
     ${it.length?`<div class="ghead"><span>פירוט פריטים</span><span class="num">${ils(sm)}</span></div>`+vItems([e]):''}`);
@@ -5917,7 +5917,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='3457a75d';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='3efca16b';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
