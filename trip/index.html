@@ -3425,7 +3425,10 @@ function cashBook(){
     const out=S.expenses.filter(e=>+e.paid&&payerOf(e)===n);
     const inn=pin.reduce((s,x)=>s+paidOf(x),0)+din.reduce((s,x)=>s+(+x.amount||0),0), o=out.reduce((s,x)=>s+(+x.paid||0),0);
     const cnt=counted()[n];
-    return {n,pin,din,out,inn,o,bal:inn-o,cnt,gap:cnt?(+cnt.amt||0)-(inn-o):null}});
+    // split of the balance by how the money moved: cash in hand vs. in the account (card / transfer / bit)
+    const kind=m=>/מזומן/.test(m||'')?'cash':(m||'').trim()?'acct':'unk', sp={cash:0,acct:0,unk:0};
+    pin.forEach(x=>sp[kind(x.method)]+=paidOf(x));din.forEach(x=>sp[kind(x.method)]+=(+x.amount||0));out.forEach(x=>sp[kind(x.method)]-=(+x.paid||0));
+    return {n,pin,din,out,inn,o,bal:inn-o,sp,cnt,gap:cnt?(+cnt.amt||0)-(inn-o):null}});
   const un=S.participants.filter(p=>paidOf(p)>0&&!holderOf(p)), und=S.donations.filter(d=>d.status==='התקבל'&&!holderOf(d));
   // paid out of someone else's pocket (or nobody wrote who paid): they're owed the money back
   const own=S.expenses.filter(e=>+e.paid&&!ppl.includes(payerOf(e)));
@@ -3433,7 +3436,7 @@ function cashBook(){
 }
 function cashSeg(head){
   const {rows,un,und,own}=cashBook(), who=V.filter.who||'';
-  const card1=r=>`<button class="cashcard ${who===r.n?'on':''}" data-filter="who" data-val="${who===r.n?'':esc(r.n)}"><span class="av">${esc(r.n[0])}</span><div class="main"><b>${esc(r.n)}</b><span>נכנס <span class="num">${ils(r.inn)}</span> · יצא <span class="num">${ils(r.o)}</span></span>${r.cnt?`<span class="gap ${Math.abs(r.gap)<1?'ok':'bad'}">${Math.abs(r.gap)<1?'הספירה תואמת ✓':`פער בספירה: <span class="num">${r.gap<0?'−':'+'}${ils(Math.abs(r.gap))}</span>`} · ${fmtDate((r.cnt.at||'').slice(0,10))}</span>`:''}</div><div class="bal num ${r.bal<0?'neg':''}">${r.bal<0?'−':''}${ils(Math.abs(r.bal))}<small>יתרה</small></div></button>`;
+  const card1=r=>`<button class="cashcard ${who===r.n?'on':''}" data-filter="who" data-val="${who===r.n?'':esc(r.n)}"><span class="av">${esc(r.n[0])}</span><div class="main"><b>${esc(r.n)}</b><span>נכנס <span class="num">${ils(r.inn)}</span> · יצא <span class="num">${ils(r.o)}</span></span><span>💵 מזומן <span class="num">${r.sp.cash<0?'−':''}${ils(Math.abs(r.sp.cash))}</span> · 💳 אשראי/העברה <span class="num">${r.sp.acct<0?'−':''}${ils(Math.abs(r.sp.acct))}</span>${Math.abs(r.sp.unk)>=1?` · לא צוין איך <span class="num">${r.sp.unk<0?'−':''}${ils(Math.abs(r.sp.unk))}</span>`:''}</span>${r.cnt?`<span class="gap ${Math.abs(r.gap)<1?'ok':'bad'}">${Math.abs(r.gap)<1?'הספירה תואמת ✓':`פער בספירה: <span class="num">${r.gap<0?'−':'+'}${ils(Math.abs(r.gap))}</span>`} · ${fmtDate((r.cnt.at||'').slice(0,10))}</span>`:''}</div><div class="bal num ${r.bal<0?'neg':''}">${r.bal<0?'−':''}${ils(Math.abs(r.bal))}<small>יתרה</small></div></button>`;
   let detail='';
   const sel=rows.find(r=>r.n===who);
   if(sel){
@@ -5914,7 +5917,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='9df50f68';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='3457a75d';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
