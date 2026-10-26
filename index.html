@@ -24,6 +24,9 @@ try{ var sa=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches
 <meta property="og:locale" content="he_IL">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://z0548531878-ui.github.io/budapest-app/play/og.jpg">
+<link rel="preconnect" href="https://upload.wikimedia.org" crossorigin>
+<link rel="dns-prefetch" href="https://upload.wikimedia.org">
+<link rel="preconnect" href="https://flagcdn.com">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Rubik:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -896,7 +899,7 @@ button,a,.btn,.answer-btn{touch-action:manipulation;}
 .q-photo.crop .crop-in{width:100%;transform-origin:50% 50%;}
 .q-photo.crop img{display:block;}
 /* תמונות ברורות בכל טלפון: הגובה לפי המסך (ולא קטן מדי בטלפון נמוך או עם תצוגה מוגדלת), ובלי טשטוש באנימציה */
-.q-photo img{height:clamp(170px,32svh,300px);animation:photoIn2 .45s ease-out backwards !important;filter:none !important;}
+.q-photo img{height:clamp(170px,32svh,300px);animation:photoIn2 .2s ease-out backwards !important;filter:none !important;}
 @media (max-height:780px){ .q-photo img{height:clamp(160px,27svh,210px);} }
 @media (max-height:700px){ .q-photo img{height:clamp(150px,24svh,180px);} }
 @keyframes photoIn2{from{opacity:0;}to{opacity:1;}}
@@ -4815,7 +4818,7 @@ const TRIP_LOCK=(()=>{try{const q=new URLSearchParams(location.search);if(q.get(
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active'); fxOnScreen(id); if(id==='s-landing') appUpdateMaybe();}
 // ---- עדכון אוטומטי: גם אפליקציה שפתוחה כבר שעות מקבלת את הגרסה החדשה ----
 // בכל עדכון מעלים את APP_BUILD ואת version.json לאותו ערך. הטעינה מחדש קורית רק במסך הפתיחה — אף פעם באמצע משחק
-const APP_BUILD = '2026-10-26-1';
+const APP_BUILD = '2026-10-26-2';
 let appNewBuild = null;
 function appUpdateCheck(){
   if(/^(localhost|127\.)/.test(location.hostname) && !window.__testUpdate) return;
@@ -5005,7 +5008,7 @@ function qCardHtml(num,total,q){
   return `<div class="q-card qanim"><div class="q-num">שאלה ${num} מתוך ${total}</div>
     <div class="q-topic">${topicIcon(q.topic)} ${esc(q.topic||'')}</div>
     ${q.type==='poll' ? '<div style="text-align:center;"><span class="qtag poll">🗳️ סקר — מי שבוחר כמו הרוב זוכה</span></div>' : ''}
-    ${q.img && q.img.indexOf('sign:')===0 ? `<div class="q-sign" data-k="${esc(q.img.slice(5))}">${SIGN_PNG[q.img.slice(5)] ? `<img src="${SIGN_PNG[q.img.slice(5)]}" alt="תמרור" draggable="false">` : (SIGN_SVG[q.img.slice(5)]||'')}</div>` : q.img ? (q.img.indexOf('flagcdn')>=0 || q.topic===T25 ? `<div class="q-flag${q.topic===T25?' q-logo':''}"><img src="${esc(q.img)}" data-u="${esc(q.img)}" alt="${q.topic===T25?'סמל':'דגל'}" draggable="false" onerror="qImgFail(this)"></div>` : (q.crop ? `<div class="q-photo crop"><div class="crop-in" style="transform:scale(${parseFloat(q.crop.split('|')[1])||1})"><img src="${esc(q.img)}" data-u="${esc(q.img)}" alt="תמונה" draggable="false" style="object-fit:cover;object-position:${esc(q.crop.split('|')[0])}" onerror="this.closest('.q-photo').classList.add('err');qImgFail(this)"></div><span class="q-credit">📷 ויקישיתוף</span></div>` : `<div class="q-photo"><img src="${esc(q.img)}" data-u="${esc(q.img)}" alt="תמונה" draggable="false" onerror="this.parentNode.classList.add('err');qImgFail(this)"><span class="q-credit">📷 ויקישיתוף</span></div>`)) : ''}
+    ${q.img && q.img.indexOf('sign:')===0 ? `<div class="q-sign" data-k="${esc(q.img.slice(5))}">${SIGN_PNG[q.img.slice(5)] ? `<img src="${SIGN_PNG[q.img.slice(5)]}" alt="תמרור" draggable="false">` : (SIGN_SVG[q.img.slice(5)]||'')}</div>` : q.img ? (q.img.indexOf('flagcdn')>=0 || q.topic===T25 ? `<div class="q-flag${q.topic===T25?' q-logo':''}"><img src="${esc(imgFast(q.img))}" data-u="${esc(q.img)}" decoding="async" fetchpriority="high" alt="${q.topic===T25?'סמל':'דגל'}" draggable="false" onerror="imgErr(this)||qImgFail(this)"></div>` : (q.crop ? `<div class="q-photo crop"><div class="crop-in" style="transform:scale(${parseFloat(q.crop.split('|')[1])||1})"><img src="${esc(imgFast(q.img))}" data-u="${esc(q.img)}" decoding="async" fetchpriority="high" alt="תמונה" draggable="false" style="object-fit:cover;object-position:${esc(q.crop.split('|')[0])}" onerror="imgErr(this)||(this.closest('.q-photo').classList.add('err'),qImgFail(this))"></div><span class="q-credit">📷 ויקישיתוף</span></div>` : `<div class="q-photo"><img src="${esc(imgFast(q.img))}" data-u="${esc(q.img)}" decoding="async" fetchpriority="high" alt="תמונה" draggable="false" onerror="imgErr(this)||(this.parentNode.classList.add('err'),qImgFail(this))"><span class="q-credit">📷 ויקישיתוף</span></div>`)) : ''}
     <div class="question-text">${esc(q.q)}</div></div>`;
 }
 function clockHtml(prefix){ return `<div class="timer-bar qanim" id="${prefix}-clock-wrap"><div class="tb-head"><span class="tb-icon">⏱️</span><span class="tb-worth" id="${prefix}-worth">💰 תשובה נכונה שווה עכשיו <b>${worthAt(0,prefix)}</b><i>נק'</i></span><span class="tb-num" id="${prefix}-timer-num">${qCfg(prefix).ms/1000}</span></div><div class="tb-track"><div class="tb-fill" id="${prefix}-timer-ring"></div><div class="tb-ticks"></div></div></div>`; }
@@ -6975,7 +6978,50 @@ function qImgFail(el){
     s.swaps = s.swaps || {}; if(q && q.img===u && (s.swaps[s.i]||0) < 2){ s.swaps[s.i]=(s.swaps[s.i]||0)+1; soloSwapQ(s, s.i); clearQTimer(); soloShowQuestion(); } }
 }
 window.qImgFail = qImgFail;
-function preloadImgs(qs){ qs.forEach(q=>{ if(q && q.img && String(q.img).indexOf('sign:')===0) signRaster(q.img.slice(5)); if(q && isPhotoUrl(q.img)) probeImg(q.img, ok=>{ if(ok===false) markBadImg(q.img); }); }); }
+// התמונות של הסבב נטענות מראש לפי הסדר שבו יופיעו (3 במקביל), כך שהראשונות מוכנות כבר בספירה לאחור
+function preloadImgs(qs){
+  const list = [];
+  qs.forEach(q=>{ if(q && q.img && String(q.img).indexOf('sign:')===0) signRaster(q.img.slice(5)); else if(q && isPhotoUrl(q.img)) list.push(q.img); });
+  let k = 0;
+  const next = ()=>{ if(k >= list.length) return; const u = list[k++];
+    probeImg(imgFast(u), ok=>{ if(ok===false && imgFast(u)!==u) probeImg(u, ok2=>{ if(ok2===false) markBadImg(u); else if(ok2) IMG_SLOW.add(u); next(); }); else { if(ok===false) markBadImg(u); next(); } }); };
+  for(let i=0;i<3;i++) next();
+}
+// ---- תמונות מהירות: במקום הקישור של ויקישיתוף (שמפנה הלאה ומייצר תמונה בגודל לא סטנדרטי — איטי),
+// פונים ישר לשרת התמונות בגודל סטנדרטי (500 פיקסלים) שכבר מוכן אצלם. לא נטען? חוזרים לקישור המקורי ----------
+const IMG_SLOW = new Set();
+function imgFast(u){
+  if(!u || IMG_SLOW.has(u) || u.indexOf('commons.wikimedia.org/wiki/Special:FilePath/')<0) return u;
+  if(imgFast.c[u]) return imgFast.c[u];
+  try{
+    let name = decodeURIComponent(u.split('Special:FilePath/')[1].split('?')[0]).replace(/ /g,'_');
+    name = name.charAt(0).toUpperCase() + name.slice(1);
+    const m = md5hex(name), t = '500px-' + name + (/\.svg$/i.test(name) ? '.png' : '');
+    return imgFast.c[u] = 'https://upload.wikimedia.org/wikipedia/commons/thumb/' + m[0] + '/' + m.slice(0,2) + '/' + encodeURIComponent(name) + '/' + encodeURIComponent(t);
+  }catch(e){ return u; }
+}
+imgFast.c = {};
+function imgErr(el){ const u = el && el.getAttribute('data-u'); if(u && el.src !== u && !el.dataset.fb){ el.dataset.fb = '1'; IMG_SLOW.add(u); el.src = u; return true; } return false; }
+window.imgErr = imgErr;
+// MD5 (לכתובות של שרת התמונות של ויקישיתוף)
+function md5hex(str){
+  const s = unescape(encodeURIComponent(str)), n = s.length, w = [];
+  for(let i=0;i<n;i++) w[i>>2] |= s.charCodeAt(i) << ((i%4)*8);
+  w[n>>2] |= 0x80 << ((n%4)*8); w[(((n+8)>>6)+1)*16-2] = n*8;
+  const K = [], S = [7,12,17,22,5,9,14,20,4,11,16,23,6,10,15,21];
+  for(let i=0;i<64;i++) K[i] = Math.floor(Math.abs(Math.sin(i+1))*4294967296)|0;
+  let a0=1732584193, b0=-271733879, c0=-1732584194, d0=271733878;
+  for(let o=0;o<w.length;o+=16){
+    let a=a0,b=b0,c=c0,d=d0;
+    for(let i=0;i<64;i++){
+      let f,g; const r=i>>4;
+      if(r===0){ f=(b&c)|(~b&d); g=i; } else if(r===1){ f=(d&b)|(~d&c); g=(5*i+1)%16; } else if(r===2){ f=b^c^d; g=(3*i+5)%16; } else { f=c^(b|~d); g=(7*i)%16; }
+      const t=d; d=c; c=b; const x=(a+f+K[i]+(w[o+g]|0))|0, sh=S[r*4+(i%4)]; b=(b+((x<<sh)|(x>>>(32-sh))))|0; a=t;
+    }
+    a0=(a0+a)|0; b0=(b0+b)|0; c0=(c0+c)|0; d0=(d0+d)|0;
+  }
+  return [a0,b0,c0,d0].map(v=>{ let h=''; for(let j=0;j<4;j++) h += ((v>>>(j*8))&255).toString(16).padStart(2,'0'); return h; }).join('');
+}
 // "מושג" של שאלה: שתי שאלות על אותו דבר (אותו סמל רכב בשתי תמונות, אותו אדם, אותה תשובה נדירה) נחשבות אותה שאלה
 let ANS_N = null;
 function qConcept(q){
