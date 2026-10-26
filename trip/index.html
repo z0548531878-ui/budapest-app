@@ -2488,6 +2488,8 @@ const mine=t=>!!ME&&String(t.owner||'').split(/,\s*/).includes(ME);
 const DON_HIDE=['חיים פולק'];
 const gDon=ppl=>ppl.some(p=>DON_HIDE.some(n=>String(p.name||'').replace(/^הרב(נית)?\s+/,'').trim()===n))?[]:donOf(ppl);
 const donOf=ppl=>{const ids=ppl.map(x=>x._id),nms=ppl.map(x=>String(x.name||'').replace(/^הרב(נית)?\s+/,'').trim().toLowerCase());return S.donations.filter(d=>(d.pid&&ids.includes(d.pid))||(d.donor&&nms.some(n=>{const dd=String(d.donor).replace(/^הרב(נית)?\s+/,'').trim().toLowerCase();return dd&&(dd.includes(n)||(dd.split(/\s+/).length>1&&n.includes(dd)))})))};
+/* room draft: while settings.trip.roomsHidden is on, participants (and producers) don't see any room assignment; organizers see everything */
+const RHID=()=>{const s=S.settings.find(x=>x._id==='trip');return !!(s&&s.roomsHidden)};const gRoom=rid=>rid&&!RHID()&&S.rooms.find(x=>x._id===rid);
 const babyRoom=r=>S.participants.some(p=>p.baby&&p.roomId===r._id);
 const isFinal=e=>!!e.final||e.status==='שולם';
 // what a participant has actually paid: the full amount, the part paid so far, or nothing
@@ -2942,7 +2944,7 @@ const SUB={
  },
  rooms(){
   const rows=S.rooms.slice().sort(byOrder), rk=rows.filter(r=>r.kitReady).length;
-  return subHead('חדרים',`<span class="cnt num">${rk}/${rows.length} עם סט</span>`)+updBar('rooms')+`${KITLOCK()?'<div class="lockbar">🔒 סימון "הסט הונח בחדר" נפתח ביום המסע, 19.11. עד אז אפשר לצפות ולעדכן מספר חדר וקומה.</div>':'<p class="note">לחיצה על העיגול מסמנת שהסט הונח בחדר.</p>'}`+card(rows.map(r=>`<div class="row" data-edit="rooms/${r._id}" role="button" tabindex="0">${KITLOCK()?'<span class="check lock" aria-label="נעול">🔒</span>':`<button class="check ${r.kitReady?'on':''}" data-toggle="rooms/${r._id}" aria-label="סט הונח">${r.kitReady?CHECK:''}</button>`}
+  return subHead('חדרים',`<span class="cnt num">${rk}/${rows.length} עם סט</span>`)+updBar('rooms')+(RHID()?'<div class="lockbar">🔒 טיוטה: השיבוץ גלוי רק למארגנים. המשתתפים לא רואים חדר. <button class="btn primary" id="rpub" style="margin-top:8px;width:100%">פרסום השיבוץ לכולם</button></div>':'<button class="btn" id="rpub" style="width:100%;margin:6px 0">🔒 החזרה למצב טיוטה (להסתיר מהמשתתפים)</button>')+`${KITLOCK()?'<div class="lockbar">🔒 סימון "הסט הונח בחדר" נפתח ביום המסע, 19.11. עד אז אפשר לצפות ולעדכן מספר חדר וקומה.</div>':'<p class="note">לחיצה על העיגול מסמנת שהסט הונח בחדר.</p>'}`+card(rows.map(r=>`<div class="row" data-edit="rooms/${r._id}" role="button" tabindex="0">${KITLOCK()?'<span class="check lock" aria-label="נעול">🔒</span>':`<button class="check ${r.kitReady?'on':''}" data-toggle="rooms/${r._id}" aria-label="סט הונח">${r.kitReady?CHECK:''}</button>`}
    <div class="main"><div class="t">${esc(r.occupants)}${babyRoom(r)?' 👶':''}</div><div class="m"><span>${esc(r.type)}</span>${babyRoom(r)?'<span class="pill p-gold">עם תינוק · עריסה</span>':''}${r.notes?`<span>${esc(r.notes)}</span>`:''}${r.kitReady&&r.kitBy?`<span class="who">📍 ${esc(firstN(r.kitBy))}${r.kitAt?' · '+esc(fmtWhen(r.kitAt)):''}</span>`:''}</div></div>${r.roomNumber||r.floor?`<span class="pill p-mute num">${r.roomNumber?'חדר '+esc(r.roomNumber):''}${r.roomNumber&&r.floor?' · ':''}${r.floor?'קומה '+esc(r.floor):''}</span>`:'<span class="pill p-mute">ממתין למלון</span>'}</div>`).join(''));
  },
  flights(){
@@ -3078,6 +3080,7 @@ view.addEventListener('click',e=>{
   const rl=t.closest('[data-roll]');if(rl){roll(rl.dataset.roll);return}
   if(t.id==='rollReset'){if(!t.classList.contains('armed')){t.classList.add('armed');t.textContent='לחצו שוב לאיפוס';return}rollReset();return}
   const sm=t.closest('[data-setme]');if(sm){setMe(sm.dataset.setme);return}
+  if(t.id==='rpub'){const h=!RHID();if(!h&&!confirm('לפרסם את שיבוץ החדרים לכל המשתתפים?'))return;save('settings','trip',{...strip(find('settings','trip')||{}),roomsHidden:h}).then(ok=>ok&&toast(h?'השיבוץ הוסתר מהמשתתפים':'השיבוץ פורסם לכולם'));return}
   if(t.id==='bkJson'){backupJson();return}
   if(t.id==='rsBtn'){document.getElementById('rsFile').click();return}
   const ut=t.closest('[data-untrash]');if(ut){restoreTrash(ut.dataset.untrash);return}
@@ -3729,7 +3732,7 @@ function taxiSheet(){sheet(`<h3>להראות לנהג המונית</h3><div clas
 
 // during the trip (19–22.11) the participant's home shows what matters that day instead of payment and passport
 const TRIPDAY=()=>ZDAYS.some(x=>x[0]===todayISO());
-function tripDayBlock(ppl){const t=todayISO(),z=zmanim(t),rid=(ppl.find(p=>p.roomId)||{}).roomId,r=rid&&S.rooms.find(x=>x._id===rid);
+function tripDayBlock(ppl){const t=todayISO(),z=zmanim(t),rid=(ppl.find(p=>p.roomId)||{}).roomId,r=gRoom(rid);
   const c=t==='2026-11-20'?['הדלקת נרות',candleTm()||hm(z.shk-18)]:t==='2026-11-21'?['צאת השבת',hm(z.tz)]:['צאת הכוכבים',hm(z.tz)];
   const box=(tag,at,l,v,sub)=>`<${tag} class="tdc" ${at}><small>${l}</small><b>${v}</b><span>${sub}</span></${tag}>`;
   return `<section class="tday" aria-label="היום במסע">
@@ -4739,7 +4742,7 @@ const pick=(o,ks)=>ks.map(k=>o&&o[k]);
 function gSigs(){const me=meG();if(!me)return {};const ppl=coupleOf(me),ids=ppl.map(p=>p._id),o={};
   const L=c=>loaded.has(c);
   if(L('schedule'))o.gl=fpH(S.schedule.filter(x=>!x.hidden).map(x=>{const y={...x};delete y._id;return y}).sort((a,b)=>JSON.stringify(a)<JSON.stringify(b)?-1:1));
-  if(L('rooms')&&L('participants')){const rid=(ppl.find(p=>p.roomId)||{}).roomId,r=rid&&S.rooms.find(x=>x._id===rid);o.gr=fpH(r?[pick(r,['roomNumber','floor','entrance','notes','beds']),S.participants.filter(p=>p.roomId===rid).map(p=>p.name).sort()]:0)}
+  if(L('rooms')&&L('participants')){const rid=(ppl.find(p=>p.roomId)||{}).roomId,r=gRoom(rid);o.gr=fpH(r?[pick(r,['roomNumber','floor','entrance','notes','beds']),S.participants.filter(p=>p.roomId===rid).map(p=>p.name).sort()]:0)}
   if(L('tasks')&&L('settings'))o.gt=fpH([myTasks(ppl).map(t=>pick(t,['title','status','due','claimStatus'])),S.tasks.filter(t=>t.open==='כן'&&t.status!=='בוצע'&&!t.owner).map(t=>t.title),gtList().map(t=>t._id)]);
   if(L('settings')){o.gq=fpH(S.settings.filter(x=>x.kind==='req'&&ids.includes(x.by)).map(x=>pick(x,['status','note'])));
     o.gm=fpH(annList().map(x=>x._id));o.gd=fpH(S.settings.filter(x=>x.kind==='ride'&&!x.hidden).map(x=>[x._id,(x.join||[]).length]))}
@@ -5094,10 +5097,10 @@ function guestHTML0(){
      <div class="pcards">${listH||'<div class="card"><div class="empty"><b>לא מצאנו שם כזה</b>נסו רק שם פרטי או רק שם משפחה</div></div>'}</div>
      <p class="note">הרשימה לפי זוגות. לחיצה על סמל הוואטסאפ פותחת שיחה.</p>`}
   if(GTAB==='gr'){
-    const rid=(ppl.find(p=>p.roomId)||{}).roomId, r=rid&&S.rooms.find(x=>x._id===rid);
+    const rid=(ppl.find(p=>p.roomId)||{}).roomId, r=gRoom(rid);
     const line=(l,v)=>`<div class="rline"><small>${l}</small><b>${v?esc(v):'טרם עודכן'}</b></div>`;
     // the room number leads; a room that's assigned but not yet numbered by the hotel says so (not "not assigned")
-    return head('החדר שלי')+(r?`<div class="roomcard"><div class="rc-num"><small>מספר חדר</small><b class="num">${r.roomNumber?esc(r.roomNumber):'—'}</b>${r.roomNumber?'':'<span>המלון עוד לא מסר מספר חדר. נעדכן כאן.</span>'}</div>
+    return head('החדר שלי')+(RHID()?card('','<b>🔒 שיבוץ החדרים יפורסם בקרוב</b>המארגנים יעדכנו כאן את מספר החדר.'):r?`<div class="roomcard"><div class="rc-num"><small>מספר חדר</small><b class="num">${r.roomNumber?esc(r.roomNumber):'—'}</b>${r.roomNumber?'':'<span>המלון עוד לא מסר מספר חדר. נעדכן כאן.</span>'}</div>
         <div class="rc-two">${line('קומה',r.floor)}${line('כניסה',r.entrance)}</div>${r.occupants?`<div class="rc-h"><span class="bed">🛏</span> ${esc(r.occupants)}</div>`:''}${r.notes?`<p class="note">${esc(r.notes)}</p>`:''}</div>`
       :`<div class="roomcard unassigned"><div class="rc-h"><span class="bed">🛏</span> השיבוץ עוד לא פורסם</div><p>כשהמארגנים יפרסמו את השיבוץ, תראו כאן את מספר החדר, הקומה והכניסה.</p></div>`)+hotelCard()}
   if(GTAB==='gz'){
@@ -5120,6 +5123,7 @@ function guestHTML0(){
       <li>נשארים עם הקבוצה ועם המארגנים, ושעת הנסיעה חזרה מתעדכנת בלוח המסע.</li></ul></div>
      <p class="note kzs">מקורות: ויקיפדיה, אתר המכלול ועיתונות (JTA). לפרטי הציון ומנהגי המקום, מומלץ להתייעץ עם המארגנים.</p>`}
   if(GTAB==='gs'&&me&&me.kitter){
+    if(RHID())return head('סידור ערכות בחדרים')+card('','<b>🔒 שיבוץ החדרים עוד לא פורסם</b>');
     const rp=roomsPlaced(),rooms=S.rooms.slice().sort((a,b)=>String(a.roomNumber||'zzz').localeCompare(String(b.roomNumber||'zzz'),undefined,{numeric:true})||byOrder(a,b)),
       rows=GKIT==='todo'?rooms.filter(r=>!r.kitReady):GKIT==='done'?rooms.filter(r=>r.kitReady):rooms,pct=rp.t?Math.round(rp.n/rp.t*100):0;
     return head('סידור ערכות בחדרים')+`<div class="gsh"><div><b class="num">${rp.n}</b><span>מתוך <span class="num">${rp.t}</span> חדרים</span></div><div class="prog"><i style="width:${pct}%"></i></div></div>
@@ -5149,7 +5153,7 @@ function guestHTML0(){
      ${mineR.length?`<div class="ghead"><span>הבקשות שלכם</span><span class="num">${mineR.length}</span></div><div class="annlist">${mineR.map(r=>{const s=st[r.status]||st['חדש'];return `<div class="ann"><div class="ah"><b>${esc(r.cat||'אחר')}</b><span class="pill ${s[0]}">${s[1]}</span></div><p>${esc(r.text||'').replace(/\n/g,'<br>')}</p>${r.status==='לא אפשרי'?'':(i=>`<ol class="rsteps" aria-label="מצב הבקשה">${['התקבלה','בטיפול','הושלמה'].map((l,j)=>`<li class="${j<=i?'on':''}" ${j===i?'aria-current="step"':''}>${l}</li>`).join('')}</ol>`)(r.status==='בוצע'?2:r.status==='בטיפול'?1:0)}${r.note?`<div class="rnote"><small>תשובת המארגנים</small>${esc(r.note).replace(/\n/g,'<br>')}</div>`:''}<small>${tsStr(r.ts)}</small></div>`}).join('')}</div>`:''}`}
   if(GTAB==='gf'){
     let k=0;
-    const rid=(ppl.find(p=>p.roomId)||{}).roomId, r=rid&&S.rooms.find(x=>x._id===rid);
+    const rid=(ppl.find(p=>p.roomId)||{}).roomId, r=gRoom(rid);
     const fl=dir=>{const g=flightGroups(ppl,dir);if(!g.length)return 'טרם עודכן';return g.map(x=>{const pre=g.length>1?x.names.join(' ו')+': ':'';if(x.solo)return pre+'טסים בעצמם';const f=x.f;return pre+(f?`<span class="ltr num">${esc(f.flightNo||'')}</span> · ${esc(dayHe(f.date))} ${fmtDate(f.date)} · <span class="num">${esc(f.dep||'')}</span>`:'טרם שויכה')}).join('<br>')};
     const need=ppl.filter(x=>x.status!=='פטור'&&+x.amount>0), tot=need.reduce((s,x)=>s+(+x.amount||0),0), got=need.reduce((s,x)=>s+paidOf(x),0), payAll=!need.length||need.every(x=>x.status==='שולם');
     const payV=!need.length?'פטור':payAll?`שולם ${ils(got)} ✓`:got?`שולם ${ils(got)} · נותר ${ils(tot-got)}`:`לתשלום ${ils(tot)}`;
@@ -5189,7 +5193,7 @@ function guestHTML0(){
   if(GTAB==='gkt'&&isProd()){const by={};S.packing.filter(x=>x.item).forEach(x=>{const k=x.kit||x.list||'כללי';(by[k]=by[k]||[]).push(x)});
     const st=x=>[x.ordered?'הוזמן':'',x.arrived?'הגיע':'',x.packed?'נארז':'',x.placed?'הונח':'',x.done?'✓':''].filter(Boolean).join(' · ');
     return head('ערכות')+`<p class="vwnote">👁 צפייה בלבד</p>`+Object.keys(by).sort().map(k=>`<h3 class="pa-h">${esc(k)} <small class="num">(${by[k].length})</small></h3><div class="vwl">${by[k].sort((a,b)=>(a.order||0)-(b.order||0)).map(x=>`<div class="vwr"><span><b style="color:var(--text,#f4ead2)">${esc(x.item)}</b>${[x.where,x.buyer&&('קונה: '+x.buyer),x.placer&&('מניח: '+x.placer),x.notes].filter(Boolean).map(t=>`<br><small>${esc(t)}</small>`).join('')}${st(x)?`<br><small style="color:#d9b45f">${st(x)}</small>`:''}</span><b class="num">${x.per?esc(x.per)+' לחדר':'× '+esc(x.qty||'')}</b></div>`).join('')}</div>`).join('')}
-  if(GTAB==='grm'&&isProd()){const R=S.rooms.slice().sort((a,b)=>(a.order||0)-(b.order||0));
+  if(GTAB==='grm'&&isProd()){if(RHID())return head('חדרים')+card('','<b>🔒 שיבוץ החדרים עוד לא פורסם</b>');const R=S.rooms.slice().sort((a,b)=>(a.order||0)-(b.order||0));
     return head('חדרים')+`<p class="vwnote">👁 צפייה בלבד · ${R.length} חדרים</p><div class="vwl">${R.map(r=>`<div class="vwr"><span><b style="color:var(--text,#f4ead2)">${esc(r.occupants||'')}</b>${[r.type,r.floor&&('קומה '+r.floor),r.notes].filter(Boolean).map(t=>`<br><small>${esc(t)}</small>`).join('')}</span><b class="num">${r.roomNumber?'חדר '+esc(r.roomNumber):'—'}${r.kitReady||r.placed?'<br><small style="color:#7fc48a">ערכה ✓</small>':''}</b></div>`).join('')}</div>`}
   if(GTAB==='gcn'&&isProd()){const C=S.contacts.slice().sort((a,b)=>(a.order||0)-(b.order||0));
     return head('ספקים ואנשי קשר')+`<div class="vwl">${C.map(c=>`<div class="vwr"><span><b style="color:var(--text,#f4ead2)">${esc(c.name||'')}</b>${[c.role,c.person,c.notes].filter(Boolean).map(t=>`<br><small>${esc(t)}</small>`).join('')}</span><b>${c.phone?`<a href="tel:${esc(String(c.phone).replace(/[^\d+]/g,''))}">${esc(c.phone)}</a><br><a href="${waLink(c.phone)}" target="_blank" rel="noopener"><small>וואטסאפ</small></a>`:''}</b></div>`).join('')}</div>`}
@@ -5938,7 +5942,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='655b2d7d';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='123262d2';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
