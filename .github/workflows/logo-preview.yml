@@ -1,0 +1,19 @@
+# Downloads small previews of candidate logos (tools/logo_candidates.txt) to branch logo-preview, to look at them
+name: Logo preview
+on: { workflow_dispatch: {} }
+permissions: { contents: write }
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir -p /tmp/p && i=0
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue; i=$((i+1))
+            u="https://commons.wikimedia.org/wiki/Special:FilePath/$(python3 -c 'import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1]))' "$f")?width=250"
+            code=$(curl -sL -A 'trivia-logo-preview/1.0 (github actions)' -o "/tmp/p/$(printf %02d $i).png" -w '%{http_code}' "$u")
+            echo "$(printf %02d $i) $code $f" >> /tmp/p/index.txt; sleep 1
+          done < tools/logo_candidates.txt
+          cd /tmp/p && git init -q && git checkout -q -b logo-preview && git add -A && git -c user.name=bot -c user.email=bot@x commit -qm preview
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" logo-preview
