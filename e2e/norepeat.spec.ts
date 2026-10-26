@@ -15,7 +15,7 @@ test.describe('F10 no repeats', () => {
       }
       const round = await page.evaluate(() => (window as any).__soloPick());
       expect(round.length).toBe(30);
-      expect(round.filter((q: any) => q.img).length).toBe(13);
+      expect(round.filter((q: any) => q.img).length).toBe(15);
       for (const q of round) {
         expect(keys.has(q.k), `round ${r + 1} repeats a question`).toBe(false);
         keys.add(q.k);

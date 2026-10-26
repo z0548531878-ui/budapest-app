@@ -889,6 +889,13 @@ button,a,.btn,.answer-btn{touch-action:manipulation;}
 .who-line{text-align:center;font-size:15px;color:var(--muted,#bdb39a);margin:6px 0 8px;}
 .who-line b{color:var(--gold-light,#F3D98B);}
 .who-change{background:none;border:0;color:#8FDCE8;font:inherit;font-weight:700;text-decoration:underline;cursor:pointer;padding:2px 4px;}
+.q-colors{display:flex;justify-content:center;gap:0;margin:8px auto 12px;width:min(260px,80%);height:110px;border-radius:14px;overflow:hidden;border:2px solid rgba(255,255,255,.25);box-shadow:0 10px 26px rgba(0,0,0,.55);}
+.q-colors i{flex:1;display:block;}
+@media (max-height:780px){ .q-colors{height:86px;} }
+.q-blur .blur-box{display:inline-block;overflow:hidden;border-radius:10px;background:#fff;border:2px solid rgba(255,255,255,.18);box-shadow:0 10px 26px rgba(0,0,0,.55),0 0 0 4px rgba(212,175,55,.18);max-width:86%;}
+.q-blur .blur-box img{border:0 !important;box-shadow:none !important;border-radius:0;max-width:100%;transform:scale(1.04);}
+.q-card:has(.q-colors) ~ .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.q-card:has(.q-colors) ~ .answers .answer-btn{min-height:64px;padding:10px 10px;font-size:17px;}
 .q-logo img{animation:none !important;padding:12px 18px;box-sizing:border-box;aspect-ratio:auto;min-width:150px;}
 @media (max-height:780px){ .q-flag img{height:100px;} }
 .q-sign svg{width:136px;height:136px;shape-rendering:geometricPrecision;}
@@ -1066,7 +1073,7 @@ const CURRENT_ROOM_DOC = 'current'; // מסמך שמצביע על החדר הפ�
 const LOBBY_MAX_AGE_MS = 12*60*60*1000; // חדר המתנה ישן מ-12 שעות לא ממוחזר — נפתח חדש
 const SOLO_REVEAL_MS = 1100;
 
-const T1='בודפשט והונגריה', T2='עולם תורני, הלכה ומנהג', T3='היסטוריה יהודית וגדולי ישראל', T4='ידע כללי, מדע וטבע', T5='מקרא, מסורת ופולקלור', T6='תחבורה, תעופה וחלל', T7='פוליטיקה ומדינה', T8='ערים בישראל', T9='ארצות העולם', T10='טיולים ונופים', T11='חשבון ומספרים', T12='מוזיקה ושירה יהודית', T13='אדמו"רים ורבנים', T14='סקרים מהמסע', T15='ספורט ומשחקים', T16='חידות והיגיון', T17='דגלים של מדינות', T18='מקומות מפורסמים', T19='תמרורים', T20='זיהוי בתמונה', T21='אישים מפורסמים', T22='כלכלה וכסף', T23='אקטואליה', T24='בית ואוכל', T25='סמלי רכב', T26='מי אמר?';
+const T1='בודפשט והונגריה', T2='עולם תורני, הלכה ומנהג', T3='היסטוריה יהודית וגדולי ישראל', T4='ידע כללי, מדע וטבע', T5='מקרא, מסורת ופולקלור', T6='תחבורה, תעופה וחלל', T7='פוליטיקה ומדינה', T8='ערים בישראל', T9='ארצות העולם', T10='טיולים ונופים', T11='חשבון ומספרים', T12='מוזיקה ושירה יהודית', T13='אדמו"רים ורבנים', T14='סקרים מהמסע', T15='ספורט ומשחקים', T16='חידות והיגיון', T17='דגלים של מדינות', T18='מקומות מפורסמים', T19='תמרורים', T20='זיהוי בתמונה', T21='אישים מפורסמים', T22='כלכלה וכסף', T23='אקטואליה', T24='בית ואוכל', T25='סמלי רכב', T26='מי אמר?', T27='מותגים';
 
 const GROUP_DEFAULT = [
  {topic:T1, type:'trivia', q:'באיזו שנה אוחדו בודה, פשט ואובודה לעיר אחת?', a:['1848','1900','1873','1920'], c:2},
@@ -4790,6 +4797,106 @@ const SOLO_QUESTIONS = [
 {topic:T21, q:'מי מופיע בתמונה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Yosef_Dov_Soloveichik,_Beis_Halevi.jpg?width=800', a:['הרב יוסף דוב סולובייצ\'יק','הרב חיים מבריסק','הנצי"ב מוולוז\'ין','הרב יצחק אלחנן ספקטור']},
 {topic:T21, q:'מי תוקע בשופר בכותל בתמונה המפורסמת ממלחמת ששת הימים?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Six_Day_War._Army_chief_chaplain_rabbi_Shlomo_Goren,_who_is_surrounded_by_IDF_soldiers,_blows_the_shofar_in_front_of_the_western_wall_in_Jerusalem._June_1967._D327-043.jpg?width=800', a:['הרב שלמה גורן','הרב מרדכי אליהו','הרב צבי יהודה קוק','הרב עובדיה יוסף']},
 {topic:T21, q:'מי ביצעו את הטיסה ההיסטורית שבתמונה (1903)?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Wrightflyer.jpg?width=800', a:['האחים רייט','צ\'ארלס לינדברג','האחים מונגולפייה','ניל ארמסטרונג']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Apple_logo_black.svg?width=500', a:['אפל','סמסונג','מיקרוסופט','גוגל']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Logo_NIKE.svg?width=500', a:['נייקי','אדידס','פומה','ריבוק']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/McDonald\'s_Golden_Arches.svg?width=500', a:['מקדונלדס','ברגר קינג','KFC','סאבוויי']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/2062095_application_chat_communication_logo_whatsapp_icon.svg?width=500', a:['וואטסאפ','טלגרם','מסנג\'ר','סקייפ']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Instagram_logo_2016.svg?width=500', a:['אינסטגרם','טיקטוק','פייסבוק','סנאפצ\'ט']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Facebook_f_logo_(2019).svg?width=500', a:['פייסבוק','טוויטר','לינקדאין','טלגרם']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/YouTube_full-color_icon_(2017).svg?width=500', a:['יוטיוב','נטפליקס','ספוטיפיי','טיקטוק']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Google_%22G%22_logo.svg?width=500', a:['גוגל','מיקרוסופט','אפל','אמזון']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Android_robot.svg?width=500', a:['אנדרואיד','וינדוס','אפל','לינוקס']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Google_Chrome_icon_(February_2022).svg?width=500', a:['כרום','פיירפוקס','ספארי','אדג\'']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Spotify_icon.svg?width=500', a:['ספוטיפיי','יוטיוב','שאזאם','סאונדקלאוד']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Telegram_logo.svg?width=500', a:['טלגרם','וואטסאפ','מסנג\'ר','טוויטר']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Mastercard_2019_logo.svg?width=500', a:['מאסטרקארד','ויזה','אמריקן אקספרס','פייפאל']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/PlayStation_logo2.svg?width=500', a:['פלייסטיישן','אקסבוקס','נינטנדו','סגה']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Logo_of_Twitter.svg?width=500', a:['טוויטר','פייסבוק','טלגרם','לינקדאין']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Tiktok_icon.svg?width=500', a:['טיקטוק','אינסטגרם','ספוטיפיי','יוטיוב']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/LinkedIn_icon_circle.svg?width=500', a:['לינקדאין','פייסבוק','טוויטר','טלגרם']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Firefox_brand_logo,_2019.svg?width=500', a:['פיירפוקס','כרום','ספארי','אופרה']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Windows_logo_-_2021_(Black).svg?width=500', a:['וינדוס','אפל','אנדרואיד','לינוקס']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Gmail_icon_(2020).svg?width=500', a:['ג\'ימייל','אאוטלוק','יאהו','פרוטון מייל']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Google_Maps_icon_(2020).svg?width=500', a:['גוגל מפות','וייז','מוביט','אובר']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Netflix_2016_N_logo.svg?width=500', a:['נטפליקס','יוטיוב','דיסני','HBO']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Domino\'s_2025_(symbol).svg?width=500', a:['דומינוס','פיצה האט','פאפא ג\'ונס','פיצה שמש']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Pinterest.svg?width=500', a:['פינטרסט','פייסבוק','טוויטר','פייפאל']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Dropbox_Icon.svg?width=500', a:['דרופבוקס','גוגל דרייב','וואןדרייב','אייקלאוד']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Xbox_one_logo.svg?width=500', a:['אקסבוקס','פלייסטיישן','נינטנדו','סגה']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Facebook_Messenger_logo_2020.svg?width=500', a:['מסנג\'ר','וואטסאפ','טלגרם','סקייפ']},
+{topic:T27, q:'של איזה מותג הסמל הזה?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Shell.svg?width=500', a:['Shell','פז','סונול','BP']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Microsoft_logo_(2012).svg?width=500', crop:'blur:7', a:['מיקרוסופט','גוגל','אפל','אינטל']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Pepsi_logo_2014.svg?width=500', crop:'blur:6', a:['פפסי','קוקה קולה','ספרייט','פנטה']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Airbnb_Logo_B%C3%A9lo.svg?width=500', crop:'blur:7', a:['איירביאנבי','בוקינג','אקספדיה','טריפאדוויזר']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Coca-Cola_logo.svg?width=500', crop:'blur:9', a:['קוקה קולה','פפסי','ספרייט','פנטה']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Zara_Logo.svg?width=500', crop:'blur:10', a:['זארה','H&M','קסטרו','מנגו']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/H&M-Logo.svg?width=500', crop:'blur:9', a:['H&M','זארה','קסטרו','פוקס']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Ikea_logo.svg?width=500', crop:'blur:9', a:['איקאה','הום סנטר','ACE','לגו']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/LEGO_logo.svg?width=500', crop:'blur:7', a:['לגו','טויס אר אס','מטל','פליימוביל']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Visa_Inc._logo_(2021%E2%80%93present).svg?width=500', crop:'blur:11', a:['ויזה','מאסטרקארד','אמריקן אקספרס','פייפאל']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Amazon_2024.svg?width=500', crop:'blur:9', a:['אמזון','איביי','עליאקספרס','שיין']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/FedEx_Express.svg?width=500', crop:'blur:9', a:['פדקס','DHL','UPS','דואר ישראל']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/DHL_Logo.svg?width=500', crop:'blur:7', a:['DHL','פדקס','UPS','דואר ישראל']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Intel_logo_(2020,_dark_blue).svg?width=500', crop:'blur:12', a:['אינטל','סמסונג','מיקרוסופט','IBM']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/KFC_Logo.svg?width=500', crop:'blur:11', a:['KFC','מקדונלדס','ברגר קינג','סאבוויי']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Burger_King_2020.svg?width=500', crop:'blur:7', a:['ברגר קינג','מקדונלדס','KFC','סאבוויי']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Adidas_Logo.svg?width=500', crop:'blur:7', a:['אדידס','נייקי','פומה','ריבוק']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/EBay_logo.svg?width=500', crop:'blur:11', a:['איביי','אמזון','עליאקספרס','שיין']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/HP_logo_2012.svg?width=500', crop:'blur:9', a:['HP','דל','לנובו','אסוס']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Tnuva.svg?width=500', crop:'blur:6', a:['תנובה','שטראוס','טרה','יטבתה']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/%D7%9C%D7%95%D7%92%D7%95_%D7%A9%D7%95%D7%A4%D7%A8%D7%A1%D7%9C.svg?width=500', crop:'blur:7', a:['שופרסל','רמי לוי','ויקטורי','יוחננוף']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Subway_2016_logo.svg?width=500', crop:'blur:8', a:['סאבוויי','מקדונלדס','KFC','ברגר קינג']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/LG_logo_(2014).svg?width=500', crop:'blur:10', a:['LG','סמסונג','סוני','פיליפס']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Canon_wordmark.svg?width=500', crop:'blur:10', a:['קנון','ניקון','סוני','פוג\'י']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Disney_wordmark.svg?width=500', crop:'blur:11', a:['דיסני','נטפליקס','וורנר','יוניברסל']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Nintendo.svg?width=500', crop:'blur:8', a:['נינטנדו','סוני','סגה','אטארי']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Zoom_Logo_2022.svg?width=500', crop:'blur:11', a:['זום','סקייפ','גוגל מיט','טימס']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Toys_%22R%22_Us_logo.svg?width=500', crop:'blur:9', a:['טויס אר אס','לגו','מטל','האסברו']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/Nutella_logo.svg?width=500', crop:'blur:10', a:['נוטלה','עלית','מילקה','קינדר']},
+{topic:T27, q:'איזה מותג מסתתר מאחורי הלוגו המטושטש?', img:'https://commons.wikimedia.org/wiki/Special:FilePath/M&M\'s_logo.svg?width=500', crop:'blur:10', a:['M&M\'s','סניקרס','קיט קט','טוויקס']},
+{topic:T27, q:'של איזה מותג הצבעים האלה?', img:'colors:#DA291C,#FFC72C', a:['מקדונלדס','KFC','סאבוויי','סטארבקס']},
+{topic:T27, q:'של איזה מותג הצבעים האלה?', img:'colors:#0058A3,#FFDB00', a:['איקאה','הום סנטר','לגו','אמזון']},
+{topic:T27, q:'של איזה מותג הצבעים האלה?', img:'colors:#4285F4,#EA4335,#FBBC05,#34A853', a:['גוגל','פייסבוק','אמזון','נטפליקס']},
+{topic:T27, q:'של איזה מותג הצבעים האלה?', img:'colors:#F40009,#FFFFFF', a:['קוקה קולה','ספרייט','פנטה','שוופס']},
+{topic:T27, q:'של איזה מותג הצבעים האלה?', img:'colors:#004B93,#FFFFFF,#C9002B', a:['פפסי','קוקה קולה','ספרייט','פנטה']},
+{topic:T27, q:'של איזה מותג הצבעים האלה?', img:'colors:#25D366,#FFFFFF', a:['וואטסאפ','טלגרם','פייסבוק','יוטיוב']},
+{topic:T27, q:'של איזה מותג הצבעים האלה?', img:'colors:#1877F2,#FFFFFF', a:['פייסבוק','וואטסאפ','יוטיוב','ספוטיפיי']},
+{topic:T27, q:'של איזה מותג הצבעים האלה?', img:'colors:#FF0000,#FFFFFF,#282828', a:['יוטיוב','ספוטיפיי','טלגרם','וואטסאפ']},
+{topic:T27, q:'של איזה מותג הצבעים האלה?', img:'colors:#1DB954,#191414', a:['ספוטיפיי','נטפליקס','פייסבוק','טוויטר']},
+{topic:T27, q:'של איזה מותג הצבעים האלה?', img:'colors:#E50914,#000000', a:['נטפליקס','ספוטיפיי','וואטסאפ','טלגרם']},
+{topic:T27, q:'של איזה מותג הצבעים האלה?', img:'colors:#4D148C,#FF6600', a:['פדקס','DHL','UPS','אמזון']},
+{topic:T27, q:'של איזה מותג הצבעים האלה?', img:'colors:#FFCC00,#D40511', a:['DHL','פדקס','UPS','אמזון']},
+{topic:T27, q:'של איזה מותג הצבעים האלה?', img:'colors:#FEDA75,#FA7E1E,#D62976,#962FBF,#4F5BD5', a:['אינסטגרם','טיקטוק','פייסבוק','לינקדאין']},
+{topic:T27, q:'של איזה מותג הצבעים האלה?', img:'colors:#00704A,#FFFFFF', a:['סטארבקס','מקדונלדס','דומינוס','KFC']},
+{topic:T27, q:'של איזה מותג הצבעים האלה?', img:'colors:#000000,#25F4EE,#FE2C55', a:['טיקטוק','אינסטגרם','ספוטיפיי','וואטסאפ']},
+{topic:T27, q:'של איזה מותג הסיסמה "Just Do It"?', a:['נייקי','אדידס','פומה','ריבוק']},
+{topic:T27, q:'של איזה מותג הסיסמה "I\'m lovin\' it"?', a:['מקדונלדס','ברגר קינג','KFC','סאבוויי']},
+{topic:T27, q:'של איזה מותג הסיסמה "Finger lickin\' good"?', a:['KFC','מקדונלדס','דומינוס','פיצה האט']},
+{topic:T27, q:'של איזה מותג הסיסמה "Think Different"?', a:['אפל','מיקרוסופט','סמסונג','IBM']},
+{topic:T27, q:'איזה משקה "נותן לך כנפיים" לפי הפרסומות?', a:['רד בול','מונסטר','XL','קוקה קולה']},
+{topic:T27, q:'של איזה מותג הסיסמה "Impossible is Nothing"?', a:['אדידס','נייקי','פומה','אנדר ארמור']},
+{topic:T27, q:'של איזה מותג הסיסמה "Because you\'re worth it"?', a:['לוריאל','ניוואה','דאב','גרנייה']},
+{topic:T27, q:'של איזה מותג הסיסמה "The best a man can get"?', a:['ג\'ילט','שיק','פיליפס','בראון']},
+{topic:T27, q:'של איזה מותג הסיסמה "Priceless" (לא יסולא בפז)?', a:['מאסטרקארד','ויזה','אמריקן אקספרס','פייפאל']},
+{topic:T27, q:'של איזה ממתק הסיסמה "נמס בפה, לא ביד"?', a:['M&M\'s','סניקרס','קיט קט','טוויקס']},
+{topic:T27, q:'של איזו חברה הסיסמה "Connecting People"?', a:['נוקיה','סמסונג','מוטורולה','סוני']},
+{topic:T27, q:'של איזה ממתק הסיסמה "Taste the Rainbow"?', a:['סקיטלס','M&M\'s','מנטוס','הריבו']},
+{topic:T27, q:'איזה פארק שעשועים מכונה "המקום המאושר ביותר עלי אדמות"?', a:['דיסנילנד','יוניברסל','לגולנד','סופרלנד']},
+{topic:T27, q:'של איזה מותג הסיסמה "Open Happiness"?', a:['קוקה קולה','פפסי','ספרייט','פנטה']},
+{topic:T27, q:'של איזה יצרן רכב הסיסמה "The Ultimate Driving Machine"?', a:['ב.מ.וו','מרצדס','אאודי','טויוטה']},
+{topic:T27, q:'של איזו רשת הסיסמה "Have it your way"?', a:['ברגר קינג','מקדונלדס','KFC','וונדיס']},
+{topic:T27, q:'של איזו רשת הסיסמה "Eat Fresh"?', a:['סאבוויי','מקדונלדס','דומינוס','KFC']},
+{topic:T27, q:'איזו חברה אימצה בעבר את המוטו "Don\'t be evil"?', a:['גוגל','אפל','פייסבוק','אמזון']},
+{topic:T27, q:'מאיזו מדינה במקור רשת הרהיטים איקאה?', a:['שוודיה','דנמרק','נורווגיה','גרמניה']},
+{topic:T27, q:'מאיזו מדינה חברת סמסונג?', a:['דרום קוריאה','יפן','סין','טייוואן']},
+{topic:T27, q:'מאיזו מדינה חברת הצעצועים לגו?', a:['דנמרק','שוודיה','גרמניה','הולנד']},
+{topic:T27, q:'איזו חברה מייצרת את מכשירי האייפון?', a:['אפל','סמסונג','גוגל','נוקיה']},
+{topic:T27, q:'באיזו מדינה פותחה אפליקציית הניווט וייז?', a:['ישראל','ארצות הברית','גרמניה','הודו']},
+{topic:T27, q:'לאיזו חברה שייך אתר יוטיוב?', a:['גוגל','מיקרוסופט','אפל','אמזון']},
+{topic:T27, q:'לאיזו חברה שייכת אפליקציית וואטסאפ?', a:['מטא','גוגל','מיקרוסופט','אפל']},
+{topic:T27, q:'מאיזו מדינה רשת האופנה זארה?', a:['ספרד','איטליה','צרפת','פורטוגל']},
+{topic:T27, q:'מאיזו מדינה חברת נוקיה?', a:['פינלנד','שוודיה','נורווגיה','דנמרק']},
+{topic:T27, q:'איזו חברה מייצרת את קונסולת הפלייסטיישן?', a:['סוני','מיקרוסופט','נינטנדו','סגה']},
 ].map(q=>({topic:q.topic, type:'trivia', q:q.q, img:q.img, crop:q.crop, a:q.a, c:0}));
 
 document.getElementById('s-loading').classList.remove('active');
@@ -4818,7 +4925,7 @@ const TRIP_LOCK=(()=>{try{const q=new URLSearchParams(location.search);if(q.get(
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active'); fxOnScreen(id); if(id==='s-landing') appUpdateMaybe();}
 // ---- עדכון אוטומטי: גם אפליקציה שפתוחה כבר שעות מקבלת את הגרסה החדשה ----
 // בכל עדכון מעלים את APP_BUILD ואת version.json לאותו ערך. הטעינה מחדש קורית רק במסך הפתיחה — אף פעם באמצע משחק
-const APP_BUILD = '2026-10-26-2';
+const APP_BUILD = '2026-10-26-3';
 let appNewBuild = null;
 function appUpdateCheck(){
   if(/^(localhost|127\.)/.test(location.hostname) && !window.__testUpdate) return;
@@ -4866,6 +4973,7 @@ function topicIcon(topic){
   if(topic===T24) return '🍲';
   if(topic===T25) return '🚗';
   if(topic===T26) return '💬';
+  if(topic===T27) return '🏷️';
   return '';
 }
 function animateCount(el, target, ms){
@@ -5008,7 +5116,7 @@ function qCardHtml(num,total,q){
   return `<div class="q-card qanim"><div class="q-num">שאלה ${num} מתוך ${total}</div>
     <div class="q-topic">${topicIcon(q.topic)} ${esc(q.topic||'')}</div>
     ${q.type==='poll' ? '<div style="text-align:center;"><span class="qtag poll">🗳️ סקר — מי שבוחר כמו הרוב זוכה</span></div>' : ''}
-    ${q.img && q.img.indexOf('sign:')===0 ? `<div class="q-sign" data-k="${esc(q.img.slice(5))}">${SIGN_PNG[q.img.slice(5)] ? `<img src="${SIGN_PNG[q.img.slice(5)]}" alt="תמרור" draggable="false">` : (SIGN_SVG[q.img.slice(5)]||'')}</div>` : q.img ? (q.img.indexOf('flagcdn')>=0 || q.topic===T25 ? `<div class="q-flag${q.topic===T25?' q-logo':''}"><img src="${esc(imgFast(q.img))}" data-u="${esc(q.img)}" decoding="async" fetchpriority="high" alt="${q.topic===T25?'סמל':'דגל'}" draggable="false" onerror="imgErr(this)||qImgFail(this)"></div>` : (q.crop ? `<div class="q-photo crop"><div class="crop-in" style="transform:scale(${parseFloat(q.crop.split('|')[1])||1})"><img src="${esc(imgFast(q.img))}" data-u="${esc(q.img)}" decoding="async" fetchpriority="high" alt="תמונה" draggable="false" style="object-fit:cover;object-position:${esc(q.crop.split('|')[0])}" onerror="imgErr(this)||(this.closest('.q-photo').classList.add('err'),qImgFail(this))"></div><span class="q-credit">📷 ויקישיתוף</span></div>` : `<div class="q-photo"><img src="${esc(imgFast(q.img))}" data-u="${esc(q.img)}" decoding="async" fetchpriority="high" alt="תמונה" draggable="false" onerror="imgErr(this)||(this.parentNode.classList.add('err'),qImgFail(this))"><span class="q-credit">📷 ויקישיתוף</span></div>`)) : ''}
+    ${q.img && q.img.indexOf('sign:')===0 ? `<div class="q-sign" data-k="${esc(q.img.slice(5))}">${SIGN_PNG[q.img.slice(5)] ? `<img src="${SIGN_PNG[q.img.slice(5)]}" alt="תמרור" draggable="false">` : (SIGN_SVG[q.img.slice(5)]||'')}</div>` : q.img && q.img.indexOf('colors:')===0 ? `<div class="q-colors" aria-label="צבעי המותג">${q.img.slice(7).split(',').map(c=>`<i style="background:${esc(c)}"></i>`).join('')}</div>` : q.img ? (q.img.indexOf('flagcdn')>=0 || q.topic===T25 || q.topic===T27 ? `<div class="q-flag${q.topic===T25||q.topic===T27?' q-logo':''}${q.crop && q.crop.indexOf('blur:')===0?' q-blur':''}">${q.crop && q.crop.indexOf('blur:')===0 ? '<span class="blur-box">' : ''}<img${q.crop && q.crop.indexOf('blur:')===0 ? ` style="filter:blur(${parseFloat(q.crop.slice(5))||6}px)"` : ''} src="${esc(imgFast(q.img))}" data-u="${esc(q.img)}" decoding="async" fetchpriority="high" alt="${q.topic===T25||q.topic===T27?'סמל':'דגל'}" draggable="false" onerror="imgErr(this)||qImgFail(this)">${q.crop && q.crop.indexOf('blur:')===0 ? '</span>' : ''}</div>` : (q.crop ? `<div class="q-photo crop"><div class="crop-in" style="transform:scale(${parseFloat(q.crop.split('|')[1])||1})"><img src="${esc(imgFast(q.img))}" data-u="${esc(q.img)}" decoding="async" fetchpriority="high" alt="תמונה" draggable="false" style="object-fit:cover;object-position:${esc(q.crop.split('|')[0])}" onerror="imgErr(this)||(this.closest('.q-photo').classList.add('err'),qImgFail(this))"></div><span class="q-credit">📷 ויקישיתוף</span></div>` : `<div class="q-photo"><img src="${esc(imgFast(q.img))}" data-u="${esc(q.img)}" decoding="async" fetchpriority="high" alt="תמונה" draggable="false" onerror="imgErr(this)||(this.parentNode.classList.add('err'),qImgFail(this))"><span class="q-credit">📷 ויקישיתוף</span></div>`)) : ''}
     <div class="question-text">${esc(q.q)}</div></div>`;
 }
 function clockHtml(prefix){ return `<div class="timer-bar qanim" id="${prefix}-clock-wrap"><div class="tb-head"><span class="tb-icon">⏱️</span><span class="tb-worth" id="${prefix}-worth">💰 תשובה נכונה שווה עכשיו <b>${worthAt(0,prefix)}</b><i>נק'</i></span><span class="tb-num" id="${prefix}-timer-num">${qCfg(prefix).ms/1000}</span></div><div class="tb-track"><div class="tb-fill" id="${prefix}-timer-ring"></div><div class="tb-ticks"></div></div></div>`; }
@@ -6872,7 +6980,7 @@ function soloMarkSeen(keys){
 }
 // בכל סבב (עצמאי וראש בראש): 3 דגלים, 3 מקומות מפורסמים, 3 תמרורים, 2 תמונות אישים ו-2 סמלי רכב —
 // פזורים לאורך הסבב (לא ברצף), ושאלות הטקסט מכל הנושאים, בלי שני נושאים זהים צמודים.
-const ROUND_IMG_MIX = [[T17,3],[T18,3],[T19,3],[T21,2],[T25,2]];
+const ROUND_IMG_MIX = [[T17,3],[T18,3],[T19,3],[T21,2],[T25,2],[T27,2]];
 // שאלות על הונגריה ובודפשט לא נכנסות למשחק העצמאי ולראש בראש
 const HU_RE = /הונגר|בודפשט|בלטון|דנובה|פורינט/;
 function roundExcluded(q){ return q.topic===T1 || HU_RE.test(q.q) || HU_RE.test(q.a[0]||''); }
@@ -6892,7 +7000,7 @@ function composeRound(avail, total, history){
   const usedC = new Set(), takeC = i => { const c = qConcept(Q[i]); if(c && usedC.has(c)) return false; if(c) usedC.add(c); return true; };
   // 1) שאלות התמונה לפי סוג
   const imgs = [];
-  ROUND_IMG_MIX.forEach(([t,n])=>{ let k=0; for(const i of preferUnseen(all.filter(i=>Q[i].topic===t))){ if(k>=n) break; if(takeC(i)){ imgs.push(i); k++; } } });
+  ROUND_IMG_MIX.forEach(([t,n])=>{ let k=0; for(const i of preferUnseen(all.filter(i=>Q[i].topic===t && Q[i].img))){ if(k>=n) break; if(takeC(i)){ imgs.push(i); k++; } } });
   // 2) שאלות טקסט — לפי סבב בין הנושאים, כדי שכל הנושאים ייכנסו
   const need = total - imgs.length, byTopic = {};
   preferUnseen(all.filter(i=>!Q[i].img)).forEach(i=>{ (byTopic[Q[i].topic] = byTopic[Q[i].topic] || []).push(i); });
@@ -6935,7 +7043,7 @@ function signRaster(k){
 const BAD_IMG_KEY = 'trivia_bad_imgs';
 let BAD_IMGS = new Set((()=>{ try{ return JSON.parse(localStorage.getItem(BAD_IMG_KEY)||'[]'); }catch(e){ return []; } })());
 let imgLoadOk = 0;
-function isPhotoUrl(u){ return !!u && u.indexOf('sign:')!==0; }
+function isPhotoUrl(u){ return !!u && u.indexOf('sign:')!==0 && u.indexOf('colors:')!==0; }
 function imgOk(q){ return !q || !isPhotoUrl(q.img) || !BAD_IMGS.has(q.img); }
 function markBadImg(u){
   if(!isPhotoUrl(u) || BAD_IMGS.has(u) || imgLoadOk < 3 || navigator.onLine===false) return false;
