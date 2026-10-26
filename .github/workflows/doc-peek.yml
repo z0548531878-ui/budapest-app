@@ -1,0 +1,27 @@
+# Reads one public doc of the game (read only, no secrets) and reports it as annotations
+name: Doc peek
+on:
+  workflow_dispatch:
+    inputs:
+      doc: { description: 'path, e.g. rooms/cheat_log', required: true }
+permissions: { contents: read }
+jobs:
+  peek:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          curl -s "https://firestore.googleapis.com/v1/projects/budapest-983e4/databases/(default)/documents/$DOC" > d.json
+          python3 - <<'PY'
+          import json
+          d=json.load(open('d.json'))
+          def val(x):
+              if 'arrayValue' in x: return [val(i) for i in x['arrayValue'].get('values',[])]
+              if 'mapValue' in x: return {k:val(v) for k,v in x['mapValue'].get('fields',{}).items()}
+              return next(iter(x.values()))
+          f={k:val(v) for k,v in d.get('fields',{}).items()}
+          for k,v in f.items():
+              items = v if isinstance(v,list) else [v]
+              for it in items[-60:]: print('::notice::'+k+' '+json.dumps(it,ensure_ascii=False)[:900])
+          if not f: print('::notice::EMPTY '+json.dumps(d)[:500])
+          PY
+        env: { DOC: '${{ inputs.doc }}' }
