@@ -19,8 +19,14 @@ jobs:
                   n = len(r.read()); return r.status, round(time.time() - t, 2), n
               except Exception as e:
                   return getattr(e, 'code', 0) or str(e)[:40], round(time.time() - t, 2), 0
-          with cf.ThreadPoolExecutor(6) as ex:
-              res = list(ex.map(lambda u: (u, get(thumb(u)), get(u)), us))
+          res = []
+          for u in us:
+              a = get(thumb(u)); time.sleep(0.6)
+              while a[0] == 429: time.sleep(10); a = get(thumb(u))
+              b = (200, 0, 0)
+              if a[0] != 200:
+                  b = get(u); time.sleep(0.6)
+              res.append((u, a, b))
           badT = [u for u, a, b in res if a[0] != 200]; badO = [u for u, a, b in res if b[0] != 200]
           avg = lambda L: round(sum(L) / max(1, len(L)), 2)
           print(f"::notice::total {len(us)} | thumb fail {len(badT)} | orig fail {len(badO)} | thumb avg {avg([a[1] for u,a,b in res if a[0]==200])}s {avg([a[2] for u,a,b in res if a[0]==200])//1000}KB | orig avg {avg([b[1] for u,a,b in res if b[0]==200])}s {avg([b[2] for u,a,b in res if b[0]==200])//1000}KB")
