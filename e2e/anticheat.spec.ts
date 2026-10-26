@@ -4,56 +4,23 @@ import type { Page } from '@playwright/test';
 /** The right answer's button index, found in the question bank by the question text */
 const rightIndex = (page: Page) => page.evaluate(() => (window as any).__acSoloQ().c);
 
-// Anti-AI guard in the solo game: leaving or copying mid-question voids it, and a hidden wrong "hint" waits for page-reading bots
+// The anti-AI guard was removed (it hurt real players); these tests make sure nothing of it is left
 test.describe('F09 fair play', () => {
-  test('F09-H1 leaving mid-question voids a right answer; copying puts the decoy on the clipboard', async ({ browser, db }) => {
+  test('F09-H1 no anti-AI traps: leaving the app mid-question still counts, no hidden hint in the page', async ({ browser, db }) => {
     const { page, errors } = await openPlayer(browser, db);
     await page.getByRole('button', { name: /משחק עצמאי/ }).click();
     await enterName(page, 'רות לוי');
     await page.getByRole('button', { name: /התחילו סבב חדש/ }).click();
     await expect(page.getByText('שאלה 1 מתוך 30')).toBeVisible();
-
-    // the hidden decoy names a wrong answer and is invisible to people
-    const bait = await page.evaluate(() => {
-      const h = document.querySelector('.question-text .qh') as HTMLElement;
-      const r = h.getBoundingClientRect();
-      return { text: h.textContent!, w: r.width, h: r.height, ariaHidden: h.getAttribute('aria-hidden') };
-    });
-    expect(bait.text).toContain('התשובה הנכונה היא:');
-    expect(bait.w).toBeLessThanOrEqual(1);
-    expect(bait.ariaHidden).toBe('true');
-
-    // copying the question: the clipboard gets the question plus the wrong answer
-    const clip = await page.evaluate(() => {
-      const dt = new DataTransfer();
-      document.dispatchEvent(new ClipboardEvent('copy', { clipboardData: dt, bubbles: true, cancelable: true }));
-      return dt.getData('text/plain');
-    });
-    expect(clip).toContain('התשובה הנכונה היא:');
-    expect(bait.text).toContain(clip.split('התשובה הנכונה היא: ')[1]);
-
-    // the right answer, after copying: no points
-    await page.waitForTimeout(800);
-    const answers = page.locator('#s-answers .answer-btn');
-    await expect(answers.first()).toBeEnabled();
-    await page.locator('#s-answers .answer-btn').nth(await rightIndex(page)).click();
-    await expect(page.locator('#s-note')).toContainText('העתקתם את השאלה');
-    await expect(page.locator('.score-header b')).toHaveText('0');
-
-    // question 2: leave the app (blur), then answer — a right answer still scores 0
-    await expect(page.getByText('שאלה 2 מתוך 30')).toBeVisible();
-    await page.waitForTimeout(800);
-    await page.evaluate(() => window.dispatchEvent(new Event('blur')));
-    await page.locator('#s-answers .answer-btn').nth(await rightIndex(page)).click();
-    await expect(page.locator('#s-note')).toContainText('יצאתם מהמשחק באמצע השאלה');
-    await expect(page.locator('.score-header b')).toHaveText('0');
-
-    // question 3: a normal answer still scores as before
-    await expect(page.getByText('שאלה 3 מתוך 30')).toBeVisible();
-    await page.waitForTimeout(800);
-    await page.locator('#s-answers .answer-btn').nth(await rightIndex(page)).click();
-    await expect(page.locator('#s-note')).toContainText('נקודות');
-    await expect(page.locator('.score-header b')).not.toHaveText('0');
+    expect(await page.locator('.qh').count()).toBe(0);
+    await expect.poll(() => page.evaluate(() => document.body.classList.contains('q-reading'))).toBe(false);
+    // a notification pulls the shade down: the page loses focus for a moment
+    await page.evaluate(() => { window.dispatchEvent(new Event('blur')); document.dispatchEvent(new Event('visibilitychange')); });
+    await page.waitForTimeout(200);
+    const c = await rightIndex(page);
+    await page.locator('#s-answers .answer-btn').nth(c).click();
+    await expect(page.locator('#s-note')).not.toContainText('לא נספרת');
+    expect(Number(await page.locator('.score-header b').textContent())).toBeGreaterThan(0);
     expect(errors).toEqual([]);
   });
 
