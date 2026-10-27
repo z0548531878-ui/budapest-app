@@ -3429,12 +3429,14 @@ function cashBook(){
   const rows=ppl.map(n=>{
     const pin=S.participants.filter(p=>paidOf(p)>0&&holderOf(p)===n), din=S.donations.filter(d=>d.status==='התקבל'&&holderOf(d)===n);
     const out=S.expenses.filter(e=>+e.paid&&payerOf(e)===n);
-    const inn=pin.reduce((s,x)=>s+paidOf(x),0)+din.reduce((s,x)=>s+(+x.amount||0),0), o=out.reduce((s,x)=>s+(+x.paid||0),0);
+    // money handed from one organizer's box to the other's (settings kind:'handover' {from,to,amt,method,date,note})
+    const HV=S.settings.filter(x=>x.kind==='handover'&&!x.hidden&&+x.amt>0), hin=HV.filter(x=>x.to===n), hout=HV.filter(x=>x.from===n);
+    const inn=pin.reduce((s,x)=>s+paidOf(x),0)+din.reduce((s,x)=>s+(+x.amount||0),0)+hin.reduce((s,x)=>s+(+x.amt||0),0), o=out.reduce((s,x)=>s+(+x.paid||0),0)+hout.reduce((s,x)=>s+(+x.amt||0),0);
     const cnt=counted()[n];
     // split of the balance by how the money moved: cash in hand vs. in the account (card / transfer / bit)
     const kind=m=>/מזומן/.test(m||'')?'cash':(m||'').trim()?'acct':'unk', sp={cash:0,acct:0,unk:0};
-    pin.forEach(x=>sp[kind(x.method)]+=paidOf(x));din.forEach(x=>sp[kind(x.method)]+=(+x.amount||0));out.forEach(x=>sp[kind(x.method)]-=(+x.paid||0));
-    return {n,pin,din,out,inn,o,bal:inn-o,sp,cnt,gap:cnt?(+cnt.amt||0)-(inn-o):null}});
+    pin.forEach(x=>sp[kind(x.method)]+=paidOf(x));din.forEach(x=>sp[kind(x.method)]+=(+x.amount||0));out.forEach(x=>sp[kind(x.method)]-=(+x.paid||0));hin.forEach(x=>sp[kind(x.method)]+=(+x.amt||0));hout.forEach(x=>sp[kind(x.method)]-=(+x.amt||0));
+    return {n,pin,din,out,hin,hout,inn,o,bal:inn-o,sp,cnt,gap:cnt?(+cnt.amt||0)-(inn-o):null}});
   const un=S.participants.filter(p=>paidOf(p)>0&&!holderOf(p)), und=S.donations.filter(d=>d.status==='התקבל'&&!holderOf(d));
   // paid out of someone else's pocket (or nobody wrote who paid): they're owed the money back
   const own=S.expenses.filter(e=>+e.paid&&!ppl.includes(payerOf(e)));
@@ -3455,7 +3457,9 @@ function cashSeg(head){
     Object.values(g).forEach(ps=>{const c=coupleOf(ps[0]),part=ps.some(x=>x.status==='שולם חלקית');
       mv.push({h:r.n,dir:1,k:pmKind(ps[0].method),t:coupleLabel(c,ps[0])||ps[0].name,sub:[ps.length<c.length?'רק '+ps.map(x=>firstN(x.name)).join(' ו'):'',ps[0].method||'',part?'תשלום חלקי':''].filter(Boolean).join(' · '),amt:ps.reduce((t,x)=>t+paidOf(x),0),edit:'participants/'+ps[0]._id})});
     r.din.forEach(d=>mv.push({h:r.n,dir:1,k:pmKind(d.method),t:'תרומה: '+d.donor,sub:d.method||'',amt:+d.amount||0,edit:'donations/'+d._id}));
-    r.out.forEach(e=>mv.push({h:r.n,dir:-1,k:pmKind(e.method),t:e.name,sub:[e.category,e.method].filter(Boolean).join(' · '),amt:+e.paid||0,edit:'expenses/'+e._id}))});
+    r.out.forEach(e=>mv.push({h:r.n,dir:-1,k:pmKind(e.method),t:e.name,sub:[e.category,e.method].filter(Boolean).join(' · '),amt:+e.paid||0,edit:'expenses/'+e._id}));
+    r.hin.forEach(x=>mv.push({h:r.n,dir:1,k:pmKind(x.method),t:'🔁 התקבל מ'+x.from,sub:[x.method,x.date&&fmtDate(x.date),x.note].filter(Boolean).join(' · '),amt:+x.amt||0}));
+    r.hout.forEach(x=>mv.push({h:r.n,dir:-1,k:pmKind(x.method),t:'🔁 הועבר ל'+x.to,sub:[x.method,x.date&&fmtDate(x.date),x.note].filter(Boolean).join(' · '),amt:+x.amt||0}))});
   // totals per method for the selected people (before the method/type filters)
   const tot={};PMK.forEach(([k])=>tot[k]={i:0,o:0});mv.forEach(m=>tot[m.k][m.dir>0?'i':'o']+=m.amt);
   const TI=mv.filter(m=>m.dir>0).reduce((t,m)=>t+m.amt,0),TO=mv.filter(m=>m.dir<0).reduce((t,m)=>t+m.amt,0);
@@ -3467,7 +3471,7 @@ function cashSeg(head){
   const flt=chips('who',[['','שתי הקופות'],...rows.map(r=>[r.n,'אצל '+r.n])],who)+chips('ct',[['','הכנסות והוצאות'],['in','⬇ הכנסות'],['out','⬆ הוצאות']],ct)+chips('cm',[['','כל אמצעי התשלום'],...usedK],cm);
   const L=mv.filter(m=>(!cm||m.k===cm)&&(!ct||(ct==='in'?m.dir>0:m.dir<0))).sort((a,b)=>b.dir-a.dir||a.t.localeCompare(b.t,'he'));
   const LI=L.filter(m=>m.dir>0).reduce((t,m)=>t+m.amt,0),LO=L.filter(m=>m.dir<0).reduce((t,m)=>t+m.amt,0);
-  const mrow=m=>`<div class="row" data-edit="${m.edit}" role="button" tabindex="0"><div class="main"><div class="t">${esc(m.t)}</div><div class="m"><span>${esc([who?'':m.h,m.sub].filter(Boolean).join(' · '))}</span></div></div><span class="amt num" style="color:${m.dir>0?'var(--ok)':'var(--bad)'}">${m.dir>0?'+':'−'}${ils(m.amt)}</span></div>`;
+  const mrow=m=>`<div class="row" ${m.edit?`data-edit="${m.edit}" role="button" tabindex="0"`:''}><div class="main"><div class="t">${esc(m.t)}</div><div class="m"><span>${esc([who?'':m.h,m.sub].filter(Boolean).join(' · '))}</span></div></div><span class="amt num" style="color:${m.dir>0?'var(--ok)':'var(--bad)'}">${m.dir>0?'+':'−'}${ils(m.amt)}</span></div>`;
   const list=`<div class="ghead"><span>${[ct==='in'?'הכנסות':ct==='out'?'הוצאות':'תנועות',cm?pmLbl(cm):''].filter(Boolean).join(' · ')} <small class="num">(${L.length})</small></span><span class="num">${ct==='out'?'−'+ils(LO):ct==='in'?ils(LI):sgn(LI-LO)}</span></div>`+card(L.map(mrow).join(''),'<b>אין תנועות בסינון הזה</b>');
   const unk=un.length+und.length;
   const ownBy={};own.forEach(e=>{const k=payerOf(e)||'';(ownBy[k]=ownBy[k]||[]).push(e)});
@@ -5942,7 +5946,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='123262d2';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='b63b1cfd';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
