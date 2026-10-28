@@ -2949,6 +2949,17 @@ const SUB={
   return subHead('חדרים',`<span class="cnt num">${rk}/${rows.length} עם סט</span>`)+updBar('rooms')+(RHID()?'<div class="lockbar">🔒 טיוטה: השיבוץ גלוי רק למארגנים. המשתתפים לא רואים חדר. <button class="btn primary" id="rpub" style="margin-top:8px;width:100%">פרסום השיבוץ לכולם</button></div>':'<button class="btn" id="rpub" style="width:100%;margin:6px 0">🔒 החזרה למצב טיוטה (להסתיר מהמשתתפים)</button>')+`${KITLOCK()?'<div class="lockbar">🔒 סימון "הסט הונח בחדר" נפתח ביום המסע, 19.11. עד אז אפשר לצפות ולעדכן מספר חדר וקומה.</div>':'<p class="note">לחיצה על העיגול מסמנת שהסט הונח בחדר.</p>'}`+card(rows.map(r=>`<div class="row" data-edit="rooms/${r._id}" role="button" tabindex="0">${KITLOCK()?'<span class="check lock" aria-label="נעול">🔒</span>':`<button class="check ${r.kitReady?'on':''}" data-toggle="rooms/${r._id}" aria-label="סט הונח">${r.kitReady?CHECK:''}</button>`}
    <div class="main"><div class="t">${esc(r.occupants)}${babyRoom(r)?' 👶':''}</div><div class="m"><span>${esc(r.type)}</span>${babyRoom(r)?'<span class="pill p-gold">עם תינוק · עריסה</span>':''}${r.notes?`<span>${esc(r.notes)}</span>`:''}${r.kitReady&&r.kitBy?`<span class="who">📍 ${esc(firstN(r.kitBy))}${r.kitAt?' · '+esc(fmtWhen(r.kitAt)):''}</span>`:''}</div></div>${r.roomNumber||r.floor?`<span class="pill p-mute num">${esc(rLoc(r))}</span>`:'<span class="pill p-mute">ממתין למלון</span>'}</div>`).join(''));
  },
+ shops(){
+  // the same kit items, grouped by where they're bought (supplier / shop / Budapest); expenses stay as they are
+  const key=x=>{const sh=(x.shop||'').trim(),w=x.where||'';if(sh)return /ויינר/.test(sh)?'ויינר':sh;if(/אריס/.test(w)||x.kit==='הזמנה מאריס')return 'אריס – הזמנת אלכוהול';if(/דיוטי/.test(w))return 'דיוטי פרי';if(/חנה/.test(w))return 'מסעדת חנה';if(/בודפשט/.test(w))return 'קונים בבודפשט';return 'עוד לא נקבע איפה'};
+  const it=S.packing.filter(x=>x.item&&(!x.sug||kst(x,'ordered'))),g={};it.forEach(x=>{const k=key(x);(g[k]=g[k]||[]).push(x)});
+  const ord=Object.keys(g).sort((a,b)=>(a==='עוד לא נקבע איפה')-(b==='עוד לא נקבע איפה')||g[b].length-g[a].length);
+  const tot=a=>a.reduce((t,x)=>t+(+x.cost||0),0);
+  return subHead('קניות',`<span class="cnt num">${it.length} פריטים</span>`)+`<p class="note">כל פריטי הערכות לפי המקום שקונים בו. לחיצה על פריט פותחת אותו לעריכה, והעיגול מסמן "הוזמן". ההוצאות לא משתנות.</p>`+
+   ord.map((k,gi)=>{const a=g[k].slice().sort((x,y)=>String(kitOf(x)).localeCompare(String(kitOf(y)),'he')||byOrder(x,y)),od=a.filter(x=>kst(x,'ordered')).length;
+    return `<details class="card" style="margin:10px 0;padding:0" ${gi<2?'open':''}><summary style="list-style:none;cursor:pointer;padding:12px 14px;display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span><b>${esc(k)}</b><br><small style="color:var(--muted)">${a.length} פריטים · ${od} הוזמנו</small></span><b class="num">${ils(tot(a))}</b></summary>`+
+     a.map(x=>`<div class="row" data-edit="packing/${x._id}" role="button" tabindex="0"><button class="check ${kst(x,'ordered')?'on':''}" data-toggle="packing/${x._id}" aria-label="הוזמן">${kst(x,'ordered')?CHECK:''}</button><div class="main"><div class="t">${esc(x.item)}</div><div class="m"><span>${esc(String(kitOf(x)||'').replace(/^ערכה ל/,''))}</span>${x.notes?`<span>${esc(x.notes)}</span>`:''}</div></div><span class="amt num" style="text-align:left;white-space:nowrap;flex:none;min-width:70px">× ${esc(x.qty||1)}<br><small>${ils(+x.cost||0)}</small></span></div>`).join('')+`</details>`}).join('');
+ },
  flights(){
   const rows=S.flights.slice().sort((a,b)=>((a.date||'')+(a.dep||'')).localeCompare((b.date||'')+(b.dep||'')));
   const solo=S.participants.filter(p=>p.outbound==='נפרד'||p.returnGroup==='עצמאי');
@@ -3678,6 +3689,7 @@ const TILE_DEFS=()=>{const pk=S.packing.filter(x=>!x.sug||kst(x,'ordered')),pd=p
  ['appusers','phone','מי באפליקציה',(()=>{const a=appStat();return `${a.ok} התקינו + התראות`})(),'c3'],
  ['passports','file','דרכונים',`${S.participants.filter(p=>p.passport).length}/${S.participants.length}`,'c2'],
  ['kits','box','ערכות',`${kstat(kitItems()).placed}/${kitItems().length} הונחו`,'c5'],
+ ['shops','box','קניות',(()=>{const a=S.packing.filter(x=>x.item&&!x.sug);return `${a.filter(x=>!kst(x,'ordered')).length} עוד לא הוזמנו`})(),'c4'],
  ['rooms','bed','חדרים',`${S.rooms.length} · ${rk} עם סט`,'c5'],
  ['flights','plane','טיסות',`${S.flights.length} טיסות`,'c6'],
  ['files','file','מסמכים',`${S.files.filter(f=>f._id!=='f00').length} מסמכים · ${S.contacts.length} אנשים`,'c8'],
@@ -3685,7 +3697,7 @@ const TILE_DEFS=()=>{const pk=S.packing.filter(x=>!x.sug||kst(x,'ordered')),pd=p
  ['reqs','tasks','בקשות ואישורים',`${pendN()} ממתינות`,'c12'], ['announce','chat','הודעות',`${annList().length} פורסמו · ${msgDue().length} לשלוח`,'c13'], ['trivia','spark','טריוויה','משחק לאוטובוס','c10'],['rav','mic','הקלטת הרב',(()=>{const n=S.settings.filter(x=>x.kind==='audio'&&!x.hidden).length;return n?n+' פורסמו':'להעלאה לכולם'})(),'c14'],['tasks','tasks','משימות',`${S.tasks.filter(t=>t.status!=='בוצע').length} פתוחות`,'c3'],['photos','cam','תמונות מהמסע',PHL?`${PH.length} תמונות · העלאה`:'צפייה והעלאה','c7'],['rides','car','נסיעות לשדה',`${S.settings.filter(x=>x.kind==='ride'&&!x.hidden).length} נסיעות`,'c4'],
  ['roles','spark','תפקידים',`${Object.keys(rolesMap()).length} עם תפקיד`,'c11'],
  ]};
-const TORD=['passports','people','appusers','tasks','photos','rides','program','reqs','announce','rav','roles','flights','rooms','kits','files','attendance','trivia'];
+const TORD=['passports','people','appusers','tasks','photos','rides','program','reqs','announce','rav','roles','flights','rooms','kits','shops','files','attendance','trivia'];
 // gold = something there is waiting for you; the rest stay dark, so the eye goes straight to what's open
 const tileHot=k=>{try{return ({reqs:pendN()>0,passports:S.participants.some(p=>!p.passport),announce:msgDue().length>0})[k]||false}catch(e){return false}};
 const msgDue=()=>{const t=todayISO();return S.messages.filter(m=>!m.sent&&m.date&&m.date<=t)};
@@ -5981,7 +5993,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='8fa97fd4';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='f6e79086';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
