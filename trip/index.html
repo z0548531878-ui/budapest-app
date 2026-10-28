@@ -2951,7 +2951,7 @@ const SUB={
  },
  shops(){
   // the same kit items, grouped by where they're bought (supplier / shop / Budapest); expenses stay as they are
-  const key=x=>{const sh=(x.shop||'').trim(),w=x.where||'';if(sh)return /ויינר/.test(sh)?'ויינר':sh;if(/אריס/.test(w)||x.kit==='הזמנה מאריס')return 'אריס – הזמנת אלכוהול';if(/דיוטי/.test(w))return 'דיוטי פרי';if(/חנה/.test(w))return 'מסעדת חנה';if(/בודפשט/.test(w))return 'קונים בבודפשט';return 'עוד לא נקבע איפה'};
+  const key=x=>{const sh=(x.shop||'').trim(),w=x.where||'';if(sh)return /^וי?ינר/.test(sh)?'ויינר':/^סופר.*בודפשט|^בבודפשט/.test(sh)?'קונים בבודפשט':sh;if(/אריס/.test(w)||x.kit==='הזמנה מאריס')return 'אריס – הזמנת אלכוהול';if(/דיוטי/.test(w))return 'דיוטי פרי';if(/חנה/.test(w))return 'מסעדת חנה';if(/בודפשט/.test(w))return 'קונים בבודפשט';return 'עוד לא נקבע איפה'};
   const all=S.packing.filter(x=>x.item&&(!x.sug||kst(x,'ordered'))),so=V.filter.so||'',sb=V.filter.sb||'';
   const buyers=[...new Set(all.flatMap(x=>String(x.buyer||'').split(/,\s*/)).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'he'));
   const it=all.filter(x=>(!so||(so==='todo'?!kst(x,'ordered'):kst(x,'ordered')))&&(!sb||(sb==='none'?!x.buyer:String(x.buyer||'').split(/,\s*/).includes(sb)))),g={};it.forEach(x=>{const k=key(x);(g[k]=g[k]||[]).push(x)});
@@ -5996,7 +5996,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='77158f5d';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='3c8e0aa8';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
