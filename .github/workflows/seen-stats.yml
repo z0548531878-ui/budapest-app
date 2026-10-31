@@ -1,0 +1,10 @@
+# Read-only: how varied the pictures in players' recent rounds were
+name: Seen stats
+on: { workflow_dispatch: {} }
+permissions: { contents: read }
+jobs:
+  stats:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/seen_stats.py
