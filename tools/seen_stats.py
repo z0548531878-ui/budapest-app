@@ -21,6 +21,7 @@ while True:
     d = json.load(urllib.request.urlopen(base + '?pageSize=300' + ('&pageToken=' + tok if tok else '')))
     docs += d.get('documents', []); tok = d.get('nextPageToken')
     if not tok: break
+rows = []
 for doc in docs:
     name = doc['name'].split('/')[-1]
     if not name.startswith('seen_'): continue
@@ -28,4 +29,17 @@ for doc in docs:
     rec = keys[-450:]
     car = [k for k in rec if K.get(k, ('',))[0] == 'T25']
     unknown = sum(1 for k in rec if k not in K)
-    print(f"::notice::{name} total={len(keys)} last450: known={len(rec)-unknown} unknown={unknown} cars={len(car)} distinctCars={len(set(car))}")
+    rows.append(f"{name} total={len(keys)} last450: known={len(rec)-unknown} unknown={unknown} cars={len(car)} distinctCars={len(set(car))}")
+
+# the shared broken-pictures list
+d = json.load(urllib.request.urlopen(base + '/bad_imgs'))
+bad = [v.get('stringValue') for v in d.get('fields', {}).get('u', {}).get('arrayValue', {}).get('values', [])]
+imgs = {}
+for m in rx.finditer(h):
+    if m.group(3): imgs[un(m.group(3))] = m.group(1)
+from collections import Counter
+c = Counter(imgs.get(u, '?') for u in bad); tot = Counter(imgs.values())
+print('::notice::BAD total=' + str(len(bad)) + ' by topic: ' + ', '.join(f"{t}:{c[t]}/{tot.get(t,0)}" for t in sorted(set(c) | set(tot))))
+lines = [f"{name}" for name in []]
+
+for i in range(0, len(rows), 12): print('::notice::' + ' || '.join(rows[i:i+12]))
