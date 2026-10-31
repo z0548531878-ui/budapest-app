@@ -4925,7 +4925,7 @@ const TRIP_LOCK=(()=>{try{const q=new URLSearchParams(location.search);if(q.get(
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active'); fxOnScreen(id); if(id==='s-landing') appUpdateMaybe();}
 // ---- עדכון אוטומטי: גם אפליקציה שפתוחה כבר שעות מקבלת את הגרסה החדשה ----
 // בכל עדכון מעלים את APP_BUILD ואת version.json לאותו ערך. הטעינה מחדש קורית רק במסך הפתיחה — אף פעם באמצע משחק
-const APP_BUILD = '2026-10-31-1';
+const APP_BUILD = '2026-10-31-2';
 let appNewBuild = null;
 function appUpdateCheck(){
   if(/^(localhost|127\.)/.test(location.hostname) && !window.__testUpdate) return;
@@ -5123,7 +5123,7 @@ function clockHtml(prefix){ return `<div class="timer-bar qanim" id="${prefix}-c
 function answerTag(q){ return q.type==='poll' ? '✓ בחירת הרוב' : '✓ התשובה הנכונה'; }
 // שורות טבלת שיאים ממסמכי Firestore: רק מי שיש לו ניקוד, מהגבוה לנמוך; בשוויון — מי שסיים מהר יותר
 // שחקנים שלא מופיעים בטבלאות השיאים (לבקשתם) — המשחקים שלהם לא נשמרים בטבלה
-const LB_HIDDEN = new Set(['שלומי זינגר','טסט טסט'].map(n=>soloNameKey(n)));
+const LB_HIDDEN = new Set(['טסט טסט'].map(n=>soloNameKey(n))); // שלומי זינגר חזר לטבלאות (31.10)
 // שמות בדיקה (טסט / test) לא נכנסים לטבלאות
 const LB_JUNK = /טסט|test/i;
 const lbShown = d => !LB_HIDDEN.has(d.id) && !LB_JUNK.test(String((d.name!==undefined ? d.name : (d.data && d.data().name)) || d.id || ''));

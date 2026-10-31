@@ -43,3 +43,10 @@ print('::notice::BAD total=' + str(len(bad)) + ' by topic: ' + ', '.join(f"{t}:{
 lines = [f"{name}" for name in []]
 
 for i in range(0, len(rows), 12): print('::notice::' + ' || '.join(rows[i:i+12]))
+
+# is a name on the trip roster? (hashes in env ROSTER_CHECK, space separated)
+import os
+r = json.load(urllib.request.urlopen(base + '/trip_roster'))
+rh = set(v.get('stringValue') for v in r.get('fields', {}).get('h', {}).get('arrayValue', {}).get('values', []))
+chk = os.environ.get('ROSTER_CHECK', '').split()
+print('::notice::ROSTER size=' + str(len(rh)) + ' check=' + ','.join('1' if x in rh else '0' for x in chk))

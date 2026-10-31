@@ -8,3 +8,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: python3 tools/seen_stats.py
+        env: { ROSTER_CHECK: '1vbbpgykgau9u eexreu19rrb8 1l6ew5h1fi2pyr 1n7rvgv15vgimy' }
