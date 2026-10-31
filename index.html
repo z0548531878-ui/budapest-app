@@ -4925,7 +4925,7 @@ const TRIP_LOCK=(()=>{try{const q=new URLSearchParams(location.search);if(q.get(
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active'); fxOnScreen(id); if(id==='s-landing') appUpdateMaybe();}
 // ---- עדכון אוטומטי: גם אפליקציה שפתוחה כבר שעות מקבלת את הגרסה החדשה ----
 // בכל עדכון מעלים את APP_BUILD ואת version.json לאותו ערך. הטעינה מחדש קורית רק במסך הפתיחה — אף פעם באמצע משחק
-const APP_BUILD = '2026-10-26-3';
+const APP_BUILD = '2026-10-31-1';
 let appNewBuild = null;
 function appUpdateCheck(){
   if(/^(localhost|127\.)/.test(location.hostname) && !window.__testUpdate) return;
@@ -7037,19 +7037,21 @@ function signRaster(k){
   im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(SIGN_SVG[k]);
 }
 
-// ---------- תמונות שלא נטענות: מזהים מראש ומחליפים בשאלה אחרת ----------
-// בתחילת השימוש נבדקות כל התמונות בגרסה זעירה. תמונה שלא נטענת נרשמת (גם בענן, כדי שכולם ידעו)
-// ולא תיבחר יותר לסבב. כדי שניתוק רשת לא יסמן הכול כ"שבור" — מסמנים רק אחרי שכמה תמונות כבר נטענו בהצלחה.
-const BAD_IMG_KEY = 'trivia_bad_imgs';
-let BAD_IMGS = new Set((()=>{ try{ return JSON.parse(localStorage.getItem(BAD_IMG_KEY)||'[]'); }catch(e){ return []; } })());
+// ---------- תמונות שלא נטענות: מחליפים בשאלה אחרת ----------
+// תמונה שלא נטענה נרשמת רק בטלפון הזה ולשעות ספורות בלבד. בעבר נרשמה גם ברשימה משותפת בענן, ובדיקה יומית
+// של כל התמונות סימנה אותן כ"שבורות" בטעות (עומס בשרת התמונות, אינטרנט מסונן, רשת איטית) — וכך נעלמו
+// 35 מ-40 סמלי הרכב אצל כולם. הרשימה המשותפת והבדיקה היומית בוטלו (31.10)
+const BAD_IMG_KEY = 'trivia_bad_imgs_v2', BAD_IMG_TTL = 6*60*60*1000;
+try{ localStorage.removeItem('trivia_bad_imgs'); localStorage.removeItem('trivia_img_check_at'); }catch(e){}
+let BAD_AT = (()=>{ try{ const o = JSON.parse(localStorage.getItem(BAD_IMG_KEY)||'{}'); const now = Date.now(); return Object.fromEntries(Object.entries(o).filter(([u,t])=>now-t < BAD_IMG_TTL)); }catch(e){ return {}; } })();
+let BAD_IMGS = new Set(Object.keys(BAD_AT));
 let imgLoadOk = 0;
 function isPhotoUrl(u){ return !!u && u.indexOf('sign:')!==0 && u.indexOf('colors:')!==0; }
 function imgOk(q){ return !q || !isPhotoUrl(q.img) || !BAD_IMGS.has(q.img); }
 function markBadImg(u){
   if(!isPhotoUrl(u) || BAD_IMGS.has(u) || imgLoadOk < 3 || navigator.onLine===false) return false;
-  BAD_IMGS.add(u);
-  try{ localStorage.setItem(BAD_IMG_KEY, JSON.stringify([...BAD_IMGS])); }catch(e){}
-  try{ db.collection('rooms').doc('bad_imgs').set({u: FV.arrayUnion(u)}, {merge:true}).catch(()=>{}); }catch(e){}
+  BAD_IMGS.add(u); BAD_AT[u] = Date.now();
+  try{ localStorage.setItem(BAD_IMG_KEY, JSON.stringify(BAD_AT)); }catch(e){}
   return true;
 }
 function probeImg(u, done){
@@ -7060,24 +7062,7 @@ function probeImg(u, done){
   setTimeout(()=>end(null), 20000); // איטי — לא מסמנים
   im.src = u;
 }
-let imgCheckStarted = false;
-const IMG_CHECK_KEY = 'trivia_img_check_at', IMG_CHECK_EVERY_MS = 24*60*60*1000;
-function checkAllImgs(){
-  if(imgCheckStarted) return; imgCheckStarted = true;
-  try{ db.collection('rooms').doc('bad_imgs').get().then(d=>{ if(d.exists) (d.data().u||[]).forEach(u=>BAD_IMGS.add(u)); }).catch(()=>{}); }catch(e){}
-  // בדיקת כל ~155 התמונות היא מאות בקשות רשת — פעם ביום לכל טלפון מספיקה (התמונות השבורות כבר שמורות מקומית ובענן)
-  try{ if(Date.now() - Number(localStorage.getItem(IMG_CHECK_KEY)||0) < IMG_CHECK_EVERY_MS) return; localStorage.setItem(IMG_CHECK_KEY, String(Date.now())); }catch(e){}
-  const urls = [...new Set(SOLO_QUESTIONS.filter(q=>isPhotoUrl(q.img)).map(q=>q.img))];
-  const failed = []; let k = 0, running = 0;
-  const next = ()=>{
-    if(k >= urls.length){ if(!running && !next.done){ next.done = true; recheck(failed.slice()); } return; }
-    const u = urls[k++]; running++;
-    probeImg(u.replace(/width=\d+/, 'width=120'), ok=>{ running--; if(ok===false) failed.push(u); setTimeout(next, 120); });
-  };
-  const recheck = list=>{ if(!list.length) return; const u = list.shift();
-    setTimeout(()=>probeImg(u.replace(/width=\d+/, 'width=120'), ok=>{ if(ok===false) markBadImg(u); recheck(list); }), 2500); };
-  for(let i=0;i<2;i++) next();
-}
+function checkAllImgs(){} // הבדיקה היומית של כל התמונות בוטלה — ראו למעלה
 // תמונה שנכשלה בזמן שהשאלה מוצגת
 function qImgFail(el){
   const u = el && el.getAttribute('data-u'); markBadImg(u);

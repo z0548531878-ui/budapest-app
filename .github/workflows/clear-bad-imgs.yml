@@ -1,0 +1,14 @@
+# One-time: empty the shared broken-pictures list (it held false alarms that hid 265 pictures from everyone)
+name: Clear broken-pictures list
+on: { workflow_dispatch: {} }
+permissions: { contents: read }
+jobs:
+  clear:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          curl -s -X PATCH -H 'Content-Type: application/json' \
+            "https://firestore.googleapis.com/v1/projects/budapest-983e4/databases/(default)/documents/rooms/bad_imgs?updateMask.fieldPaths=u" \
+            -d '{"fields":{"u":{"arrayValue":{}}}}' | head -c 300
+          n=$(curl -s "https://firestore.googleapis.com/v1/projects/budapest-983e4/databases/(default)/documents/rooms/bad_imgs" | python3 -c 'import json,sys;d=json.load(sys.stdin);print(len(d.get("fields",{}).get("u",{}).get("arrayValue",{}).get("values",[])))')
+          echo "::notice::bad_imgs now has $n entries"

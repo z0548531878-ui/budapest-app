@@ -7,7 +7,7 @@ test('F13-H1 two question swaps per round', async ({ browser, db }) => {
   await enterName(page, 'מחליף שאלות');
   await page.getByRole('button', { name: /התחילו סבב חדש/ }).click();
   await expect(page.getByText('שאלה 1 מתוך 30')).toBeVisible();
-  const qText = () => page.locator('.question-text').evaluate(e => e.firstChild!.textContent);
+  const qText = () => page.evaluate(() => { const im = document.querySelector('.q-card img, .q-colors') as any; return document.querySelector('.question-text')!.firstChild!.textContent + '|' + (im ? (im.getAttribute('data-u') || im.getAttribute('src') || im.outerHTML) : ''); }); // image questions share the same text
   const seen = new Set([await qText()]);
   for (const left of [2, 1]) {
     const b = page.locator('#s-skipq');
