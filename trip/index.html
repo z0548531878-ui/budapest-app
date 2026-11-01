@@ -2409,6 +2409,43 @@ body.guest #view .gway .gw b{font-size:12px!important;line-height:1.2;font-weigh
 .ftools{grid-template-columns:repeat(5,1fr)!important;gap:6px!important}
 .ftools button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:58px!important;padding:6px 2px!important;font-size:11.5px!important;line-height:1.15;border-radius:13px!important}
 .ftools button i{font-style:normal;font-size:18px;line-height:1}
+/* participant tiles: each one has its own colour, so they are easy to tell apart */
+body.guest #view .gcb>.gc{--ac:#d6b262;--ag:rgba(214,178,98,.2)}
+body.guest #view .gcb>.gc[data-gnav="gm"]{--ac:#5aa9ff;--ag:rgba(90,169,255,.2)}
+body.guest #view .gcb>.gc[data-gnav="gt"]{--ac:#4fcf8f;--ag:rgba(79,207,143,.2)}
+body.guest #view .gcb>.gc[data-gnav="gd"]{--ac:#3cc8c8;--ag:rgba(60,200,200,.2)}
+body.guest #view .gcb>.gc[data-gnav="gp"]{--ac:#a685ff;--ag:rgba(166,133,255,.2)}
+body.guest #view .gcb>.gc[data-gnav="gx"]{--ac:#ff9a4d;--ag:rgba(255,154,77,.2)}
+body.guest #view .gcb>.gc[data-gnav="gz"]{--ac:#e9c46a;--ag:rgba(233,196,106,.22)}
+body.guest #view .gcb>.gc[data-gnav="gk"]{--ac:#8fb0c9;--ag:rgba(143,176,201,.2)}
+body.guest #view .gcb>.gc[data-gnav="gi"]{--ac:#ff7aa8;--ag:rgba(255,122,168,.2)}
+body.guest #view .gcb>.gc[data-gnav="gv"],body.guest #view .gcb>.gc[data-gnav="ge"]{--ac:#7fd1a5;--ag:rgba(127,209,165,.2)}
+body.guest #view .gcb>.gc:not(.gtrv){background:radial-gradient(110% 90% at 100% 0,var(--ag),transparent 62%),linear-gradient(160deg,#1c1710,#0e0c08)!important;border-color:var(--ag)!important}
+body.guest #view .gcb>.gc:not(.gtrv) .gc-i{background:var(--ac)!important;color:#0e0c08!important;border:0!important;box-shadow:0 6px 16px -6px var(--ac)!important}
+body.guest #view .gcb>.gc:not(.gtrv) .gc-i svg{stroke-width:2.1}
+body.guest #view .gcb>.gc:not(.gtrv):active{transform:scale(.96)}
+/* trivia stands out: a gold hero card */
+body.guest #view .gcb>.gc.gtrv{min-height:86px!important;padding:14px 14px 14px 104px!important;background:linear-gradient(115deg,#ffe6a3,#e2b552 45%,#b9862b)!important;border:0!important;box-shadow:0 16px 32px -16px rgba(240,190,90,.75),inset 0 1px 0 rgba(255,255,255,.55)!important;overflow:hidden;grid-template-columns:52px 1fr!important}
+body.guest #view .gcb>.gc.gtrv .gc-i{width:52px!important;height:52px!important;border-radius:16px!important;background:#15110a!important;color:#ffd977!important;border:0!important;animation:trvSpin 6s ease-in-out infinite}
+body.guest #view .gcb>.gc.gtrv .gc-i svg{width:28px!important;height:28px!important}
+body.guest #view .gcb>.gc.gtrv .gc-t{color:#15110a!important;font-size:19px!important;font-weight:900}
+body.guest #view .gcb>.gc.gtrv .gc-s{color:#4a3912!important;font-size:12.5px!important}
+.gtrv .gc-go{position:absolute;inset-inline-end:12px;top:50%;margin-top:-16px;height:32px;display:grid;place-items:center;padding:0 14px;border-radius:999px;background:#15110a;color:#ffd977;font-weight:900;font-size:13.5px;z-index:2;animation:trvGo 2.4s ease-in-out infinite}
+.gtrv .tsp{position:absolute;width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 10px 3px rgba(255,255,255,.8);opacity:0;animation:tsp 2.8s ease-in-out infinite;z-index:1;pointer-events:none}
+.gtrv .tsp:nth-of-type(1){top:16%;inset-inline-start:42%}.gtrv .tsp:nth-of-type(2){top:70%;inset-inline-start:62%;animation-delay:.9s}.gtrv .tsp:nth-of-type(3){top:28%;inset-inline-start:78%;animation-delay:1.8s}
+@keyframes tsp{0%,100%{opacity:0;transform:scale(.3)}45%{opacity:1;transform:scale(1)}}
+@keyframes trvGo{50%{transform:translateX(-4px)}}
+@keyframes trvSpin{0%,80%,100%{transform:none}88%{transform:rotate(-14deg) scale(1.08)}94%{transform:rotate(10deg)}}
+/* the strip under the flight card: four coloured actions */
+body.guest #view .gway{grid-template-columns:repeat(4,1fr)!important;gap:8px!important;margin:12px 0 2px!important}
+body.guest #view .gway .gw{padding:10px 4px 9px!important;border-radius:16px!important;background:linear-gradient(160deg,#1c1710,#0e0c08)!important;border:1px solid rgba(214,178,98,.3)!important;gap:6px!important}
+body.guest #view .gway .gw-i{width:38px!important;height:38px!important;border-radius:12px!important;animation:none!important;font-size:19px}
+body.guest #view .gway .gw.hotel .gw-i{background:linear-gradient(150deg,#ffe9a8,#c99a3d)!important;color:#15110a}
+body.guest #view .gway .gw.sim .gw-i{background:linear-gradient(150deg,#c4a8ff,#7c5ce0)!important;color:#fff}
+body.guest #view .gway .gw.drv .gw-i{background:linear-gradient(150deg,#8fd0ff,#3a84c9)!important;color:#fff}
+body.guest #view .gway .gw b{font-size:12px!important;line-height:1.2;color:var(--ink)!important}
+body.guest #view .gway .gw:active{transform:scale(.94)}
+@media (prefers-reduced-motion:reduce){.gtrv .tsp,.gtrv .gc-go,body.guest #view .gcb>.gc.gtrv .gc-i{animation:none!important}.gtrv .tsp{display:none}}
 /* participant boarding pass: card + flip clock; animations move only transform/opacity so phones stay smooth */
 .pass.bp2{flex-direction:column;border-radius:22px!important;background:linear-gradient(150deg,#221c11,#0f0d09)!important;border-color:rgba(214,178,98,.45)!important;contain:layout paint;animation:bpIn .8s cubic-bezier(.2,.8,.2,1) both}
 @keyframes bpIn{from{opacity:0;transform:perspective(700px) rotateX(24deg) translateY(18px)}}
@@ -5278,11 +5315,10 @@ function guestHTML0(){
        <div class="rdy-l">${items.map(([o,l,sb,g,ic,f],i)=>{const t='button';return `<${t} class="ri ${o?'ok':f>0?'mid':'bad'}" data-gnav="${g}" style="--i:${i}"><span class="ri-i">${ic}</span><span class="ri-t"><b>${l}${!o&&f>0?` <em class="ri-p num">${Math.round(f*100)}%</em>`:''}</b><small>${sb}</small></span><span class="ri-c">${o?'✓':'‹'}</span></${t}>`}).join('')}
 </div>${pct===100?'<i class="rdy-cele" aria-hidden="true"></i>':''}</section>`})();
     const way=`<section class="gway" aria-label="בדרכים">
-      <a class="gw" style="--i:0" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener" aria-label="ניווט למלון"><span class="gw-i">${IX.nav}</span><b>למלון</b></a>
-      <a class="gw rest" style="--i:1" href="${mapsGo(HANNA.q)}" target="_blank" rel="noopener" aria-label="ניווט למסעדת חנה"><span class="gw-i">${IX.food}</span><b>מסעדת חנה</b></a>
-      <a class="gw taxi" style="--i:2" href="${BOLT_URL}" rel="noopener" aria-label="מונית Bolt בבודפשט"><span class="gw-i">🚕</span><b>מונית</b></a>
-      ${DRIVER_PHONE?`<a class="gw drv" style="--i:3" href="${waLink(DRIVER_PHONE,`אנחנו צריכים דרייבר לנתב״ג`)}" target="_blank" rel="noopener" aria-label="דרייבר לשדה, הזמנה בוואטסאפ"><span class="gw-i">🚐</span><b>דרייבר</b></a>`:`<button class="gw drv" style="--i:3" data-nodrv aria-label="דרייבר לשדה, בקרוב"><span class="gw-i">🚐</span><b>דרייבר</b></button>`}
-      <button class="gw sim" style="--i:4" data-gnav="gn" aria-label="eSIM, קוד הנחה"><span class="gw-i">${IX.sim}</span><b>eSIM</b></button></section>`;
+      <a class="gw hotel" style="--i:0" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener"><span class="gw-i">${IX.nav}</span><b>ניווט<br>למלון</b></a>
+      <a class="gw taxi" style="--i:1" href="${BOLT_URL}" rel="noopener" aria-label="הזמנת מונית Bolt בבודפשט"><span class="gw-i">🚕</span><b>הזמנת<br>מונית</b></a>
+      ${DRIVER_PHONE?`<a class="gw drv" style="--i:2" href="${waLink(DRIVER_PHONE,`אנחנו צריכים דרייבר לנתב״ג`)}" target="_blank" rel="noopener" aria-label="הזמנת דרייבר לשדה בוואטסאפ"><span class="gw-i">🚐</span><b>הזמנת<br>דרייבר</b></a>`:`<button class="gw drv" style="--i:2" data-nodrv aria-label="הזמנת דרייבר לשדה, בקרוב"><span class="gw-i">🚐</span><b>הזמנת<br>דרייבר</b></button>`}
+      <button class="gw sim" style="--i:3" data-gnav="gn" aria-label="eSIM לחו״ל, קוד הנחה"><span class="gw-i">${IX.sim}</span><b>eSIM<br>לחו״ל</b></button></section>`;
     const SKY='<div class="gsky" aria-hidden="true">'+[[8,14,0],[22,6,.8],[35,22,1.6],[48,9,.4],[61,18,2.1],[74,5,1.2],[86,16,.2],[93,8,1.9],[14,30,2.4],[67,34,.9]].map(([x,y,d])=>`<i style="inset-inline-start:${x}%;top:${y}%;animation-delay:${d}s"></i>`).join('')+'<svg viewBox="0 0 400 90" preserveAspectRatio="xMidYMax slice"><path d="M0 90V70h30v-8h14v8h22V58h10v12h18V64h8v-6h6v6h8v6h26V52c0-9 8-14 16-18v-8l3-9 3 9v8c8 4 16 9 16 18v18h26V60h12v10h22v-6h10v6h26V56h12v14h30v-8h16v8h30v20z" fill="#0b0905" stroke="#c99a3d" stroke-opacity=".28" stroke-width="1"/></svg></div>';
     const ph=orgPhone();
     const orgP=(nm,fb)=>{const x=S.participants.find(q=>String(q.name||'').includes(nm));return (x&&x.phone)||fb};
@@ -5290,7 +5326,7 @@ function guestHTML0(){
     const help=`<section class="ghelp g3" aria-label="עזרה"><small class="gh-t">צריכים עזרה? כתבו לנו בוואטסאפ</small>
       <div class="gh-l">${ORGS.map(([n,t])=>`<a class="gh-w" href="${waLink(t)}" target="_blank" rel="noopener" aria-label="וואטסאפ ל${n}">${IX.wa||'💬'}<span>${n}</span></a>`).join('')}<a class="gh-w sos" href="tel:112" aria-label="חירום 112">112</a></div></section><p class="gcred">פותח על ידי שלומי זינגר · כל הזכויות שמורות ©</p>`;
     return pv+`<div class="ghome">${SKY}<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(coupleLabel(ppl,me)||'')}</b>${dayMood()?`<span class="mood">${dayMood()}</span>`:''}</div></div>
-     ${TRIPDAY()?(todayISO()==='2026-11-19'&&first&&Date.now()<depAt(first)+4*36e5?passBlock:''):passBlock+extraOut}${nowCard('data-gnav="gl"')}${voiceCard()}${chCard(1)}${ravCard()}${momentHTML()}${banner}${ciTasks(ppl).filter(c=>!c.done).map(ciCard).join('')}${TRIPDAY()?boardHTML(ppl)+tripDayBlock(ppl)+way:ready+boardHTML(ppl)}
+     ${TRIPDAY()?(todayISO()==='2026-11-19'&&first&&Date.now()<depAt(first)+4*36e5?passBlock:''):passBlock+extraOut}${way}${nowCard('data-gnav="gl"')}${voiceCard()}${chCard(1)}${ravCard()}${momentHTML()}${banner}${ciTasks(ppl).filter(c=>!c.done).map(ciCard).join('')}${TRIPDAY()?boardHTML(ppl)+tripDayBlock(ppl):ready+boardHTML(ppl)}
      <div class="gcb">
       ${(()=>{/* most used first; the order changes once the trip starts */
         const C={gs:()=>me&&me.kitter?cube('gs',I.box,'סידור ערכות בחדרים',(()=>{const rp=roomsPlaced();return rp.t?`הונחו ${rp.n} מתוך ${rp.t} חדרים`:'עדכון באיזה חדר סידרתם'})(),(()=>{const rp=roomsPlaced();return rp.t-rp.n||''})()):'',
@@ -5306,13 +5342,13 @@ function guestHTML0(){
           gx:()=>cube('gx',IX.food,'מסעדות ואטרקציות','איפה אוכלים כשר, ומה כדאי לראות'),
           gz:()=>cube('gz',IX.pin,'קרעסטיר','על רבי ישעיה׳לה ועל הציון'),
           gk:()=>cube('gk',IX.tools,'כלים לדרך','שעון, זמנים, מטבע, ביטויים'),
-          trv:()=>`<a class="gc gtrv" href="${trvHref()}" style="--i:${n++}"><span class="gc-i">${I.spark}</span><span class="gc-t">טריוויה על גלגלים</span><span class="gc-s">${open?'כל המשחקים פתוחים. בהצלחה!':'עצמאי וראש בראש פתוחים · קבוצתי ביום המסע'}</span></a>`,
+          trv:()=>`<a class="gc gtrv" href="${trvHref()}" style="--i:${n++}"><i class="tsp" aria-hidden="true"></i><i class="tsp" aria-hidden="true"></i><i class="tsp" aria-hidden="true"></i><span class="gc-go" aria-hidden="true">לשחק ‹</span><span class="gc-i">${I.spark}</span><span class="gc-t">טריוויה על גלגלים</span><span class="gc-s">${open?'כל המשחקים פתוחים. בהצלחה!':'עצמאי וראש בראש פתוחים · קבוצתי ביום המסע'}</span></a>`,
           ge:()=>cube('ge',IX.coin,'חשבון משותף','מי שילם, ומי חייב למי',(()=>{const b=me?Object.values(splitBal(me)).filter(v=>v<=-1).length:0;return b||''})())};
         const ord=TRIPDAY()?['gs','gkt','grm','gcn','gv','gm','gi','trv','gx','gk','gt','gz','gp','gd']:['gs','gkt','grm','gcn','gv','gm','trv','gt','gd','gp','gx','gz','gk','gi'];
         // two per row; trivia takes a full row, and an odd one out at the end too
         const L=ord.map(k=>C[k]()).filter(Boolean),odd=L.filter(x=>!x.includes('gtrv')).length%2;if(odd){const k=L.map(x=>!x.includes('gtrv')).lastIndexOf(true);L[k]=L[k].replace('class="gc','class="gc wide')}
         return L.join('')})()}
-     </div>${TRIPDAY()?'':way}
+     </div>
      ${flightGroups(ppl,'חזור').map(g=>guestFlightCard(g,ppl,'חזור')).join('')}
      ${help}</div>`}
   if(GTAB==='gx'){
@@ -6547,7 +6583,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='c6b4da02ad';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='e36743acf3';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
