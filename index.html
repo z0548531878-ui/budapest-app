@@ -4921,11 +4921,13 @@ let soloState=null;
 let hostAlertedFor=null, playerRoomUnsub=null, playerListUnsub=null;
 
 function $(id){return document.getElementById(id);}
+// נכנסו מאפליקציית המסע עם השם המלא: שומרים אותו, וכך לא צריך להירשם
+(()=>{try{const n=String(new URLSearchParams(location.search).get('name')||'').trim().replace(/\s+/g,' ');if(n.split(' ').length>=2&&n.length<=60){localStorage.setItem('trivia_full_name',n);sessionStorage.setItem('tripName',n)}}catch(e){}})();
 const TRIP_LOCK=(()=>{try{const q=new URLSearchParams(location.search);if(q.get('lock')==='1')sessionStorage.setItem('tripLock','1');return sessionStorage.getItem('tripLock')==='1'&&Date.now()<Date.parse('2026-11-19T00:00:00+02:00')}catch(e){return false}})();
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active'); fxOnScreen(id); if(id==='s-landing') appUpdateMaybe();}
 // ---- עדכון אוטומטי: גם אפליקציה שפתוחה כבר שעות מקבלת את הגרסה החדשה ----
 // בכל עדכון מעלים את APP_BUILD ואת version.json לאותו ערך. הטעינה מחדש קורית רק במסך הפתיחה — אף פעם באמצע משחק
-const APP_BUILD = '2026-10-31-2';
+const APP_BUILD = '2026-11-01-1';
 let appNewBuild = null;
 function appUpdateCheck(){
   if(/^(localhost|127\.)/.test(location.hostname) && !window.__testUpdate) return;
@@ -6779,7 +6781,8 @@ async function soloDoRegister(){
     const ref = soloPlayersRef().doc(id);
     const d = await ref.get();
     if(d.exists){
-      if(!confirm('השם "'+name+'" כבר רשום במשחק.\nזה אתם? לחצו "אישור" כדי להמשיך עם השיא שלכם.\nאם זה מישהו אחר — לחצו "ביטול" והוסיפו פרט מזהה לשם.')){
+      let fromTrip=false;try{fromTrip=sessionStorage.getItem('tripName')===name}catch(e){}
+      if(!fromTrip&&!confirm('השם "'+name+'" כבר רשום במשחק.\nזה אתם? לחצו "אישור" כדי להמשיך עם השיא שלכם.\nאם זה מישהו אחר — לחצו "ביטול" והוסיפו פרט מזהה לשם.')){
         btn.disabled=false; btn.textContent='🎯 הרשמה והמשך'; return;
       }
       best = d.data().best||0;
