@@ -2390,6 +2390,10 @@ body[data-sky="night"] .skyfx .stars{opacity:1}
 .ftools{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 4px}
 .ftools button{min-height:44px;border-radius:14px;border:1px solid rgba(214,178,98,.28);background:rgba(214,178,98,.06);color:var(--ink);font:inherit;font-weight:700;font-size:13.5px}
 #fxTop:not(:empty){padding-top:4px}#fxBot:not(:empty){padding-top:6px}
+.album{margin:12px 0 4px;padding:12px;border-radius:18px;border:1px solid rgba(214,178,98,.4);background:linear-gradient(160deg,#211a0f,#14110b)}
+.al-st{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;border-radius:12px;overflow:hidden}.al-st img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
+.al-t{margin:10px 2px}.al-t b{display:block;font-size:17px}.al-t small{color:var(--muted)}
+.al-b{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px}.al-b .btn{justify-content:center}
 .fx-phs{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.fx-phs .btn{flex:1}
 .fx-phs [aria-pressed="true"]{background:rgba(214,178,98,.2);border-color:#d6b262}
 .phv-tag{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);left:50%;transform:translateX(-50%);z-index:5;border:1px solid rgba(255,255,255,.3);background:rgba(0,0,0,.6);color:#fff;border-radius:999px;padding:9px 16px;font:inherit;font-size:14px}
@@ -4843,7 +4847,7 @@ const PLACES=[
 
 // a tapped notification opens the app on its screen (the service worker opens ./#tab=gl)
 let GKIT='todo';
-let GTAB=(()=>{try{const m=location.hash.match(/tab=(g[a-z])\b/);return m&&GNAV.concat([['gm'],['gk'],['gx'],['gp'],['gf'],['gt'],['gq']]).some(n=>n[0]===m[1])?m[1]:'gh'}catch(e){return 'gh'}})(), GSEG='open', GGEN='all', GQ='';
+let GTAB=(()=>{try{const m=location.hash.match(/tab=(g[a-z])\b/);return m&&GNAV.concat([['gm'],['gk'],['gx'],['gp'],['gf'],['gt'],['gq'],['gi']]).some(n=>n[0]===m[1])?m[1]:'gh'}catch(e){return 'gh'}})(), GSEG='open', GGEN='all', GQ='';
 const DRAFT={annTitle:'',annText:'',reqText:'',reqCat:'אחר'};
 const meG=()=>{if(PREV&&ROLE==='org'){return (PREVID&&S.participants.find(p=>p._id===PREVID))||S.participants.find(p=>p.name==='חיים פולק')||S.participants.find(p=>p.name==='שלומי זינגר')||null}return S.participants.find(p=>p._id===ROLE.slice(6))||null};
 const isPrevOrg=()=>PREV&&ROLE==='org';
@@ -4993,7 +4997,7 @@ function ridesHTML(ppl,me){
 /* ---- photos from the trip: 'photos' holds a small preview, 'photobig' the full picture (read only when opened) ---- */
 let PH=[], PHL=false, PHERR='', PHSUB=null, PHF='all', PHBUSY='', PHPCT=0, PHFAIL=[];
 const PHBIG={};
-function photosSub(){if(PHSUB||!db)return;PHSUB=db.collection('photos').orderBy('ts','desc').limit(500).onSnapshot(s=>{PH=s.docs.map(d=>({...d.data(),_id:d.id})).filter(p=>!p.hidden&&p.th);PHL=true;PHERR='';if(GTAB==='gi'||V.sub==='photos')render()},e=>{PHL=true;PHERR=(e&&e.code)||'err';render()})}
+function photosSub(){if(PHSUB||!db)return;PHSUB=db.collection('photos').orderBy('ts','desc').limit(500).onSnapshot(s=>{PH=s.docs.map(d=>({...d.data(),_id:d.id})).filter(p=>!p.hidden&&p.th);PHL=true;PHERR='';if(GTAB==='gi'||V.sub==='photos')render();else try{fxPaint()}catch(e){}},e=>{PHL=true;PHERR=(e&&e.code)||'err';render()})}
 const phSeen=()=>{try{return +localStorage.getItem('phSeen')||0}catch(e){return 0}};
 const photoNew=()=>PHL?PH.filter(p=>(p.ts||0)>phSeen()).length:0;
 const phMeId=()=>{const me=meG();return me?me._id:'org:'+(ME||'')};
@@ -5994,7 +5998,7 @@ document.addEventListener('click',e=>{
   if(T.closest('#pskip')){const st=(document.getElementById('pgate')||{}).dataset;if(st&&/^(ask|denied)/.test(st.st||''))SKIPN=1;else try{sessionStorage.setItem('skipInst','1')}catch(x){}pgate();return}
   if(T.closest('#pinst')&&DEFER){DEFER.prompt();DEFER.userChoice.then(c=>{if(c&&c.outcome==='accepted')INSTD=true}).finally(()=>{DEFER=null;pgate()});return}
 },true);
-const openTab=t=>{if(!t)return;if(GUEST()){if(GNAV.concat([['gm'],['gk'],['gx'],['gp'],['gf'],['gt'],['gq']]).some(n=>n[0]===t)){GTAB=t;render(true)}}else if(ROLE==='org'&&TABS.includes(t))go(t)};
+const openTab=t=>{if(!t)return;if(GUEST()){if(GNAV.concat([['gm'],['gk'],['gx'],['gp'],['gf'],['gt'],['gq'],['gi']]).some(n=>n[0]===t)){GTAB=t;render(true)}}else if(ROLE==='org'&&TABS.includes(t))go(t)};
 if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>openTab(e.data&&e.data.tab));
 addEventListener('hashchange',()=>{const m=location.hash.match(/tab=([a-z]+)/);if(m)openTab(m[1])});
 function confetti(){const box=document.createElement('div');box.className='cfx';box.setAttribute('aria-hidden','true');const col=['#ffe9a8','#f0c86e','#c99a3d','#7fd1a5','#fff'];
@@ -6022,7 +6026,7 @@ function nowBarPaint(){const c=document.querySelector('.nowc');if(!c)return;cons
   if(!bar){bar=document.createElement('div');bar.className='nc-bar';bar.setAttribute('role','progressbar');bar.setAttribute('aria-label','כמה עבר מהפריט הנוכחי');bar.innerHTML='<i></i>';row.appendChild(bar)}
   bar.setAttribute('aria-valuenow',p);bar.firstChild.style.width=p+'%'}
 function shabbatState(){const n=budNow();let z;try{z=zmanim(n.d)}catch(e){return null}
-  if(n.d==='2026-11-20'){const c=toMin(candleTm())||Math.round(z.shk-18);if(n.m>=600&&n.m<c)return {pre:1,left:c-n.m,at:hm(c)};if(n.m>=c)return {pre:0}}
+  if(n.d==='2026-11-20'){const c=toMin(candleTm())||Math.round(z.shk-18);if(n.m>=360&&n.m<c)return {pre:1,left:c-n.m,at:hm(c)};if(n.m>=c)return {pre:0}}
   if(n.d==='2026-11-21'&&n.m<z.tz)return {pre:0,out:hm(z.tz)};return null}
 function shabbatPaint(){const st=shabbatState(),v=document.getElementById('view');if(!v)return;let c=v.querySelector('.shabc');
   if(!st){if(c)c.remove();return}
@@ -6045,6 +6049,9 @@ const fxHome=()=>{const v=document.getElementById('view');return v&&(v.dataset.s
 function fxSlot(v,cls,html,after){let el=v.querySelector('.'+cls);if(!html){if(el)el.remove();return null}
   if(!el){el=document.createElement('section');el.className=cls;const a=after&&v.querySelector(after);if(a)a.after(el);else v.prepend(el)}
   if(el.__h!==html){el.__h=html;el.innerHTML=html}return el}
+
+/* Shabbat: reminders an hour and 20 minutes before candle lighting in Budapest */
+setInterval(()=>{try{if(!ROLE)return;const st=shabbatState();if(!st||!st.pre)return;[[60,'🕯 עוד שעה הדלקת נרות'],[20,'🕯 עוד 20 דקות הדלקת נרות. שבת שלום!']].forEach(([m,t])=>{if(st.left<=m&&st.left>m-5){const k='shab'+m,seen=lsGet('fxAl',{});if(seen[k])return;seen[k]=1;lsSet('fxAl',seen);fxNotify(`${t} · ${st.at}`,'shab')}})}catch(e){}},30000);
 
 /* 3. a heads-up 15 minutes before each item in the day's program (while the app is open or in the background) */
 setInterval(()=>{try{if(!ROLE)return;const z=nowNext();if(!z||!z.nxt)return;const left=z.nxt.mi-z.now;if(left<0||left>15)return;
@@ -6224,6 +6231,19 @@ const WHATSNEW=['⏰ תזכורת 15 דקות לפני כל דבר בלו״ז','
 function whatsNew(){if(navigator.webdriver||FX.wn||!ROLE||PREV)return;FX.wn=1;const k='fxWN1',seen=lsGet(k,0);lsSet(k,1);if(seen)return;if(!lsGet('fxSeen',0)&&GUEST())return;
   setTimeout(()=>{if(document.getElementById('scrim'))return;sheet(`<h3>✨ חדש באפליקציה</h3><ul class="missed">${WHATSNEW.map(w=>`<li><b>${w}</b></li>`).join('')}</ul><div class="sheet-acts"><span class="sp"></span><button class="btn primary" data-dismiss type="button">מעולה</button></div>`)},2500)}
 
+/* 10. the trip album: every photo by day, to save or share in one go (on home from the last trip evening) */
+const albumLink=()=>location.origin+location.pathname+(TRIP_KEY?'#k='+TRIP_KEY+'&tab=gi':'');
+function albumCard(){if(!PH.length)return '';const days=new Set(PH.map(p=>new Date(p.ts).toDateString())).size;
+  return `<div class="album"><div class="al-st">${PH.slice(0,4).map(p=>`<img src="${esc(p.th)}" alt="" loading="lazy">`).join('')}</div><div class="al-t"><b>📚 אלבום המסע</b><small>${PH.length} תמונות · ${days} ימים</small></div>
+   <div class="al-b"><button type="button" class="btn primary" id="fxAlbOpen">לאלבום</button><button type="button" class="btn" id="fxAlbShare">שיתוף</button><button type="button" class="btn" id="fxAlbSave">💾 שמירה</button></div></div>`}
+async function albumShare(){const t='אלבום מסע הגיבוש להונגריה 📸 כל התמונות של כולם, לפי ימים:\n'+albumLink();
+  try{if(navigator.share){await navigator.share({title:'אלבום המסע',text:t});return}}catch(e){if(e&&e.name==='AbortError')return}
+  location.href='https://wa.me/?text='+encodeURIComponent(t)}
+async function albumSave(){const L=PH.slice(0,60);if(!L.length){toast('עוד אין תמונות');return}toast(`מכין ${L.length} תמונות…`);
+  try{const files=[];for(const p of L)files.push(await phFile(p));if(navigator.canShare&&navigator.canShare({files})){await navigator.share({files,title:'אלבום המסע'});return}
+    for(const f of files){const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();a.remove();await new Promise(r=>setTimeout(r,350))}toast('האלבום נשמר')}catch(e){if(e&&e.name!=='AbortError')toast('השמירה לא הצליחה. נסו שוב')}}
+const albumTime=()=>{const n=budNow();return n.d>'2026-11-22'||(n.d==='2026-11-22'&&n.m>=17*60)};
+
 /* where it all shows: home cards, settings items, a few buttons */
 function fxPaint(){const v=document.getElementById('view');if(!v)return;const home=fxHome(),scr=v.dataset.scr;
   // home cards live in their own boxes around the screen, so the screen's own redraws (and their highlights) stay untouched
@@ -6235,16 +6255,17 @@ function fxPaint(){const v=document.getElementById('view');if(!v)return;const ho
     if(GUEST()){const td=budNow().d;if([TRIP_DAYS[0].d,TRIP_DAYS[TRIP_DAYS.length-1].d].includes(td))T.unshift(`<button type="button" class="fdbtn" data-gnav="gw">✈ יום טיסה · צ׳ק־אין וכרטיס העלייה</button>`);
       const pl=payLink(),me=meG(),ppl=me?coupleOf(me):[],need=ppl.filter(x=>x.status!=='פטור'&&+x.amount>0),left=need.reduce((t,x)=>t+(+x.amount||0)-paidOf(x),0);
       if(pl&&left>0)T.push(`<a class="paybtn" href="${esc(pl)}" target="_blank" rel="noopener" id="fxPay" data-amt="${Math.round(left)}">💳 לתשלום: ${ils(left)}<small>Bit / PayBox · הסכום יועתק</small></a>`);
+      if(albumTime()){photosSub();T.unshift(albumCard())}
       B.push(wxStrip(),`<div class="sosbar"><button type="button" id="fxSos">🆘 עזרה וחירום</button><button type="button" id="fxLost">📍 הלכתי לאיבוד</button></div>`)}
-    else{T.push(`<div class="ftools"><button type="button" id="fxField">🧭 מצב שטח</button><button type="button" id="fxPick">📍 נקודת איסוף</button><button type="button" id="fxSearch">🔍 חיפוש</button></div>`,morningCard());B.push(wxStrip())}
+    else{if(albumTime()){photosSub();T.unshift(albumCard())}T.push(`<div class="ftools"><button type="button" id="fxField">🧭 מצב שטח</button><button type="button" id="fxPick">📍 נקודת איסוף</button><button type="button" id="fxSearch">🔍 חיפוש</button></div>`,morningCard());B.push(wxStrip())}
     put(top,T.filter(Boolean).join(''));put(bot,B.filter(Boolean).join(''))}
-  if(scr==='ggi'||scr==='photos'){if(!v.querySelector('.fx-phs')){const a=v.querySelector('.ph-up');if(a){const d=document.createElement('div');d.className='fx-phs';d.innerHTML=`<button type="button" class="btn" id="fxPhSave">💾 שמירת התמונות של היום</button><button type="button" class="btn" id="fxPhMe" aria-pressed="${PHF==='me'}">🏷 תמונות שאני בהן</button>`;a.after(d)}}}
+  if(scr==='ggi'||scr==='photos'){if(!v.querySelector('.fx-phs')){const a=v.querySelector('.ph-up');if(a){const d=document.createElement('div');d.className='fx-phs';d.innerHTML=`<button type="button" class="btn" id="fxAlbShare">🔗 שיתוף האלבום</button><button type="button" class="btn" id="fxAlbSave">📚 שמירת כל האלבום</button><button type="button" class="btn" id="fxPhSave">💾 שמירת התמונות של היום</button><button type="button" class="btn" id="fxPhMe" aria-pressed="${PHF==='me'}">🏷 תמונות שאני בהן</button>`;a.after(d)}}}
   if(scr==='announce')annSchedPaint();
   appStatLinks();reqWatch();missedCheck();backupNudge();whatsNew();annQueue()}
 {const _fp=render;render=function(a){_fp(a);try{fxPaint()}catch(e){console.warn('fx',e)}}}
 document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;const id=(t.closest('[id]')||{}).id;
   if(id==='fxSos'){sosSheet();return}if(id==='fxLost'){lostSend();return}if(id==='fxField'){fieldSheet();return}if(id==='fxPick'){pickupSheet();return}if(id==='fxSearch'){gSearch();return}
-  if(id==='fxPhSave'){phSaveDay();return}if(id==='fxPhMe'){PHF=PHF==='me'?'all':'me';render();return}
+  if(id==='fxPhSave'){phSaveDay();return}if(id==='fxAlbShare'){albumShare();return}if(id==='fxAlbSave'){albumSave();return}if(id==='fxAlbOpen'){if(GUEST()){GTAB='gi';render(true)}else go('more',{sub:'photos'});scrollTo(0,0);return}if(id==='fxPhMe'){PHF=PHF==='me'?'all':'me';render();return}
   if(id==='fxPay'){const a=t.closest('#fxPay');try{navigator.clipboard&&navigator.clipboard.writeText(a.dataset.amt)}catch(x){}toast('הסכום הועתק: '+a.dataset.amt+' ₪')}});
 
 /* pull to refresh: only inside the installed app, where the phone has none of its own */
@@ -6310,7 +6331,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='829f3f959c';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='6f227608f5';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>

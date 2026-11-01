@@ -50,3 +50,27 @@ test('an error on a phone is reported to the organizers', async ({ browser, db }
   await page.evaluate("errReport('בדיקה: משהו נשבר','test')");
   await expect.poll(() => page.evaluate("S.settings.some(x => x.kind === 'err' && x.msg.includes('בדיקה'))")).toBe(true);
 });
+
+test('after the last evening, home offers the trip album to open, share and save', async ({ browser, db }) => {
+  await seedBigTrip(db);
+  const { page } = await openTrip(browser, db);
+  await page.clock.setFixedTime(new Date('2026-11-22T19:00:00+01:00'));
+  await page.evaluate(() => { localStorage.setItem('nogate', '1'); sessionStorage.setItem('skipInst', '1'); localStorage.setItem('role', 'guest:p2'); });
+  await page.reload();
+  await expect.poll(() => page.evaluate('COLS.every(c => loaded.has(c))')).toBe(true);
+  await page.evaluate(async () => { const ev = (0, eval); for (let i = 0; i < 3; i++) await ev('db').doc('photos/al' + i).set({ th: 'data:image/gif;base64,R0lGODlhAQABAAAAACw=', by: 'p5', byName: 'משה', ts: Date.now() - i * 864e5 }); });
+  await expect(page.locator('.album')).toContainText('3 תמונות');
+  await page.locator('#fxAlbOpen').click();
+  await expect.poll(() => page.evaluate('GTAB')).toBe('gi');
+});
+
+test('on Friday morning the Shabbat card already counts down to candle lighting', async ({ browser, db }) => {
+  await seedBigTrip(db);
+  const { page } = await openTrip(browser, db);
+  await page.clock.setFixedTime(new Date('2026-11-20T07:30:00+01:00'));
+  await page.evaluate(() => { localStorage.setItem('nogate', '1'); sessionStorage.setItem('skipInst', '1'); localStorage.setItem('role', 'guest:p2'); });
+  await page.reload();
+  await expect.poll(() => page.evaluate('COLS.every(c => loaded.has(c))')).toBe(true);
+  await page.evaluate('render(true)');
+  await expect(page.locator('.shabc')).toContainText('הדלקת נרות');
+});
