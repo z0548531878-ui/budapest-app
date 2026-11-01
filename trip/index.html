@@ -2368,6 +2368,31 @@ body[data-sky="night"] .skyfx .stars{opacity:1}
 @keyframes ptrGo{0%{transform:rotate(-90deg)}30%{transform:rotate(-90deg) translateX(-4px)}100%{transform:rotate(-120deg) translate(160px,-40px);opacity:0}}
 @media (prefers-reduced-motion:reduce){#ptr.go svg{animation:none}}
 .vwnote{margin:2px 2px 10px;font-size:13.5px;color:#d9b45f}
+
+/* ===== participant UI pass ===== */
+/* 7. tile icons in outline; solid gold only where something is new */
+body.guest .gcb>.gc .gc-i{background:transparent!important;border:1.5px solid rgba(214,178,98,.55)!important;color:#f0d28c!important;box-shadow:none!important}
+body.guest .gcb>.gc.nw .gc-i{background:linear-gradient(180deg,#f6dc93,#c99a3d)!important;color:#15110a!important;border:0!important}
+/* 8. readiness: finished items fold */
+.rdy-l .ri-done{display:none!important}.rdy-l.ri-open .ri-done{display:flex!important}
+.ri-sum{display:flex;align-items:center;gap:8px;width:100%;padding:9px 12px;border-radius:12px;border:1px dashed rgba(95,194,138,.45);background:rgba(95,194,138,.06);color:#bfe9cf;font:inherit;font-weight:700;font-size:14px}
+.ri-sum span{color:#5fc28a}.ri-sum i{margin-inline-start:auto;font-style:normal;font-size:12.5px;color:var(--muted);font-weight:600}
+/* 4 + 9. slim bar */
+#slimBar{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;align-items:center;gap:8px;padding:calc(env(safe-area-inset-top,0px) + 8px) 14px 8px;background:rgba(12,10,7,.96);border-bottom:1px solid rgba(214,178,98,.3);transform:translateY(-110%);transition:transform .28s cubic-bezier(.2,.8,.2,1);font-size:13.5px;pointer-events:none}
+#slimBar.on{transform:none}#slimBar img{width:26px;height:26px;border-radius:50%}#slimBar>b{font-family:var(--display);color:#f0d28c;font-size:15px;white-space:nowrap}
+#slimBar span{margin-inline-start:auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#f3ead3}#slimBar span small{color:var(--muted)}#slimBar span b{color:#f6dc93}
+/* 10. a tile grows into its screen */
+.grow-o{position:fixed;z-index:60;border-radius:20px;background:linear-gradient(160deg,#211a0f,#0b0a08);border:1px solid rgba(214,178,98,.45);display:grid;place-items:center;transition:left .3s cubic-bezier(.2,.8,.2,1),top .3s cubic-bezier(.2,.8,.2,1),width .3s cubic-bezier(.2,.8,.2,1),height .3s cubic-bezier(.2,.8,.2,1),border-radius .3s,opacity .25s;pointer-events:none}
+.grow-o.full{left:0!important;top:0!important;width:100vw!important;height:100vh!important;border-radius:0}.grow-o.gone{opacity:0}
+.grow-o .gc-i{width:64px;height:64px;border-radius:20px;display:grid;place-items:center;border:1.5px solid rgba(214,178,98,.6);color:#f0d28c}.grow-o .gc-i svg{width:32px;height:32px}
+/* 12. a checkmark draws itself */
+@media (prefers-reduced-motion:no-preference){.check.on svg path,.ri.ok .ri-c,.gpt-ok{stroke-dasharray:16;animation:ckDraw .45s cubic-bezier(.2,.8,.2,1) both}@keyframes ckDraw{from{stroke-dashoffset:16}to{stroke-dashoffset:0}}}
+/* 13 + 14. readable text, one rhythm of space between sections */
+body.guest #view{font-size:16px}
+body.guest #view :is(.gc-s,.sc-s,.ri small,.ann p,.note,.ghint,.nc-row span){font-size:max(13px,1em)}
+body.guest .ghome{display:flex;flex-direction:column;gap:14px}
+body.guest .ghome>*{margin-block:0!important}
+body.guest .ghome>.gsky{position:absolute}
 /* feature pack */
 .fdbtn{display:block;width:100%;margin:12px 0 4px;padding:14px;border:0;border-radius:16px;background:linear-gradient(180deg,#f6dc93,#c99a3d);color:#15110a;font:inherit;font-weight:800;font-size:16px}
 .pickc{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0 4px;padding:12px 14px;border-radius:16px;border:1px solid rgba(95,194,138,.5);background:rgba(95,194,138,.08)}
@@ -5192,7 +5217,7 @@ function guestHTML0(){
     const help=`<section class="ghelp g3" aria-label="עזרה"><small class="gh-t">צריכים עזרה? כתבו לנו בוואטסאפ</small>
       <div class="gh-l">${ORGS.map(([n,t])=>`<a class="gh-w" href="${waLink(t)}" target="_blank" rel="noopener" aria-label="וואטסאפ ל${n}">${IX.wa||'💬'}<span>${n}</span></a>`).join('')}<a class="gh-w sos" href="tel:112" aria-label="חירום 112">112</a></div></section><p class="gcred">פותח על ידי שלומי זינגר · כל הזכויות שמורות ©</p>`;
     return pv+`<div class="ghome">${SKY}<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(coupleLabel(ppl,me)||'')}</b>${dayMood()?`<span class="mood">${dayMood()}</span>`:''}</div></div>
-     ${nowCard('data-gnav="gl"')}${voiceCard()}${chCard(1)}${ravCard()}${momentHTML()}${banner}${ciTasks(ppl).filter(c=>!c.done).map(ciCard).join('')}${TRIPDAY()?boardHTML(ppl)+(todayISO()==='2026-11-19'&&first&&Date.now()<depAt(first)+4*36e5?passBlock:'')+tripDayBlock(ppl):boardHTML(ppl)+passBlock+extraOut+progCard()+ready}${prepHTML(ppl)}${way}
+     ${nowCard('data-gnav="gl"')}${voiceCard()}${chCard(1)}${ravCard()}${momentHTML()}${banner}${ciTasks(ppl).filter(c=>!c.done).map(ciCard).join('')}${TRIPDAY()?boardHTML(ppl)+(todayISO()==='2026-11-19'&&first&&Date.now()<depAt(first)+4*36e5?passBlock:'')+tripDayBlock(ppl):ready+boardHTML(ppl)+passBlock+extraOut}${prepHTML(ppl)}${way}
      <div class="gcb">
       ${(()=>{/* most used first; the order changes once the trip starts */
         const C={gs:()=>me&&me.kitter?cube('gs',I.box,'סידור ערכות בחדרים',(()=>{const rp=roomsPlaced();return rp.t?`הונחו ${rp.n} מתוך ${rp.t} חדרים`:'עדכון באיזה חדר סידרתם'})(),(()=>{const rp=roomsPlaced();return rp.t-rp.n||''})()):'',
@@ -6337,6 +6362,25 @@ function kerSheet(){sheet(`<h3>🕯 ברוכים הבאים לקרעסטיר</h3
    <div class="sheet-acts"><span class="sp"></span><button class="btn primary" type="button" id="fxKerMore">עוד על הצדיק</button></div>`);
   document.getElementById('fxKerMore').onclick=()=>{closeSheet();setTimeout(()=>{GTAB='gz';render(true);scrollTo(0,0)},120)}}
 
+/* ===== participant UI pass: compact tiles, one gold action, readiness shows what's left, a slim bar on scroll,
+   tiles that grow into their screen, a drawn checkmark ===== */
+/* 8. readiness: finished items fold into one line */
+function rdyFold(){const L=document.querySelector('#view .rdy-l');if(!L||L.__fold)return;const ok=[...L.querySelectorAll('.ri.ok')];if(!ok.length||ok.length===L.children.length)return;L.__fold=1;
+  ok.forEach(x=>x.classList.add('ri-done'));const b=document.createElement('button');b.type='button';b.className='ri-sum';b.innerHTML=`<span>✓</span>${ok.length===1?'דבר אחד הושלם':ok.length+' הושלמו'}<i>הצגה</i>`;
+  b.onclick=()=>{const open=L.classList.toggle('ri-open');b.querySelector('i').textContent=open?'הסתרה':'הצגה'};L.appendChild(b)}
+/* 4 + 9. a slim bar on scroll: the trip's name, and on trip days what's next */
+(()=>{const bar=document.createElement('div');bar.id='slimBar';bar.setAttribute('aria-hidden','true');document.body.appendChild(bar);let on=false,tick=false;
+  const paint=()=>{tick=false;const show=GUEST()&&ROLE&&scrollY>170&&!document.getElementById('gate')&&!document.body.classList.contains('pg');
+    if(show){const z=nowNext(),h=`<img src="logo.webp" alt=""><b>מסע גיבוש הונגריה</b>${z&&z.nxt?`<span><small>הבא</small> ${esc(z.nxt.ti)} · <b class="num">${esc(z.nxt.tm)}</b></span>`:z&&z.cur?`<span><small>עכשיו</small> ${esc(z.cur.ti)}</span>`:''}`;if(bar.__h!==h){bar.__h=h;bar.innerHTML=h}}
+    if(show!==on){on=show;bar.classList.toggle('on',show)}};
+  addEventListener('scroll',()=>{if(!tick){tick=true;requestAnimationFrame(paint)}},{passive:true});setInterval(paint,30000)})();
+/* 10. a tile grows into its screen */
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('.gcb>.gc[data-gnav]');if(!t||reduce||e.__grown)return;
+  const r=t.getBoundingClientRect(),k=t.dataset.gnav,o=document.createElement('div');o.className='grow-o';o.style.cssText=`left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px`;
+  const ic=t.querySelector('.gc-i');o.innerHTML=ic?`<span class="gc-i">${ic.innerHTML}</span>`:'';document.body.appendChild(o);e.stopPropagation();e.preventDefault();
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{o.classList.add('full')}));
+  setTimeout(()=>{GTAB=k;V.seg=null;render(true);scrollTo(0,0);o.classList.add('gone');setTimeout(()=>o.remove(),260)},300)},true);
+
 /* where it all shows: home cards, settings items, a few buttons */
 function fxPaint(){const v=document.getElementById('view');if(!v)return;const home=fxHome(),scr=v.dataset.scr;
   // home cards live in their own boxes around the screen, so the screen's own redraws (and their highlights) stay untouched
@@ -6356,6 +6400,7 @@ function fxPaint(){const v=document.getElementById('view');if(!v)return;const ho
     put(top,T.filter(Boolean).join(''));put(bot,B.filter(Boolean).join(''))}
   if(scr==='ggi'||scr==='photos'){if(!v.querySelector('.fx-phs')){const a=v.querySelector('.ph-up');if(a){const d=document.createElement('div');d.className='fx-phs';d.innerHTML=`${GUEST()?'<button type="button" class="btn primary" id="fxFace">🙋 מצאו אותי בתמונות</button>':''}<button type="button" class="btn" id="fxAlbShare">🔗 שיתוף האלבום</button><button type="button" class="btn" id="fxAlbSave">📚 שמירת כל האלבום</button><button type="button" class="btn" id="fxPhSave">💾 שמירת התמונות של היום</button><button type="button" class="btn" id="fxPhMe" aria-pressed="${PHF==='me'}">🏷 תמונות שאני בהן</button>`;a.after(d)}}}
   if(scr==='announce')annSchedPaint();
+  if(scr==='ggh')rdyFold();
   appStatLinks();reqWatch();missedCheck();backupNudge();whatsNew();annQueue()}
 {const _fp=render;render=function(a){_fp(a);try{fxPaint()}catch(e){console.warn('fx',e)}}}
 document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;const id=(t.closest('[id]')||{}).id;
@@ -6426,7 +6471,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='d26ccc2e5d';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='d8250da528';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>

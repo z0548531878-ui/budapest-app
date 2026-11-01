@@ -135,3 +135,11 @@ test('on the way to Kerestur a welcome to the tomb opens, offline', async ({ bro
   await page.locator('#fxKer').click();
   await expect(page.getByRole('dialog')).toContainText('רבי ישעיה מקרעסטיר');
 });
+
+test('scrolling down shows a slim bar with the trip name and what is next', async ({ browser, db }) => {
+  const page = await at(browser, db, '2026-11-20T11:20:00+01:00');
+  await expect(page.locator('#slimBar')).not.toHaveClass(/on/);
+  await page.evaluate(() => scrollTo(0, 900));
+  await expect(page.locator('#slimBar')).toHaveClass(/on/);
+  await expect(page.locator('#slimBar')).toContainText('הבא');
+});
