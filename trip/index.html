@@ -2391,6 +2391,15 @@ body[data-sky="night"] .skyfx .stars{opacity:1}
 .ftools button{min-height:44px;border-radius:14px;border:1px solid rgba(214,178,98,.28);background:rgba(214,178,98,.06);color:var(--ink);font:inherit;font-weight:700;font-size:13.5px}
 #fxTop:not(:empty){padding-top:4px}#fxBot:not(:empty){padding-top:6px}
 .thxc{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:14px 0 4px;padding:12px 14px;border-radius:16px;border:1px solid rgba(240,200,110,.4);background:rgba(240,200,110,.06)}.thxc b{display:block;font-size:15px}.thxc small{color:var(--muted);font-size:12.5px}.thx-b{display:flex;gap:6px;flex:none}
+.retc,.motz{margin:12px 0 4px;padding:14px;border-radius:18px;border:1px solid rgba(127,178,232,.45);background:linear-gradient(160deg,#141c2a,#0e0c09)}
+.retc>b,.ret-h b,.motz>b{font-size:16px}.retc small,.motz small{display:block;color:var(--muted);font-size:12.5px}
+.ret-h{display:flex;justify-content:space-between;align-items:center;gap:8px}.ret-cd{font-size:12.5px;font-weight:800;color:#9cc3ef;background:rgba(127,178,232,.14);border-radius:99px;padding:3px 10px}
+.ret-g{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin:10px 0 6px}.ret-g b{font-size:18px;display:block}
+.ret-f{display:flex;align-items:center;gap:8px}.ret-f span{font-size:12px;color:var(--muted)}.ret-f sup{font-size:10px;color:var(--muted)}
+.ret-n{margin-top:4px}
+.motz{border-color:rgba(214,178,98,.4);background:linear-gradient(160deg,#211a0f,#14110b)}.motz-b{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.motz-b .btn{justify-content:center}
+.kerc{display:flex;align-items:center;gap:12px;width:100%;margin:12px 0 4px;padding:14px;border-radius:18px;border:1px solid rgba(255,190,90,.5);background:radial-gradient(90% 120% at 90% 100%,rgba(255,170,60,.16),transparent 70%),#14110b;color:var(--ink);font:inherit;text-align:start}
+.kerc span{font-size:28px}.kerc div{flex:1}.kerc b{display:block;font-size:16px}.kerc small{color:var(--muted);font-size:12.5px}.kerc i{font-style:normal;color:#f6dc93;font-size:20px}
 .album{margin:12px 0 4px;padding:12px;border-radius:18px;border:1px solid rgba(214,178,98,.4);background:linear-gradient(160deg,#211a0f,#14110b)}
 .al-st{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;border-radius:12px;overflow:hidden}.al-st img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
 .al-t{margin:10px 2px}.al-t b{display:block;font-size:17px}.al-t small{color:var(--muted)}
@@ -6290,6 +6299,44 @@ function thxReveal(){const L=thxMine().sort((a,b)=>a.ts-b.ts);sheet(`<h3>💛 ${
 function thxCard(){if(!GUEST())return '';const n=thxMine().length,open=THX_OPEN();
   return `<div class="thxc"><div><b>💛 תודה שקטה</b><small>${open?(n?`קיבלתם ${n} תודות. לחצו לראות`:'אפשר עדיין לשלוח תודה'):(n?`מחכות לכם ${n} תודות · ייפתחו במוצאי שבת`:'שלחו תודה בלי שם למישהו מהמסע')}</small></div><div class="thx-b">${open&&n?'<button type="button" class="btn primary" id="fxThxOpen">לראות</button>':''}<button type="button" class="btn" id="fxThx">לשלוח</button></div></div>`}
 
+/* 11. "my way home": the return group, its time to leave for the airport, the flight, and reminders for that group only */
+const RET_MAP={'מוצ״ש':'א','ראשון צהריים':'ב','ראשון ערב':'ג'};
+function myReturn(){const me=GUEST()&&meG();if(!me||!me.returnGroup)return null;if(me.returnGroup==='עצמאי')return {solo:1};
+  const L=RET_MAP[me.returnGroup],row=L&&FLIGHTS_HOME.find(r=>r[0]===L),f=S.flights.find(x=>x.dir==='חזור'&&x.group===me.returnGroup);if(!row&&!f)return null;
+  const date=(row&&/21\.11/.test(row[2]))?'2026-11-21':'2026-11-22',m=row&&String(row[7]).match(/(\d{1,2}:\d{2})/),leave=m?m[1]:'';
+  return {name:row?row[1]:me.returnGroup,when:row?row[2]:'',no:(f&&f.flightNo)||(row&&row[3])||'',dep:(f&&f.dep)||(row&&row[4])||'',arr:(f&&f.arr)||(row&&row[5])||'',next:row&&row[6],leave,leaveTxt:row?row[7]:'',date}}
+function returnCard(){const r=myReturn();if(!r)return '';const n=budNow();if(n.d<'2026-11-21'||n.d>'2026-11-22')return '';
+  if(r.solo)return `<div class="retc"><b>🧳 החזרה שלכם</b><small>חוזרים עצמאית. נסיעה טובה! שאלות? בצ׳אט או לשלומי.</small></div>`;
+  const leaveMin=toMin(r.leave),left=r.date===n.d&&leaveMin!=null?leaveMin-n.m:null;if(r.date<n.d||(left!=null&&left<-120))return '';
+  return `<div class="retc"><div class="ret-h"><b>🧳 החזרה שלי · ${esc(r.name)}</b>${left!=null&&left>0&&left<=180?`<span class="ret-cd">בעוד ${esc(inMin(left).replace('בעוד ',''))}</span>`:''}</div>
+   <div class="ret-g"><div><small>${esc(r.when)}</small><b class="num">${esc(r.leaveTxt||'')}</b></div><div class="ret-f" dir="ltr"><b class="num">${esc(r.dep)}</b><span>BUD → TLV</span><b class="num">${esc(r.arr)}${r.next?'<sup>+1</sup>':''}</b></div></div>
+   <small class="ret-n">${esc(r.no)} · דרכון ביד, צ׳ק־אין בטלפון, מזוודות סגורות בלובי</small></div>`}
+setInterval(()=>{try{const r=myReturn();if(!r||r.solo||!r.leave)return;const n=budNow();if(n.d!==r.date)return;const left=toMin(r.leave)-n.m;
+  [[60,'🧳 עוד שעה יוצאים לשדה'],[15,'🧳 עוד 15 דקות יוצאים לשדה. לרדת ללובי']].forEach(([m,t])=>{if(left<=m&&left>m-5){const k='ret'+m,seen=lsGet('fxAl',{});if(seen[k])return;seen[k]=1;lsSet('fxAl',seen);fxNotify(`${t} · ${r.leave} · ${r.name}`,'ret')}})}catch(e){}},30000);
+
+/* 12. Saturday night, for whoever stays: kosher places nearby, and a table to join */
+const STAYING=()=>{const me=GUEST()&&meG();return !!me&&me.returnGroup&&me.returnGroup!=='מוצ״ש'};
+const MOTZ_OPEN=()=>{const n=budNow();return n.d==='2026-11-21'&&n.m>=17*60};
+function motzCard(){if(!MOTZ_OPEN()||!STAYING())return '';const d=S.settings.find(x=>x._id==='motzash')||{},j=d.join||{},ids=Object.keys(j).filter(k=>j[k]),me=meG(),inn=me&&j[me._id];
+  return `<div class="motz"><b>🍽 ארוחה חופשית ברובע היהודי</b><small>${ids.length?`${ids.length} מצטרפים לשולחן משותף`:'מי שנשאר הערב: אפשר לאכול יחד'}${d.meet?' · '+esc(d.meet):''}</small><div class="motz-b"><button type="button" class="btn ${inn?'':'primary'}" id="fxMotzJoin">${inn?'✓ מצטרפ/ת':'אני מצטרף/ת'}</button><button type="button" class="btn" id="fxMotzList">איפה אוכלים</button></div></div>`}
+function motzList(){const d=S.settings.find(x=>x._id==='motzash')||{},j=d.join||{},names=S.participants.filter(p=>j[p._id]).map(p=>firstN(p.name));
+  const eat=PLACES.slice(0,2).flatMap(g=>g.l);
+  sheet(`<h3>🍽 מוצאי שבת ברובע היהודי</h3><p class="note">כל המקומות במרחק הליכה מהמלון. במוצאי שבת שעות הפתיחה משתנות: בודקים במקום, וגם תעודת כשרות בתוקף.</p>
+   ${names.length?`<div class="annq"><b>יוצאים יחד</b><div>${names.map(esc).join(' · ')}</div></div>`:''}
+   <div class="sos">${eat.map(([he,en,addr,dist,note])=>`<a class="sos-b" href="${mapsGo(en+' '+addr)}" target="_blank" rel="noopener"><b>${esc(he)}</b><small>${esc(dist)}${note?' · '+esc(note):''}</small></a>`).join('')}</div>`)}
+async function motzJoin(){const me=meG();if(!me)return;const d=S.settings.find(x=>x._id==='motzash')||{},on=!(d.join||{})[me._id];
+  if(await gset('settings/motzash',{kind:'motzash',join:{[me._id]:on}}))toast(on?'נרשמתם. נתראה בארוחה':'הוסרתם מהרשימה')}
+
+/* 2. arriving in Kerestur: a short, offline welcome to the tomb, on the bus before arrival */
+const KER_WIN=()=>{const n=budNow();return n.d==='2026-11-19'&&n.m>=13*60+30&&n.m<17*60};
+function kerCard(){return GUEST()&&KER_WIN()?`<button type="button" class="kerc" id="fxKer"><span>🕯</span><div><b>מגיעים לקרעסטיר</b><small>על רבי ישעיה׳לה ומה עושים בציון · עובד גם בלי קליטה</small></div><i>‹</i></button>`:''}
+function kerSheet(){sheet(`<h3>🕯 ברוכים הבאים לקרעסטיר</h3><p class="note">רבי ישעיה מקרעסטיר זי״ע (ה׳תר״א–ה׳תרפ״ה), ״רבי ישעיה׳לה״, נודע באהבת החסד ובהכנסת האורחים שלו. אלפים עולים לציון בכל שנה.</p>
+   <ul class="missed"><li><b>📜 תהילים ושמות</b><span>מתפללים בשביל עצמנו ובשביל מי שביקש מאיתנו, ומזכירים שמות לישועה</span></li>
+   <li><b>✍️ פתק</b><span>נוהגים להשאיר פתק עם בקשה</span></li><li><b>🕯 נר</b><span>מדליקים נר לעילוי נשמת הצדיק</span></li>
+   <li><b>💧 נטילת ידיים</b><span>ביציאה מבית העלמין</span></li><li><b>⚠️ כהנים</b><span>לא נכנסים לבית העלמין. שואלים את המארגנים מה מסודר עבורם</span></li></ul>
+   <div class="sheet-acts"><span class="sp"></span><button class="btn primary" type="button" id="fxKerMore">עוד על הצדיק</button></div>`);
+  document.getElementById('fxKerMore').onclick=()=>{closeSheet();setTimeout(()=>{GTAB='gz';render(true);scrollTo(0,0)},120)}}
+
 /* where it all shows: home cards, settings items, a few buttons */
 function fxPaint(){const v=document.getElementById('view');if(!v)return;const home=fxHome(),scr=v.dataset.scr;
   // home cards live in their own boxes around the screen, so the screen's own redraws (and their highlights) stay untouched
@@ -6302,6 +6349,7 @@ function fxPaint(){const v=document.getElementById('view');if(!v)return;const ho
       const pl=payLink(),me=meG(),ppl=me?coupleOf(me):[],need=ppl.filter(x=>x.status!=='פטור'&&+x.amount>0),left=need.reduce((t,x)=>t+(+x.amount||0)-paidOf(x),0);
       if(pl&&left>0)T.push(`<a class="paybtn" href="${esc(pl)}" target="_blank" rel="noopener" id="fxPay" data-amt="${Math.round(left)}">💳 לתשלום: ${ils(left)}<small>Bit / PayBox · הסכום יועתק</small></a>`);
       if(albumTime()){photosSub();T.unshift(albumCard())}
+      T.unshift(kerCard(),returnCard(),motzCard());
       B.push(thxCard());
       B.push(wxStrip(),`<div class="sosbar"><button type="button" id="fxSos">🆘 עזרה וחירום</button><button type="button" id="fxLost">📍 הלכתי לאיבוד</button></div>`)}
     else{if(albumTime()){photosSub();T.unshift(albumCard())}T.push(`<div class="ftools"><button type="button" id="fxField">🧭 מצב שטח</button><button type="button" id="fxPick">📍 נקודת איסוף</button><button type="button" id="fxSearch">🔍 חיפוש</button></div>`,morningCard());B.push(wxStrip())}
@@ -6312,7 +6360,7 @@ function fxPaint(){const v=document.getElementById('view');if(!v)return;const ho
 {const _fp=render;render=function(a){_fp(a);try{fxPaint()}catch(e){console.warn('fx',e)}}}
 document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;const id=(t.closest('[id]')||{}).id;
   if(id==='fxSos'){sosSheet();return}if(id==='fxLost'){lostSend();return}if(id==='fxField'){fieldSheet();return}if(id==='fxPick'){pickupSheet();return}if(id==='fxSearch'){gSearch();return}
-  if(id==='fxPhSave'){phSaveDay();return}if(id==='fxAlbShare'){albumShare();return}if(id==='fxFace'){faceSheet();return}if(id==='fxThx'){thxSheet();return}if(id==='fxThxOpen'){thxReveal();return}if(id==='fxAlbSave'){albumSave();return}if(id==='fxAlbOpen'){if(GUEST()){GTAB='gi';render(true)}else go('more',{sub:'photos'});scrollTo(0,0);return}if(id==='fxPhMe'){PHF=PHF==='me'?'all':'me';render();return}
+  if(id==='fxPhSave'){phSaveDay();return}if(id==='fxAlbShare'){albumShare();return}if(id==='fxKer'){kerSheet();return}if(id==='fxMotzJoin'){motzJoin();return}if(id==='fxMotzList'){motzList();return}if(id==='fxFace'){faceSheet();return}if(id==='fxThx'){thxSheet();return}if(id==='fxThxOpen'){thxReveal();return}if(id==='fxAlbSave'){albumSave();return}if(id==='fxAlbOpen'){if(GUEST()){GTAB='gi';render(true)}else go('more',{sub:'photos'});scrollTo(0,0);return}if(id==='fxPhMe'){PHF=PHF==='me'?'all':'me';render();return}
   if(id==='fxPay'){const a=t.closest('#fxPay');try{navigator.clipboard&&navigator.clipboard.writeText(a.dataset.amt)}catch(x){}toast('הסכום הועתק: '+a.dataset.amt+' ₪')}});
 
 /* pull to refresh: only inside the installed app, where the phone has none of its own */
@@ -6378,7 +6426,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='02ad8edd36';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='d26ccc2e5d';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>

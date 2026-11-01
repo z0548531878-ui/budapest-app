@@ -102,3 +102,36 @@ test('the photos screen offers "find me in the photos" to participants', async (
   await page.locator('#fxFace').click();
   await expect(page.getByRole('dialog')).toContainText('הזיהוי נעשה רק בטלפון הזה');
 });
+
+const at = async (browser: any, db: any, when: string, extra?: (db: any) => Promise<void>) => {
+  await seedBigTrip(db);
+  if (extra) await extra(db);
+  const { page } = await openTrip(browser, db);
+  await page.clock.setFixedTime(new Date(when));
+  await page.evaluate(() => { localStorage.setItem('nogate', '1'); sessionStorage.setItem('skipInst', '1'); localStorage.setItem('role', 'guest:p2'); });
+  await page.reload();
+  await expect.poll(() => page.evaluate('COLS.every(c => loaded.has(c))')).toBe(true);
+  await page.evaluate('render(true)');
+  return page;
+};
+
+test('my way home: the return group, when to leave for the airport, and the flight', async ({ browser, db }) => {
+  const page = await at(browser, db, '2026-11-21T15:30:00+01:00', async d => { await d.put(`${T}/participants/p2`, { returnGroup: 'מוצ״ש' }); });
+  await expect(page.locator('.retc')).toContainText('קבוצה א׳');
+  await expect(page.locator('.retc')).toContainText('יציאה לשדה 17:20');
+  await expect(page.locator('.ret-cd')).toBeVisible();
+});
+
+test('Saturday night: whoever stays sees kosher places nearby and can join a shared table', async ({ browser, db }) => {
+  const page = await at(browser, db, '2026-11-21T18:30:00+01:00', async d => { await d.put(`${T}/participants/p2`, { returnGroup: 'ראשון ערב' }); });
+  await page.locator('#fxMotzJoin').click();
+  await expect.poll(() => page.evaluate("!!(S.settings.find(x => x._id === 'motzash') || {}).join?.p2")).toBe(true);
+  await page.locator('#fxMotzList').click();
+  await expect(page.getByRole('dialog')).toContainText('אשיז');
+});
+
+test('on the way to Kerestur a welcome to the tomb opens, offline', async ({ browser, db }) => {
+  const page = await at(browser, db, '2026-11-19T14:10:00+01:00');
+  await page.locator('#fxKer').click();
+  await expect(page.getByRole('dialog')).toContainText('רבי ישעיה מקרעסטיר');
+});
