@@ -64,8 +64,9 @@ test('organizers: personal message and a task for everyone from the messages scr
   // the home tiles start with passports and participants ("who is in the app" came in next, then tasks)
   await expect(page.locator('.cubes.tiles .cube b').nth(0)).toHaveText('דרכונים');
   await expect(page.locator('.cubes.tiles .cube b').nth(1)).toHaveText('משתתפים');
-  await expect(page.locator('.cubes.tiles .cube b').nth(2)).toHaveText('משימות');
-  await page.locator('.cubes.tiles .cube').nth(2).click();
+  // tasks have their own work card and bottom-bar tab, so no second tile
+  await expect(page.locator('.cubes.tiles .cube b', { hasText: /^משימות$/ })).toHaveCount(0);
+  await page.locator('.bigc').getByRole('button', { name: /משימות/ }).first().click();
   await expect.poll(() => page.evaluate('V.tab')).toBe('tasks');
   await page.evaluate(`go('more',{sub:'announce'})`);
   await page.locator('[data-ann-mode="one"]').click();
