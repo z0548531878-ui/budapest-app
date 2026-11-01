@@ -54,6 +54,8 @@ html.orgro body::after{content:'👁 צפייה בלבד';position:fixed;top:cal
 <meta property="og:locale" content="he_IL">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+<link rel="dns-prefetch" href="https://api.open-meteo.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=Frank+Ruhl+Libre:wght@500;700;900&family=Suez+One&display=swap">
 <style>
 /* Layout: phone app shell. Navy masthead with parliament silhouette, boarding-pass hero, soft card sections,
@@ -2366,6 +2368,42 @@ body[data-sky="night"] .skyfx .stars{opacity:1}
 @keyframes ptrGo{0%{transform:rotate(-90deg)}30%{transform:rotate(-90deg) translateX(-4px)}100%{transform:rotate(-120deg) translate(160px,-40px);opacity:0}}
 @media (prefers-reduced-motion:reduce){#ptr.go svg{animation:none}}
 .vwnote{margin:2px 2px 10px;font-size:13.5px;color:#d9b45f}
+/* feature pack */
+.fdbtn{display:block;width:100%;margin:12px 0 4px;padding:14px;border:0;border-radius:16px;background:linear-gradient(180deg,#f6dc93,#c99a3d);color:#15110a;font:inherit;font-weight:800;font-size:16px}
+.pickc{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0 4px;padding:12px 14px;border-radius:16px;border:1px solid rgba(95,194,138,.5);background:rgba(95,194,138,.08)}
+.pickc small{display:block;color:#9fd8b6;font-size:12.5px}.pickc b{font-size:16px}
+.wx{margin:14px 0 6px;padding:12px 14px;border-radius:16px;border:1px solid rgba(214,178,98,.22);background:rgba(214,178,98,.05)}
+.wx>b{font-size:13px;color:var(--muted)}.wx-r{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px;text-align:center}
+.wx-r small{display:block;font-size:12px;color:var(--muted)}.wx-r span{font-size:22px;display:block}.wx-r b{font-size:13.5px}.wx-r i{display:block;font-style:normal;font-size:11.5px;color:#9cc3ef}
+.wx-n{display:block;margin-top:6px;font-size:12.5px;color:#e0b45c}
+.sosbar{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.sosbar button{min-height:46px;border-radius:14px;border:1px solid rgba(224,84,74,.45);background:rgba(224,84,74,.08);color:#f2c2bc;font:inherit;font-weight:800}
+.sos{display:flex;flex-direction:column;gap:8px}.sos-b{display:block;text-align:start;padding:13px 14px;border-radius:14px;border:1px solid rgba(214,178,98,.25);background:rgba(214,178,98,.05);color:var(--ink);text-decoration:none;font:inherit;width:100%}
+.sos-b b{display:block;font-size:16px}.sos-b small{color:var(--muted);font-size:12.5px}.sos-b.red{border-color:rgba(224,84,74,.6);background:rgba(224,84,74,.12)}.sos-b.red b{font-size:24px;color:#ff8a80}
+.paybtn{display:block;margin:10px 0;padding:13px 14px;border-radius:16px;background:linear-gradient(180deg,#f6dc93,#c99a3d);color:#15110a;font-weight:800;font-size:16px;text-decoration:none;text-align:center}
+.paybtn small{display:block;font-weight:600;font-size:12px;opacity:.8}
+.morn{margin:12px 0 4px;padding:14px;border-radius:18px;border:1px solid rgba(214,178,98,.35);background:linear-gradient(160deg,#211a0f,#14110b)}
+.morn>b{font-size:15px}.morn small{color:var(--muted)}.morn.ok small{display:block;margin-top:2px}
+.morn-r{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-top:10px}
+.morn-r button{padding:10px;border-radius:12px;border:1px solid rgba(214,178,98,.25);background:rgba(214,178,98,.06);color:var(--ink);font:inherit;text-align:start}
+.morn-r b{display:block;font-size:22px;color:#f6dc93}.morn-r small{font-size:12px}
+.ftools{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 4px}
+.ftools button{min-height:44px;border-radius:14px;border:1px solid rgba(214,178,98,.28);background:rgba(214,178,98,.06);color:var(--ink);font:inherit;font-weight:700;font-size:13.5px}
+#fxTop:not(:empty){padding-top:4px}#fxBot:not(:empty){padding-top:6px}
+.fx-phs{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.fx-phs .btn{flex:1}
+.fx-phs [aria-pressed="true"]{background:rgba(214,178,98,.2);border-color:#d6b262}
+.phv-tag{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);left:50%;transform:translateX(-50%);z-index:5;border:1px solid rgba(255,255,255,.3);background:rgba(0,0,0,.6);color:#fff;border-radius:999px;padding:9px 16px;font:inherit;font-size:14px}
+.tglist{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;max-height:48vh;overflow:auto}
+.schedl{display:flex;flex-direction:column;gap:4px;margin-top:10px;font-size:13px;color:var(--muted)}.schedl input{min-height:42px;border-radius:12px;border:1px solid rgba(214,178,98,.3);background:#13110d;color:var(--ink);padding:0 10px;font:inherit}
+.annq{margin-top:10px;padding:10px 12px;border-radius:12px;background:rgba(214,178,98,.06);font-size:13px;display:flex;flex-direction:column;gap:4px}.annq b{color:#f6dc93}
+.pfto{margin-top:8px;min-height:40px;border-radius:10px;width:100%}
+.missed{list-style:none;margin:6px 0;padding:0;display:flex;flex-direction:column;gap:8px}.missed li{padding:10px 12px;border-radius:12px;background:rgba(214,178,98,.06)}.missed b{display:block}.missed span{font-size:13px;color:var(--muted)}
+.allog{display:flex;flex-direction:column;gap:6px;max-height:60vh;overflow:auto;margin-top:8px}.al{display:flex;gap:10px;padding:8px 4px;border-bottom:1px solid rgba(214,178,98,.1);font-size:14px}.al .av{flex:none}.al small{display:block;color:var(--muted)}.al i{display:block;font-style:normal;font-size:11.5px;color:var(--muted)}
+.field-m{display:flex;flex-direction:column;gap:12px}.fm-big{padding:22px;border-radius:20px;border:1px solid rgba(214,178,98,.4);background:rgba(214,178,98,.08);color:var(--ink);font:inherit}.fm-big b{display:block;font-size:48px;color:#f6dc93}
+.fm-next{padding:14px;border-radius:16px;background:rgba(255,255,255,.04)}.fm-next small{color:var(--muted)}.fm-next b{display:block;font-size:20px}
+.fm-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.fm-row .btn{justify-content:center;font-size:13px}
+.gsr{display:flex;flex-direction:column;gap:6px;margin-top:10px;max-height:56vh;overflow:auto}.gsi{display:grid;grid-template-columns:28px 1fr;grid-template-rows:auto auto;column-gap:8px;text-align:start;padding:10px;border-radius:12px;border:1px solid rgba(214,178,98,.15);background:rgba(214,178,98,.04);color:var(--ink);font:inherit}
+.gsi span{grid-row:1/3;font-size:18px;align-self:center}.gsi small{color:var(--muted);font-size:12.5px}
 /* spacing and tap size: nothing glued to its neighbour, nothing too small for a thumb */
 .progb{margin-top:12px!important}
 /* the screen area keeps its place: a first card's top margin no longer pulls the whole screen down by a few px when you switch tabs */
@@ -3258,10 +3296,11 @@ document.getElementById('ideaBtn').onclick=()=>updSheet(curScope());
 function openSettings(){
   const it=(at,ic,l,sub,cls)=>`<button class="setit${cls?' '+cls:''}" ${at}><span class="ic">${ic}</span><span class="main"><b>${l}</b>${sub?`<small>${sub}</small>`:''}</span></button>`;
   let h;
-  if(GUEST())h=`<h3>הגדרות</h3><div class="setlist">${it('id="pdiag"','🔔','התראות ובדיקת תקינות','מה מגיע לטלפון ואם הכול עובד')}${(()=>{const ph=orgPhone();return ph?`<a class="setit" href="${waLink(ph)}" target="_blank" rel="noopener"><span class="ic">💬</span><span class="main"><b>שאלה לשלומי</b><small>וואטסאפ למארגן המסע</small></span></a>`:''})()}${isPrevOrg()?'':it('data-switch','🔄','החלפת משתמש','יציאה מהשם שלכם וכניסה בשם אחר','out')}</div>`;
-  else h=`<h3>הגדרות</h3><div class="setlist">${it('data-set="me"','👤','מי אני',ME?esc(ME):'עוד לא נבחר')}${it('data-set="settings"','💾','צוות, גיבוי וייצוא','שיתוף עם הצוות, אקסל, שחזור')}${it('data-set="settings"','🗑','נמחקו לאחרונה',trashed().length?trashed().length+' פריטים':'')}${it('data-set="guide"','❓','איך זה עובד','')}${it('data-switch','🔄','החלפת משתמש','יציאה מהחשבון וכניסה מחדש','out')}</div>`;
+  if(GUEST())h=`<h3>הגדרות</h3><div class="setlist">${it('data-fx="sos"','🆘','עזרה וחירום','112, המארגן, ניווט למלון, השגרירות')}${it('id="pdiag"','🔔','התראות ובדיקת תקינות','מה מגיע לטלפון ואם הכול עובד')}${(()=>{const ph=orgPhone();return ph?`<a class="setit" href="${waLink(ph)}" target="_blank" rel="noopener"><span class="ic">💬</span><span class="main"><b>שאלה לשלומי</b><small>וואטסאפ למארגן המסע</small></span></a>`:''})()}${isPrevOrg()?'':it('data-switch','🔄','החלפת משתמש','יציאה מהשם שלכם וכניסה בשם אחר','out')}</div>`;
+  else h=`<h3>הגדרות</h3><div class="setlist">${it('data-fx="field"','🧭','מצב שטח','ספירה, הבא בלו״ז, הודעה מהירה')}${it('data-fx="search"','🔍','חיפוש בכל האפליקציה','')}${it('data-fx="log"','📜','יומן פעולות','מי שינה מה, לפי אדם')}${it('data-fx="roles"','👥','הרשאות צוות','מי יכול לשנות מה')}${it('data-fx="pay"','💳','קישור לתשלום','Bit או PayBox למשתתפים')}${it('data-fx="report"','📄','דוח סיום מסע','מאזן, הוצאות ותרומות, לשמירה כ־PDF')}${it('data-fx="err"','🐞','תקלות מהשטח',(()=>{const n=S.settings.filter(x=>x.kind==='err'&&!x.hidden).length;return n?n+' חדשות':'אין'})())}${it('data-set="me"','👤','מי אני',ME?esc(ME):'עוד לא נבחר')}${it('data-set="settings"','💾','צוות, גיבוי וייצוא','שיתוף עם הצוות, אקסל, שחזור')}${it('data-set="settings"','🗑','נמחקו לאחרונה',trashed().length?trashed().length+' פריטים':'')}${it('data-set="guide"','❓','איך זה עובד','')}${it('data-switch','🔄','החלפת משתמש','יציאה מהחשבון וכניסה מחדש','out')}</div>`;
   sheet(h);
   const r=document.getElementById('sheetRoot');
+  r.querySelectorAll('[data-fx]').forEach(b=>b.onclick=()=>{const k=b.dataset.fx;closeSheet();setTimeout(()=>({sos:sosSheet,field:fieldSheet,search:gSearch,log:actLog,roles:rolesSheet,pay:payLinkSheet,report:tripReport,err:errSheet})[k](),120)});
   r.querySelectorAll('[data-set]').forEach(b=>b.onclick=()=>{const k=b.dataset.set;closeSheet();if(k==='me'){setTimeout(()=>pickMe(),60);return}go('more',{sub:k})});
   // switching user forgets the remembered name too, so the entry screen opens empty
   const sw=r.querySelector('[data-switch]');if(sw)sw.onclick=()=>{closeSheet();try{localStorage.removeItem('lastG')}catch(e){}logoutRole();if(document.getElementById('gate')&&TRIP_KEY)showGate('new')};
@@ -3856,7 +3895,7 @@ function progSheet(key){
     if(!await save('settings','prog',{...strip(find('settings','prog')||{}),fix:all}))return;
     // a merge keeps keys that were removed from the map: remove the reverted one explicitly
     if(!f&&db){try{await db.doc('settings/prog').update({['fix.'+key]:firebase.firestore.FieldValue.delete()})}catch(e){console.warn('prog reset',e)}}
-    if(annText&&document.getElementById('pfAnn').checked&&db){const ts=Date.now();db.doc('settings/ann_'+ts).set({kind:'ann',title:'שינוי בלוח המסע',text:annText,ts,prog:key}).catch(()=>toast('ההודעה למשתתפים לא נשלחה'))}
+    if(annText&&document.getElementById('pfAnn').checked&&db){const ts=Date.now();db.doc('settings/ann_'+ts).set({kind:'ann',title:'שינוי בלוח המסע',text:annText,ts,prog:key,...pfTo()}).catch(()=>toast('ההודעה למשתתפים לא נשלחה'))}
     closeSheet();toast(f?'עודכן. כל המשתתפים רואים את השינוי':'חזר לתוכנית המקורית')};
   document.getElementById('pfOk').onclick=()=>{const tm=document.getElementById('pfTm').value.trim(),ti=document.getElementById('pfTi').value.trim(),sub=document.getElementById('pfSub').value.trim();
     if(!ti){toast('כתבו מה קורה');return}if(tm&&toMin(tm)==null&&!/[א-ת]/.test(tm)){toast('כתבו שעה כמו 16:30');return}
@@ -5007,7 +5046,7 @@ function chCard(home){const c=chLive();if(!c)return '';const n=(PH||[]).filter(p
   return `<section class="chal"><div class="ch-h"><span class="ch-i">🎯</span><div><small>אתגר צילום${n?' · <span class="num">'+n+'</span> תמונות':''}</small><b>${esc(c.text)}</b></div></div><button class="btn primary" data-chup="${c._id}" style="width:100%">📷 צילום לאתגר</button>${home?'':''}</section>`}
 function photosHTML(){
   photosSub();
-  const mine=phMeId(), L=PHF==='mine'?PH.filter(p=>p.by===mine):PH;
+  const mine=phMeId(), L=PHF==='mine'?PH.filter(p=>p.by===mine):PHF==='me'?PH.filter(p=>(p.tags||[]).includes(meId())):PH;
   if(PHL&&PH.length&&GUEST()&&!isPrevOrg())setTimeout(()=>{try{localStorage.setItem('phSeen',String(Math.max(...PH.map(p=>p.ts||0))))}catch(e){}},1500);
   const err=PHERR==='permission-denied'?`<div class="lockbar">צריך לעדכן את חוקי Firebase כדי שהגלריה תעבוד (ההוראות אצל Claude).</div>`:PHERR?`<div class="lockbar">הגלריה לא נטענה. בדקו שיש אינטרנט ונסו שוב.</div>`:'';
   const fail=PHFAIL.length&&!PHBUSY?`<div class="ph-fail" role="alert"><span>${PHFAIL.length===1?'תמונה אחת לא עלתה':PHFAIL.length+' תמונות לא עלו'}. בדרך כלל זו קליטה חלשה.</span><button class="btn" data-ph-retry>ניסיון חוזר</button></div>`:'';
@@ -5044,7 +5083,7 @@ document.addEventListener('click',e=>{const T=e.target;if(!T.closest||document.g
 async function phBig(p){if(PHBIG[p._id])return PHBIG[p._id];try{const d=await db.doc('photobig/'+p._id).get();const s=d.exists&&d.data().src;if(s){PHBIG[p._id]=s;return s}}catch(e){}return p.th}
 async function phFile(p){const src=await phBig(p),b=await (await fetch(src)).blob();return new File([b],'budapest-'+p._id+'.jpg',{type:'image/jpeg'})}
 let PHI=-1;
-function phOpen(id){const L=PHF==='mine'?PH.filter(p=>p.by===phMeId()):PH;PHI=L.findIndex(p=>p._id===id);if(PHI<0)return;phShow(L)}
+function phOpen(id){const L=PHF==='mine'?PH.filter(p=>p.by===phMeId()):PHF==='me'?PH.filter(p=>(p.tags||[]).includes(meId())):PH;PHI=L.findIndex(p=>p._id===id);if(PHI<0)return;phShow(L)}
 function phShow(L){const p=L[PHI];if(!p)return;let v=document.getElementById('phv');
   if(!v){v=document.createElement('div');v.id='phv';v.setAttribute('dir','rtl');v.setAttribute('role','dialog');v.setAttribute('aria-modal','true');document.body.appendChild(v);requestAnimationFrame(()=>v.classList.add('on'))}
   const own=p.by===phMeId()||(ROLE==='org'&&!PREV);
@@ -5993,6 +6032,221 @@ function shabbatPaint(){const st=shabbatState(),v=document.getElementById('view'
 function homeFx(){try{skyPaint();planePaint();nowBarPaint();shabbatPaint();syncPaint()}catch(e){console.warn('homeFx',e)}}
 {const _hf=render;render=function(a){_hf(a);homeFx();try{mxAfter()}catch(e){}}}
 setInterval(homeFx,30000);
+
+/* ===================== feature pack (Nov 2026) ===================== */
+const FX={};
+function fxNotify(t,tag){navigator.vibrate&&navigator.vibrate([30,60,30]);
+  if(document.visibilityState==='visible')toast(t);
+  else if('Notification' in window&&Notification.permission==='granted'&&navigator.serviceWorker)navigator.serviceWorker.ready.then(r=>r.showNotification('מבקשי ה׳',{body:t,icon:'icon-192.png',dir:'rtl',lang:'he',tag:tag||'fx'})).catch(()=>{})}
+const lsGet=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const meId=()=>{const m=GUEST()&&meG();return m?m._id:''};
+const fxHome=()=>{const v=document.getElementById('view');return v&&(v.dataset.scr==='ggh'||v.dataset.scr==='home')?v:null};
+function fxSlot(v,cls,html,after){let el=v.querySelector('.'+cls);if(!html){if(el)el.remove();return null}
+  if(!el){el=document.createElement('section');el.className=cls;const a=after&&v.querySelector(after);if(a)a.after(el);else v.prepend(el)}
+  if(el.__h!==html){el.__h=html;el.innerHTML=html}return el}
+
+/* 3. a heads-up 15 minutes before each item in the day's program (while the app is open or in the background) */
+setInterval(()=>{try{if(!ROLE)return;const z=nowNext();if(!z||!z.nxt)return;const left=z.nxt.mi-z.now;if(left<0||left>15)return;
+  const k='al:'+budNow().d+'|'+z.nxt.tm+'|'+z.nxt.ti,seen=lsGet('fxAl',{});if(seen[k])return;seen[k]=1;lsSet('fxAl',seen);
+  fxNotify(`⏰ בעוד ${left<1?'רגע':left+' דק׳'}: ${z.nxt.ti}${z.nxt.sub?' · '+z.nxt.sub:''}`,'next')}catch(e){}},30000);
+
+/* 4. the bus pickup point: set by an organizer (with the phone's location), shown to everyone with navigation */
+const pickup=()=>{const p=S.settings.find(x=>x._id==='pickup');return p&&p.text&&!p.hidden&&Date.now()-(p.at||0)<14*36e5?p:null};
+const pickupNav=p=>p.lat?`https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}&travelmode=walking`:mapsGo(p.text+' Budapest');
+function pickupSheet(){const p=S.settings.find(x=>x._id==='pickup')||{};
+  sheet(`<h3>📍 נקודת איסוף</h3><p class="note">כולם יראו את זה בראש מסך הבית למשך 14 שעות, עם כפתור ניווט.</p><div class="form">
+   <label class="field">איפה נפגשים<input id="puT" value="${esc(p.text||'')}" placeholder="למשל: היציאה הראשית של המלון"></label>
+   <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="puLoc" type="button">📡 המיקום שלי עכשיו</button><span class="note" id="puL">${p.lat?'נשמר מיקום מדויק':''}</span></div>
+   <div class="sheet-acts"><button class="btn ghost" id="puOff" type="button">הסרה</button><span class="sp"></span><button class="btn primary" id="puOk" type="button">שמירה ופרסום</button></div></div>`);
+  let loc=p.lat?{lat:p.lat,lng:p.lng}:null;
+  document.getElementById('puLoc').onclick=()=>{if(!navigator.geolocation){toast('אין גישה למיקום בטלפון הזה');return}document.getElementById('puL').textContent='מאתר…';
+    navigator.geolocation.getCurrentPosition(g=>{loc={lat:+g.coords.latitude.toFixed(6),lng:+g.coords.longitude.toFixed(6)};document.getElementById('puL').textContent='✓ המיקום נקלט'},()=>{document.getElementById('puL').textContent='לא הצלחנו לאתר מיקום'},{enableHighAccuracy:true,timeout:12000})};
+  document.getElementById('puOk').onclick=async()=>{const t=document.getElementById('puT').value.trim();if(!t){toast('כתבו איפה נפגשים');return}
+    if(await save('settings','pickup',{...strip(find('settings','pickup')||{}),kind:'pickup',text:t,lat:loc?loc.lat:null,lng:loc?loc.lng:null,at:Date.now(),by:ME||'',hidden:false})){closeSheet();toast('נקודת האיסוף פורסמה לכולם')}};
+  document.getElementById('puOff').onclick=async()=>{if(await save('settings','pickup',{...strip(find('settings','pickup')||{}),hidden:true})){closeSheet();toast('הוסר')}}}
+
+/* 11. weather in Budapest for the trip days (free forecast, cached for 3 hours; shows once the forecast reaches the trip) */
+const WX_ICON=c=>c===0?'☀️':c<=2?'🌤':c===3?'☁️':c<=48?'🌫':c<=57?'🌦':c<=67?'🌧':c<=77?'🌨':c<=82?'🌧':c<=86?'🌨':'⛈';
+async function wxLoad(){const c=lsGet('fxWx',null);if(c&&Date.now()-c.at<3*36e5)return c.d;
+  try{const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=47.4979&longitude=19.0402&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FBudapest&start_date=2026-11-19&end_date=2026-11-22');
+    if(!r.ok)return c&&c.d;const j=await r.json(),d=(j.daily&&j.daily.time||[]).map((t,i)=>({d:t,c:j.daily.weather_code[i],hi:Math.round(j.daily.temperature_2m_max[i]),lo:Math.round(j.daily.temperature_2m_min[i]),p:j.daily.precipitation_probability_max[i]})).filter(x=>x.hi!=null);
+    lsSet('fxWx',{at:Date.now(),d});return d}catch(e){return c&&c.d}}
+let WX=null;wxLoad().then(d=>{WX=d;try{fxPaint()}catch(e){}});
+const wxStrip=()=>!WX||!WX.length?'':`<div class="wx"><b>מזג האוויר בבודפשט</b><div class="wx-r">${WX.map(x=>{const td=TRIP_DAYS.find(t=>t.d===x.d);return `<div><small>${esc(td?td.s.split(' ')[0]:x.d.slice(8))}</small><span>${WX_ICON(x.c)}</span><b class="num">${x.lo}°–${x.hi}°</b>${x.p>=40?`<i class="num">☔ ${x.p}%</i>`:''}</div>`}).join('')}</div>${WX.some(x=>x.hi<=8)?'<small class="wx-n">קר: מעיל, כובע וכפפות</small>':''}</div>`;
+
+/* 15. save the day's photos to the phone in one go */
+async function phSaveDay(){const day=new Date().toDateString();let L=PH.filter(p=>new Date(p.ts).toDateString()===day);const all=!L.length;if(all)L=PH.slice(0,30);
+  if(!L.length){toast('עוד אין תמונות');return}toast(`מכין ${L.length} תמונות…`);
+  try{const files=[];for(const p of L)files.push(await phFile(p));
+    if(navigator.canShare&&navigator.canShare({files})){await navigator.share({files,title:'תמונות מהמסע'});return}
+    for(const f of files){const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();a.remove();await new Promise(r=>setTimeout(r,350))}
+    toast(all?'נשמרו 30 התמונות האחרונות':'התמונות של היום נשמרו')}catch(e){if(e&&e.name!=='AbortError')toast('השמירה לא הצליחה. נסו שוב')}}
+
+/* 16. tag who is in a photo, and a filter for the photos you appear in */
+function phTagSheet(pid){const p=PH.find(x=>x._id===pid);if(!p)return;const on=new Set(p.tags||[]);
+  const ppl=S.participants.slice().sort((a,b)=>a.name.localeCompare(b.name,'he'));
+  sheet(`<h3>🏷 מי בתמונה?</h3><input class="search" id="tgQ" type="search" placeholder="חיפוש שם"><div class="tglist">${ppl.map(x=>`<button type="button" class="opt" data-tg="${x._id}" aria-pressed="${on.has(x._id)}">${esc(x.name)}</button>`).join('')}</div>
+   <div class="sheet-acts"><span class="sp"></span><button class="btn primary" id="tgOk" type="button">שמירה</button></div>`);
+  const r=document.getElementById('sheetRoot');r.querySelectorAll('[data-tg]').forEach(b=>b.onclick=()=>{const k=b.dataset.tg;on.has(k)?on.delete(k):on.add(k);b.setAttribute('aria-pressed',String(on.has(k)))});
+  document.getElementById('tgQ').oninput=e=>{const q=e.target.value.trim();r.querySelectorAll('[data-tg]').forEach(b=>b.hidden=!!q&&!b.textContent.includes(q))};
+  document.getElementById('tgOk').onclick=async()=>{const tags=[...on];const ok=GUEST()?await gset('photos/'+pid,{tags}):await save('photos',pid,{...strip(p),tags});if(ok!==false){p.tags=tags;closeSheet();toast(tags.length?'התיוג נשמר':'התיוג הוסר')}}}
+new MutationObserver(()=>{const v=document.getElementById('phv');if(!v||v.querySelector('.phv-tag'))return;const L=PHF==='mine'?PH.filter(p=>p.by===phMeId()):PHF==='me'?PH.filter(p=>(p.tags||[]).includes(meId())):PH,p=L[PHI];if(!p)return;
+  const b=document.createElement('button');b.type='button';b.className='phv-tag';b.textContent='🏷 '+((p.tags||[]).length?(p.tags.length+' מתויגים'):'מי בתמונה?');b.onclick=e=>{e.stopPropagation();phTagSheet(p._id)};v.appendChild(b)}).observe(document.body,{childList:true});
+
+/* 18–19. emergency and "I'm lost" */
+function sosSheet(){const ph=orgPhone(),hotelQ=HOTEL.q;
+  sheet(`<h3>🆘 עזרה וחירום</h3><div class="sos">
+   <a class="sos-b red" href="tel:112"><b>112</b><small>חירום בהונגריה: אמבולנס, משטרה, כיבוי</small></a>
+   <button class="sos-b" type="button" id="sosLost"><b>📍 הלכתי לאיבוד</b><small>שולח למארגן את המיקום שלי בוואטסאפ</small></button>
+   <a class="sos-b" href="${mapsGo(hotelQ)}" target="_blank" rel="noopener"><b>🏨 ניווט למלון</b><small>${esc(HOTEL.en)}</small></a>
+   ${ph?`<a class="sos-b" href="tel:${esc(String(ph).replace(/[^\d+]/g,''))}"><b>📞 המארגן</b><small class="num ltr">${esc(fmtPhone?fmtPhone(ph):ph)}</small></a>`:''}
+   <a class="sos-b" href="tel:+3613926200"><b>🇮🇱 שגרירות ישראל בבודפשט</b><small class="num ltr">+36 1 392 6200</small></a></div>`);
+  document.getElementById('sosLost').onclick=()=>lostSend()}
+function lostSend(){const ph=orgPhone(),me=meG&&GUEST()?meG():null,who=me?me.name:(ME||'');
+  const send=(q)=>{const t=`הלכתי לאיבוד 🙏 ${who?'('+who+') ':''}אני כאן: ${q}`;location.href=waLink(ph,t)};
+  if(!navigator.geolocation){send('(אין מיקום בטלפון)');return}toast('מאתר את המיקום שלך…');
+  navigator.geolocation.getCurrentPosition(g=>send(`https://maps.google.com/?q=${g.coords.latitude.toFixed(5)},${g.coords.longitude.toFixed(5)}`),()=>send('(לא הצלחתי לאתר מיקום)'),{enableHighAccuracy:true,timeout:12000})}
+
+/* 20. your request's status changed: a notice */
+function reqWatch(){if(!GUEST()||!loaded.has('settings'))return;const me=meG();if(!me)return;const ids=coupleOf(me).map(p=>p._id);
+  const mine=reqList().filter(r=>ids.includes(r.by)),was=lsGet('fxReq',null),now={};mine.forEach(r=>now[r._id]=r.status||'חדש');
+  if(was)mine.forEach(r=>{const a=was[r._id],b=now[r._id];if(a&&a!==b&&b!=='חדש')fxNotify(`הבקשה שלך (${r.cat||'בקשה'}): ${b==='בוצע'?'בוצעה ✓':b==='בטיפול'?'בטיפול':b==='לא אפשרי'?'לצערנו לא אפשרית':b}`,'req')});
+  lsSet('fxReq',now)}
+
+/* 21. pay the rest straight from the app (Bit / PayBox link the organizers set) */
+const payLink=()=>{const t=S.settings.find(x=>x._id==='trip');return t&&t.payLink||''};
+function payLinkSheet(){sheet(`<h3>💳 קישור לתשלום</h3><p class="note">קישור Bit או PayBox. משתתף שעוד חייב יראה כפתור "לתשלום" עם הסכום שנשאר. את הסימון ששולם עושים כרגיל.</p>
+  <div class="form"><input id="plIn" class="ltr" value="${esc(payLink())}" placeholder="https://..."><div class="sheet-acts"><span class="sp"></span><button class="btn primary" id="plOk" type="button">שמירה</button></div></div>`);
+  document.getElementById('plOk').onclick=async()=>{const v=document.getElementById('plIn').value.trim();if(v&&!/^https?:\/\//.test(v)){toast('הדביקו קישור שמתחיל ב־https');return}
+    if(await save('settings','trip',{...strip(find('settings','trip')||{}),payLink:v})){closeSheet();toast(v?'הקישור נשמר':'הקישור הוסר')}}}
+
+/* 22. what you missed since you last opened the app */
+function missedCheck(){if(navigator.webdriver||!GUEST()||!COLS.every(c=>loaded.has(c))||FX.missed)return;FX.missed=1;const last=lsGet('fxSeen',0);lsSet('fxSeen',Date.now());if(!last||Date.now()-last<8*36e5)return;
+  const anns=annList().filter(a=>(a.ts||0)>last),fx=Object.values((S.settings.find(x=>x._id==='prog')||{}).fix||{}).filter(f=>f&&f.at&&Date.parse(f.at)>last),ph=PH.filter(p=>(p.ts||0)>last).length;
+  const L=[...anns.slice(0,4).map(a=>`<li><b>📣 ${esc(a.title||'הודעה')}</b><span>${esc((a.text||'').slice(0,90))}</span></li>`),...fx.slice(0,4).map(f=>`<li><b>🕘 שינוי בלו״ז</b><span>${esc(f.ti||'')}${f.tm?' · '+esc(f.tm):''}</span></li>`),ph?`<li><b>📸 ${ph} תמונות חדשות</b><span>בתמונות מהמסע</span></li>`:''].filter(Boolean);
+  if(!L.length)return;setTimeout(()=>{if(document.getElementById('scrim'))return;sheet(`<h3>מה חדש מאז שהייתם כאן</h3><ul class="missed">${L.join('')}</ul><div class="sheet-acts"><span class="sp"></span><button class="btn primary" data-dismiss type="button">הבנתי</button></div>`)},1200)}
+addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&GUEST())lsSet('fxSeen',Date.now())});
+
+/* 23 + 32. the organizers' morning summary, with budget overruns */
+function morningCard(){if(GUEST()||!COLS.every(c=>loaded.has(c)))return '';const h=new Date().getHours();if(h>=13&&!lsGet('fxMornAll',0))return '';
+  const m=money(),pass=S.participants.filter(x=>!x.passport).length,urg=S.tasks.filter(t=>t.status!=='בוצע'&&t.priority==='גבוהה').length,over=S.expenses.filter(e=>+e.paid>+e.estimate&&+e.estimate>0);
+  const items=[[m.unpaid.length,'עוד לא שילמו','money','{"seg":"participants","filter":{"pay":"open"}}'],[pass,'בלי צילום דרכון','more','{"sub":"passports"}'],[urg,'משימות דחופות פתוחות','tasks','{}'],[over.length,'הוצאות שחרגו מהתכנון','money','{"seg":"expenses"}']].filter(x=>x[0]);
+  if(!items.length)return `<div class="morn ok"><b>☀️ בוקר טוב! הכול מסודר</b><small>אין משהו דחוף כרגע</small></div>`;
+  return `<div class="morn"><b>☀️ סיכום הבוקר</b><div class="morn-r">${items.map(([n,l,go,o])=>`<button type="button" data-go="${go}" data-opts='${o}'><b class="num">${n}</b><small>${l}</small></button>`).join('')}</div></div>`}
+
+/* 31. who hasn't opened the app yet: send them the link */
+function appStatLinks(){const v=document.getElementById('view');if(!v||GUEST())return;v.querySelectorAll('.row[data-person]').forEach(r=>{if(r.querySelector('.fx-wa')||!/עוד לא נכנס/.test(r.textContent))return;const p=S.participants.find(x=>x._id===r.dataset.person);if(!p||!p.phone)return;
+  const a=document.createElement('a');a.className='ab wa fx-wa';a.target='_blank';a.rel='noopener';a.setAttribute('data-stop','');a.setAttribute('aria-label','שליחת הקישור לאפליקציה ל'+p.name);a.textContent='🔗';
+  a.href=waLink(p.phone,`שלום ${firstN(p.name)}, זה הקישור לאפליקציית המסע להונגריה: ${appLink()}\nפותחים, כותבים את השם, ומוסיפים למסך הבית.`);a.onclick=e=>e.stopPropagation();r.appendChild(a)})}
+
+/* 36. announcements at a set time: kept aside, and published by the first organizer's phone that is open when the time comes */
+function annQueue(){if(GUEST()||!db||PREV)return;S.settings.filter(x=>x.kind==='annq'&&!x.hidden&&(x.at||0)<=Date.now()).forEach(q=>{if(FX['q'+q._id])return;FX['q'+q._id]=1;
+  const {kind,at,_id,...rest}=q;db.doc('settings/ann_'+at).set({...rest,kind:'ann',ts:at}).then(()=>db.doc('settings/'+_id).set({hidden:true,sent:Date.now()},{merge:true})).catch(()=>{FX['q'+q._id]=0})})}
+setInterval(()=>{try{annQueue()}catch(e){}},60000);
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-ann-pub]');if(!b)return;const at=document.getElementById('annAt');if(!at||!at.value)return;const when=new Date(at.value).getTime();if(!(when>Date.now()+60000))return;
+  e.stopPropagation();e.preventDefault();const md=DRAFT.annMode||'all',title=(DRAFT.annTitle||'').trim(),text=(DRAFT.annText||'').trim();if(md==='task'){toast('משימה לא מתוזמנת. נקו את השעה');return}if(!text){toast('כתבו את תוכן ההודעה');return}
+  const extra=md==='one'?(()=>{const p=S.participants.find(x=>x._id===DRAFT.annTo);return p?{to:[p._id],toName:p.name}:null})():{};if(extra===null){toast('בחרו למי לשלוח');return}
+  db.doc('settings/annq_'+when).set({kind:'annq',title,text,at:when,by:ME||'',...extra}).then(()=>{toast('ההודעה תפורסם ב־'+fmtWhen(new Date(when).toISOString()));DRAFT.annTitle='';DRAFT.annText='';render()}).catch(()=>toast('השמירה לא הצליחה'))},true);
+function annSchedPaint(){const t=document.getElementById('annText');if(!t||document.getElementById('annAt'))return;const pub=document.querySelector('[data-ann-pub]');if(!pub)return;
+  const l=document.createElement('label');l.className='schedl';l.innerHTML='<span>⏰ לפרסם בזמן מסוים (לא חובה)</span><input type="datetime-local" id="annAt">';pub.before(l);
+  const Q=S.settings.filter(x=>x.kind==='annq'&&!x.hidden).sort((a,b)=>a.at-b.at);if(Q.length){const d=document.createElement('div');d.className='annq';d.innerHTML='<b>מתוזמנות</b>'+Q.map(q=>`<div><span>${esc(fmtWhen(new Date(q.at).toISOString()))}</span> ${esc(q.title||(q.text||'').slice(0,40))}${q.toName?' · ל'+esc(q.toName):''} <button type="button" class="link" data-annq-x="${q._id}">ביטול</button></div>`).join('');pub.after(d)}}
+document.addEventListener('click',e=>{const x=e.target.closest&&e.target.closest('[data-annq-x]');if(!x)return;e.stopPropagation();db.doc('settings/'+x.dataset.annqX).set({hidden:true},{merge:true}).then(()=>{toast('בוטל');render()})},true);
+
+/* 37. a change in the program can go only to the group it concerns */
+new MutationObserver(()=>{const c=document.getElementById('pfAnn');if(!c||document.getElementById('pfTo'))return;const grp=[...new Set(S.participants.map(p=>p.outbound).filter(Boolean))];if(grp.length<2)return;
+  const s=document.createElement('select');s.id='pfTo';s.className='pfto';s.innerHTML='<option value="">לכולם</option>'+grp.map(g=>`<option value="${esc(g)}">רק לטיסה: ${esc(g)}</option>`).join('');(c.closest('label')||c).after(s)}).observe(document.body,{childList:true,subtree:true});
+const pfTo=()=>{const s=document.getElementById('pfTo'),g=s&&s.value;if(!g)return {};const ids=S.participants.filter(p=>p.outbound===g).map(p=>p._id);return ids.length?{to:ids,toName:'טיסה '+g}:{}};
+
+/* 38. activity log by person */
+function actLog(){const L=S.activity.slice().sort((a,b)=>(b.at||'').localeCompare(a.at||''));const who=[...new Set(L.map(a=>a.by).filter(Boolean))];let f='';
+  const draw=()=>{const R=L.filter(a=>!f||a.by===f).slice(0,120);document.getElementById('alL').innerHTML=R.length?R.map(a=>`<div class="al"><span class="av">${esc((a.by||'?')[0])}</span><div><b>${esc(a.by||'מישהו')}</b> ${esc(actLine(a))}${a.change?`<small>${esc(a.change)}</small>`:''}<i class="num">${esc(fmtWhen(a.at))}</i></div></div>`).join(''):'<p class="note">אין פעולות</p>';
+    document.querySelectorAll('[data-alf]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.alf===f)))};
+  sheet(`<h3>📜 יומן פעולות</h3><div class="chips">${['',...who].map(n=>`<button type="button" class="chip" data-alf="${esc(n)}">${n?esc(n):'כולם'}</button>`).join('')}</div><div id="alL" class="allog"></div>`);
+  document.querySelectorAll('[data-alf]').forEach(b=>b.onclick=()=>{f=b.dataset.alf;draw()});draw()}
+
+/* 39. a weekly backup nudge, once a day, one tap */
+function backupNudge(){if(navigator.webdriver||GUEST()||ROLE!=='org'||!loaded.has('settings')||FX.bk)return;FX.bk=1;if(backupAge()<=7)return;const k='fxBk'+new Date().toDateString();if(lsGet(k,0))return;lsSet(k,1);
+  setTimeout(()=>{if(document.getElementById('scrim'))return;sheet(`<h3>💾 גיבוי שבועי</h3><p class="note">${backupAge()===Infinity?'עוד לא נשמר גיבוי של הנתונים.':'עבר יותר משבוע מהגיבוי האחרון.'} לחיצה אחת שומרת קובץ גיבוי מלא בטלפון. כדאי להעלות אותו לדרייב.</p><div class="sheet-acts"><button class="btn ghost" data-dismiss type="button">לא עכשיו</button><span class="sp"></span><button class="btn primary" id="bkNow" type="button">גיבוי עכשיו</button></div>`);
+    document.getElementById('bkNow').onclick=()=>{closeSheet();setTimeout(()=>{go('more',{sub:'settings'});setTimeout(()=>{const b=document.getElementById('bkJson');b&&b.click()},400)},100)}},2500)}
+
+/* 40. end-of-trip report, ready to save as PDF */
+function tripReport(){const m=money(),cats={};S.expenses.forEach(e=>{const c=e.category||'אחר';cats[c]=(cats[c]||0)+(+e.paid||+e.estimate||0)});
+  const paidN=S.participants.filter(p=>p.status==='שולם').length,don=S.donations.reduce((t,d)=>t+(+d.amount||0),0),now=new Date().toLocaleDateString('he-IL');
+  const html=`<!doctype html><html dir="rtl" lang="he"><head><meta charset="utf-8"><title>דוח סיום מסע</title><style>body{font-family:Arial,sans-serif;margin:32px;color:#222}h1{margin:0 0 4px}h2{margin:26px 0 8px;font-size:18px;border-bottom:2px solid #c99a3d;padding-bottom:4px}table{width:100%;border-collapse:collapse}td{padding:6px 4px;border-bottom:1px solid #eee}td:last-child{text-align:left;font-variant-numeric:tabular-nums}.big{font-size:22px;font-weight:bold}small{color:#777}</style></head><body>
+   <h1>מסע גיבוש הונגריה · דוח סיום</h1><small>שיעור מבקשי ה׳ · 19–22.11.2026 · הופק ${now}</small>
+   <h2>מאזן</h2><table><tr><td>הכנסות צפויות</td><td>${ils(m.income)}</td></tr><tr><td>הוצאות צפויות</td><td>${ils(m.est)}</td></tr><tr><td>שולם לספקים</td><td>${ils(m.out)}</td></tr><tr><td class="big">מאזן</td><td class="big">${m.gap<0?'−':'+'}${ils(Math.abs(m.gap))}</td></tr></table>
+   <h2>הוצאות לפי תחום</h2><table>${Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([c,v])=>`<tr><td>${esc(c)}</td><td>${ils(v)}</td></tr>`).join('')}</table>
+   <h2>משתתפים ותרומות</h2><table><tr><td>משתתפים</td><td>${S.participants.length}</td></tr><tr><td>שילמו במלואם</td><td>${paidN}</td></tr><tr><td>עוד לא שילמו</td><td>${m.unpaid.length}</td></tr><tr><td>תרומות</td><td>${ils(don)}</td></tr></table>
+   <script>setTimeout(()=>print(),400)<\/script></body></html>`;
+  const w=window.open('','_blank');if(!w){toast('אפשרו חלונות קופצים כדי להפיק את הדוח');return}w.document.write(html);w.document.close()}
+
+/* 41. what each organizer can change: everything, or one area */
+const AREAS={all:['הכול',null],money:['תקציב ותשלומים',['participants','expenses','donations']],rooms:['חדרים וציוד',['rooms','packing']],sched:['לו״ז, טיסות והודעות',['schedule','flights','messages']],tasks:['משימות',['tasks','notes']]};
+const myArea=()=>{const r=(S.settings.find(x=>x._id==='roles')||{}).map||{};return (ME&&r[ME])||'all'};
+function rolesSheet(){const r=(S.settings.find(x=>x._id==='roles')||{}).map||{};
+  sheet(`<h3>👥 מה כל מארגן יכול לשנות</h3><p class="note">ברירת המחדל: הכול. מי שמוגבל לתחום רואה הכול, ויכול לשנות רק בתחום שלו.</p><div class="form">${team().map(n=>`<label class="field">${esc(n)}<select data-role="${esc(n)}">${Object.entries(AREAS).map(([k,[l]])=>`<option value="${k}" ${(r[n]||'all')===k?'selected':''}>${l}</option>`).join('')}</select></label>`).join('')}
+   <div class="sheet-acts"><span class="sp"></span><button class="btn primary" id="rlOk" type="button">שמירה</button></div></div>`);
+  document.getElementById('rlOk').onclick=async()=>{const map={};document.querySelectorAll('[data-role]').forEach(s=>map[s.dataset.role]=s.value);if(await save('settings','roles',{...strip(find('settings','roles')||{}),kind:'roles',map})){closeSheet();toast('ההרשאות נשמרו')}}}
+{const _sv=save;save=async function(c,id,data){if(!GUEST()&&ROLE==='org'){const a=AREAS[myArea()];if(a&&a[1]&&F[c]&&!a[1].includes(c)){toast(`אפשר לשנות רק ב${a[0]}`);return false}}return _sv(c,id,data)}}
+
+/* 42. field mode: one big screen for the organizer on the ground */
+function fieldSheet(){const ses=(typeof rollCur==='function'&&rollCur())||curSes(),here=S.attendance.filter(a=>a.session===ses.k&&a.here).length,z=nowNext(),N=S.participants.length;
+  sheet(`<h3>🧭 מצב שטח</h3><div class="field-m"><button type="button" class="fm-big" data-fm="roll"><b class="num">${here}/${N}</b><small>כאן · ${esc(ses.l||ses.t||'ספירה')}</small></button>
+   <div class="fm-next"><small>${z&&z.nxt?'הבא · '+esc(z.nxt.tm):'בלו״ז'}</small><b>${z&&z.nxt?esc(z.nxt.ti):'אין עוד היום'}</b></div>
+   <div class="fm-row"><button type="button" class="btn" data-fm="ann">📣 הודעה לכולם</button><button type="button" class="btn" data-fm="pick">📍 נקודת איסוף</button><button type="button" class="btn" data-fm="sos">🆘 חירום</button></div></div>`);
+  document.querySelectorAll('[data-fm]').forEach(b=>b.onclick=()=>{const k=b.dataset.fm;closeSheet();setTimeout(()=>{if(k==='roll')go('more',{sub:'attendance'});else if(k==='ann')go('more',{sub:'announce'});else if(k==='pick')pickupSheet();else sosSheet()},80)})}
+
+/* 46. organizers: one search across everything */
+function gSearch(){sheet(`<h3>🔍 חיפוש</h3><input class="search" id="gsQ" type="search" placeholder="משתתף, משימה, הוצאה, אירוע…" autocomplete="off"><div id="gsR" class="gsr"></div>`);
+  const q=document.getElementById('gsQ'),R=document.getElementById('gsR');setTimeout(()=>q.focus(),80);
+  const run=()=>{const s=q.value.trim();if(s.length<2){R.innerHTML='<p class="note">כתבו לפחות שתי אותיות</p>';return}const has=x=>String(x||'').includes(s);
+    const res=[...S.participants.filter(p=>has(p.name)||has(p.phone)||has(p.nameEn)).map(p=>['👤',p.name,p.phone?fmtPhone(p.phone):'משתתף','participants',p._id]),
+      ...S.tasks.filter(t=>has(t.title)||has(t.notes)).map(t=>['✅',t.title,(t.owner||'')+' · '+(t.status||''),'tasks',t._id]),
+      ...S.expenses.filter(e=>has(e.name)||has(e.notes)).map(e=>['₪',e.name,ils(e.estimate),'expenses',e._id]),
+      ...S.schedule.filter(r=>has(r.title)||has(r.place)).map(r=>['🕘',r.title,(r.time||'')+' '+(r.day||''),'schedule',r._id]),
+      ...S.contacts.filter(c=>has(c.name)||has(c.role)).map(c=>['📞',c.name,c.role||'','contacts',c._id])].slice(0,40);
+    R.innerHTML=res.length?res.map(([i,t,sub,c,id])=>`<button type="button" class="gsi" data-gs="${c}/${id}"><span>${i}</span><b>${esc(t)}</b><small>${esc(sub)}</small></button>`).join(''):'<p class="note">לא נמצא</p>';
+    R.querySelectorAll('[data-gs]').forEach(b=>b.onclick=()=>{const [c,id]=b.dataset.gs.split('/');closeSheet();setTimeout(()=>editor(c,id),120)})};
+  q.oninput=run;run()}
+
+/* 49. errors on any phone reach the organizers */
+let ERRN=0;function errReport(msg,src){try{if(!db||ERRN>=5||PREV)return;msg=String(msg||'').slice(0,300);if(!msg||/ResizeObserver|Script error/.test(msg))return;const k='fxErr'+msg.slice(0,60);if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1');ERRN++;
+  const ts=Date.now();db.doc('settings/err_'+ts+'_'+Math.random().toString(36).slice(2,6)).set({kind:'err',msg,src:String(src||'').slice(0,200),at:ts,role:GUEST()?'guest':ROLE||'none',who:GUEST()?((meG()||{}).name||''):(ME||''),scr:(document.getElementById('view')||{}).dataset?.scr||'',v:window.APPV||'',ua:navigator.userAgent.slice(0,140)}).catch(()=>{})}catch(e){}}
+addEventListener('error',e=>errReport(e.message,(e.filename||'')+':'+(e.lineno||'')));
+addEventListener('unhandledrejection',e=>errReport(e.reason&&(e.reason.message||e.reason),'promise'));
+function errSheet(){const L=S.settings.filter(x=>x.kind==='err'&&!x.hidden).sort((a,b)=>b.at-a.at).slice(0,40);
+  sheet(`<h3>🐞 תקלות מהשטח</h3>${L.length?`<div class="allog">${L.map(x=>`<div class="al"><div><b>${esc(x.msg)}</b><small>${esc(x.who||x.role)} · ${esc(x.scr)} · v${esc(x.v)}</small><i class="num">${esc(fmtWhen(new Date(x.at).toISOString()))}</i></div></div>`).join('')}</div><div class="sheet-acts"><span class="sp"></span><button class="btn" id="erClr" type="button">ניקוי הרשימה</button></div>`:'<p class="note">אין תקלות. הכול עובד 🎉</p>'}`);
+  const c=document.getElementById('erClr');if(c)c.onclick=async()=>{const bt=db.batch();L.forEach(x=>bt.set(db.doc('settings/'+x._id),{hidden:true},{merge:true}));await bt.commit();closeSheet();toast('נוקה')}}
+
+/* 50. what's new, once after an update */
+const WHATSNEW=['⏰ תזכורת 15 דקות לפני כל דבר בלו״ז','📍 נקודת איסוף עם ניווט','🌤 מזג האוויר בבודפשט לימי המסע','📸 שמירת כל התמונות של היום, ותיוג מי בתמונה','🆘 כפתור חירום ו"הלכתי לאיבוד"','🔔 עדכון כשהבקשה שלך מטופלת','✨ "מה פספסתי" כשחוזרים לאפליקציה'];
+function whatsNew(){if(navigator.webdriver||FX.wn||!ROLE||PREV)return;FX.wn=1;const k='fxWN1',seen=lsGet(k,0);lsSet(k,1);if(seen)return;if(!lsGet('fxSeen',0)&&GUEST())return;
+  setTimeout(()=>{if(document.getElementById('scrim'))return;sheet(`<h3>✨ חדש באפליקציה</h3><ul class="missed">${WHATSNEW.map(w=>`<li><b>${w}</b></li>`).join('')}</ul><div class="sheet-acts"><span class="sp"></span><button class="btn primary" data-dismiss type="button">מעולה</button></div>`)},2500)}
+
+/* where it all shows: home cards, settings items, a few buttons */
+function fxPaint(){const v=document.getElementById('view');if(!v)return;const home=fxHome(),scr=v.dataset.scr;
+  // home cards live in their own boxes around the screen, so the screen's own redraws (and their highlights) stay untouched
+  const box=(id,before)=>{let el=document.getElementById(id);if(!el){el=document.createElement('div');el.id=id;el.className='fxbox';before?v.before(el):v.after(el)}return el};
+  const top=box('fxTop',true),bot=box('fxBot',false),put=(el,h)=>{if(el.__h!==h){el.__h=h;el.innerHTML=h}};
+  if(!home){put(top,'');put(bot,'')}
+  else{const pk=pickup(),T=[],B=[];
+    if(pk)T.push(`<div class="pickc"><div><small>📍 נקודת איסוף</small><b>${esc(pk.text)}</b></div><a class="btn primary" href="${pickupNav(pk)}" target="_blank" rel="noopener">ניווט</a></div>`);
+    if(GUEST()){const td=budNow().d;if([TRIP_DAYS[0].d,TRIP_DAYS[TRIP_DAYS.length-1].d].includes(td))T.unshift(`<button type="button" class="fdbtn" data-gnav="gw">✈ יום טיסה · צ׳ק־אין וכרטיס העלייה</button>`);
+      const pl=payLink(),me=meG(),ppl=me?coupleOf(me):[],need=ppl.filter(x=>x.status!=='פטור'&&+x.amount>0),left=need.reduce((t,x)=>t+(+x.amount||0)-paidOf(x),0);
+      if(pl&&left>0)T.push(`<a class="paybtn" href="${esc(pl)}" target="_blank" rel="noopener" id="fxPay" data-amt="${Math.round(left)}">💳 לתשלום: ${ils(left)}<small>Bit / PayBox · הסכום יועתק</small></a>`);
+      B.push(wxStrip(),`<div class="sosbar"><button type="button" id="fxSos">🆘 עזרה וחירום</button><button type="button" id="fxLost">📍 הלכתי לאיבוד</button></div>`)}
+    else{T.push(`<div class="ftools"><button type="button" id="fxField">🧭 מצב שטח</button><button type="button" id="fxPick">📍 נקודת איסוף</button><button type="button" id="fxSearch">🔍 חיפוש</button></div>`,morningCard());B.push(wxStrip())}
+    put(top,T.filter(Boolean).join(''));put(bot,B.filter(Boolean).join(''))}
+  if(scr==='ggi'||scr==='photos'){if(!v.querySelector('.fx-phs')){const a=v.querySelector('.ph-up');if(a){const d=document.createElement('div');d.className='fx-phs';d.innerHTML=`<button type="button" class="btn" id="fxPhSave">💾 שמירת התמונות של היום</button><button type="button" class="btn" id="fxPhMe" aria-pressed="${PHF==='me'}">🏷 תמונות שאני בהן</button>`;a.after(d)}}}
+  if(scr==='announce')annSchedPaint();
+  appStatLinks();reqWatch();missedCheck();backupNudge();whatsNew();annQueue()}
+{const _fp=render;render=function(a){_fp(a);try{fxPaint()}catch(e){console.warn('fx',e)}}}
+document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;const id=(t.closest('[id]')||{}).id;
+  if(id==='fxSos'){sosSheet();return}if(id==='fxLost'){lostSend();return}if(id==='fxField'){fieldSheet();return}if(id==='fxPick'){pickupSheet();return}if(id==='fxSearch'){gSearch();return}
+  if(id==='fxPhSave'){phSaveDay();return}if(id==='fxPhMe'){PHF=PHF==='me'?'all':'me';render();return}
+  if(id==='fxPay'){const a=t.closest('#fxPay');try{navigator.clipboard&&navigator.clipboard.writeText(a.dataset.amt)}catch(x){}toast('הסכום הועתק: '+a.dataset.amt+' ₪')}});
+
 /* pull to refresh: only inside the installed app, where the phone has none of its own */
 (()=>{let y0=null,dy=0,el=null;const T=80;
   const ok=()=>isStandalone()&&!document.getElementById('scrim')&&!document.getElementById('gate')&&!document.getElementById('pgate')&&window.scrollY<=0;
@@ -6056,7 +6310,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='9d16d74b3d';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='829f3f959c';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
