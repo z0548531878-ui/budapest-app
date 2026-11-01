@@ -1138,7 +1138,7 @@ body.guest .btn,body.guest button.btn,body.guest a.btn{display:inline-flex;align
 .gpt.nw{border-color:#f0c86e;box-shadow:0 0 0 1.5px #f0c86e}
 .ext-r{justify-self:stretch;display:grid;gap:8px}.ext-rr{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:16px;border:1px solid rgba(214,178,98,.35);background:rgba(255,255,255,.03);text-align:right}.ext-rr span{display:grid}.ext-rr small{color:var(--muted);font-size:12.5px}.ext-rr.ok{border-color:#7fd1a5;background:rgba(127,209,165,.08)}.ext-rr .btn{white-space:nowrap}
 @media (prefers-reduced-motion:reduce){.gpt,.gpt::after,.gpt-i{animation:none!important}}
-.gback:not(.bot){position:sticky;top:calc(env(safe-area-inset-top,0px) + 6px);z-index:40;background:rgba(18,15,9,.88);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 10px 24px -14px #000}
+.gback:not(.bot){position:sticky;top:calc(env(safe-area-inset-top,0px) + 6px);z-index:40;background:rgba(18,15,9,.97);box-shadow:0 10px 24px -14px #000}
 .prevbar+.gback:not(.bot){top:calc(env(safe-area-inset-top,0px) + 78px)}
 .gback:active{transform:scale(.97);background:rgba(214,178,98,.2)}
 /* press feel everywhere: a quick sink and a gold flash */
@@ -1818,7 +1818,7 @@ body.guest .ghome .greet b{font-size:36px;text-shadow:0 0 28px rgba(240,210,140,
 .ri.rnav{background:transparent;border-style:dashed}
 @supports (animation-timeline:view()){
  .gc{animation:gcScroll linear both;animation-timeline:view();animation-range:entry 0% entry 70%}
- @keyframes gcScroll{from{opacity:0;transform:translateY(46px) scale(.88) rotateX(12deg)}to{opacity:1;transform:none}}
+ @keyframes gcScroll{from{opacity:0;transform:translateY(40px) scale(.9)}to{opacity:1;transform:none}}
 }
 .gc:active{transform:perspective(600px) rotateX(7deg) scale(.95)!important}
 .gc .gc-i{animation:floatI 4s ease-in-out infinite;animation-delay:calc(var(--i,0)*-.4s)}
@@ -2242,7 +2242,7 @@ body:not(.guest) #view [role=button].main{min-height:40px}
 /* guide steps with a way in; who-am-I sections; the participant preview bar stays on screen */
 .step .btn.sm{margin-top:6px}
 .pm-h{margin-top:20px;padding-top:14px;border-top:1px solid rgba(214,178,98,.2)}
-.prevbar{position:sticky;top:calc(6px + env(safe-area-inset-top,0px));z-index:6;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);background:rgba(40,32,16,.92)!important}
+.prevbar{position:sticky;top:calc(6px + env(safe-area-inset-top,0px));z-index:6;background:rgba(40,32,16,.92)!important}
 /* team activity: money changes stand apart, rows that open say so */
 .feed .it.cash .av{background:rgba(127,209,165,.16);color:#7fd1a5;font-weight:900}
 .it-open{color:#e9c46f;font-weight:700}
@@ -2366,19 +2366,32 @@ body[data-sky="night"] .skyfx .stars{opacity:1}
 @keyframes ptrGo{0%{transform:rotate(-90deg)}30%{transform:rotate(-90deg) translateX(-4px)}100%{transform:rotate(-120deg) translate(160px,-40px);opacity:0}}
 @media (prefers-reduced-motion:reduce){#ptr.go svg{animation:none}}
 .vwnote{margin:2px 2px 10px;font-size:13.5px;color:#d9b45f}
+/* spacing and tap size: nothing glued to its neighbour, nothing too small for a thumb */
+.progb{margin-top:12px!important}
+/* the screen area keeps its place: a first card's top margin no longer pulls the whole screen down by a few px when you switch tabs */
+#view{display:flow-root}
+body #view .days,body .pass .days{gap:6px!important}
+.gh-l{gap:8px!important}.gh-w{min-height:38px!important;padding:7px 12px!important}
+.chip{min-height:36px}
+.pc-bot .pill,button.pill{min-height:34px}
+.link,button[data-zman]{min-height:36px;display:inline-flex;align-items:center}
+.check{width:32px!important;height:32px!important}
+.pedit{width:36px!important;height:36px!important}
+.card+.card,.card+.ghead,.ghead+.card{margin-top:10px}
 
 /* ===== motion layer: the same screens, with movement. Screens rise in, rows flow in reading direction, tiles pop,
    numbers count up, bars fill, tabs slide toward the side you went, nav icons bounce. Off under reduced motion. ===== */
 :root{--muted:#b4a98e}
 @media (prefers-reduced-motion:no-preference){
   #view.enter>*{animation:mxRise .6s cubic-bezier(.2,.8,.2,1) both!important;animation-delay:calc(var(--mx,0) * 45ms)!important}
-  @keyframes mxRise{from{opacity:0;transform:translate(var(--dx,0px),18px) scale(.985);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
-  #view.enter .card>.row,#view.enter .card>div>.row{animation:mxRow .5s cubic-bezier(.2,.8,.2,1) both!important;animation-delay:calc(140ms + var(--mr,0) * 38ms)!important}
+  @keyframes mxRise{from{opacity:0;transform:translate(var(--dx,0px),18px) scale(.985)}to{opacity:1;transform:none}}
+  #view.enter .mxNo{animation:none!important}
+  #view.enter[data-scr="home"] .card>.row,#view.enter[data-scr="ggh"] .card>.row{animation:mxRow .5s cubic-bezier(.2,.8,.2,1) both!important;animation-delay:calc(140ms + var(--mr,0) * 38ms)!important}
   @keyframes mxRow{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}
-  #view.enter :is(.tile,.cube,.gc,.hjump>button,.kpi,.fc,.sc,.ri,.pcs,.qact>button,.fbal){animation:mxPop .7s cubic-bezier(.2,1.45,.35,1) both!important;animation-delay:calc(160ms + var(--mt,0) * 55ms)!important}
+  #view.enter:is([data-scr="home"],[data-scr="ggh"],[data-scr="more"]) :is(.tile,.cube,.gc,.hjump>button,.kpi,.fc,.sc,.ri,.qact>button,.fbal){animation:mxPop .7s cubic-bezier(.2,1.45,.35,1) both!important;animation-delay:calc(160ms + var(--mt,0) * 55ms)!important}
   @keyframes mxPop{from{opacity:0;transform:translateY(14px) scale(.9)}to{opacity:1;transform:none}}
   #view.enter :is(.page-title h2,.greet b,.sec-h h3){animation:mxTitle .7s cubic-bezier(.2,.8,.2,1) both}
-  @keyframes mxTitle{from{opacity:0;letter-spacing:.12em;filter:blur(6px)}to{opacity:1;filter:none}}
+  @keyframes mxTitle{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   :is(.tile,.cube,.gc,.hjump>button,.kpi,.fc,.sc,.ri,.btn,.gbtn,.chip,.opt,.qact>button){transition:transform .22s cubic-bezier(.2,1.7,.4,1),box-shadow .2s}
   :is(.tile,.cube,.gc,.hjump>button,.kpi,.fc,.sc,.ri,.qact>button):active{transform:scale(.95)!important}
   :is(.btn,.gbtn,.chip,.opt):active{transform:scale(.94)!important}
@@ -2393,6 +2406,8 @@ body[data-sky="night"] .skyfx .stars{opacity:1}
 .syncago{margin:2px 2px 8px;font-size:12.5px;color:#a69a7d}
 .syncago.stale{color:#e0b45c;font-weight:700}
 /* long lists: rows off screen skip layout and paint until scrolled near */
+.card>.row:nth-child(n+9),.card>div>.row:nth-child(n+9),.annlist>.ann:nth-child(n+6),.gcb>.gc:nth-child(n+7){content-visibility:auto;contain-intrinsic-size:auto 66px}
+.gcb>.gc:nth-child(n+7){contain-intrinsic-size:auto 184px}
 .pcrow{content-visibility:auto;contain-intrinsic-size:auto 340px}
 .prow{content-visibility:auto;contain-intrinsic-size:auto 76px}
 .vwl{display:flex;flex-direction:column;border:1px solid rgba(214,178,98,.2);border-radius:14px;overflow:hidden;margin-bottom:12px}
@@ -5384,9 +5399,11 @@ function mxAfter(){const v=document.getElementById('view');if(!v||!v.classList.c
   // once per freshly drawn screen: a redraw that kept the screen as it was must not replay the entrance
   if(MX_DONE===v.firstElementChild)return;MX_DONE=v.firstElementChild;
   const i=mxTabIdx();let dx=0;if(i!=null&&MX_LAST!=null&&i!==MX_LAST)dx=i>MX_LAST?-26:26;if(i!=null)MX_LAST=i;v.style.setProperty('--dx',dx+'px');
-  [...v.children].forEach((c,k)=>c.style.setProperty('--mx',Math.min(k,10)));
-  v.querySelectorAll('.card').forEach(cd=>{let k=0;cd.querySelectorAll(':scope>.row,:scope>div>.row').forEach(r=>r.style.setProperty('--mr',Math.min(k++,12)))});
-  let t=0;v.querySelectorAll('.tile,.cube,.gc,.hjump>button,.kpi,.fc,.sc,.ri,.pcs,.qact>button,.fbal').forEach(el=>el.style.setProperty('--mt',Math.min(t++,12)));
+  // only what's on the first screen moves in; the rest is already there when you scroll to it
+  const H=innerHeight*1.1,low=el=>el.getBoundingClientRect().top>H;
+  [...v.children].forEach((c,k)=>{c.style.setProperty('--mx',Math.min(k,10));c.classList.toggle('mxNo',low(c))});
+  v.querySelectorAll('.card').forEach(cd=>{let k=0;cd.querySelectorAll(':scope>.row,:scope>div>.row').forEach(r=>{r.style.setProperty('--mr',Math.min(k++,12));if(low(r))r.classList.add('mxNo')})});
+  let t=0;v.querySelectorAll('.tile,.cube,.gc,.hjump>button,.kpi,.fc,.sc,.ri,.pcs,.qact>button,.fbal').forEach(el=>{el.style.setProperty('--mt',Math.min(t++,12));if(low(el))el.classList.add('mxNo')});
   // numbers count up from zero when the screen opens
   v.querySelectorAll('[data-count]').forEach(el=>{const to=+el.dataset.count;if(!isFinite(to)||to<=0)return;const pct=el.dataset.fmt==='pct',t0=performance.now(),D=900;
     (function f(n){const k=Math.min(1,(n-t0)/D),e=1-Math.pow(1-k,3),val=Math.round(to*e);el.textContent=val.toLocaleString('he-IL')+(pct?'%':'');if(k<1)requestAnimationFrame(f)})(t0)});
@@ -6039,7 +6056,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='a2e9fa5e';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='9d16d74b3d';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>

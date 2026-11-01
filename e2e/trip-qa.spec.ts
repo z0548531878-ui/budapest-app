@@ -25,12 +25,31 @@ async function probe(page: Page, ms: number, act: string, scroll = false) {
     (0, eval)(act as string);
     if (scroll) { const H = document.documentElement.scrollHeight; for (let i = 0; i < 12; i++) { await new Promise(r => setTimeout(r, 60)); window.scrollTo(0, (H * (i + 1)) / 12); } for (let i = 12; i >= 0; i--) { await new Promise(r => setTimeout(r, 60)); window.scrollTo(0, (H * i) / 12); } }
     await new Promise(r => setTimeout(r, ms as number + 50)); po.disconnect();
+    // measure the layout at rest: let entrance animations finish first (up to 3s)
+    await Promise.race([Promise.all(document.getAnimations().filter(a => a.effect?.getTiming().iterations !== Infinity).map(a => a.finished.catch(() => 0))), new Promise(r => setTimeout(r, 3000))]);
     // anything visible that sticks out past the screen edge
     const W = innerWidth, out: string[] = [];
     document.querySelectorAll('#view *, header.top *, #nav *').forEach(el => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return;
       let p: Element | null = el.parentElement, clipped = false; while (p && p !== document.body) { const cs = getComputedStyle(p); if (/(auto|scroll|hidden|clip)/.test(cs.overflowX)) { const pr = p.getBoundingClientRect(); if (pr.right <= W + 1 && pr.left >= -1) { clipped = true; break } } p = p.parentElement; }
       if (!clipped && (r.right > W + 2 || r.left < -2)) out.push((el.className && typeof el.className === 'string' ? el.className.split(' ')[0] : el.nodeName) + ` ${Math.round(r.left)}..${Math.round(r.right)}`); });
-    return { long: frames.filter(f => f > 50).length, worst: Math.round(Math.max(0, ...frames)), shift: +shift.toFixed(3), shifts: shifts.slice(0, 3),
+    // cards and rows that touch or overlap their neighbour, text cut off without an ellipsis, buttons too small to tap
+    const vis = (e: Element) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < innerHeight * 3; };
+    const boxy = (e: Element) => { const cs = getComputedStyle(e); return cs.position !== 'absolute' && cs.position !== 'fixed' && (cs.backgroundColor !== 'rgba(0, 0, 0, 0)' || parseFloat(cs.borderTopWidth) > 0 || cs.backgroundImage !== 'none'); };
+    const tight: string[] = [];
+    document.querySelectorAll('#view *').forEach(el => { const n = el.nextElementSibling; if (!n || !vis(el) || !vis(n) || !boxy(el) || !boxy(n)) return;
+      const a = el.getBoundingClientRect(), b = n.getBoundingClientRect(); const hov = Math.min(a.right, b.right) - Math.max(a.left, b.left), vov = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+      if (el.closest('.card') && n.closest('.card') === el.closest('.card')) return;
+      if (hov > 10 && b.top >= a.top) { const g = b.top - a.bottom; if (g < 4 && g > -40 && vov < a.height - 2) tight.push((el.className && typeof el.className === 'string' ? el.className.split(' ')[0] : el.nodeName) + '>' + (typeof n.className === 'string' ? n.className.split(' ')[0] : '') + ' ' + Math.round(g)); }
+      else if (vov > 10 && a.top === b.top) { const g = Math.min(Math.abs(b.left - a.right), Math.abs(a.left - b.right)); if (g < 4 && hov < 0 + 1) tight.push((typeof el.className === 'string' ? el.className.split(' ')[0] : el.nodeName) + '|' + (typeof n.className === 'string' ? n.className.split(' ')[0] : '') + ' ' + Math.round(g)); } });
+    const clip: string[] = [];
+    document.querySelectorAll('#view *, header.top *').forEach(el => { if (!vis(el) || el.children.length) return; const cs = getComputedStyle(el); if (!(el as HTMLElement).innerText?.trim()) return;
+      // the text itself runs past the box (a decorative sweep inside the button doesn't count)
+      const rg = document.createRange(); rg.selectNodeContents(el); const tr = rg.getBoundingClientRect(), er = el.getBoundingClientRect();
+      if ((tr.right > er.right + 1 || tr.left < er.left - 1) && /(hidden|clip)/.test(cs.overflowX) && cs.textOverflow !== 'ellipsis') clip.push((typeof el.className === 'string' ? el.className.split(' ')[0] : el.nodeName) + ':' + (el as HTMLElement).innerText.slice(0, 18)); });
+    const small: string[] = [];
+    document.querySelectorAll('#view button, #view a, #view [role=button], header.top button, #nav button').forEach(el => { if (!vis(el)) return; const r = { width: (el as HTMLElement).offsetWidth, height: (el as HTMLElement).offsetHeight }; if (r.width < 30 || r.height < 30) small.push((typeof el.className === 'string' ? el.className.split(' ')[0] : el.nodeName) + ` ${Math.round(r.width)}x${Math.round(r.height)}`); });
+    return { tight: [...new Set(tight)].slice(0, 8), nTight: tight.length, clip: [...new Set(clip)].slice(0, 6), nClip: clip.length, small: [...new Set(small)].slice(0, 6), nSmall: small.length,
+      long: frames.filter(f => f > 50).length, worst: Math.round(Math.max(0, ...frames)), shift: +shift.toFixed(3), shifts: shifts.slice(0, 3),
       hScroll: document.documentElement.scrollWidth > W + 1, out: [...new Set(out)].slice(0, 5) };
   }, [ms, act, scroll] as const);
 }
