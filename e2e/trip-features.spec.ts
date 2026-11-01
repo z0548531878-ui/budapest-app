@@ -54,7 +54,7 @@ test('an error on a phone is reported to the organizers', async ({ browser, db }
 test('after the last evening, home offers the trip album to open, share and save', async ({ browser, db }) => {
   await seedBigTrip(db);
   const { page } = await openTrip(browser, db);
-  await page.clock.setFixedTime(new Date('2026-11-22T19:00:00+01:00'));
+  await page.clock.setFixedTime(new Date('2026-11-21T19:00:00+01:00'));
   await page.evaluate(() => { localStorage.setItem('nogate', '1'); sessionStorage.setItem('skipInst', '1'); localStorage.setItem('role', 'guest:p2'); });
   await page.reload();
   await expect.poll(() => page.evaluate('COLS.every(c => loaded.has(c))')).toBe(true);
@@ -73,4 +73,32 @@ test('on Friday morning the Shabbat card already counts down to candle lighting'
   await expect.poll(() => page.evaluate('COLS.every(c => loaded.has(c))')).toBe(true);
   await page.evaluate('render(true)');
   await expect(page.locator('.shabc')).toContainText('הדלקת נרות');
+});
+
+test('a quiet thank-you: sent without a name, counted at once, opened after havdalah', async ({ browser, db }) => {
+  await seedBigTrip(db);
+  const { page } = await openTrip(browser, db);
+  await page.clock.setFixedTime(new Date('2026-11-21T18:00:00+01:00'));
+  await page.evaluate(() => { localStorage.setItem('nogate', '1'); sessionStorage.setItem('skipInst', '1'); localStorage.setItem('role', 'guest:p5'); });
+  await page.reload();
+  await expect.poll(() => page.evaluate('COLS.every(c => loaded.has(c))')).toBe(true);
+  await page.locator('#fxThx').click();
+  await page.locator('[data-th="p2"]').click();
+  await page.locator('#thT').fill('על העזרה עם המזוודות');
+  await page.locator('#thOk').click();
+  await expect.poll(() => page.evaluate("S.settings.some(x => x.kind === 'thx' && x.to === 'p2' && !x.by)")).toBe(true);
+  await page.evaluate("setRole('guest:p2')");
+  await page.locator('#fxThxOpen').click();
+  await expect(page.getByRole('dialog')).toContainText('על העזרה עם המזוודות');
+});
+
+test('the photos screen offers "find me in the photos" to participants', async ({ browser, db }) => {
+  await seedBigTrip(db);
+  const { page } = await openTrip(browser, db);
+  await page.evaluate(() => { localStorage.setItem('nogate', '1'); sessionStorage.setItem('skipInst', '1'); localStorage.setItem('role', 'guest:p2'); });
+  await page.reload();
+  await expect.poll(() => page.evaluate('COLS.every(c => loaded.has(c))')).toBe(true);
+  await page.evaluate("GTAB='gi';render(true)");
+  await page.locator('#fxFace').click();
+  await expect(page.getByRole('dialog')).toContainText('הזיהוי נעשה רק בטלפון הזה');
 });
