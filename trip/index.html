@@ -331,6 +331,8 @@ button.pill{padding:7px 12px;font-size:13px}
 .scrim.open{background:rgba(6,10,20,.5)}
 .sheet{background:#121a2e;border-top:1px solid var(--edge);width:100%;max-width:600px;max-height:92%;overflow:auto;border-radius:24px 24px 0 0;padding:10px 16px calc(22px + env(safe-area-inset-bottom,0px));transform:translateY(100%);transition:transform .32s var(--ease)}
 .scrim.open .sheet{transform:none}
+.fxbox.fxgrow{overflow:hidden;animation:fxGrow .42s cubic-bezier(.2,.8,.2,1)}@keyframes fxGrow{from{opacity:0;max-height:0}to{opacity:1;max-height:420px}}
+.scrim.swap,.scrim.swap .sheet{transition:none!important}.scrim.swap .sheet{overflow:hidden}.scrim.swap .sheet>*{animation:shSwap .24s ease both}@keyframes shSwap{from{opacity:0}to{opacity:1}}
 .sheet:focus{outline:none}
 .grip{width:42px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 14px}
 @media(min-width:760px){.scrim{align-items:center}.sheet{border-radius:24px;transform:translateY(30px) scale(.97);opacity:0;transition:transform .3s var(--ease),opacity .25s}.scrim.open .sheet{opacity:1}.grip{display:none}}
@@ -3818,11 +3820,13 @@ const TILE_DEFS=()=>{const pk=S.packing.filter(x=>!x.sug||kst(x,'ordered')),pd=p
  ['reqs','tasks','בקשות ואישורים',`${pendN()} ממתינות`,'c12'], ['announce','chat','הודעות',`${annList().length} פורסמו · ${msgDue().length} לשלוח`,'c13'], ['trivia','spark','טריוויה','משחק לאוטובוס','c10'],['rav','mic','הקלטת הרב',(()=>{const n=S.settings.filter(x=>x.kind==='audio'&&!x.hidden).length;return n?n+' פורסמו':'להעלאה לכולם'})(),'c14'],['tasks','tasks','משימות',`${S.tasks.filter(t=>t.status!=='בוצע').length} פתוחות`,'c3'],['photos','cam','תמונות מהמסע',PHL?`${PH.length} תמונות · העלאה`:'צפייה והעלאה','c7'],['rides','car','נסיעות לשדה',`${S.settings.filter(x=>x.kind==='ride'&&!x.hidden).length} נסיעות`,'c4'],
  ['roles','spark','תפקידים',`${Object.keys(rolesMap()).length} עם תפקיד`,'c11'],
  ]};
-const TORD=['passports','people','appusers','tasks','photos','rides','program','reqs','announce','rav','roles','flights','rooms','kits','shops','files','attendance','trivia'];
+// trivia link: carries the user's full name so the game does not ask for it (not in organizer preview)
+const trvHref=()=>{let nm='';try{nm=GUEST()?(PREV?'':(meG()||{}).name||''):(typeof ME==='string'?ME:'')}catch(e){}nm=String(nm||'').trim();return (GUEST()?'trivia/?lock=1':'trivia/')+(nm.split(/\s+/).length>=2?(GUEST()?'&':'?')+'name='+encodeURIComponent(nm):'')};
+const TORD=['passports','people','tasks','announce','program','reqs','trivia','appusers','photos','rides','rav','roles','flights','rooms','kits','shops','files','attendance'];
 // gold = something there is waiting for you; the rest stay dark, so the eye goes straight to what's open
 const tileHot=k=>{try{return ({reqs:pendN()>0,passports:S.participants.some(p=>!p.passport),announce:msgDue().length>0})[k]||false}catch(e){return false}};
 const msgDue=()=>{const t=todayISO();return S.messages.filter(m=>!m.sent&&m.date&&m.date<=t)};
-const homeTiles=()=>`<section class="sec"><div class="sec-h"><h3>הכל במקום אחד</h3><span class="sec-k"><i></i>מחכה לטיפול</span></div><div class="cubes tiles">${TILE_DEFS().sort((a,b)=>TORD.indexOf(a[0])-TORD.indexOf(b[0])).map(([k,ic,l,s,c],i)=>(k==='trivia'?`<a class="cube ${c}" href="trivia/" style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></a>`:`<button class="cube ${c}${tileHot(k)?' hot':''}" ${k==='tasks'?'data-go="tasks"':`data-go="more" data-opts='{"sub":"${k}"}'`} style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></button>`)).join('')}</div></section>`;
+const homeTiles=()=>`<section class="sec"><div class="sec-h"><h3>הכל במקום אחד</h3><span class="sec-k"><i></i>מחכה לטיפול</span></div><div class="cubes tiles">${TILE_DEFS().sort((a,b)=>TORD.indexOf(a[0])-TORD.indexOf(b[0])).map(([k,ic,l,s,c],i)=>(k==='trivia'?`<a class="cube ${c}" href="${trvHref()}" style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></a>`:`<button class="cube ${c}${tileHot(k)?' hot':''}" ${k==='tasks'?'data-go="tasks"':`data-go="more" data-opts='{"sub":"${k}"}'`} style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></button>`)).join('')}</div></section>`;
 
 
 const PROG=[
@@ -4189,14 +4193,16 @@ let sheetFrom=null;
 const FKEYS=['data-edit','data-person','data-msg','data-pay','data-nav'];
 const focusKey=el=>{const r=el&&el.closest(FKEYS.map(a=>`[${a}]`).join(',')+',[id]:not([id=""])');if(!r)return null;const a=FKEYS.find(a=>r.hasAttribute(a));return a?`[${a}="${CSS.escape(r.getAttribute(a))}"]`:'#'+CSS.escape(r.id)};
 function sheet(html){const r=document.getElementById('sheetRoot');
-  if(!document.getElementById('scrim')){const a=document.activeElement;sheetFrom=a&&a!==document.body?{el:a,key:focusKey(a),main:!!a.closest('.main')}:null}
+  // one sheet replacing another that is still sliding away: swap in place, no slide down and up again
+  const old=r.querySelector('.scrim:not(#scrim) .sheet'),h0=old&&!reduce?old.offsetHeight:0;
+  if(!document.getElementById('scrim')&&!h0){const a=document.activeElement;sheetFrom=a&&a!==document.body?{el:a,key:focusKey(a),main:!!a.closest('.main')}:null}
   r.innerHTML=`<div class="scrim" id="scrim"><div class="sheet" role="dialog" aria-modal="true" tabindex="-1"><div class="grip"></div><div class="sh-bar"><button type="button" class="sh-x" data-dismiss aria-label="סגירת החלון"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>${html}</div></div>`;
   const s=document.getElementById('scrim'),sh=s.querySelector('.sheet');unnest(sh);sh.addEventListener('keydown',keyClick);
   const h=sh.querySelector('h3');if(h){h.id='sheetTitle';sh.setAttribute('aria-labelledby','sheetTitle')}
   sh.focus({preventScroll:true});
   // Tab stays inside the open sheet
   sh.addEventListener('keydown',e=>{if(e.key!=='Tab')return;const f=[...sh.querySelectorAll('button:not([disabled]),a[href],input:not([type=hidden]),textarea,[tabindex="0"]')].filter(x=>x.offsetParent);if(!f.length)return;
-    const first=f[0],last=f[f.length-1];if(e.shiftKey&&(document.activeElement===first||document.activeElement===sh)){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}});requestAnimationFrame(()=>requestAnimationFrame(()=>s.classList.add('open')));
+    const first=f[0],last=f[f.length-1];if(e.shiftKey&&(document.activeElement===first||document.activeElement===sh)){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}});if(h0){s.classList.add('swap','open');Promise.resolve().then(()=>{const h1=sh.offsetHeight;if(Math.abs(h1-h0)>2&&sh.animate)sh.animate([{height:h0+'px'},{height:h1+'px'}],{duration:240,easing:'cubic-bezier(.2,.8,.2,1)'})});setTimeout(()=>s.classList.remove('swap'),300)}else requestAnimationFrame(()=>requestAnimationFrame(()=>s.classList.add('open')));
   // typing in a form marks it as changed: closing it without saving then asks first
   sh.addEventListener('input',e=>{const t=e.target;if(t.matches&&t.matches('input:not([type=search]):not([type=file]):not([data-nodirty]),textarea,select'))sh.dataset.dirty='1'});
   s.addEventListener('click',e=>{if(e.target===s||e.target.closest('[data-close],[data-dismiss]'))dismissSheet()});
@@ -5233,10 +5239,10 @@ function guestHTML0(){
           gx:()=>cube('gx',IX.food,'מסעדות ואטרקציות','איפה אוכלים כשר, ומה כדאי לראות'),
           gz:()=>cube('gz',IX.pin,'קרעסטיר','על רבי ישעיה׳לה ועל הציון'),
           gk:()=>cube('gk',IX.tools,'כלים לדרך','שעון, זמנים, מטבע, ביטויים'),
+          trv:()=>`<a class="gc gtrv" href="${trvHref()}" style="--i:${n++}"><span class="gc-i">${I.spark}</span><span class="gc-t">טריוויה על גלגלים</span><span class="gc-s">${open?'כל המשחקים פתוחים. בהצלחה!':'עצמאי וראש בראש פתוחים · קבוצתי ביום המסע'}</span></a>`,
           ge:()=>cube('ge',IX.coin,'חשבון משותף','מי שילם, ומי חייב למי',(()=>{const b=me?Object.values(splitBal(me)).filter(v=>v<=-1).length:0;return b||''})())};
-        const ord=TRIPDAY()?['gs','gkt','grm','gcn','gv','gt','gm','gi','gx','gz','gp','gk','gd']:['gs','gkt','grm','gcn','gv','gt','gm','gd','gp','gx','gz','gk','gi'];
+        const ord=TRIPDAY()?['gs','gkt','grm','gcn','gv','gm','gi','trv','gx','gk','gt','gz','gp','gd']:['gs','gkt','grm','gcn','gv','gm','trv','gt','gd','gp','gx','gz','gk','gi'];
         return ord.map(k=>C[k]()).join('')})()}
-      <a class="gc gtrv" href="trivia/?lock=1" style="--i:${n++}"><span class="gc-i">${I.spark}</span><span class="gc-t">טריוויה על גלגלים</span><span class="gc-s">${open?'כל המשחקים פתוחים. בהצלחה!':'עצמאי וראש בראש פתוחים · קבוצתי ביום המסע'}</span></a>
      </div>
      ${flightGroups(ppl,'חזור').map(g=>guestFlightCard(g,ppl,'חזור')).join('')}
      ${help}</div>`}
@@ -6385,7 +6391,7 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest
 function fxPaint(){const v=document.getElementById('view');if(!v)return;const home=fxHome(),scr=v.dataset.scr;
   // home cards live in their own boxes around the screen, so the screen's own redraws (and their highlights) stay untouched
   const box=(id,before)=>{let el=document.getElementById(id);if(!el){el=document.createElement('div');el.id=id;el.className='fxbox';before?v.before(el):v.after(el)}return el};
-  const top=box('fxTop',true),bot=box('fxBot',false),put=(el,h)=>{if(el.__h!==h){el.__h=h;el.innerHTML=h}};
+  const top=box('fxTop',true),bot=box('fxBot',false),put=(el,h)=>{if(el.__h!==h){const was=!!el.__h;el.__h=h;el.innerHTML=h;if(!was&&h&&!reduce){el.classList.remove('fxgrow');void el.offsetWidth;el.classList.add('fxgrow');el.addEventListener('animationend',e=>{if(e.target===el)el.classList.remove('fxgrow')})}}};
   if(!home){put(top,'');put(bot,'')}
   else{const pk=pickup(),T=[],B=[];
     if(pk)T.push(`<div class="pickc"><div><small>📍 נקודת איסוף</small><b>${esc(pk.text)}</b></div><a class="btn primary" href="${pickupNav(pk)}" target="_blank" rel="noopener">ניווט</a></div>`);
@@ -6471,7 +6477,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='d8250da528';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='d528933836';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
