@@ -2390,6 +2390,7 @@ body[data-sky="night"] .skyfx .stars{opacity:1}
 .ftools{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 4px}
 .ftools button{min-height:44px;border-radius:14px;border:1px solid rgba(214,178,98,.28);background:rgba(214,178,98,.06);color:var(--ink);font:inherit;font-weight:700;font-size:13.5px}
 #fxTop:not(:empty){padding-top:4px}#fxBot:not(:empty){padding-top:6px}
+.thxc{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:14px 0 4px;padding:12px 14px;border-radius:16px;border:1px solid rgba(240,200,110,.4);background:rgba(240,200,110,.06)}.thxc b{display:block;font-size:15px}.thxc small{color:var(--muted);font-size:12.5px}.thx-b{display:flex;gap:6px;flex:none}
 .album{margin:12px 0 4px;padding:12px;border-radius:18px;border:1px solid rgba(214,178,98,.4);background:linear-gradient(160deg,#211a0f,#14110b)}
 .al-st{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;border-radius:12px;overflow:hidden}.al-st img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
 .al-t{margin:10px 2px}.al-t b{display:block;font-size:17px}.al-t small{color:var(--muted)}
@@ -6242,7 +6243,52 @@ async function albumShare(){const t='אלבום מסע הגיבוש להונגר
 async function albumSave(){const L=PH.slice(0,60);if(!L.length){toast('עוד אין תמונות');return}toast(`מכין ${L.length} תמונות…`);
   try{const files=[];for(const p of L)files.push(await phFile(p));if(navigator.canShare&&navigator.canShare({files})){await navigator.share({files,title:'אלבום המסע'});return}
     for(const f of files){const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();a.remove();await new Promise(r=>setTimeout(r,350))}toast('האלבום נשמר')}catch(e){if(e&&e.name!=='AbortError')toast('השמירה לא הצליחה. נסו שוב')}}
-const albumTime=()=>{const n=budNow();return n.d>'2026-11-22'||(n.d==='2026-11-22'&&n.m>=17*60)};
+const albumTime=()=>{const n=budNow();return n.d>'2026-11-21'||(n.d==='2026-11-21'&&n.m>=17*60)};
+
+/* 6. "find me in the photos": face matching runs on this phone only. Your selfie's face signature stays in this phone; no photo leaves it. */
+const FACE_LIB='https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/dist/face-api.js',FACE_MODELS='https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/model/';
+let FACE_READY=null;
+function faceLoad(){if(FACE_READY)return FACE_READY;FACE_READY=new Promise((res,rej)=>{const s=document.createElement('script');s.src=FACE_LIB;s.onload=async()=>{try{const f=window.faceapi;
+    // the phone's graphics chip when there is one, plain processor otherwise
+    try{if(!await f.tf.setBackend('webgl'))throw 0}catch(e){await f.tf.setBackend('cpu')}await f.tf.ready();
+    await Promise.all([f.nets.tinyFaceDetector.loadFromUri(FACE_MODELS),f.nets.faceLandmark68Net.loadFromUri(FACE_MODELS),f.nets.faceRecognitionNet.loadFromUri(FACE_MODELS)]);res(f)}catch(e){FACE_READY=null;rej(e)}};s.onerror=()=>{FACE_READY=null;rej(new Error('load'))};document.head.appendChild(s)});return FACE_READY}
+const faceImg=src=>new Promise((res,rej)=>{const i=new Image();i.crossOrigin='anonymous';i.onload=()=>res(i);i.onerror=rej;i.src=src});
+const faceOpts=f=>new f.TinyFaceDetectorOptions({inputSize:416,scoreThreshold:.45});
+function faceSheet(){const mine=lsGet('fxFace',null);
+  sheet(`<h3>🙋 מצאו אותי בתמונות</h3><p class="note">הטלפון מזהה אתכם בתמונות של המסע. הזיהוי נעשה רק בטלפון הזה: הסלפי לא נשמר ולא נשלח לשום מקום.</p>
+   <div id="fcBody">${mine?`<button class="btn primary" id="fcScan" type="button" style="width:100%">🔍 חיפוש בכל התמונות</button><button class="link" id="fcRedo" type="button">סלפי חדש</button>`:`<label class="btn primary" style="width:100%;justify-content:center">📷 צילום סלפי<input type="file" accept="image/*" capture="user" id="fcSelf" hidden></label>`}</div>`);
+  const body=document.getElementById('fcBody');
+  const self=document.getElementById('fcSelf');if(self)self.onchange=async e=>{const file=e.target.files[0];if(!file)return;body.innerHTML='<p class="note"><span class="gspin"></span> לומד את הפנים שלכם… (בפעם הראשונה זה לוקח כמה שניות)</p>';
+    try{const f=await faceLoad(),img=await faceImg(URL.createObjectURL(file)),d=await f.detectSingleFace(img,faceOpts(f)).withFaceLandmarks().withFaceDescriptor();
+      if(!d){body.innerHTML='<p class="note">לא מצאנו פנים בתמונה. נסו סלפי באור טוב, מקרוב.</p>';return}
+      lsSet('fxFace',Array.from(d.descriptor).map(x=>+x.toFixed(4)));lsSet('fxFaceScan',{});closeSheet();setTimeout(faceSheet,150)}catch(err){body.innerHTML='<p class="note">הזיהוי לא נטען. צריך אינטרנט בפעם הראשונה.</p>'}};
+  const redo=document.getElementById('fcRedo');if(redo)redo.onclick=()=>{try{localStorage.removeItem('fxFace')}catch(e){}closeSheet();setTimeout(faceSheet,150)};
+  const scan=document.getElementById('fcScan');if(scan)scan.onclick=()=>faceScan(body)}
+async function faceScan(body){photosSub();const me=new Float32Array(lsGet('fxFace',[])),cache=lsGet('fxFaceScan',{}),L=PH.slice(0,250),hits=[];let n=0;
+  body.innerHTML='<p class="note" id="fcP"><span class="gspin"></span> טוען…</p><div class="ph-grid" id="fcG"></div>';const P=document.getElementById('fcP'),G=document.getElementById('fcG');
+  let f;try{f=await faceLoad()}catch(e){P.textContent='הזיהוי לא נטען. צריך אינטרנט.';return}
+  for(const p of L){n++;if(!document.getElementById('fcP'))return;P.innerHTML=`<span class="gspin"></span> בודק ${n} מתוך ${L.length} · נמצאתם ב־${hits.length}`;
+    let hit=cache[p._id];if(hit==null){try{const img=await faceImg(await phBig(p)),fs=await f.detectAllFaces(img,faceOpts(f)).withFaceLandmarks().withFaceDescriptors();hit=fs.some(x=>f.euclideanDistance(x.descriptor,me)<.52)?1:0}catch(e){hit=0}cache[p._id]=hit;if(n%10===0)lsSet('fxFaceScan',cache)}
+    if(hit){hits.push(p);const b=document.createElement('button');b.className='ph-c';b.innerHTML=`<img src="${esc(p.th)}" alt="" loading="lazy">`;b.onclick=()=>{closeSheet();setTimeout(()=>phOpen(p._id),150)};G.appendChild(b)}}
+  lsSet('fxFaceScan',cache);const id=meId();
+  P.innerHTML=hits.length?`נמצאתם ב־<b>${hits.length}</b> תמונות`:'לא מצאנו אתכם בתמונות. אפשר לנסות סלפי חדש.';
+  if(hits.length&&id){const t=document.createElement('button');t.className='btn primary';t.style.cssText='width:100%;margin-top:10px';t.textContent='🏷 לתייג אותי בכולן';
+    t.onclick=async()=>{t.disabled=true;let ok=0;for(const p of hits){const tags=[...new Set([...(p.tags||[]),id])];if(await gset('photos/'+p._id,{tags})){p.tags=tags;ok++}}toast(`תויגתם ב־${ok} תמונות`);t.textContent='✓ תויגתם'};body.appendChild(t)}}
+
+/* 9. a quiet thank-you: send anonymous thanks; everyone sees what they received after havdalah on Saturday night */
+const THX_OPEN=()=>{const n=budNow();return n.d>'2026-11-21'||(n.d==='2026-11-21'&&n.m>=17*60)};
+const thxMine=()=>{const m=GUEST()&&meG();if(!m)return [];const ids=coupleOf(m).map(p=>p._id);return S.settings.filter(x=>x.kind==='thx'&&!x.hidden&&ids.includes(x.to))};
+function thxSheet(){const me=meG(),own=me?coupleOf(me).map(p=>p._id):[],ppl=S.participants.filter(p=>!own.includes(p._id)).sort((a,b)=>a.name.localeCompare(b.name,'he'));let to='';
+  sheet(`<h3>💛 תודה שקטה</h3><p class="note">בלי שם. מי שקיבל רואה במוצאי שבת כמה תודות קיבל ועל מה.</p><input class="search" id="thQ" type="search" placeholder="למי? חיפוש שם"><div class="tglist" id="thL">${ppl.map(p=>`<button type="button" class="opt" data-th="${p._id}" aria-pressed="false">${esc(p.name)}</button>`).join('')}</div>
+   <textarea class="note-in" id="thT" maxlength="200" placeholder="על מה? (לא חובה) למשל: על העזרה עם המזוודות" style="min-height:70px"></textarea>
+   <div class="sheet-acts"><span class="sp"></span><button class="btn primary" id="thOk" type="button">שליחת תודה</button></div>`);
+  const r=document.getElementById('sheetRoot');r.querySelectorAll('[data-th]').forEach(b=>b.onclick=()=>{to=b.dataset.th;r.querySelectorAll('[data-th]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)))});
+  document.getElementById('thQ').oninput=e=>{const q=e.target.value.trim();r.querySelectorAll('[data-th]').forEach(b=>b.hidden=!!q&&!b.textContent.includes(q))};
+  document.getElementById('thOk').onclick=async()=>{if(!to){toast('בחרו למי');return}const sent=lsGet('fxThx',0);if(sent>=40){toast('שלחתם כבר הרבה תודות 💛');return}
+    const ts=Date.now();if(await gset('settings/thx_'+ts+'_'+Math.random().toString(36).slice(2,7),{kind:'thx',to,text:document.getElementById('thT').value.trim().slice(0,200),ts})){lsSet('fxThx',sent+1);closeSheet();toast('התודה נשלחה 💛')}}}
+function thxReveal(){const L=thxMine().sort((a,b)=>a.ts-b.ts);sheet(`<h3>💛 ${L.length} תודות בשבילכם</h3>${L.length?`<ul class="missed">${L.map(x=>`<li><b>💛 ${x.text?esc(x.text):'תודה!'}</b></li>`).join('')}</ul>`:'<p class="note">עוד לא הגיעו תודות.</p>'}`)}
+function thxCard(){if(!GUEST())return '';const n=thxMine().length,open=THX_OPEN();
+  return `<div class="thxc"><div><b>💛 תודה שקטה</b><small>${open?(n?`קיבלתם ${n} תודות. לחצו לראות`:'אפשר עדיין לשלוח תודה'):(n?`מחכות לכם ${n} תודות · ייפתחו במוצאי שבת`:'שלחו תודה בלי שם למישהו מהמסע')}</small></div><div class="thx-b">${open&&n?'<button type="button" class="btn primary" id="fxThxOpen">לראות</button>':''}<button type="button" class="btn" id="fxThx">לשלוח</button></div></div>`}
 
 /* where it all shows: home cards, settings items, a few buttons */
 function fxPaint(){const v=document.getElementById('view');if(!v)return;const home=fxHome(),scr=v.dataset.scr;
@@ -6256,16 +6302,17 @@ function fxPaint(){const v=document.getElementById('view');if(!v)return;const ho
       const pl=payLink(),me=meG(),ppl=me?coupleOf(me):[],need=ppl.filter(x=>x.status!=='פטור'&&+x.amount>0),left=need.reduce((t,x)=>t+(+x.amount||0)-paidOf(x),0);
       if(pl&&left>0)T.push(`<a class="paybtn" href="${esc(pl)}" target="_blank" rel="noopener" id="fxPay" data-amt="${Math.round(left)}">💳 לתשלום: ${ils(left)}<small>Bit / PayBox · הסכום יועתק</small></a>`);
       if(albumTime()){photosSub();T.unshift(albumCard())}
+      B.push(thxCard());
       B.push(wxStrip(),`<div class="sosbar"><button type="button" id="fxSos">🆘 עזרה וחירום</button><button type="button" id="fxLost">📍 הלכתי לאיבוד</button></div>`)}
     else{if(albumTime()){photosSub();T.unshift(albumCard())}T.push(`<div class="ftools"><button type="button" id="fxField">🧭 מצב שטח</button><button type="button" id="fxPick">📍 נקודת איסוף</button><button type="button" id="fxSearch">🔍 חיפוש</button></div>`,morningCard());B.push(wxStrip())}
     put(top,T.filter(Boolean).join(''));put(bot,B.filter(Boolean).join(''))}
-  if(scr==='ggi'||scr==='photos'){if(!v.querySelector('.fx-phs')){const a=v.querySelector('.ph-up');if(a){const d=document.createElement('div');d.className='fx-phs';d.innerHTML=`<button type="button" class="btn" id="fxAlbShare">🔗 שיתוף האלבום</button><button type="button" class="btn" id="fxAlbSave">📚 שמירת כל האלבום</button><button type="button" class="btn" id="fxPhSave">💾 שמירת התמונות של היום</button><button type="button" class="btn" id="fxPhMe" aria-pressed="${PHF==='me'}">🏷 תמונות שאני בהן</button>`;a.after(d)}}}
+  if(scr==='ggi'||scr==='photos'){if(!v.querySelector('.fx-phs')){const a=v.querySelector('.ph-up');if(a){const d=document.createElement('div');d.className='fx-phs';d.innerHTML=`${GUEST()?'<button type="button" class="btn primary" id="fxFace">🙋 מצאו אותי בתמונות</button>':''}<button type="button" class="btn" id="fxAlbShare">🔗 שיתוף האלבום</button><button type="button" class="btn" id="fxAlbSave">📚 שמירת כל האלבום</button><button type="button" class="btn" id="fxPhSave">💾 שמירת התמונות של היום</button><button type="button" class="btn" id="fxPhMe" aria-pressed="${PHF==='me'}">🏷 תמונות שאני בהן</button>`;a.after(d)}}}
   if(scr==='announce')annSchedPaint();
   appStatLinks();reqWatch();missedCheck();backupNudge();whatsNew();annQueue()}
 {const _fp=render;render=function(a){_fp(a);try{fxPaint()}catch(e){console.warn('fx',e)}}}
 document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;const id=(t.closest('[id]')||{}).id;
   if(id==='fxSos'){sosSheet();return}if(id==='fxLost'){lostSend();return}if(id==='fxField'){fieldSheet();return}if(id==='fxPick'){pickupSheet();return}if(id==='fxSearch'){gSearch();return}
-  if(id==='fxPhSave'){phSaveDay();return}if(id==='fxAlbShare'){albumShare();return}if(id==='fxAlbSave'){albumSave();return}if(id==='fxAlbOpen'){if(GUEST()){GTAB='gi';render(true)}else go('more',{sub:'photos'});scrollTo(0,0);return}if(id==='fxPhMe'){PHF=PHF==='me'?'all':'me';render();return}
+  if(id==='fxPhSave'){phSaveDay();return}if(id==='fxAlbShare'){albumShare();return}if(id==='fxFace'){faceSheet();return}if(id==='fxThx'){thxSheet();return}if(id==='fxThxOpen'){thxReveal();return}if(id==='fxAlbSave'){albumSave();return}if(id==='fxAlbOpen'){if(GUEST()){GTAB='gi';render(true)}else go('more',{sub:'photos'});scrollTo(0,0);return}if(id==='fxPhMe'){PHF=PHF==='me'?'all':'me';render();return}
   if(id==='fxPay'){const a=t.closest('#fxPay');try{navigator.clipboard&&navigator.clipboard.writeText(a.dataset.amt)}catch(x){}toast('הסכום הועתק: '+a.dataset.amt+' ₪')}});
 
 /* pull to refresh: only inside the installed app, where the phone has none of its own */
@@ -6331,7 +6378,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='6f227608f5';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='02ad8edd36';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
