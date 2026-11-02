@@ -117,14 +117,14 @@ test('organizers: the rides and photos tiles follow the rides and let them uploa
   await page.evaluate(() => { localStorage.setItem('role', 'org'); });
   await page.reload();
   await expect.poll(() => page.evaluate('COLS.every(c => loaded.has(c))')).toBe(true);
-  await page.locator('.cubes.tiles .cube', { hasText: 'נסיעות לשדה' }).click();
+  await page.locator('.cubes.tiles .cube', { hasText: 'נסיעות' }).click();
   await expect(page.locator('.rd-c')).toContainText('בני ברק');
   await expect(page.locator('.rd-c .rd-j')).toContainText('גלעד מור');
   await expect(page.locator('.rd-sum')).toContainText('1/3');
   // only בני לוי has nothing arranged
   await expect(page.locator('.rd-mates summary')).toContainText('1 משתתפים');
   await page.evaluate(`go('home')`);
-  await page.locator('.cubes.tiles .cube', { hasText: 'תמונות מהמסע' }).click();
+  await page.locator('.cubes.tiles .cube', { hasText: 'תמונות' }).click();
   const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAFklEQVR4nGP8z8DAwMDAxMDAwMDAAAANHQEDasKb6QAAAABJRU5ErkJggg==', 'base64');
   await page.locator('#phFile').setInputFiles({ name: 'a.png', mimeType: 'image/png', buffer: png });
   await expect(page.locator('.ph-c')).toHaveCount(1);

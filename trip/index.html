@@ -2501,6 +2501,27 @@ body.guest .ghome .hello{align-items:center!important}
 @media (prefers-reduced-motion:no-preference){.trvp{animation:trvHop 4.2s 1.4s cubic-bezier(.3,.7,.3,1) infinite}.trvp-sp{animation:trvSpin 4.2s 1.4s ease-in-out infinite}}
 @keyframes trvHop{0%,72%,100%{transform:none}78%{transform:translateY(-7px) scale(1.04)}84%{transform:translateY(0) scale(.97,1.03)}90%{transform:translateY(-3px)}95%{transform:none}}
 .trvp:active{transform:scale(.94)!important}
+/* organizer home: tiles in the participants' template (four per row), work cards half the size, side by side */
+#view section .cubes.tiles{grid-template-columns:repeat(4,1fr)!important;gap:8px!important}
+#view section .cubes.tiles>.cube.cube{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;text-align:center!important;gap:2px!important;min-height:0!important;padding:10px 3px 9px!important;border-radius:16px!important;background:linear-gradient(160deg,#1d1810,#0e0c08)!important;border:1px solid rgba(214,178,98,.32)!important;color:var(--ink)!important;position:relative;overflow:hidden;box-shadow:none!important}
+#view section .cubes.tiles>.cube.cube .ci{position:static!important;width:38px!important;height:38px!important;border-radius:12px!important;margin:0 0 4px!important;background:var(--goldbtn)!important;color:#15110a!important;animation:none!important;box-shadow:0 6px 14px -8px rgba(240,200,110,.8)}
+#view section .cubes.tiles>.cube.cube .ci svg{width:19px!important;height:19px!important}
+#view section .cubes.tiles>.cube.cube b{font-size:12.5px!important;font-weight:800;line-height:1.2;color:#f6e3b0!important;max-width:100%;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+#view section .cubes.tiles>.cube.cube small{font-size:11px!important;line-height:1.25;color:#b9ab8a!important;opacity:1!important;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#view section .cubes.tiles>.cube.cube.hot{border-color:rgba(240,200,110,.75)!important;box-shadow:0 0 0 1px rgba(240,200,110,.35),0 8px 20px -12px rgba(240,200,110,.7)!important}
+#view section .cubes.tiles>.cube.cube:active{transform:scale(.94)}
+@media (max-width:370px){#view section .cubes.tiles>.cube.cube b{font-size:11.5px!important}}
+#view .bigc{grid-template-columns:1fr 1fr!important;gap:8px!important;margin:10px 0 4px!important}
+#view .bigc .bc{padding:9px 10px!important;gap:6px!important;border-radius:16px!important;min-height:0!important}
+#view .bigc .bc-h{gap:8px!important;grid-template-columns:auto 1fr!important}
+#view .bigc .bc-i{width:30px!important;height:30px!important;border-radius:10px!important}#view .bigc .bc-i svg{width:17px!important;height:17px!important}
+#view .bigc .bc-h b{font-size:14.5px!important;line-height:1.15}
+#view .bigc .bc-h small{font-size:11px!important;display:block;line-height:1.2}
+#view .bigc .bc-go{display:none!important}
+#view .bigc .bc-bar{height:5px!important}
+#view .bigc .bc-cs{gap:4px!important;flex-wrap:nowrap!important;overflow:hidden}
+#view .bigc .bc-cs .bcc{font-size:10.5px!important;padding:1px 6px!important;white-space:nowrap}
+#view .bigc .bc-cs .bcc:nth-child(n+2){display:none}
 /* the flight card, compact: fits the opening screen together with the actions under it */
 .pass.bp2{margin-top:8px!important;border-radius:18px!important}
 .pass.bp2 .pass-main{padding:9px 12px 6px!important}
@@ -2993,11 +3014,12 @@ const VIEWS={
   const attention=fires.length?`<section class="sec"><div class="sec-h"><h3>דורש תשומת לב</h3><button class="link" data-go="more">כל התובנות ›</button></div>${card(fires.map(([c,l,to,o])=>`<button class="row" data-go="${to}" data-opts='${esc(JSON.stringify(o))}'><span class="pill ${c}">!</span><div class="main"><div class="t">${esc(l)}</div></div><span aria-hidden="true" style="color:var(--muted)">‹</span></button>`).join(''))}</section>`:'';
   return `<div class="hello"><div class="greet">${greeting()}<b>${ME?esc(ME):'ברוכים הבאים'}</b></div><span class="date">${today}</span></div>
   ${out?passHTML(out):''}
+  ${fin}
   <section class="hjump" aria-label="תקציב ותובנות"><button data-go="money"><span class="ic">${I.money}</span><b>תקציב</b><small>${ready('participants')?esc(m.unpaid.length?m.unpaid.length+' עוד לא שילמו':'כולם שילמו'):'…'}</small></button><button data-go="more"><span class="ic">${I.more}</span><b>תובנות וכלים</b><small>${(n=>n?n+' דורשים טיפול':'הכול נראה טוב')(insights().L.filter(x=>x.lvl==='bad').length)}</small>${(n=>n?`<span class="badge num">${n}</span>`:'')(insights().L.filter(x=>x.lvl==='bad').length)}</button></section>
   ${nowCard(`data-go="more" data-opts='{"sub":"program"}'`)}
-  ${attention}${fin}
   ${bigCards()}
   ${homeTiles()}
+  ${attention}
   <section class="hub">
    <button class="big" data-idea><span class="ic">${I.spark}</span><span class="main"><b>עדכון או רעיון</b><span>${CAN_SEND()?'כותבים או מכתיבים, וזה מגיע ל-Claude':'כותבים או מכתיבים, וזה נשמר לכל הצוות'}</span></span><span class="mic">${I.mic}</span></button>
    ${CAN_SEND()?'':'<!--'}<div class="sync ${pn?'has':''}"><span class="dot"></span><div class="main"><b>${pn?`${pn} חדשים ל-Claude`:'Claude מעודכן'}</b><small>${pn?'שולחים אליו, והוא מעדכן כאן לבד':'אין שינויים שהוא לא ראה'}</small></div>
@@ -3974,7 +3996,10 @@ const TORD=['passports','people','tasks','announce','program','reqs','trivia','a
 // gold = something there is waiting for you; the rest stay dark, so the eye goes straight to what's open
 const tileHot=k=>{try{return ({reqs:pendN()>0,passports:S.participants.some(p=>!p.passport),announce:msgDue().length>0})[k]||false}catch(e){return false}};
 const msgDue=()=>{const t=todayISO();return S.messages.filter(m=>!m.sent&&m.date&&m.date<=t)};
-const homeTiles=()=>`<section class="sec"><div class="sec-h"><h3>הכל במקום אחד</h3><span class="sec-k"><i></i>מחכה לטיפול</span></div><div class="cubes tiles">${TILE_DEFS().filter(x=>!['tasks','shops','program'].includes(x[0])).sort((a,b)=>TORD.indexOf(a[0])-TORD.indexOf(b[0])).map(([k,ic,l,s,c],i)=>(k==='trivia'?`<a class="cube ${c}" href="${trvHref()}" style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></a>`:`<button class="cube ${c}${tileHot(k)?' hot':''}" ${k==='tasks'?'data-go="tasks"':`data-go="more" data-opts='{"sub":"${k}"}'`} style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></button>`)).join('')}</div></section>`;
+// short names that fit a quarter-width tile (the full name stays as its label for screen readers)
+const TSUBS={trivia:'לאוטובוס',photos:'מהמסע',rav:'דברי הרב'};
+const TSHORT={appusers:'באפליקציה',reqs:'בקשות',rav:'הקלטות',photos:'תמונות',rides:'נסיעות',attendance:'נוכחות'};
+const homeTiles=()=>`<section class="sec"><div class="sec-h"><h3>הכל במקום אחד</h3><span class="sec-k"><i></i>מחכה לטיפול</span></div><div class="cubes tiles">${TILE_DEFS().filter(x=>!['tasks','shops','program'].includes(x[0])).sort((a,b)=>TORD.indexOf(a[0])-TORD.indexOf(b[0])).map(([k,ic,l0,s0,c],i)=>{const l=TSHORT[k]||l0;let s=String(s0||'').split(' · ')[0].split(' + ')[0];if(s.length>11)s=TSUBS[k]||'';return (k==='trivia'?`<a class="cube ${c}" href="${trvHref()}" style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></a>`:`<button class="cube ${c}${tileHot(k)?' hot':''}" aria-label="${esc(l0+(s?' · '+s:''))}" ${k==='tasks'?'data-go="tasks"':`data-go="more" data-opts='{"sub":"${k}"}'`} style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></button>`)}).join('')}</div></section>`;
 
 
 const PROG=[
@@ -6647,7 +6672,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='12b94a644f';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='b2472dd3b2';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
