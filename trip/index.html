@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="בודפשט">
 <link rel="preload" as="image" href="logo.webp" fetchpriority="high">
 <link rel="icon" href="icon.png">
-<link rel="apple-touch-icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon-apple.png">
 <link rel="manifest" href="manifest.json">
 <script>try{if(/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1))document.querySelector('link[rel="manifest"]').href='manifest-ios.json'}catch(e){}</script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -2275,14 +2275,20 @@ body:not(.guest) #view [role=button].main{min-height:40px}
 .splash .sp-s{display:block!important;z-index:1;font-family:var(--body);font-size:15px;font-weight:700;color:#a69a7d!important}
 @media (prefers-reduced-motion:no-preference){
  .splash:not(.quick):not(.go) :is(.sp-logo,.sp-t,.sp-line,.sp-s){opacity:0}
- .splash.go:not(.quick) .sp-logo img{animation:spLogo .8s cubic-bezier(.2,.8,.2,1) both!important}
+ .splash.go:not(.quick) .sp-logo img{animation:spLogo .75s cubic-bezier(.2,.8,.2,1) both!important}
  .splash.go:not(.quick) .sp-ring circle{animation:spRing 1s .15s cubic-bezier(.6,0,.2,1) both}
  .splash.go:not(.quick) .sp-shine::after{animation:spShine .8s .75s ease-out both}
  .splash.go:not(.quick) .sp-t{animation:spRise .6s .5s cubic-bezier(.2,.8,.2,1) both}
  .splash.go:not(.quick) .sp-line{animation:spLine .6s .75s cubic-bezier(.2,.8,.2,1) both}
  .splash.go:not(.quick) .sp-s{animation:spRise .6s .85s cubic-bezier(.2,.8,.2,1) both}
 }
-@keyframes spLogo{from{opacity:0;transform:scale(.86)}to{opacity:1;transform:none}}
+@keyframes spLogo{from{opacity:0;transform:rotate(-320deg) scale(.35)}70%{opacity:1}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:no-preference){
+ .splash.quick:not(.go) .sp-logo img{opacity:0}
+ .splash.quick.go .sp-logo img{animation:spLogo .6s cubic-bezier(.2,.8,.2,1) both!important}
+ .splash.quick :is(.sp-t,.sp-line,.sp-s){animation:spRise .45s .2s cubic-bezier(.2,.8,.2,1) both}
+ .splash.out .sp-logo{transform:scale(1.25);opacity:0;transition:transform .4s cubic-bezier(.4,0,.2,1),opacity .35s}
+}
 @keyframes spRing{from{stroke-dashoffset:302}to{stroke-dashoffset:0}}
 @keyframes spShine{0%{left:-60%;opacity:1}100%{left:130%;opacity:1}}
 @keyframes spRise{from{opacity:0;transform:translateY(10px);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
@@ -6509,7 +6515,7 @@ function fxPaint(){const v=document.getElementById('view');if(!v)return;const ho
       T.unshift(kerCard(),returnCard(),motzCard());
       B.push(thxCard());
       B.push(wxStrip(),`<div class="sosbar"><button type="button" id="fxSos">🆘 עזרה וחירום</button><button type="button" id="fxLost">📍 הלכתי לאיבוד</button></div>`)}
-    else{if(albumTime()){photosSub();T.unshift(albumCard())}T.push(`<div class="ftools" role="region" aria-label="פעולות מהירות"><button type="button" id="fxAnn"><i>📣</i>הודעה לכולם</button><button type="button" id="fxProg"><i>🗓</i>שינוי בלו״ז</button><button type="button" id="fxField"><i>🧭</i>מצב שטח</button><button type="button" id="fxPick"><i>📍</i>נקודת איסוף</button><button type="button" id="fxSearch"><i>🔍</i>חיפוש</button></div>`,morningCard());B.push(wxStrip())}
+    else{if(albumTime()){photosSub();T.unshift(albumCard())}T.push(`<div class="ftools" role="region" aria-label="פעולות מהירות"><button type="button" id="fxAnn"><i>📣</i>הודעה לכולם</button><button type="button" id="fxProg"><i>🗓</i>שינוי בלו״ז</button><button type="button" id="fxField"><i>🧭</i>מצב שטח</button><button type="button" id="fxPick"><i>📍</i>נקודת איסוף</button><button type="button" id="fxSearch"><i>🔍</i>חיפוש</button></div>`);B.push(wxStrip())}
     put(top,T.filter(Boolean).join(''));put(bot,B.filter(Boolean).join(''))}
   if(scr==='ggi'||scr==='photos'){if(!v.querySelector('.fx-phs')){const a=v.querySelector('.ph-up');if(a){const d=document.createElement('div');d.className='fx-phs';d.innerHTML=`${GUEST()?'<button type="button" class="btn primary" id="fxFace">🙋 מצאו אותי בתמונות</button>':''}<button type="button" class="btn" id="fxAlbShare">🔗 שיתוף האלבום</button><button type="button" class="btn" id="fxAlbSave">📚 שמירת כל האלבום</button><button type="button" class="btn" id="fxPhSave">💾 שמירת התמונות של היום</button><button type="button" class="btn" id="fxPhMe" aria-pressed="${PHF==='me'}">🏷 תמונות שאני בהן</button>`;a.after(d)}}}
   if(scr==='announce')annSchedPaint();
@@ -6541,7 +6547,7 @@ setInterval(pgate,4000);
   if(!TRIP_KEY||isIOS())return;
   const base=location.origin+location.pathname.replace(/[^/]*$/,'');
   const m={name:'מסע גיבוש הונגריה',short_name:'הונגריה',lang:'he',dir:'rtl',id:base,scope:base,start_url:base+'#k='+TRIP_KEY,display:'standalone',background_color:'#050504',theme_color:'#050504',
-    icons:[{src:base+'icon-192.png',sizes:'192x192',type:'image/png',purpose:'any'},{src:base+'icon-512.png',sizes:'512x512',type:'image/png',purpose:'any'},{src:base+'icon-512.png',sizes:'512x512',type:'image/png',purpose:'maskable'}]};
+    icons:[{src:base+'icon-192.png',sizes:'192x192',type:'image/png',purpose:'any'},{src:base+'icon-512.png',sizes:'512x512',type:'image/png',purpose:'any'},{src:base+'icon-mask-192.png',sizes:'192x192',type:'image/png',purpose:'maskable'},{src:base+'icon-mask-512.png',sizes:'512x512',type:'image/png',purpose:'maskable'}]};
   const url=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}));
   let l=document.querySelector('link[rel="manifest"]');if(!l){l=document.createElement('link');l.rel='manifest';document.head.appendChild(l)}l.href=url;
 }catch(e){}})();
@@ -6564,7 +6570,7 @@ render(true);
 (()=>{const sp=document.getElementById('splash');let seen=false;try{seen=sessionStorage.getItem('splash')==='1';sessionStorage.setItem('splash','1')}catch(e){}
   // the full opening only on the very first launch; afterwards a short fade, so a quick check isn't a wait
   let first=true;try{first=!localStorage.getItem('splashSeen');localStorage.setItem('splashSeen','1')}catch(e){}
-  if(seen||reduce){sp.remove();return}if(!first)sp.classList.add('quick');const im=sp.querySelector('img');const start=()=>{sp.classList.add('go');setTimeout(()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),first?420:260)},first?1700:380)};if(im&&!im.complete){let d=0;const f=()=>{if(!d){d=1;start()}};im.addEventListener('load',f);im.addEventListener('error',f);setTimeout(f,700)}else start()})();
+  if(seen||reduce){sp.remove();return}if(!first)sp.classList.add('quick');const im=sp.querySelector('img');const start=()=>{sp.classList.add('go');setTimeout(()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),first?420:360)},first?1700:760)};if(im&&!im.complete){let d=0;const f=()=>{if(!d){d=1;start()}};im.addEventListener('load',f);im.addEventListener('error',f);setTimeout(f,700)}else start()})();
 (async()=>{
   db=await initFire();
   if(!db){document.getElementById('banner').innerHTML='<p class="banner">חסר הקישור המלא של הצוות. פתחו את האפליקציה מהקישור ששלומי שלח (הוא מסתיים ב-#k=…).</p>';return}
@@ -6585,7 +6591,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='aa8cb8bdab';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='100760fb56';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
