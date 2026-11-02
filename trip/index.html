@@ -2498,6 +2498,19 @@ body.guest #view .prs :is(.gc-i,.gw-i,.ri-i,.gic){transform:scale(1.16) rotate(-
 .bp-u small{grid-column:auto!important;font-size:10.5px!important;margin-inline-start:3px}
 .bpt{width:20px!important;height:28px!important;font-size:18px!important;line-height:28px!important;border-radius:5px!important}
 @media (max-width:370px){.bpt{width:18px!important;height:26px!important;font-size:16px!important;line-height:26px!important}.bp-cd{gap:5px!important}.bp-u small{font-size:9.5px!important}}
+/* road to the flight: the ring counts up, each row fills its own line, the headline catches the light */
+.rdy .ri-bar{position:absolute;inset-inline:12px;bottom:3px;height:2.5px;border-radius:2px;background:linear-gradient(90deg,#b8862f,#ffe9a8);transform-origin:right center;transform:scaleX(var(--f));opacity:.85;pointer-events:none}
+.rdy .ri.ok .ri-bar{background:linear-gradient(90deg,#3f9f6e,#7fd1a5)}
+.rdy .ri.bad .ri-bar{opacity:0}
+.rdy-hl{background:linear-gradient(100deg,#f6dc93 0%,#f6dc93 40%,#fff6d6 50%,#f6dc93 60%,#f6dc93 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent}
+@media (prefers-reduced-motion:no-preference){
+ .rdy .ri-bar{animation:riBar 1.1s calc(.7s + var(--i,0)*.15s) cubic-bezier(.2,.8,.2,1) both}
+ .rdy-hl{animation:hlSweep 4.5s 1.2s ease-in-out infinite}
+ .rdy .ri.mid .ri-p{animation:riPulse 2.6s 2s ease-in-out infinite}
+}
+@keyframes riBar{from{transform:scaleX(0)}}
+@keyframes hlSweep{0%{background-position:100% 0}40%,100%{background-position:-50% 0}}
+@keyframes riPulse{50%{transform:scale(1.12)}}
 /* the "what we still need from you" card: a notch smaller */
 body.guest .rdy{padding:11px 12px 9px!important;margin:10px 0 12px!important;border-radius:22px!important}
 body.guest .rdy-top{gap:11px!important;margin-bottom:7px!important}
@@ -5329,9 +5342,9 @@ function guestHTML0(){
         if(fl.length)items.push([dn===fl.length,'צ׳ק־אין',dn===fl.length?'בוצע לכל הטיסות':openNow?'הצ׳ק־אין פתוח עכשיו!':dn?`${dn} מתוך ${fl.length} טיסות`:'נפתח 24 שעות לפני כל טיסה','gw',IX.ci,dn/fl.length])}
 
       const ok=items.filter(x=>x[0]).length,pct=Math.round(items.reduce((a,x)=>a+x[5],0)/items.length*100),some=items.some(x=>x[5]>0),R=52,C=2*Math.PI*R;
-      return `<section class="rdy ${pct===100?'full':''}" aria-label="מה המארגנים צריכים מכם: ${pct}% הושלם"><div class="rdy-top"><div class="rdy-ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="${R}" fill="none" stroke="rgba(214,178,98,.18)" stroke-width="8"/><circle class="rg" cx="60" cy="60" r="${R}" fill="none" stroke="url(#rdg)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" style="--c:${C};--o:${C*(1-pct/100)}" transform="rotate(-90 60 60)"/><defs><linearGradient id="rdg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b8862f"/><stop offset="1" stop-color="#ffe9a8"/></linearGradient></defs></svg><b class="num">${pct}%</b></div>
-       <div class="rdy-h"><small>הדרך לטיסה</small><b>${pct===100?'מוכנים לטיסה ✓':ok?ok+' מתוך '+items.length+' הושלמו':some?'חלק כבר התקבל':'מחכים לכם'}</b><span>${pct===100?'הכל מוכן. נתראה בשדה!':'תשלום, דרכון, ביטוח וצ׳ק־אין'}</span></div></div>
-       <div class="rdy-l">${items.map(([o,l,sb,g,ic,f],i)=>{const t='button';return `<${t} class="ri ${o?'ok':f>0?'mid':'bad'}" data-gnav="${g}" style="--i:${i}"><span class="ri-i">${ic}</span><span class="ri-t"><b>${l}${!o&&f>0?` <em class="ri-p num">${Math.round(f*100)}%</em>`:''}</b><small>${sb}</small></span><span class="ri-c">${o?'✓':'‹'}</span></${t}>`}).join('')}
+      return `<section class="rdy ${pct===100?'full':''}" aria-label="מה המארגנים צריכים מכם: ${pct}% הושלם"><div class="rdy-top"><div class="rdy-ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="${R}" fill="none" stroke="rgba(214,178,98,.18)" stroke-width="8"/><circle class="rg" cx="60" cy="60" r="${R}" fill="none" stroke="url(#rdg)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" style="--c:${C};--o:${C*(1-pct/100)}" transform="rotate(-90 60 60)"/><defs><linearGradient id="rdg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b8862f"/><stop offset="1" stop-color="#ffe9a8"/></linearGradient></defs></svg><b class="num" data-rdy="${pct}">${pct}%</b></div>
+       <div class="rdy-h"><small>הדרך לטיסה</small><b class="rdy-hl">${pct===100?'מוכנים לטיסה ✓':ok?ok+' מתוך '+items.length+' הושלמו':some?'חלק כבר התקבל':'מחכים לכם'}</b><span>${pct===100?'הכל מוכן. נתראה בשדה!':'תשלום, דרכון, ביטוח וצ׳ק־אין'}</span></div></div>
+       <div class="rdy-l">${items.map(([o,l,sb,g,ic,f],i)=>{const t='button';return `<${t} class="ri ${o?'ok':f>0?'mid':'bad'}" data-gnav="${g}" style="--i:${i}"><span class="ri-i">${ic}</span><span class="ri-t"><b>${l}${!o&&f>0?` <em class="ri-p num">${Math.round(f*100)}%</em>`:''}</b><small>${sb}</small></span><span class="ri-c">${o?'✓':'‹'}</span><i class="ri-bar" style="--f:${o?1:Math.max(0,Math.min(1,f))}" aria-hidden="true"></i></${t}>`}).join('')}
 </div>${pct===100?'<i class="rdy-cele" aria-hidden="true"></i>':''}</section>`})();
     const way=`<section class="gway" aria-label="בדרכים">
       <a class="gw hotel" style="--i:0" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener" aria-label="ניווט למלון בבודפשט"><span class="gw-i">${IX.nav}</span><b>ניווט למלון</b><small>בבודפשט</small></a>
@@ -5345,7 +5358,7 @@ function guestHTML0(){
     const help=`<section class="ghelp g3" aria-label="עזרה"><small class="gh-t">צריכים עזרה? כתבו לנו בוואטסאפ</small>
       <div class="gh-l">${ORGS.map(([n,t])=>`<a class="gh-w" href="${waLink(t)}" target="_blank" rel="noopener" aria-label="וואטסאפ ל${n}">${IX.wa||'💬'}<span>${n}</span></a>`).join('')}<a class="gh-w sos" href="tel:112" aria-label="חירום 112">112</a></div></section><p class="gcred">פותח על ידי שלומי זינגר · כל הזכויות שמורות ©</p>`;
     return pv+`<div class="ghome">${SKY}<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(coupleLabel(ppl,me)||'')}</b>${dayMood()?`<span class="mood">${dayMood()}</span>`:''}</div></div>
-     ${TRIPDAY()?(todayISO()==='2026-11-19'&&first&&Date.now()<depAt(first)+4*36e5?passBlock:''):passBlock+extraOut}${way}${nowCard('data-gnav="gl"')}${voiceCard()}${chCard(1)}${ravCard()}${momentHTML()}${banner}${ciTasks(ppl).filter(c=>!c.done).map(ciCard).join('')}${TRIPDAY()?boardHTML(ppl)+tripDayBlock(ppl):ready+boardHTML(ppl)}
+     ${TRIPDAY()?(todayISO()==='2026-11-19'&&first&&Date.now()<depAt(first)+4*36e5?passBlock:''):passBlock+extraOut}${nowCard('data-gnav="gl"')}${voiceCard()}${chCard(1)}${ravCard()}${momentHTML()}${banner}${ciTasks(ppl).filter(c=>!c.done).map(ciCard).join('')}${TRIPDAY()?boardHTML(ppl)+tripDayBlock(ppl):ready+boardHTML(ppl)}${way}
      <div class="gcb">
       ${(()=>{/* most used first; the order changes once the trip starts */
         const C={gs:()=>me&&me.kitter?cube('gs',I.box,'סידור ערכות בחדרים',(()=>{const rp=roomsPlaced();return rp.t?`הונחו ${rp.n} מתוך ${rp.t} חדרים`:'עדכון באיזה חדר סידרתם'})(),(()=>{const rp=roomsPlaced();return rp.t-rp.n||''})()):'',
@@ -6518,6 +6531,11 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest
     el.classList.add('prs');const r=el.getBoundingClientRect(),d=Math.max(r.width,r.height)*2.4,rp=document.createElement('i');rp.className='rip';rp.style.cssText=`left:${e.clientX-r.left}px;top:${e.clientY-r.top}px;width:${d}px;height:${d}px`;el.appendChild(rp);setTimeout(()=>rp.remove(),650)},{passive:true});
   ['pointerup','pointercancel','scroll'].forEach(t=>addEventListener(t,up,{passive:true,capture:true}))}
 
+/* the readiness ring's number counts from 0 while the ring draws (once per drawn card) */
+function rdyCount(){const b=document.querySelector('#view [data-rdy]');if(!b||b.__done||reduce)return;b.__done=1;const to=+b.dataset.rdy;if(!to)return;
+  const t0=performance.now()+350,d=1700,ease=x=>1-Math.pow(1-x,3);b.textContent='0%';
+  const st=t=>{if(!b.isConnected)return;const x=Math.min(1,Math.max(0,(t-t0)/d)),v=Math.round(to*ease(x));const s=v+'%';if(b.textContent!==s)b.textContent=s;if(x<1)requestAnimationFrame(st)};requestAnimationFrame(st)}
+
 /* where it all shows: home cards, settings items, a few buttons */
 function fxPaint(){const v=document.getElementById('view');if(!v)return;const home=fxHome(),scr=v.dataset.scr;
   // home cards live in their own boxes around the screen, so the screen's own redraws (and their highlights) stay untouched
@@ -6539,7 +6557,7 @@ function fxPaint(){const v=document.getElementById('view');if(!v)return;const ho
   if(scr==='announce')annSchedPaint();
   if(scr==='ggh')rdyFold();
   appStatLinks();reqWatch();missedCheck();backupNudge();whatsNew();annQueue()}
-{const _fp=render;render=function(a){_fp(a);try{fxPaint()}catch(e){console.warn('fx',e)}}}
+{const _fp=render;render=function(a){_fp(a);try{rdyCount()}catch(e){}try{fxPaint()}catch(e){console.warn('fx',e)}}}
 document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;const id=(t.closest('[id]')||{}).id;
   if(id==='fxSos'){sosSheet();return}if(id==='fxLost'){lostSend();return}if(id==='fxField'){fieldSheet();return}if(id==='fxAnn'){go('more',{sub:'announce'});return}if(id==='fxProg'){go('more',{sub:'program'});return}if(id==='fxPick'){pickupSheet();return}if(id==='fxSearch'){gSearch();return}
   if(id==='fxPhSave'){phSaveDay();return}if(id==='fxAlbShare'){albumShare();return}if(id==='fxKer'){kerSheet();return}if(id==='fxMotzJoin'){motzJoin();return}if(id==='fxMotzList'){motzList();return}if(id==='fxFace'){faceSheet();return}if(id==='fxThx'){thxSheet();return}if(id==='fxThxOpen'){thxReveal();return}if(id==='fxAlbSave'){albumSave();return}if(id==='fxAlbOpen'){if(GUEST()){GTAB='gi';render(true)}else go('more',{sub:'photos'});scrollTo(0,0);return}if(id==='fxPhMe'){PHF=PHF==='me'?'all':'me';render();return}
@@ -6609,7 +6627,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='79f51f2a7f';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='7f5f4016a2';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
