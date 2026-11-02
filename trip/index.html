@@ -2480,6 +2480,27 @@ body.guest #view .prs :is(.gc-i,.gw-i,.ri-i,.gic){transform:scale(1.16) rotate(-
 .pass.bp2 .days .sh{background:var(--goldbtn)!important;border-color:transparent!important}
 @media (max-width:370px){.bpt{width:23px;height:33px;font-size:21px;line-height:33px}.bp-cd{gap:7px}.bp-ap b{font-size:30px}}
 @media (prefers-reduced-motion:reduce){.pass.bp2,.bp-foil,.bp-pl,.bpt.fl{animation:none!important}.bp-foil{display:none}}
+/* participant tiles: four per row, the same size as the action strip */
+body.guest #view .gcb{grid-template-columns:repeat(4,1fr)!important;gap:8px!important;margin-top:10px!important}
+body.guest #view .gcb>.gc:not(.gtrv),body.guest #view .gcb>.gc:nth-child(n):not(.gtrv){flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;text-align:center!important;gap:2px!important;min-height:0!important;padding:10px 3px 9px!important;border-radius:16px!important;grid-column:auto!important}
+body.guest #view .gcb>.gc .gc-i{width:38px!important;height:38px!important;border-radius:12px!important;margin:0 0 4px!important}
+body.guest #view .gcb>.gc .gc-i svg{width:19px!important;height:19px!important}
+body.guest #view .gcb>.gc:not(.gtrv) :is(.gc-t,.gc-s){align-self:center!important;justify-self:center!important;width:auto!important}
+body.guest #view .gcb>.gc:not(.gtrv) .gc-t{margin-top:0!important;font-size:12.5px!important;font-weight:800;text-align:center!important;justify-self:center!important;max-width:100%}
+body.guest #view .gcb>.gc:not(.gtrv) .gc-s{font-size:11.5px!important;text-align:center!important;max-width:100%;color:#b9ab8a!important}
+body.guest #view .gcb>.gc .gc-b{top:5px!important;inset-inline-end:5px!important;min-width:19px;height:19px;font-size:11px!important;line-height:19px!important;padding:0 5px!important}
+body.guest #view .gcb>.gc .gc-nw{display:none}
+@media (max-width:370px){body.guest #view .gcb>.gc:not(.gtrv) .gc-t{font-size:11.5px!important}}
+/* trivia invitation beside the names: bounces now and then */
+body.guest .ghome .hello{align-items:center!important}
+.trvp{flex:none;display:grid;grid-template-columns:auto auto;grid-template-rows:auto auto;column-gap:7px;row-gap:4px;align-items:center;padding:8px 10px;border-radius:16px;text-decoration:none;color:#15110a;background:linear-gradient(120deg,#ffe6a3,#e2b552 55%,#b9862b);box-shadow:0 10px 24px -12px rgba(240,190,90,.8),inset 0 1px 0 rgba(255,255,255,.55);position:relative;z-index:1}
+.trvp-sp{grid-row:1/3;width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:#15110a;color:#ffd977}
+.trvp-sp svg{width:17px;height:17px}
+.trvp-t{font-weight:900;font-size:12px;line-height:1.1}
+.trvp-go{font-size:11px;font-weight:900;background:#15110a;color:#ffd977;border-radius:999px;padding:2px 8px;justify-self:start}
+@media (prefers-reduced-motion:no-preference){.trvp{animation:trvHop 4.2s 1.4s cubic-bezier(.3,.7,.3,1) infinite}.trvp-sp{animation:trvSpin 4.2s 1.4s ease-in-out infinite}}
+@keyframes trvHop{0%,72%,100%{transform:none}78%{transform:translateY(-7px) scale(1.04)}84%{transform:translateY(0) scale(.97,1.03)}90%{transform:translateY(-3px)}95%{transform:none}}
+.trvp:active{transform:scale(.94)!important}
 /* the flight card, compact: fits the opening screen together with the actions under it */
 .pass.bp2{margin-top:8px!important;border-radius:18px!important}
 .pass.bp2 .pass-main{padding:9px 12px 6px!important}
@@ -5356,30 +5377,29 @@ function guestHTML0(){
     const orgP=(nm,fb)=>{const x=S.participants.find(q=>String(q.name||'').includes(nm));return (x&&x.phone)||fb};
     const ORGS=[['שלומי זינגר',ph],['איציק שרייבר',orgP('איציק שרייבר','0543030492')],['יעל שרייבר',orgP('יעל שרייבר','0549251241')]].filter(o=>o[1]);
     const help=`<section class="ghelp g3" aria-label="עזרה"><small class="gh-t">צריכים עזרה? כתבו לנו בוואטסאפ</small>
-      <div class="gh-l">${ORGS.map(([n,t])=>`<a class="gh-w" href="${waLink(t)}" target="_blank" rel="noopener" aria-label="וואטסאפ ל${n}">${IX.wa||'💬'}<span>${n}</span></a>`).join('')}<a class="gh-w sos" href="tel:112" aria-label="חירום 112">112</a></div></section><p class="gcred">פותח על ידי שלומי זינגר · כל הזכויות שמורות ©</p>`;
-    return pv+`<div class="ghome">${SKY}<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(coupleLabel(ppl,me)||'')}</b>${dayMood()?`<span class="mood">${dayMood()}</span>`:''}</div></div>
+      <div class="gh-l">${ORGS.map(([n,t])=>`<a class="gh-w" href="${waLink(t)}" target="_blank" rel="noopener" aria-label="וואטסאפ ל${n}">${IX.wa||'💬'}<span>${n}</span></a>`).join('')}<a class="gh-w sos" href="tel:112" aria-label="חירום 112">112</a></div></section>`;
+    return pv+`<div class="ghome">${SKY}<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(coupleLabel(ppl,me)||'')}</b>${dayMood()?`<span class="mood">${dayMood()}</span>`:''}</div><a class="trvp" href="${trvHref()}"><i class="trvp-sp" aria-hidden="true">${I.spark}</i><span class="trvp-t">טריוויה<br>על גלגלים</span><b class="trvp-go">לשחק ‹</b></a></div>
      ${TRIPDAY()?(todayISO()==='2026-11-19'&&first&&Date.now()<depAt(first)+4*36e5?passBlock:''):passBlock+extraOut}${nowCard('data-gnav="gl"')}${voiceCard()}${chCard(1)}${ravCard()}${momentHTML()}${banner}${ciTasks(ppl).filter(c=>!c.done).map(ciCard).join('')}${TRIPDAY()?boardHTML(ppl)+tripDayBlock(ppl):ready+boardHTML(ppl)}${way}
      <div class="gcb">
       ${(()=>{/* most used first; the order changes once the trip starts */
-        const C={gs:()=>me&&me.kitter?cube('gs',I.box,'סידור ערכות בחדרים',(()=>{const rp=roomsPlaced();return rp.t?`הונחו ${rp.n} מתוך ${rp.t} חדרים`:'עדכון באיזה חדר סידרתם'})(),(()=>{const rp=roomsPlaced();return rp.t-rp.n||''})()):'',
-          gt:()=>cube('gt',I.tasks,'משימות',mineT?(mineT===1?'משימה אחת שלכם':mineT+' משימות שלכם'):openT?openT+' פתוחות לעזרה':'עזרה לצוות במסע',pendOpen()||''),
-          gv:()=>canExp()?cube('gv',I.money,'הוצאות והכנסות','צפייה בלבד',''):'',
-          gkt:()=>isProd()?cube('gkt',I.box,'ערכות','מה יש בכל ערכה ומה הסטטוס',''):'',
-          grm:()=>isProd()?cube('grm',I.bed,'חדרים','מי בכל חדר ואיפה הערכה',''):'',
-          gcn:()=>isProd()?cube('gcn',I.phone,'ספקים ואנשי קשר','טלפונים של הספקים בשטח',''):'',
-          gm:()=>cube('gm',I.chat,'הודעות',un?(un===1?'הודעה חדשה אחת':un+' הודעות חדשות'):'עדכונים מהמארגנים',un||''),
-          gd:()=>cube('gd',IX.car,'נסיעה לשדה','מצטרפים לנסיעה משותפת',rideMine()||''),
-          gp:()=>cube('gp',I.people,'משתתפים','מי בא ואיך מתקשרים'),
-          gi:()=>cube('gi',IX.cam,'תמונות','מעלים ומשתפים',(()=>{const n=photoNew();return n||''})()),
-          gx:()=>cube('gx',IX.food,'אוכל ואטרקציות','כשר, ומה כדאי לראות'),
-          gz:()=>cube('gz',IX.pin,'קרעסטיר','רבי ישעיה׳לה והציון'),
-          gk:()=>cube('gk',IX.tools,'כלים לדרך','זמנים, מטבע וביטויים'),
+        const C={gs:()=>me&&me.kitter?cube('gs',I.box,'סידור ערכות',(()=>{const rp=roomsPlaced();return rp.t?`${rp.n}/${rp.t} חדרים`:'באיזה חדר'})(),(()=>{const rp=roomsPlaced();return rp.t-rp.n||''})()):'',
+          gt:()=>cube('gt',I.tasks,'משימות',mineT?mineT+' שלכם':openT?openT+' פתוחות':'עזרה לצוות',pendOpen()||''),
+          gv:()=>canExp()?cube('gv',I.money,'כספים','צפייה בלבד',''):'',
+          gkt:()=>isProd()?cube('gkt',I.box,'ערכות','מה בכל ערכה',''):'',
+          grm:()=>isProd()?cube('grm',I.bed,'חדרים','מי בכל חדר',''):'',
+          gcn:()=>isProd()?cube('gcn',I.phone,'ספקים','טלפונים',''):'',
+          gm:()=>cube('gm',I.chat,'הודעות',un?un+' חדשות':'מהמארגנים',un||''),
+          gd:()=>cube('gd',IX.car,'נסיעה לשדה','משותפת',rideMine()||''),
+          gp:()=>cube('gp',I.people,'משתתפים','מי בא'),
+          gi:()=>cube('gi',IX.cam,'תמונות','מהמסע',(()=>{const n=photoNew();return n||''})()),
+          gx:()=>cube('gx',IX.food,'מסעדות','ואטרקציות'),
+          gz:()=>cube('gz',IX.pin,'קרעסטיר','הציון'),
+          gk:()=>cube('gk',IX.tools,'כלים לדרך','זמנים ומטבע'),
           trv:()=>`<a class="gc gtrv" href="${trvHref()}" style="--i:${n++}"><i class="tsp" aria-hidden="true"></i><i class="tsp" aria-hidden="true"></i><i class="tsp" aria-hidden="true"></i><span class="gc-go" aria-hidden="true">לשחק ‹</span><span class="gc-i">${I.spark}</span><span class="gc-t">טריוויה על גלגלים</span><span class="gc-s">${open?'כל המשחקים פתוחים!':'עצמאי וראש בראש פתוחים'}</span></a>`,
-          ge:()=>cube('ge',IX.coin,'חשבון משותף','מי שילם, ומי חייב למי',(()=>{const b=me?Object.values(splitBal(me)).filter(v=>v<=-1).length:0;return b||''})())};
-        const ord=TRIPDAY()?['gs','gkt','grm','gcn','gv','gm','gi','trv','gx','gk','gt','gz','gp','gd']:['gs','gkt','grm','gcn','gv','gm','trv','gt','gd','gp','gx','gz','gk','gi'];
-        // two per row; trivia takes a full row, and an odd one out at the end too
-        const L=ord.map(k=>C[k]()).filter(Boolean),odd=L.filter(x=>!x.includes('gtrv')).length%2;if(odd){const k=L.map(x=>!x.includes('gtrv')).lastIndexOf(true);L[k]=L[k].replace('class="gc','class="gc wide')}
-        return L.join('')})()}
+          ge:()=>cube('ge',IX.coin,'חשבון משותף','מי חייב למי',(()=>{const b=me?Object.values(splitBal(me)).filter(v=>v<=-1).length:0;return b||''})())};
+        const ord=TRIPDAY()?['gs','gkt','grm','gcn','gv','gm','gi','gx','gk','gt','gz','gp','gd']:['gs','gkt','grm','gcn','gv','gm','gt','gd','gp','gx','gz','gk','gi'];
+        // four per row, the same size as the actions above
+        return ord.map(k=>C[k]()).filter(Boolean).join('')})()}
      </div>
      ${flightGroups(ppl,'חזור').map(g=>guestFlightCard(g,ppl,'חזור')).join('')}
      ${help}</div>`}
@@ -6550,7 +6570,7 @@ function fxPaint(){const v=document.getElementById('view');if(!v)return;const ho
       if(albumTime()){photosSub();T.unshift(albumCard())}
       T.unshift(kerCard(),returnCard(),motzCard());
       B.push(thxCard());
-      B.push(wxStrip(),`<div class="sosbar"><button type="button" id="fxSos">🆘 עזרה וחירום</button><button type="button" id="fxLost">📍 הלכתי לאיבוד</button></div>`)}
+      B.push(wxStrip(),`<div class="sosbar"><button type="button" id="fxSos">🆘 עזרה וחירום</button><button type="button" id="fxLost">📍 הלכתי לאיבוד</button></div>`,'<p class="gcred">פותח על ידי שלומי זינגר · כל הזכויות שמורות ©</p>')}
     else{if(albumTime()){photosSub();T.unshift(albumCard())}T.push(`<div class="ftools" role="region" aria-label="פעולות מהירות"><button type="button" id="fxAnn"><i>📣</i>הודעה לכולם</button><button type="button" id="fxProg"><i>🗓</i>שינוי בלו״ז</button><button type="button" id="fxField"><i>🧭</i>מצב שטח</button><button type="button" id="fxPick"><i>📍</i>נקודת איסוף</button><button type="button" id="fxSearch"><i>🔍</i>חיפוש</button></div>`);B.push(wxStrip())}
     put(top,T.filter(Boolean).join(''));put(bot,B.filter(Boolean).join(''))}
   if(scr==='ggi'||scr==='photos'){if(!v.querySelector('.fx-phs')){const a=v.querySelector('.ph-up');if(a){const d=document.createElement('div');d.className='fx-phs';d.innerHTML=`${GUEST()?'<button type="button" class="btn primary" id="fxFace">🙋 מצאו אותי בתמונות</button>':''}<button type="button" class="btn" id="fxAlbShare">🔗 שיתוף האלבום</button><button type="button" class="btn" id="fxAlbSave">📚 שמירת כל האלבום</button><button type="button" class="btn" id="fxPhSave">💾 שמירת התמונות של היום</button><button type="button" class="btn" id="fxPhMe" aria-pressed="${PHF==='me'}">🏷 תמונות שאני בהן</button>`;a.after(d)}}}
@@ -6627,7 +6647,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='7f5f4016a2';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='12b94a644f';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
