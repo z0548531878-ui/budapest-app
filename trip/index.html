@@ -2782,6 +2782,8 @@ const donOf=ppl=>{const ids=ppl.map(x=>x._id),nms=ppl.map(x=>String(x.name||'').
 /* room draft: while settings.trip.roomsHidden is on, participants (and producers) don't see any room assignment; organizers see everything */
 /* the hotel has 4 buildings: room 4205 = building 4, floor 2 */
 const bOf=r=>r?(r.building||(r.roomNumber?String(r.roomNumber)[0]:'')):'', rLoc=r=>[bOf(r)&&'בניין '+bOf(r),r.floor&&'קומה '+r.floor,r.roomNumber&&'חדר '+r.roomNumber].filter(Boolean).join(' · ');
+// where an item is bought: the supplier / shop, else the place (Aris order, Budapest, Hana)
+const shopKey=x=>{const sh=(x.shop||'').trim(),w=x.where||'';if(sh)return /^וי?ינר/.test(sh)?'ויינר':/^סופר.*בודפשט|^בבודפשט/.test(sh)?'קונים בבודפשט':sh;if(/אריס/.test(w)||x.kit==='הזמנה מאריס')return 'אריס – הזמנת אלכוהול';if(/דיוטי/.test(w))return 'דיוטי פרי';if(/חנה/.test(w))return 'מסעדת חנה';if(/בודפשט/.test(w))return 'קונים בבודפשט';return 'עוד לא נקבע איפה'};
 const RHID=()=>{const s=S.settings.find(x=>x._id==='trip');return !!(s&&s.roomsHidden)};const gRoom=rid=>rid&&!RHID()&&S.rooms.find(x=>x._id===rid);
 const babyRoom=r=>S.participants.some(p=>p.baby&&p.roomId===r._id);
 const isFinal=e=>!!e.final||e.status==='שולם';
@@ -3201,6 +3203,7 @@ const SUB={
      <div class="pc-bot">${u?`<a class="pill p-ok" href="${esc(u)}" target="_blank" rel="noopener">🛂 צילום הדרכון</a>`:`<button class="pill p-mute" data-pclink="${p._id}">+ קישור לצילום</button>`}<button class="pill ${p.passport?'p-ok':'p-mute'}" data-pp="${p._id}" aria-pressed="${!!p.passport}">${p.passport?'התקבל ✓':'סימון: התקבל'}</button>${!p.passport&&p.phone?`<a class="pill p-mute" href="${waLink(p.phone,'שלום '+firstN(p.name)+', כדי להשלים את הרישום למסע לבודפשט נשמח לצילום של עמוד הפרטים בדרכון. תודה!')}" target="_blank" rel="noopener">בקשה בוואטסאפ</a>`:''}</div></div>`}).join(''):card('','<b>'+(q?'לא נמצא':'אין כאן אף אחד')+'</b>')}`;
  },
  packing(){
+  const st=V.filter.st||'';
   const rest=S.packing.slice();
   const where=x=>x.where||(/בודפשט/.test(x.list||'')?'בבודפשט':'בארץ');
   const seg=V.filter.sh||'todo', q=V.q;
@@ -3209,7 +3212,7 @@ const SUB={
   const by=V.filter.by||'', bc={};rest.filter(x=>!kst(x,'ordered')&&!x.sug).forEach(x=>{const k=x.buyer||'__none';bc[k]=(bc[k]||0)+1});
   if(by)rows=rows.filter(x=>by==='__none'?!x.buyer:String(x.buyer||'').split(/,\s*/).includes(by));
   const wh=V.filter.wh||'',wn=V.filter.wn||'',pr=x=>x.prio||'רגיל',open_=rest.filter(x=>!kst(x,'ordered')&&!x.sug);
-  if(wh)rows=rows.filter(x=>where(x)===wh);if(wn)rows=rows.filter(x=>pr(x)===wn);
+  if(wh)rows=rows.filter(x=>where(x)===wh);if(st)rows=rows.filter(x=>shopKey(x)===st);if(wn)rows=rows.filter(x=>pr(x)===wn);
   const bt=x=>kst(x,'ordered'), todo=rest.filter(x=>!bt(x)&&!x.sug), done=rest.filter(x=>bt(x)), sug=rest.filter(x=>x.sug&&!bt(x));
   if(seg==='todo')rows=rows.filter(x=>!bt(x)&&!x.sug);else if(seg==='done')rows=rows.filter(x=>bt(x));else if(seg==='sug')rows=rows.filter(x=>x.sug&&!bt(x));
   const cost=a=>a.reduce((s,x)=>s+(+x.cost||0),0), pct=(todo.length+done.length)?Math.round(done.length/(todo.length+done.length)*100):0;
@@ -3218,18 +3221,20 @@ const SUB={
   const row=r=>r.sug&&!bt(r)?sugRow(r):`<div class="row ${bt(r)?'done':''}" data-edit="packing/${r._id}" role="button" tabindex="0"><button class="check ${bt(r)?'on':''}" data-toggle="packing/${r._id}" aria-label="נקנה">${bt(r)?CHECK:''}</button>
     <div class="main"><div class="t"><span class="num">${esc(r.qty)}</span> × ${esc(r.item)} ${r.sug?'<span class="pill p-gold">💡 הצעה</span>':''}</div><div class="m">${r.prio==='דחוף'?'<span class="pill p-bad">🔥 דחוף</span>':r.prio==='הרגע האחרון'?'<span class="pill p-gold">⏳ הרגע האחרון</span>':''}${r.buyer?`<span class="who">${esc(r.buyer)}</span>`:''}${r.notes?`<span>${esc(r.notes)}</span>`:''}</div></div>
     <div class="end">${+r.cost?`<span class="num" style="font-weight:800">${ils(r.cost)}</span>`:''}${r.sug&&!bt(r)?`<button class="pill p-mute" data-nr="${r._id}">לא רלוונטי</button>`:''}</div></div>`;
-  const groups=['בארץ','בבודפשט'].map(w=>{const g=rows.filter(x=>where(x)===w).sort(byOrder);return g.length?`<div class="ghead"><span>${w==='בארץ'?'🇮🇱 קונים בארץ':'🇭🇺 קונים בבודפשט'}</span><span class="num">${g.length} · ${ils(cost(g))}</span></div>`+(seg==='sug'?`<div class="suglist">${g.map(row).join('')}</div>`:card(g.map(row).join(''))):''}).join('');
+  const stores=[...new Set(rows.map(shopKey))].sort((a,b)=>(a==='עוד לא נקבע איפה')-(b==='עוד לא נקבע איפה')||rows.filter(x=>shopKey(x)===b).length-rows.filter(x=>shopKey(x)===a).length);
+  const groups=stores.map(w=>{const g=rows.filter(x=>shopKey(x)===w).sort(byOrder);return g.length?`<div class="ghead"><span>🛒 ${esc(w)}</span><span class="num">${g.length} · ${ils(cost(g))}</span></div>`+(seg==='sug'?`<div class="suglist">${g.map(row).join('')}</div>`:card(g.map(row).join(''))):''}).join('');
   return subHead('רשימת קניות',`<span class="cnt num">${done.length}/${todo.length+done.length}</span>`)+updBar('packing')+`
    <section class="shsum" aria-label="מצב הקניות"><div class="shs"><div><b class="num">${todo.length}</b><span>לקנות</span></div><div><b class="num">${done.length}</b><span>נקנו</span></div><div><b class="num">${ils(cost(todo))}</b><span>נשאר לשלם</span></div></div><div class="prog"><i data-w="${pct}%" style="width:0"></i></div>
     <div class="shw"><span>🇮🇱 בארץ <b class="num">${todo.filter(x=>where(x)==='בארץ').length}</b></span><span>🇭🇺 בבודפשט <b class="num">${todo.filter(x=>where(x)==='בבודפשט').length}</b></span><span>מוכן <b class="num">${pct}%</b></span></div></section>
    <form class="quick" id="padd"><input id="paddIn" placeholder="הוספת פריט לקנייה…" autocomplete="off"><button>הוסף</button></form>
    ${seg==='sug'&&sug.length?'<p class="note">אלה הצעות שלי. "להכניס לרשימה" מעביר את הפריט לרשימת הקניות. אפשר קודם לערוך כמות, מחיר ומי קונה.</p>':''}<div class="seg">${[['todo','לקנות',todo.length],['done','נקנה',done.length],['sug','💡 הצעות',sug.length],['all','הכל',rest.length]].map(([k,l,c])=>`<button data-filter="sh" data-val="${k}" aria-pressed="${seg===k}">${l}<span class="c num">${c}</span></button>`).join('')}</div>
+   <div class="chips own" style="flex-wrap:nowrap;overflow-x:auto"><span class="chl">אצל מי</span>${(()=>{const oc={};rest.filter(x=>x.item&&(!x.sug||bt(x))).forEach(x=>{const k=shopKey(x);oc[k]=(oc[k]||0)+1});return [['','הכל'],...Object.keys(oc).sort((a,b)=>(a==='עוד לא נקבע איפה')-(b==='עוד לא נקבע איפה')||oc[b]-oc[a]).map(k=>[k,k])].map(([v,l])=>`<button class="chip" style="flex:none" data-filter="st" data-val="${esc(v)}" aria-pressed="${st===v}">${esc(l)}${v?` <span class="num">${oc[v]}</span>`:''}</button>`).join('')})()}</div>
    <div class="chips own"><span class="chl">איפה</span>${[['','הכל'],['בארץ','🇮🇱 בארץ'],['בבודפשט','🇭🇺 בבודפשט']].map(([v,l])=>`<button class="chip" data-filter="wh" data-val="${v}" aria-pressed="${wh===v}">${l}${v?` <span class="num">${open_.filter(x=>where(x)===v).length}</span>`:''}</button>`).join('')}</div>
    <div class="chips own"><span class="chl">מתי</span>${[['','הכל'],['דחוף','🔥 דחוף'],['הרגע האחרון','⏳ הרגע האחרון']].map(([v,l])=>`<button class="chip" data-filter="wn" data-val="${v}" aria-pressed="${wn===v}">${l}${v?` <span class="num">${open_.filter(x=>pr(x)===v).length}</span>`:''}</button>`).join('')}</div>
    <div class="chips own"><span class="chl">מי קונה</span>${[['','כולם'],...Object.keys(bc).filter(k=>k!=='__none').sort((a,b)=>bc[b]-bc[a]).map(n=>[n,n]),...(bc.__none?[['__none','בלי קונה']]:[])].map(([v,l])=>`<button class="chip" data-filter="by" data-val="${esc(v)}" aria-pressed="${by===v}">${esc(l)}${v?` <span class="num">${bc[v]}</span>`:''}</button>`).join('')}</div>
    <input class="search" id="q" type="search" placeholder="חיפוש פריט" value="${esc(q)}">
    ${seg==='todo'&&sug.length?`<button class="sugnote" data-filter="sh" data-val="sug">💡 ${sug.length} הצעות מחכות להחלטה שלך: להכניס לרשימה או לא ›</button>`:''}
-   ${groups||card('','<b>'+(wh||wn||by?'אין פריטים בסינון הזה':seg==='todo'?'הכל נקנה 🎉':'אין כאן פריטים')+'</b>')}
+   ${groups||card('','<b>'+(wh||wn||by||st?'אין פריטים בסינון הזה':seg==='todo'?'הכל נקנה 🎉':'אין כאן פריטים')+'</b>')}
 `;
  },
  rooms(){
@@ -3239,7 +3244,7 @@ const SUB={
  },
  shops(){
   // the same kit items, grouped by where they're bought (supplier / shop / Budapest); expenses stay as they are
-  const key=x=>{const sh=(x.shop||'').trim(),w=x.where||'';if(sh)return /^וי?ינר/.test(sh)?'ויינר':/^סופר.*בודפשט|^בבודפשט/.test(sh)?'קונים בבודפשט':sh;if(/אריס/.test(w)||x.kit==='הזמנה מאריס')return 'אריס – הזמנת אלכוהול';if(/דיוטי/.test(w))return 'דיוטי פרי';if(/חנה/.test(w))return 'מסעדת חנה';if(/בודפשט/.test(w))return 'קונים בבודפשט';return 'עוד לא נקבע איפה'};
+  const key=shopKey;
   const all=S.packing.filter(x=>x.item&&(!x.sug||kst(x,'ordered'))),so=V.filter.so||'',sb=V.filter.sb||'';
   const buyers=[...new Set(all.flatMap(x=>String(x.buyer||'').split(/,\s*/)).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'he'));
   const it=all.filter(x=>(!so||(so==='todo'?!kst(x,'ordered'):kst(x,'ordered')))&&(!sb||(sb==='none'?!x.buyer:String(x.buyer||'').split(/,\s*/).includes(sb)))),g={};it.forEach(x=>{const k=key(x);(g[k]=g[k]||[]).push(x)});
@@ -6672,7 +6677,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='dda665f2c1';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='105c1469';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
