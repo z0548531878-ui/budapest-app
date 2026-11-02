@@ -35,10 +35,17 @@ test('on Friday the Shabbat card counts down to candle lighting, then says Shabb
   await expect(page.locator('.shabc')).toContainText('שבת שלום');
 });
 
-test('home says when the data was last updated, and warns when it is old', async ({ browser, db }) => {
-  const page = await open(browser, db, '2026-10-15T12:00:00+03:00');
+test('organizers see when the data was last updated, with a warning only when offline; participants do not', async ({ browser, db }) => {
+  const page = await open(browser, db, '2026-10-15T12:00:00+03:00', 'org');
   await page.evaluate(() => { (0, eval)('LASTSYNC=Date.now()-3*6e4;syncPaint()'); });
   await expect(page.locator('.syncago')).toHaveText('המידע עודכן לפני 3 דק׳');
   await page.evaluate(() => { (0, eval)('LASTSYNC=Date.now()-40*6e4;syncPaint()'); });
+  await expect(page.locator('.syncago.stale')).toHaveCount(0);
+  await page.context().setOffline(true);
+  await page.evaluate(() => { (0, eval)('syncPaint()'); });
   await expect(page.locator('.syncago.stale')).toContainText('לפני 40 דק׳');
+  await page.context().setOffline(false);
+  const g = await open(browser, db, '2026-10-15T12:00:00+03:00');
+  await g.evaluate(() => { (0, eval)('LASTSYNC=Date.now()-3*6e4;syncPaint()'); });
+  await expect(g.locator('.syncago')).toHaveCount(0);
 });

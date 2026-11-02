@@ -2480,6 +2480,24 @@ body.guest #view .prs :is(.gc-i,.gw-i,.ri-i,.gic){transform:scale(1.16) rotate(-
 .pass.bp2 .days .sh{background:var(--goldbtn)!important;border-color:transparent!important}
 @media (max-width:370px){.bpt{width:23px;height:33px;font-size:21px;line-height:33px}.bp-cd{gap:7px}.bp-ap b{font-size:30px}}
 @media (prefers-reduced-motion:reduce){.pass.bp2,.bp-foil,.bp-pl,.bpt.fl{animation:none!important}.bp-foil{display:none}}
+/* the flight card, compact: fits the opening screen together with the actions under it */
+.pass.bp2{margin-top:8px!important;border-radius:18px!important}
+.pass.bp2 .pass-main{padding:9px 12px 6px!important}
+.pass.bp2 .pass-top{font-size:11.5px!important}
+.pass.bp2 .pass-route{margin:0!important}
+.bp-ap b{font-size:24px!important}.bp-ap span{font-size:11.5px!important;margin-top:1px}
+.bp-arc{height:34px!important;margin-bottom:9px!important;max-width:150px!important}
+.pass.bp2 .loct{display:none!important}
+.pass.bp2 .days{margin-top:6px!important;gap:4px!important}
+.pass.bp2 .days>div{padding:2px 2px!important;font-size:10.5px!important;line-height:1.15!important;border-radius:8px!important}
+.pass.bp2 .days b{font-size:11px!important}
+.bp-tear{margin:0 12px!important}.bp-tear::before,.bp-tear::after{width:16px;height:16px;top:-9px}.bp-tear::before{right:-21px}.bp-tear::after{left:-21px}
+.pass.bp2 .bp-stub{padding:6px 10px 8px!important}
+.bp-cd{gap:8px!important}
+.bp-u{grid-template-columns:auto auto auto!important;align-items:center;column-gap:2px!important}
+.bp-u small{grid-column:auto!important;font-size:10.5px!important;margin-inline-start:3px}
+.bpt{width:20px!important;height:28px!important;font-size:18px!important;line-height:28px!important;border-radius:5px!important}
+@media (max-width:370px){.bpt{width:18px!important;height:26px!important;font-size:16px!important;line-height:26px!important}.bp-cd{gap:5px!important}.bp-u small{font-size:9.5px!important}}
 /* the "what we still need from you" card: a notch smaller */
 body.guest .rdy{padding:11px 12px 9px!important;margin:10px 0 12px!important;border-radius:22px!important}
 body.guest .rdy-top{gap:11px!important;margin-bottom:7px!important}
@@ -5574,8 +5592,8 @@ let LASTSYNC=0;try{LASTSYNC=+localStorage.getItem('lastSync')||0}catch(e){}
 let _syncW=0;function syncMark(){LASTSYNC=Date.now();if(Date.now()-_syncW>15000){_syncW=Date.now();try{localStorage.setItem('lastSync',String(LASTSYNC))}catch(e){}}}
 function syncAgo(){if(!LASTSYNC)return '';const m=Math.floor((Date.now()-LASTSYNC)/6e4);if(m<1)return 'עכשיו';if(m<60)return `לפני ${m} דק׳`;const d=new Date(LASTSYNC),t=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;return new Date().toDateString()===d.toDateString()?`היום ב־${t}`:`${d.getDate()}.${d.getMonth()+1} ב־${t}`}
 function syncPaint(){const v=document.getElementById('view');if(!v)return;const home=v.querySelector('.hello');let el=v.querySelector('.syncago');
-  if(!home||!LASTSYNC){if(el)el.remove();return}
-  const stale=!navigator.onLine||Date.now()-LASTSYNC>10*6e4,t=`${stale?'⚠️ ':''}המידע עודכן ${syncAgo()}`;
+  if(!home||!LASTSYNC||GUEST()){if(el)el.remove();return}
+  const stale=!navigator.onLine,t=`${stale?'⚠️ ':''}המידע עודכן ${syncAgo()}`;
   if(!el){el=document.createElement('div');el.className='syncago';el.setAttribute('role','status');home.after(el)}
   if(el.textContent!==t)el.textContent=t;el.classList.toggle('stale',stale)}
 setInterval(()=>{try{syncPaint()}catch(e){}},30000);
@@ -6591,7 +6609,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='100760fb56';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='79f51f2a7f';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
