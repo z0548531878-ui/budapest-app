@@ -6657,7 +6657,7 @@ render(true);
   if(!db){document.getElementById('banner').innerHTML='<p class="banner">חסר הקישור המלא של הצוות. פתחו את האפליקציה מהקישור ששלומי שלח (הוא מסתיים ב-#k=…).</p>';return}
   // the log and the trash only grow: take the newest, not whichever 1000 Firestore returns first
   const NEWEST={activity:600,trash:300}, q=c=>NEWEST[c]?db.collection(c).orderBy('at','desc').limit(NEWEST[c]):db.collection(c).limit(1000);
-  COLS.forEach(c=>q(c).onSnapshot(s=>{if(s.metadata&&s.metadata.fromCache===false)syncMark();S[c]=s.docs.map(d=>({...d.data(),_id:d.id}));if(c==='participants'){pdMigrate();pdOverlay();dobSync();rosterPublish()}loaded.add(c);later()},
+  COLS.forEach(c=>q(c).onSnapshot(s=>{if(s.metadata&&s.metadata.fromCache===false)syncMark();S[c]=s.docs.map(d=>{const o={...d.data(),_id:d.id};if('name' in o&&typeof o.name!=='string')o.name=o.name==null?'':String(o.name);else if(c==='participants'&&o.name==null)o.name='';return o});if(c==='participants'){pdMigrate();pdOverlay();dobSync();rosterPublish()}loaded.add(c);later()},
     e=>{diagE('listen '+c,e);document.getElementById('banner').innerHTML=`<p class="banner">${e&&e.code==='permission-denied'?'אין גישה לנתונים. ודאו שעדכנתם את חוקי Firebase (ההוראות אצל Claude).':'החיבור נותק. רעננו את הדף.'}</p>`}));
   pdSub();
   if(!ME)setTimeout(()=>{if(!ME&&ROLE==='org'&&!document.getElementById('scrim'))pickMe()},1200);
@@ -6672,7 +6672,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='b2472dd3b2';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='dda665f2c1';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
