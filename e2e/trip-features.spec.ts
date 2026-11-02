@@ -29,9 +29,10 @@ test('an organizer publishes a pickup point and participants see it with navigat
   await expect(page.locator('.pickc a')).toHaveAttribute('href', /47\.5,19\.05/);
 });
 
-test('the organizers get a morning summary, tools on home, and one search across everything', async ({ browser, db }) => {
+test('the organizers get tools on home and one search across everything, without a morning summary', async ({ browser, db }) => {
   const page = await as(browser, db, 'org');
   await expect(page.locator('.ftools')).toBeVisible();
+  await expect(page.getByText('סיכום הבוקר')).toHaveCount(0);
   await page.locator('#fxSearch').click();
   await page.locator('#gsQ').fill('משימה');
   await expect(page.locator('.gsi').first()).toBeVisible();
