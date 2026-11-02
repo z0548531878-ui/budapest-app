@@ -36,6 +36,11 @@
 .chb.go{background:linear-gradient(180deg,#f6dc93,#c99a3d);color:#15110a;border:0}.chrec b{flex:1;color:#ff8b7a}
 .kg-r{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(214,178,98,.12)}.kg-r small{color:var(--muted);margin-inline-start:6px}.kg-t{border-bottom:0;font-weight:800;color:#f6dc93}.kgh{margin:16px 0 6px}
 html.orgro body::after{content:'👁 צפייה בלבד';position:fixed;top:calc(env(safe-area-inset-top,0px) + 6px);left:10px;z-index:9999;font:700 12px/1 Heebo,sans-serif;padding:6px 10px;border-radius:999px;background:rgba(201,162,75,.95);color:#1a1307;pointer-events:none}
+.pfil{border:1px solid var(--line);background:var(--glass);border-radius:18px;margin:10px 0 12px;overflow:hidden}
+.pfil .fr{display:flex;align-items:center;gap:8px;padding:7px 10px 7px 0;border-bottom:1px solid var(--line)}.pfil .fr:last-child{border-bottom:0}
+.pfil .fr>b{flex:0 0 74px;padding-inline-start:12px;font-size:12px;font-weight:800;color:#a69a7d;white-space:nowrap}
+.pfil .chips{margin:0;padding:0 2px;flex:1;min-width:0;gap:6px}
+.pfil .chip{min-height:32px;padding:5px 11px!important;font-size:12.5px!important}
 </style>
 </head>
 <body>
@@ -3228,10 +3233,11 @@ const SUB={
     <div class="shw"><span>🇮🇱 בארץ <b class="num">${todo.filter(x=>where(x)==='בארץ').length}</b></span><span>🇭🇺 בבודפשט <b class="num">${todo.filter(x=>where(x)==='בבודפשט').length}</b></span><span>מוכן <b class="num">${pct}%</b></span></div></section>
    <form class="quick" id="padd"><input id="paddIn" placeholder="הוספת פריט לקנייה…" autocomplete="off"><button>הוסף</button></form>
    ${seg==='sug'&&sug.length?'<p class="note">אלה הצעות שלי. "להכניס לרשימה" מעביר את הפריט לרשימת הקניות. אפשר קודם לערוך כמות, מחיר ומי קונה.</p>':''}<div class="seg">${[['todo','לקנות',todo.length],['done','נקנה',done.length],['sug','💡 הצעות',sug.length],['all','הכל',rest.length]].map(([k,l,c])=>`<button data-filter="sh" data-val="${k}" aria-pressed="${seg===k}">${l}<span class="c num">${c}</span></button>`).join('')}</div>
-   <div class="chips own" style="flex-wrap:nowrap;overflow-x:auto"><span class="chl">אצל מי</span>${(()=>{const oc={};rest.filter(x=>x.item&&(!x.sug||bt(x))).forEach(x=>{const k=shopKey(x);oc[k]=(oc[k]||0)+1});return [['','הכל'],...Object.keys(oc).sort((a,b)=>(a==='עוד לא נקבע איפה')-(b==='עוד לא נקבע איפה')||oc[b]-oc[a]).map(k=>[k,k])].map(([v,l])=>`<button class="chip" style="flex:none" data-filter="st" data-val="${esc(v)}" aria-pressed="${st===v}">${esc(l)}${v?` <span class="num">${oc[v]}</span>`:''}</button>`).join('')})()}</div>
-   <div class="chips own"><span class="chl">איפה</span>${[['','הכל'],['בארץ','🇮🇱 בארץ'],['בבודפשט','🇭🇺 בבודפשט']].map(([v,l])=>`<button class="chip" data-filter="wh" data-val="${v}" aria-pressed="${wh===v}">${l}${v?` <span class="num">${open_.filter(x=>where(x)===v).length}</span>`:''}</button>`).join('')}</div>
-   <div class="chips own"><span class="chl">מתי</span>${[['','הכל'],['דחוף','🔥 דחוף'],['הרגע האחרון','⏳ הרגע האחרון']].map(([v,l])=>`<button class="chip" data-filter="wn" data-val="${v}" aria-pressed="${wn===v}">${l}${v?` <span class="num">${open_.filter(x=>pr(x)===v).length}</span>`:''}</button>`).join('')}</div>
-   <div class="chips own"><span class="chl">מי קונה</span>${[['','כולם'],...Object.keys(bc).filter(k=>k!=='__none').sort((a,b)=>bc[b]-bc[a]).map(n=>[n,n]),...(bc.__none?[['__none','בלי קונה']]:[])].map(([v,l])=>`<button class="chip" data-filter="by" data-val="${esc(v)}" aria-pressed="${by===v}">${esc(l)}${v?` <span class="num">${bc[v]}</span>`:''}</button>`).join('')}</div>
+   <section class="pfil" aria-label="סינון">
+   <div class="fr"><b>🏪 אצל מי</b><div class="chips">${(()=>{const oc={};rest.filter(x=>x.item&&(!x.sug||bt(x))).forEach(x=>{const k=shopKey(x);oc[k]=(oc[k]||0)+1});return [['','הכל'],...Object.keys(oc).sort((a,b)=>(a==='עוד לא נקבע איפה')-(b==='עוד לא נקבע איפה')||oc[b]-oc[a]).map(k=>[k,k])].map(([v,l])=>`<button class="chip" style="flex:none" data-filter="st" data-val="${esc(v)}" aria-pressed="${st===v}">${esc(l)}${v?` <span class="num">${oc[v]}</span>`:''}</button>`).join('')})()}</div></div>
+   <div class="fr"><b>📍 איפה</b><div class="chips">${[['','הכל'],['בארץ','🇮🇱 בארץ'],['בבודפשט','🇭🇺 בבודפשט']].map(([v,l])=>`<button class="chip" data-filter="wh" data-val="${v}" aria-pressed="${wh===v}">${l}${v?` <span class="num">${open_.filter(x=>where(x)===v).length}</span>`:''}</button>`).join('')}</div></div>
+   <div class="fr"><b>⏱ מתי</b><div class="chips">${[['','הכל'],['דחוף','🔥 דחוף'],['הרגע האחרון','⏳ הרגע האחרון']].map(([v,l])=>`<button class="chip" data-filter="wn" data-val="${v}" aria-pressed="${wn===v}">${l}${v?` <span class="num">${open_.filter(x=>pr(x)===v).length}</span>`:''}</button>`).join('')}</div></div>
+   <div class="fr"><b>👤 מי קונה</b><div class="chips">${[['','כולם'],...Object.keys(bc).filter(k=>k!=='__none').sort((a,b)=>bc[b]-bc[a]).map(n=>[n,n]),...(bc.__none?[['__none','בלי קונה']]:[])].map(([v,l])=>`<button class="chip" data-filter="by" data-val="${esc(v)}" aria-pressed="${by===v}">${esc(l)}${v?` <span class="num">${bc[v]}</span>`:''}</button>`).join('')}</div></div></section>
    <input class="search" id="q" type="search" placeholder="חיפוש פריט" value="${esc(q)}">
    ${seg==='todo'&&sug.length?`<button class="sugnote" data-filter="sh" data-val="sug">💡 ${sug.length} הצעות מחכות להחלטה שלך: להכניס לרשימה או לא ›</button>`:''}
    ${groups||card('','<b>'+(wh||wn||by||st?'אין פריטים בסינון הזה':seg==='todo'?'הכל נקנה 🎉':'אין כאן פריטים')+'</b>')}
@@ -6677,7 +6683,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='105c1469';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='a3988571';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
