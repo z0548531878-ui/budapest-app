@@ -31,4 +31,7 @@ jobs:
           grep -E '✘|Error:|Expected|Received|stalled|passed|failed' out.txt | head -20 | while read -r l; do echo "::notice::run ${{ matrix.run }} | $l"; done
       - if: always()
         uses: actions/upload-artifact@v4
-        with: { name: load-run-${{ matrix.run }}, path: test-results, if-no-files-found: ignore }
+        with:
+          name: load-run-${{ matrix.run }}
+          path: test-results
+          if-no-files-found: ignore
