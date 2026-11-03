@@ -1040,7 +1040,7 @@ body.guest .nav-in button[data-gnav="gadd"] .badge{inset-inline-end:calc(50% - 3
 .ht-h small{display:block;color:#a69a7d;font-weight:700}.ht-h b{font-size:21px;color:#f6dc93;display:block}.ht-h .en{display:block;color:#cfc3a6;font-size:13px}
 .navbtn{width:100%;justify-content:center;gap:10px;min-height:54px;font-size:18px}.navbtn svg{width:22px;height:22px}
 .hotelbar{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;border-radius:18px;font-weight:900;font-size:18px;text-decoration:none;color:#15110a;background:linear-gradient(180deg,#f6dc93,#c99a3d);margin:6px 0}.hotelbar svg{width:22px;height:22px}
-.place.eat .pl-hrs{font-size:12.5px;color:#e9dcbc;line-height:1.35}.place.eat .pl-k{font-size:12px;color:#c9a75e;font-weight:700}
+.place .pl-hrs{font-size:12.5px;color:#e9dcbc;line-height:1.35}.place.eat .pl-k{font-size:12px;color:#c9a75e;font-weight:700}
 .pgrp{margin:6px 0}.place{border:1px solid rgba(214,178,98,.25);border-radius:18px;padding:12px 14px;margin:8px 0;background:linear-gradient(160deg,#17140f,#0d0c09);display:grid;gap:6px;justify-items:start}
 .pl-t{display:grid;gap:1px}.pl-t b{font-size:18px}.pl-t .en{color:#a69a7d;font-size:13px;text-align:right}
 .place small{color:#cfc3a6;font-size:13.5px}
@@ -5069,17 +5069,17 @@ const EAT=[
   {n:'חומוס בר',hrs:'א׳–ה׳ 12:00–23:00 · ו׳ 11:00–16:00',tel:'+36704020120',k:'חוג חתם סופר פתח תקווה',map:'https://maps.app.goo.gl/HwhWd371vWj8ZjUD8',d:'6 דק׳ הליכה'}]}];
 const PLACES=[
  {h:'🎡 אטרקציות וחוויות',l:[
-  ['שייט על הדנובה','Vigadó Pier Danube cruise Budapest','Vigadó tér, Budapest','בערך 15 דק׳ הליכה · 1.2 ק״מ','הכי יפה במוצאי שבת, מתחנות 7–11'],
-  ['קורקינט חשמלי','Andrássy út Budapest','Andrássy út, Budapest','','Lime או Tier. חונים רק בנקודות Mobi'],
-  ['הפרלמנט','Hungarian Parliament Building','Kossuth Lajos tér 1-3, Budapest','','יום שישי 11:00–15:00, חוזרים למלון לפני 15:00'],
-  ['גשר השלשלאות','Széchenyi Chain Bridge','Széchenyi Chain Bridge, Budapest','',''],
-  ['מצודת הדייגים','Fisherman\'s Bastion','Szentháromság tér, Budapest','',''],
-  ['אי מרגיט','Margaret Island','Margit-sziget, Budapest','',''],
-  ['הר גלרט','Gellért Hill','Gellért-hegy, Budapest','',''],
-  ['השוק המרכזי הגדול','Great Market Hall','Vámház körút 1-3, Budapest','16 דק׳ הליכה · 1.2 ק״מ','נבנה ב־1897. אוכל רק עם תעודת כשרות']]},
+  ['שייט על הדנובה','Vigadó Pier Danube cruise Budapest','Vigadó tér, Budapest','בערך 15 דק׳ הליכה · 1.2 ק״מ','הכי יפה במוצאי שבת, מתחנות 7–11','שייטי ערב יוצאים בערך 18:00–22:00 · השעות לפי החברה'],
+  ['קורקינט חשמלי','Andrássy út Budapest','Andrássy út, Budapest','','Lime או Tier. חונים רק בנקודות Mobi','פתוח כל הזמן, דרך האפליקציה'],
+  ['הפרלמנט','Hungarian Parliament Building','Kossuth Lajos tér 1-3, Budapest','','יום שישי 11:00–15:00, חוזרים למלון לפני 15:00','מרכז המבקרים: כל יום 8:00–16:00 (נובמבר–מרץ) · סיורים מודרכים בלבד'],
+  ['גשר השלשלאות','Széchenyi Chain Bridge','Széchenyi Chain Bridge, Budapest','','','פתוח כל הזמן · יפה במיוחד בלילה'],
+  ['מצודת הדייגים','Fisherman\'s Bastion','Szentháromság tér, Budapest','','','הטרסות התחתונות: כל הזמן, בחינם · המגדלים העליונים: 9:00–19:00 בתשלום, וחינם אחרי'],
+  ['אי מרגיט','Margaret Island','Margit-sziget, Budapest','','','פתוח כל הזמן'],
+  ['הר גלרט','Gellért Hill','Gellért-hegy, Budapest','','','פתוח כל הזמן · התצפית הכי יפה בשקיעה'],
+  ['השוק המרכזי הגדול','Great Market Hall','Vámház körút 1-3, Budapest','16 דק׳ הליכה · 1.2 ק״מ','נבנה ב־1897. אוכל רק עם תעודת כשרות','ב׳–ו׳ 6:00–18:00 · שבת 6:00–16:00 · א׳ 10:00–16:00']]},
  {h:'🛍 קניות',l:[
-  ['קניון ווסטנד','Westend City Center','Váci út 1-3, Budapest','10 דק׳ במונית',''],
-  ['מדרחוב ואצי','Váci utca','Váci utca, Budapest','15 דק׳ הליכה · 1.1 ק״מ','']]}
+  ['קניון ווסטנד','Westend City Center','Váci út 1-3, Budapest','10 דק׳ במונית','','החנויות: ב׳–שבת 10:00–21:00 · א׳ 10:00–19:00'],
+  ['מדרחוב ואצי','Váci utca','Váci utca, Budapest','15 דק׳ הליכה · 1.1 ק״מ','','הרחוב פתוח כל הזמן · החנויות בערך 10:00–20:00']]}
 ];
 
 // a tapped notification opens the app on its screen (the service worker opens ./#tab=gl)
@@ -5453,11 +5453,11 @@ function guestHTML0(){
      ${help}</div>`}
   if(GTAB==='gx'){
     const hn=`<a class="hotelbar" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener">${IX.nav}<span>חזרה למלון · ניווט</span></a>`;
-    return head('מסעדות ואטרקציות')+hn+`<div class="kosher" role="note"><b>לפני שאוכלים</b>בודקים תעודת כשרות בתוקף במקום עצמו. המידע כאן עלול להשתנות.</div><p class="note">"ניווט" פותח את המקום במפות. המרחקים הם מהמלון, בערך.</p>`+
+    return head('מסעדות ואטרקציות')+hn+`<div class="kosher" role="note"><b>לפני שאוכלים</b>בודקים תעודת כשרות בתוקף במקום עצמו. המידע כאן עלול להשתנות.</div><p class="note">"ניווט" פותח את המקום במפות. המרחקים הם מהמלון, בערך. שעות הפתיחה עלולות להשתנות, ובחגים הונגריים חלק מהמקומות סגורים.</p>`+
      EAT.map((g,gi)=>`<section class="pgrp" style="--g:${gi}"><div class="ghead"><span>${g.h}</span><span class="num">${g.l.length}</span></div>${g.l.map((p,i)=>`<div class="place eat" style="--i:${i}"><div class="pl-t"><b>${esc(p.n)}</b>${p.d?`<span class="pill p-mute">${esc(p.d)}</span>`:''}</div>
        <div class="pl-hrs">🕒 ${hrsHTML(p.hrs)}</div>${p.k?`<div class="pl-k">✡︎ כשרות ${esc(p.k)}</div>`:''}${p.note?`<small>${esc(p.note)}</small>`:''}
        <div class="pl-a"><a class="btn primary" href="${safeUrl(p.map)}" target="_blank" rel="noopener">${IX.nav}<span>ניווט</span></a>${p.tel?`<a class="btn" href="tel:${p.tel}">📞<span>התקשרות</span></a>`:''}</div></div>`).join('')}</section>`).join('')+
-     PLACES.map((g,gi)=>`<section class="pgrp" style="--g:${gi+3}"><div class="ghead"><span>${g.h}</span><span class="num">${g.l.length}</span></div>${g.l.map((p,i)=>`<div class="place" style="--i:${i}"><div class="pl-t"><b>${esc(p[0])}</b><span class="ltr en">${esc(p[1])}</span></div>${p[3]?`<span class="pill p-mute">${esc(p[3])}</span>`:''}${p[4]?`<small>${esc(p[4])}</small>`:''}
+     PLACES.map((g,gi)=>`<section class="pgrp" style="--g:${gi+3}"><div class="ghead"><span>${g.h}</span><span class="num">${g.l.length}</span></div>${g.l.map((p,i)=>`<div class="place" style="--i:${i}"><div class="pl-t"><b>${esc(p[0])}</b><span class="ltr en">${esc(p[1])}</span></div>${p[3]?`<span class="pill p-mute">${esc(p[3])}</span>`:''}${p[5]?`<div class="pl-hrs">🕒 ${hrsHTML(p[5])}</div>`:''}${p[4]?`<small>${hrsHTML(p[4])}</small>`:''}
        <div class="pl-a"><a class="btn primary" href="${mapsGo(p[1]+' '+p[2])}" target="_blank" rel="noopener">${IX.nav}<span>ניווט</span></a><a class="btn" href="${mapsFind(p[1]+' '+p[2])}" target="_blank" rel="noopener">${IX.pin}<span>במפה</span></a></div></div>`).join('')}</section>`).join('')+
      `<p class="note">טיפ: מזמינים מונית באפליקציית Bolt או בקבלה. כרטיס אשראי מתקבל כמעט בכל מקום.</p>`}
   if(GTAB==='gl'){const h=SUB.program().replace(/<div class="page-title">[\s\S]*?<\/div>/,'');const k=progDay(),i=PROG.findIndex(x=>x.k===k),pv_=PROG[i-1],nx=PROG[i+1];
@@ -6698,7 +6698,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='8f43068ac7';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='d43864cbd3';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
