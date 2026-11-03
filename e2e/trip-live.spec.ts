@@ -404,7 +404,7 @@ test('SHOP-1 shopping: filter by country/Budapest and by urgent/last minute; roo
   await expect(rows).toHaveCount(1); await expect(rows).toContainText('מים');
   await page.getByRole('button', { name: /^🔥 דחוף/ }).click();
   await expect(page.locator('#view')).toContainText('אין פריטים בסינון הזה');
-  await page.locator('.chips.own').filter({ hasText: 'איפה' }).getByRole('button', { name: /^הכל/ }).click(); // back to all places
+  await page.locator('[data-filter="wh"][data-val=""]').click(); // back to all places
   await expect(rows).toHaveCount(2); // the urgent ones: candles, and the cans for the rooms
   expect(errors).toEqual([]);
 });
