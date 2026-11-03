@@ -2675,6 +2675,10 @@ body #view .days,body .pass .days{gap:6px!important}
 .splash.calm .sp-logo img{opacity:1!important;animation:none!important;transform:none!important;box-shadow:none!important}
 .splash.calm.out{opacity:0!important;transform:none!important;transition:opacity .28s ease!important}
 .splash.calm.out .sp-logo{transform:none!important;opacity:1!important;transition:none!important}
+.rdy .rg{animation:none!important;stroke-dashoffset:var(--o)!important}
+.sheet .btn,.sheet button,#pvl .btn{-webkit-tap-highlight-color:transparent}
+/* press feedback waits a moment, so a touch that turns into a scroll doesn't make rows shrink and flash */
+@media (hover:none){html body *:active{transition-delay:90ms!important}}
 @media (prefers-reduced-motion:no-preference){
  #view.enter>*,#view.enter[data-scr]>*{animation:calmIn .22s ease-out both!important;animation-delay:0s!important}
  #view.enter *{animation-delay:0s!important}
@@ -4404,7 +4408,8 @@ function sheet(html){const r=document.getElementById('sheetRoot');
   // pull down to close: a long pull or a quick flick closes it, a short one springs back
   let y0=null,ly=0,lt=0,vy=0;const g=!reduce&&window.gsap;
   const setY=y=>{if(g)gsap.set(sh,{y});else sh.style.transform=`translateY(${y}px)`};
-  sh.addEventListener('touchstart',e=>{y0=sh.scrollTop<=0?e.touches[0].clientY:null;ly=y0;lt=e.timeStamp;vy=0;if(g)gsap.killTweensOf(sh)},{passive:true});
+  const innerUp=t=>{for(let n=t;n&&n!==sh;n=n.parentElement)if(n.scrollTop>0&&n.scrollHeight>n.clientHeight+2)return true;return false};
+  sh.addEventListener('touchstart',e=>{y0=sh.scrollTop<=0&&!innerUp(e.target)?e.touches[0].clientY:null;ly=y0;lt=e.timeStamp;vy=0;if(g)gsap.killTweensOf(sh)},{passive:true});
   sh.addEventListener('touchmove',e=>{if(y0==null)return;const y=e.touches[0].clientY,dy=y-y0;vy=(y-ly)/Math.max(1,e.timeStamp-lt);ly=y;lt=e.timeStamp;if(dy>0){sh.style.transition='none';setY(dy)}},{passive:true});
   sh.addEventListener('touchend',e=>{if(y0==null)return;const dy=e.changedTouches[0].clientY-y0;y0=null;
     if((dy>110||(dy>24&&vy>.55))&&sheetDirty()){if(g)gsap.to(sh,{y:0,duration:.22,ease:'power2.out',clearProps:'transform'});else{sh.style.transition='';sh.style.transform=''}dismissSheet();return}
@@ -4658,7 +4663,7 @@ setInterval(()=>{const D=document.getElementById('cdD'),T=document.getElementByI
   ['h','m','s'].forEach(u=>{const el=T.querySelector(`[data-u="${u}"]`);if(!el){T.innerHTML=c.t;return}if(el.textContent!==c[u]){el.textContent=c[u];if(!reduce){el.classList.remove('tk');void el.offsetWidth;el.classList.add('tk')}}})},1000);
 
 
-document.addEventListener('pointerdown',e=>{if(reduce)return;const t=e.target.closest('.btn,.hub .big,.shortcuts button,.tile,.stat,.cashcard,.act');if(!t)return;
+document.addEventListener('click',e=>{if(reduce||!e.clientX&&!e.clientY)return;const t=e.target.closest('.btn,.hub .big,.shortcuts button,.tile,.stat,.cashcard,.act');if(!t)return;
   const r=t.getBoundingClientRect(),s=Math.max(r.width,r.height),d=document.createElement('span');d.className='rpl';d.style.cssText=`width:${s}px;height:${s}px;left:${e.clientX-r.left-s/2}px;top:${e.clientY-r.top-s/2}px`;
   if(getComputedStyle(t).position==='static')t.style.position='relative';t.style.overflow='hidden';t.appendChild(d);setTimeout(()=>d.remove(),650)},{passive:true});
 (()=>{const sp=document.getElementById('splash');if(!sp)return;const dust=sp.querySelector('.dust');if(dust)for(let i=0;i<14;i++){const x=document.createElement('i');x.style.left=(Math.random()*100)+'%';x.style.animationDelay=(Math.random()*2.4)+'s';x.style.animationDuration=(2+Math.random()*1.8)+'s';dust.appendChild(x)}})();
@@ -6707,7 +6712,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='8822252d4f';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='bfecc7134e';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
