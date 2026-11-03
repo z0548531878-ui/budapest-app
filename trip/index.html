@@ -2664,11 +2664,6 @@ body #view .days,body .pass .days{gap:6px!important}
 }
 .syncago{margin:2px 2px 8px;font-size:12.5px;color:#a69a7d}
 .syncago.stale{color:#e0b45c;font-weight:700}
-/* long lists: rows off screen skip layout and paint until scrolled near */
-.card>.row:nth-child(n+9),.card>div>.row:nth-child(n+9),.annlist>.ann:nth-child(n+6),.gcb>.gc:nth-child(n+7){content-visibility:auto;contain-intrinsic-size:auto 66px}
-.gcb>.gc:nth-child(n+7){contain-intrinsic-size:auto 184px}
-.pcrow{content-visibility:auto;contain-intrinsic-size:auto 340px}
-.prow{content-visibility:auto;contain-intrinsic-size:auto 76px}
 .vwl{display:flex;flex-direction:column;border:1px solid rgba(214,178,98,.2);border-radius:14px;overflow:hidden;margin-bottom:12px}
 .vwr{display:flex;justify-content:space-between;gap:12px;padding:11px 14px;border-bottom:1px solid rgba(214,178,98,.12);font-size:15px}
 .vwr:last-child{border-bottom:0}.vwr span{color:var(--muted)}.vwr b{text-align:end}
@@ -6698,7 +6693,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='d43864cbd3';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='60f2923661';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
