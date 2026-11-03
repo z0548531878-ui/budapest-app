@@ -35,6 +35,8 @@ test.describe('F01 solo game', () => {
     await expect(page.locator('#s-final')).toHaveText(String(score));
     await expect.poll(async () => (await db.get(`${SOLO}/משה כהן`))?.games).toBe(1);
     expect(await db.get(`${SOLO}/משה כהן`)).toMatchObject({ best: score, bestQ: 30 });
+    // every question of the round is counted in the per-question stats (8 shard docs)
+    await expect.poll(async () => { let n = 0; for (let i = 0; i < 8; i++) { const d = await db.get(`rooms/qstats_${i}`); if (d) n += Object.values(d.st || {}).reduce((t: number, v: any) => t + v.n, 0); } return n; }).toBe(30);
     if (score > 0) await expect(page.locator('#s-end-lb .board-row.mine')).toContainText('משה כהן');
     // the round review lists all 30 questions with the right answer, and a wrong question can be reported
     await page.getByRole('button', { name: /התשובות של הסבב/ }).click();

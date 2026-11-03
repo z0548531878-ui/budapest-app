@@ -926,6 +926,63 @@ button,a,.btn,.answer-btn{touch-action:manipulation;}
 #s-landing .btn.cta.locked-trip .lk-note{font-size:13.5px;}
 @media (prefers-reduced-motion:no-preference){#s-landing.active .cta-ic{animation:ctaIc .5s cubic-bezier(.2,1.6,.4,1) both;}#s-landing.active #btn-solo .cta-ic{animation-delay:.35s;}#s-landing.active #btn-duel .cta-ic{animation-delay:.63s;}#s-landing.active #btn-join-manual .cta-ic{animation-delay:.91s;}}
 @keyframes ctaIc{from{transform:scale(.3) rotate(-30deg);opacity:0;}to{transform:none;opacity:1;}}
+/* ===== עיצוב תלת-ממד: גדלים מאוזנים + כניסה בהיפוך (נובמבר 2026) ===== */
+#s-landing .logo-frame{margin:8px 0 14px;}
+#s-landing .logo-orb{width:190px;height:190px;}
+#s-landing h1{font-size:clamp(38px,11.5vw,46px);margin-bottom:20px !important;}
+#s-landing .btn.cta{min-height:74px;padding:10px 16px;border-radius:20px;width:92%;margin-inline:auto;gap:12px;}
+#s-landing .cta-ic{width:50px;height:50px;font-size:24px;}
+#s-landing .cta-t b{font-size:20px;}#s-landing .cta-t small{font-size:13px;}
+.solo-home .sh-hero{margin:0 0 10px !important;gap:12px !important;}
+.solo-home .sh-badge{width:56px !important;height:56px !important;}
+.solo-home .sh-hi1{font-size:13px;line-height:1.1;margin:0;}.solo-home .sh-name{font-size:26px;}.solo-home .sh-tag{font-size:14px;}
+.solo-home .rec-grid{gap:10px !important;margin-bottom:8px !important;}
+#solo-body .solo-home .rec-card{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"ic lb" "num nm";align-items:center;column-gap:8px;row-gap:0;padding:6px 12px;text-align:right;border-radius:14px;}
+#solo-body .solo-home .rec-ic{grid-area:ic;font-size:20px;margin:0;}
+#solo-body .solo-home .rec-label{grid-area:lb;font-size:13px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#solo-body .solo-home .rec-name{grid-area:nm;font-size:12.5px;margin:0;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#solo-body .solo-home .rec-num{grid-area:num;font-size:26px;margin:0;}
+.solo-home .sh-progress{margin:0 2px 10px !important;}
+#solo-body .solo-home .sh-go{padding:10px 14px !important;border-radius:18px;}
+.solo-home .sh-go-main{font-size:21px;}.solo-home .sh-go-sub{font-size:12.5px;}
+#solo-body .solo-home .solo-lb{margin-top:10px;padding:8px 8px 2px;}
+#solo-body .solo-home .board-row{padding:7px 12px;margin-bottom:4px;gap:10px;border-radius:11px;}
+#solo-body .solo-home .board-name{display:flex;align-items:baseline;gap:8px;font-size:16px;white-space:nowrap;overflow:hidden;min-width:0;}
+#solo-body .solo-home .board-sub{display:inline;margin:0;font-size:12px;flex-shrink:0;}
+#solo-body .solo-home .bn{min-width:0;overflow:hidden;text-overflow:ellipsis;}
+#solo-body .solo-home .board-score{font-size:18px;}
+#solo-body .solo-home .rank{font-size:15px;width:24px;text-align:center;flex-shrink:0;}
+#solo-body .solo-home .sh-act{padding:7px 4px;font-size:14.5px;border-radius:14px;flex-direction:column;gap:2px;justify-content:center;min-height:0;white-space:nowrap;}
+#solo-body .solo-home .sh-act span{font-size:20px;position:static;transform:none;margin:0;line-height:1.1;}
+@media (max-height:700px){#solo-body .solo-home .board-row{padding:5px 12px;margin-bottom:3px;}#solo-body .solo-home .sh-hero{margin-bottom:6px !important;}#solo-body .solo-home .sh-badge{width:46px !important;height:46px !important;}#s-landing .logo-orb{width:160px;height:160px;}#s-landing .btn.cta{min-height:68px;}}
+/* לוגו: נגיעה קלה — מתהפך לצד השני */
+.logo-flip{transition:transform .75s cubic-bezier(.3,1.35,.5,1) !important;}
+#s-landing .logo-orb{cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+@media (prefers-reduced-motion:no-preference){
+  #s-landing.screen .logo-orb{animation:coinIn 1.2s cubic-bezier(.2,1,.3,1) both, logoFloat 5s ease-in-out 1.2s infinite;}
+  @keyframes coinIn{from{transform:rotateY(-360deg) scale(.4);opacity:0;}to{transform:none;opacity:1;}}
+  #s-landing.screen #btn-solo,#s-landing.screen #btn-duel,#s-landing.screen #btn-join-manual{animation:cardFlipIn .8s cubic-bezier(.2,1.3,.4,1) both !important;transform-origin:50% 0;}
+  #s-landing.screen #btn-solo{animation-delay:.6s !important;}#s-landing.screen #btn-duel{animation-delay:.75s !important;}#s-landing.screen #btn-join-manual{animation-delay:.9s !important;}
+  @keyframes cardFlipIn{from{opacity:0;transform:perspective(600px) rotateX(-95deg);}to{opacity:1;transform:none;}}
+  #s-landing.screen #btn-solo .cta-ic,#s-landing.screen #btn-duel .cta-ic,#s-landing.screen #btn-join-manual .cta-ic{animation:icBob 2.6s ease-in-out 1.6s infinite both !important;}
+  #s-landing.screen #btn-duel .cta-ic{animation-delay:2.4s !important;}#s-landing.screen #btn-join-manual .cta-ic{animation-delay:3.2s !important;}
+  @keyframes icBob{0%,100%{transform:translateY(0) rotateY(0);}50%{transform:translateY(-4px) rotateY(180deg);}}
+  #solo-body .solo-home .board-row,#solo-body .solo-home.no-anim .board-row{animation:rowFlipIn .6s cubic-bezier(.2,1.3,.4,1) both !important;animation-delay:calc(.25s + var(--i,0) * 70ms) !important;transform-origin:50% 0;}
+  @keyframes rowFlipIn{from{opacity:0;transform:perspective(500px) rotateX(-90deg);}to{opacity:1;transform:none;}}
+  #solo-body .solo-home .rec-card{animation:recFlipIn .8s cubic-bezier(.2,1.2,.4,1) both !important;}
+  #solo-body .solo-home .rec-card.top{animation-delay:.1s !important;}
+  @keyframes recFlipIn{from{opacity:0;transform:perspective(500px) rotateY(90deg);}to{opacity:1;transform:none;}}
+  #solo-body .solo-home .sh-go,#solo-body .solo-home.no-anim .sh-go{animation:goRing 2s ease-out infinite !important;}
+  @keyframes goRing{0%{box-shadow:0 6px 0 #8A6E1E,0 0 0 0 rgba(255,225,130,.7);}70%{box-shadow:0 6px 0 #8A6E1E,0 0 0 14px rgba(255,225,130,0);}100%{box-shadow:0 6px 0 #8A6E1E,0 0 0 0 rgba(255,225,130,0);}}
+  /* רק בפעם הראשונה; רענון של הטבלה לא מפעיל שוב את ההיפוך */
+  #solo-body .solo-home.no-anim .board-row,#solo-body .solo-home.no-anim .rec-card{animation:none !important;}
+}
+/* לחיצה: הכפתור מתכווץ ויוצא ממנו גל אור */
+.tap-rip{position:absolute;border-radius:50%;background:rgba(255,255,255,.5);width:80px;height:80px;margin:-40px 0 0 -40px;transform:scale(0);animation:tapRip .55s ease-out forwards;pointer-events:none;z-index:3;}
+@keyframes tapRip{to{transform:scale(4.5);opacity:0;}}
+#s-landing .btn.cta,.solo-home .sh-go,.solo-home .sh-act{position:relative;overflow:hidden;}
+#s-landing .btn.cta:active,.solo-home .sh-go:active,.solo-home .sh-act:active{transform:scale(.96) !important;transition:transform .1s;}
+html.lite #s-landing .logo-orb,html.lite #s-landing.screen .cta-ic,html.lite #solo-body .solo-home .sh-go{animation:none !important;}
 </style>
 </head>
 <body>
@@ -4925,7 +4982,7 @@ const TRIP_LOCK=(()=>{try{const q=new URLSearchParams(location.search);if(q.get(
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active'); fxOnScreen(id); if(id==='s-landing') appUpdateMaybe();}
 // ---- עדכון אוטומטי: גם אפליקציה שפתוחה כבר שעות מקבלת את הגרסה החדשה ----
 // בכל עדכון מעלים את APP_BUILD ואת version.json לאותו ערך. הטעינה מחדש קורית רק במסך הפתיחה — אף פעם באמצע משחק
-const APP_BUILD = '2026-11-03-1';
+const APP_BUILD = '2026-11-03-2';
 let appNewBuild = null;
 function appUpdateCheck(){
   if(/^(localhost|127\.)/.test(location.hostname) && !window.__testUpdate) return;
@@ -5333,15 +5390,21 @@ function fxSetupLanding(){
     clip.parentNode.insertBefore(flip, clip); flip.appendChild(clip);
     const back = clip.cloneNode(true); back.classList.add('back'); const bi = back.querySelector('img'); if(bi) bi.removeAttribute('id');
     flip.appendChild(back);
+    // נגיעה קלה (כבר ברגע המגע) — הלוגו מתהפך חצי סיבוב לצד השני
     let turns = 0;
-    logo.addEventListener('click', ()=>{
-      turns++; flip.style.transform = `rotateY(${turns*360}deg)`;
-      logo.classList.remove('spinning'); void logo.offsetWidth; logo.classList.add('spinning');
-      clearTimeout(logo._spinT); logo._spinT = setTimeout(()=>logo.classList.remove('spinning'), 2600);
-      const c=fxCenter(logo); fxBurst(c.x,c.y,60,FX_GOLD,5);
+    logo.addEventListener('pointerdown', ()=>{
+      turns++; flip.style.transform = `rotateY(${turns*180}deg)`;
+      const c=fxCenter(logo); fxBurst(c.x,c.y,40,FX_GOLD,4);
     });
   }
 }
+// לחיצה על כפתור ראשי: גל אור יוצא מנקודת המגע
+document.addEventListener('pointerdown', e=>{
+  const b = e.target.closest && e.target.closest('#s-landing .btn.cta, .solo-home .sh-go, .solo-home .sh-act'); if(!b) return;
+  const r = b.getBoundingClientRect(), d = document.createElement('span');
+  d.className='tap-rip'; d.setAttribute('aria-hidden','true'); d.style.left=(e.clientX-r.left)+'px'; d.style.top=(e.clientY-r.top)+'px';
+  b.appendChild(d); setTimeout(()=>d.remove(), 600);
+}, {passive:true});
 function fxOnScreen(id){
   fxInit(); if(!fx.cv) return;
   fx.ambient = (id==='s-landing') && !LITE();
@@ -5781,6 +5844,7 @@ function duelAnswer(k, btn){
   const q = duelQuestion(duel.v, i);
   const voided = acHit(duel, i, 'away') || acHit(duel, i, 'copy');
   const pts = k===q.c && !voided ? worthAt(ms) : 0;
+  if(!voided) qStatsAdd([{k:qKey(q), ok: k===q.c ? 1 : 0}]);
   lockWorth('d', duel.startLocal, ms);
   const box=$('d-answers');
   if(box) box.querySelectorAll('.answer-btn').forEach(b=>{ b.disabled=true; if(b===btn){ b.classList.add('selected'); b.dataset.tag='✓ הבחירה שלכם'; pressFeedback(b); } });
@@ -6447,6 +6511,7 @@ async function hostEndQuestion(){
     const roster = rosterOf(nm, playersOrder); rosterSig = JSON.stringify(roster); rosterAt = Date.now();
     batch.update(roomRef(), {phase:'reveal', revealWinners:winners, phaseAt:Date.now(), roster});
     await batch.commit();
+    if(q.type!=='poll' && answers.length) qStatsAdd([{k:qKey(q), n:answers.length, ok:answers.filter(a=>a.choice===q.c).length}]);
   }catch(e){
     // leave the phase as-is; the watchdog retries automatically
   }finally{
@@ -6828,7 +6893,8 @@ function soloSwitchUser(){
 function soloHomeBoardHtml(){
   const p = soloProfile(), mine = soloBest();
   if(!soloTop.length) return `<div class="sh-empty">${soloTopLoaded ? 'עדיין אין שיאים — היו הראשונים!' : 'טוען את טבלת השיאים...'}</div>`;
-  const row = (rank, name, best, isMe, i, r)=>recRowHtml(rank, {name, score:best, sub:soloRowSub(r)}, isMe, i);
+  const sub = r=>r && r.bestCorrect!=null ? `<span class="board-sub">${r.bestCorrect||0}${r.bestQ?'/'+r.bestQ:''} · ${fmtDur(r.bestMs).replace(" דק'",'')}</span>` : '';
+  const row = (rank, name, best, isMe, i, r)=>recRowHtml(rank, {name, score:best, sub:sub(r)}, isMe, i);
   let html = soloTop.map((r,i)=>row(i+1, r.name, r.best, p && r.id===p.id, i, r)).join('');
   const inTop = p && soloTop.some(r=>r.id===p.id);
   if(p && !inTop){
@@ -6837,7 +6903,7 @@ function soloHomeBoardHtml(){
   return `<div class="lb-title">🏆 טבלת השיאים</div>` + html;
 }
 // טבלת שיאים מלאה בתוך תיבה נגללת (רק הטבלה נגללת — הכפתורים נשארים במקומם)
-function recRowHtml(rank, r, isMe, i){ return `<div class="board-row ${rank===1?'first':''} ${isMe?'mine':''}"${i!=null?` style="--i:${i}"`:''}><div class="rank">${rankLabel(rank-1)}</div><div class="board-name">${esc(r.name||'')}${isMe?' <small>(אתם)</small>':''}${r.sub||''}</div><div class="board-score">${r.score||0}</div></div>`; }
+function recRowHtml(rank, r, isMe, i){ return `<div class="board-row ${rank===1?'first':''} ${isMe?'mine':''}"${i!=null?` style="--i:${i}"`:''}><div class="rank">${rankLabel(rank-1)}</div><div class="board-name"><span class="bn">${esc(r.name||'')}${isMe?' <small>(אתם)</small>':''}</span>${r.sub||''}</div><div class="board-score">${r.score||0}</div></div>`; }
 function lbBoxHtml(title, rows){ return `<div class="lb-title">${title}<span class="lb-count">${rows.length===1 ? 'משתתף אחד' : rows.length + ' משתתפים'}</span></div><div class="lb-scroll">${rows.map(r=>recRowHtml(r.rank, r, r.me)).join('')}</div>`; }
 function lbScrollToMe(box){ const sc = box && box.querySelector('.lb-scroll'), m = sc && sc.querySelector('.mine'); if(sc && m) sc.scrollTop = Math.max(0, m.offsetTop - sc.clientHeight/2 + m.offsetHeight/2); }
 function missHtml(txt){ return `<div class="se-miss">${txt}</div>`; }
@@ -7149,6 +7215,18 @@ function qConcept(q){
   if(q.img) return 'i|' + q.topic + '|' + a;
   return ANS_N.get(a) <= 3 && String(a).length > 2 ? 't|' + a : null;
 }
+// סטטיסטיקה לכל שאלה: כמה ענו וכמה צדקו (נשמר בשקט, לא מעכב את המשחק). 8 מסמכים כדי לא להעמיס מסמך אחד
+function qStatsAdd(list){
+  try{
+    if(!list || !list.length || typeof db==='undefined') return;
+    const by = {};
+    list.forEach(e=>{ if(!e || !e.k) return; const sh = parseInt(e.k.slice(-1),36)%8, m = by[sh] = by[sh] || {};
+      const cur = m[e.k] = m[e.k] || {n:0, ok:0}; cur.n += e.n||1; cur.ok += e.ok||0; });
+    Object.keys(by).forEach(sh=>{ const st = {};
+      Object.entries(by[sh]).forEach(([k,v])=>{ st[k] = {n:FV.increment(v.n), ok:FV.increment(v.ok)}; });
+      db.collection('rooms').doc('qstats_'+sh).set({st, at:Date.now()}, {merge:true}).catch(()=>{}); });
+  }catch(e){}
+}
 function qKey(q){ let h=5381; const t=q.q+(q.img||''); for(let i=0;i<t.length;i++) h=((h<<5)+h+t.charCodeAt(i))>>>0; return h.toString(36); }
 function soloPickQuestions(){
   const p = soloProfile(), key = 'trivia_solo_seen_v2_' + (p ? p.id : 'guest');
@@ -7219,6 +7297,7 @@ function soloReveal(choice){
   const elapsed = Date.now()-s.startedAt;
   const right = choice===q.c;
   (s.picks = s.picks || [])[s.i] = choice;
+  if(!(right && (acHit(s, s.i, 'away') || acHit(s, s.i, 'copy')))) (s.qlog = s.qlog || []).push({k:qKey(q), ok: right?1:0});
   s.totalMs = (s.totalMs||0) + Math.min(SOLO_QUESTION_MS, elapsed);
   let pts = 0;
   const ac = s.ac = s.ac || {away:0, copy:0, fast:0, bait:0, wrong:0};
@@ -7256,6 +7335,7 @@ function soloEnd(){
   const s = soloState; if(!s) return;
   const prevBest = soloBest();
   const bad = acVerdict(s);
+  if(!bad.length && !s.qStatsSent){ s.qStatsSent = true; qStatsAdd(s.qlog); }
   const isNew = !bad.length && s.score > prevBest;
   const g = globalBest(), p = soloProfile();
   const isGlobal = !bad.length && s.score>0 && (!g || s.score > g.best || (p && g.id===p.id && isNew));

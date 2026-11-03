@@ -1,13 +1,14 @@
-# Read-only: right-answer rate per question from saved duel and group games
+# Read-only on the game data: right-answer rate per question. Result goes to the q-stats branch (out/q_stats.csv)
 name: Question stats
 on: { workflow_dispatch: {} }
-permissions: { contents: read }
+permissions: { contents: write }
 jobs:
   stats:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
       - run: python3 tools/q_stats.py
-      - uses: actions/upload-artifact@v4
-        with: { name: q-stats, path: out/q_stats.csv }
+      - run: |
+          mkdir -p /tmp/p && cp out/q_stats.csv /tmp/p/ && cd /tmp/p && git init -q && git checkout -q -b q-stats && git add -A && git -c user.name=bot -c user.email=bot@x commit -qm stats
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" q-stats
