@@ -5,7 +5,7 @@ on: { workflow_dispatch: {} }
 permissions: { contents: read }
 jobs:
   load:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     strategy:
       max-parallel: 1
@@ -18,7 +18,8 @@ jobs:
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: 21 }
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install chromium
+      - run: npx playwright install-deps chromium || sudo npx playwright install-deps chromium || echo 'deps step failed, trying anyway'
       - name: Run test ${{ matrix.run }}
         run: |
           set -o pipefail
