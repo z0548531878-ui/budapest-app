@@ -1,0 +1,34 @@
+# Load test of the group game: 5 runs one after another, each a full 50-question game with 80 players,
+# against the Firestore emulator with the real security rules (never touches the live database)
+name: Load test (80 players)
+on: { workflow_dispatch: {} }
+permissions: { contents: read }
+jobs:
+  load:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix: { run: [1, 2, 3, 4, 5] }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Run test ${{ matrix.run }}
+        run: |
+          set -o pipefail
+          npx -y firebase-tools@13.35.1 emulators:exec --only firestore --project demo-trivia \
+            "LOAD=1 npx playwright test e2e/load.spec.ts --workers=1 --reporter=line" 2>&1 | tee out.txt
+      - if: always()
+        run: |
+          r=$(grep -o 'LOAD-REPORT .*' out.txt | head -1 | cut -c13-)
+          echo "::notice::run ${{ matrix.run }}: ${r:-no report}"
+          grep -E '✘|Error:|Expected|Received|stalled|passed|failed' out.txt | head -20 | while read -r l; do echo "::notice::run ${{ matrix.run }} | $l"; done
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with: { name: load-run-${{ matrix.run }}, path: test-results, if-no-files-found: ignore }
