@@ -1040,6 +1040,7 @@ body.guest .nav-in button[data-gnav="gadd"] .badge{inset-inline-end:calc(50% - 3
 .ht-h small{display:block;color:#a69a7d;font-weight:700}.ht-h b{font-size:21px;color:#f6dc93;display:block}.ht-h .en{display:block;color:#cfc3a6;font-size:13px}
 .navbtn{width:100%;justify-content:center;gap:10px;min-height:54px;font-size:18px}.navbtn svg{width:22px;height:22px}
 .hotelbar{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;border-radius:18px;font-weight:900;font-size:18px;text-decoration:none;color:#15110a;background:linear-gradient(180deg,#f6dc93,#c99a3d);margin:6px 0}.hotelbar svg{width:22px;height:22px}
+.place.eat .pl-hrs{font-size:12.5px;color:#e9dcbc;line-height:1.35}.place.eat .pl-k{font-size:12px;color:#c9a75e;font-weight:700}
 .pgrp{margin:6px 0}.place{border:1px solid rgba(214,178,98,.25);border-radius:18px;padding:12px 14px;margin:8px 0;background:linear-gradient(160deg,#17140f,#0d0c09);display:grid;gap:6px;justify-items:start}
 .pl-t{display:grid;gap:1px}.pl-t b{font-size:18px}.pl-t .en{color:#a69a7d;font-size:13px;text-align:right}
 .place small{color:#cfc3a6;font-size:13.5px}
@@ -5043,20 +5044,30 @@ const gIco=k=>IX[k]||I[k]||'';
 const HOTEL={name:'מלון סילבר קראון',en:'Silver Crown Hotel & Residence, Palace Quarter',q:'Silver Crown Hotel & Residence Palace Quarter Budapest'};
 const mapsFind=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
 const mapsGo=(q,mode='walking')=>'https://www.google.com/maps/dir/?api=1&travelmode='+mode+'&destination='+encodeURIComponent(q);
+/* kosher food in Budapest: name, hours, phone, kashrut and the organizers' own map link (list from Shlomi, Nov 2026).
+   ms: open on Saturday night (motzash) */
+// each opening time reads left to right inside the Hebrew line (otherwise 10:00–16:00 shows as 16:00–10:00)
+const hrsHTML=t=>esc(t).replace(/(\d{1,2}:\d{2})–(\d{1,2}:\d{2})/g,'<bdi dir="ltr">$1–$2</bdi>');
+const EAT=[
+ {h:'🛒 סופרמרקט',l:[
+  {n:'סופרמרקט כשר',hrs:'א׳ 10:00–16:00 · ב׳–ה׳ 8:00–19:00 · ו׳ 8:00–15:00',tel:'+36305722165',map:'https://maps.app.goo.gl/VnngjVsJ593NVGxn7',d:'4 דק׳ הליכה'}]},
+ {h:'🥐 חלבי',l:[
+  {n:'קיורטוש וגלידה כשר',hrs:'א׳–ה׳ 11:00–23:00 · ו׳ 9:00–14:00',k:'הרב אוברלנדר',map:'https://maps.app.goo.gl/RzFYhqj3VdR1Ts9m8'},
+  {n:'קפה תמר',hrs:'א׳–ה׳ 8:00–22:00 · ו׳ 8:00–16:00',tel:'+36304167336',k:'הרב אוברלנדר',map:'https://maps.app.goo.gl/HVMoPC6quiBxr4By6',d:'6–7 דק׳ הליכה'},
+  {n:'קפה תל אביב',hrs:'א׳–ה׳ 8:30–21:00 · ו׳ 8:00–14:00',tel:'+36305721684',k:'הרב אוברלנדר',map:'https://maps.app.goo.gl/zYhNxb1yBmnFYMpS7',d:'7 דק׳ הליכה'},
+  {n:'ברוקלין בייגל',hrs:'א׳ 9:00–18:00 · ב׳–ה׳ 9:00–21:00 · ו׳ 9:00–14:00',tel:'+36303194356',k:'הרב אוברלנדר',map:'https://maps.app.goo.gl/H5a9UJ5Qqesc3ow9A',d:'10 דק׳ במונית'},
+  {n:'מאפייה כשרה UpTown',hrs:'א׳–ה׳ 8:00–18:00 · ו׳ 8:00–16:00',tel:'+36304858873',k:'הרב אוברלנדר',map:'https://maps.app.goo.gl/ZzSMaj1PyxLDZzVTA',d:'7–8 דק׳ הליכה'},
+  {n:'עגלת קפה ומאפים',hrs:'א׳–ה׳ 8:00–18:00 · ו׳ 8:00–15:00',note:'כשר רק מה שבשקית סגורה ממאפיית שמש · ליד מלון 7seasons',map:'https://maps.app.goo.gl/4HsvQvcASHWp5ZUP6'}]},
+ {h:'🍖 בשרי',l:[
+  {n:'חנה',hrs:'א׳–ה׳ 12:00–23:30 · ו׳ 10:00–14:00',tel:'+36203951746',k:'CRC',map:'https://maps.app.goo.gl/9MGNjewtFk6JoVLY8',d:'7 דק׳ הליכה',note:'ארוחות השבת שלנו'},
+  {n:'מרקש',hrs:'א׳–ה׳ 12:00–24:00',tel:'+36703000075',k:'הרב אוברלנדר',map:'https://maps.app.goo.gl/tbyn41oxbpRjsyn88'},
+  {n:'ניתאווהלו Nitavalo',hrs:'א׳–ה׳ 12:00–22:00',tel:'+36204395546',k:'תפארת ישראל, הרב יזדי',map:'https://maps.app.goo.gl/dusgvXFDp9tv1oU3A',d:'8 דק׳ הליכה'},
+  {n:'כרמל',hrs:'א׳–ה׳ 12:00–22:30 · ו׳ 12:00–14:00',tel:'+3613221834',k:'הרב אוברלנדר',map:'https://maps.app.goo.gl/2EZcPSuXmaG2xepo8',d:'7 דק׳ הליכה'},
+  {n:'אשיז',hrs:'א׳–ה׳ 12:00–02:00 · ו׳ 12:00–17:00 · מוצ״ש 21:30–02:00',tel:'+36204180459',k:'הרב נחמיה רוטנברג',map:'https://maps.app.goo.gl/PqvX81mjmMbMbrGP9',d:'8 דק׳ הליכה',ms:'21:30'},
+  {n:'פלאפל בר',hrs:'א׳–ה׳ 12:00–24:00 · מוצ״ש 22:00–02:00',k:'הרב אוברלנדר',map:'https://maps.app.goo.gl/YWCr2FW8xmgw9jVA6',ms:'22:00'},
+  {n:'שוק הכרמל',hrs:'א׳–ה׳ 12:00–24:00 · מוצ״ש 21:00–24:00',tel:'+36301150242',k:'הרב אוברלנדר',map:'https://maps.app.goo.gl/exsNnXQh34HjizPD7',ms:'21:00'},
+  {n:'חומוס בר',hrs:'א׳–ה׳ 12:00–23:00 · ו׳ 11:00–16:00',tel:'+36704020120',k:'חוג חתם סופר פתח תקווה',map:'https://maps.app.goo.gl/HwhWd371vWj8ZjUD8',d:'6 דק׳ הליכה'}]}];
 const PLACES=[
- {h:'🍖 בשרי ואוכל רחוב',l:[
-  ['מסעדת חנה','Hanna Glatt Kosher Restaurant','Kazinczy utca 29, Budapest','7 דק׳ הליכה · 500 מ׳','ארוחות שבת'],
-  ['מסעדת כרמל','Carmel Restaurant','Kazinczy utca 31, Budapest','7 דק׳ הליכה · 500 מ׳',''],
-  ['ניתהוולו','Nitavalo Restaurant','Dob utca 32, Budapest','8 דק׳ הליכה · 600 מ׳','השף אהרון פייגן'],
-  ['חומוס בר הסניף הכשר','Hummus Bar Kosher','Wesselényi utca 14, Budapest','6 דק׳ הליכה · 450 מ׳',''],
-  ['אשיז','Ashiz Israeli Street Food','Dob utca 5, Budapest','8 דק׳ הליכה · 650 מ׳','פתוח בלילות ובמוצאי שבת']]},
- {h:'🥐 חלבי, מאפים וסופר',l:[
-  ['קונדיטוריית פרויליך','Frőhlich Cukrászda','Dob utca 22, Budapest','8 דק׳ הליכה · 600 מ׳','מאז 1953'],
-  ['קפה תל אביב','Café Tel Aviv','Kazinczy utca 28, Budapest','7 דק׳ הליכה · 500 מ׳',''],
-  ['קפה תמר','Café Tamar','Nagy Diófa utca 3, Budapest','6–7 דק׳ הליכה · 500 מ׳',''],
-  ['סופר כשר','Kosher Market Budapest','Dohány utca 36, Budapest','4 דק׳ הליכה · 290 מ׳',''],
-  ['מאפיית אפטאון','UpTown Kosher Bakery','Dob utca 16, Budapest','7–8 דק׳ הליכה · 550 מ׳','חלות ועוגות'],
-  ['ברוקלין בייגל','Brooklyn Bagel','Újpesti rakpart 1, Budapest','10 דק׳ במונית · 3.2 ק״מ','']]},
  {h:'🎡 אטרקציות וחוויות',l:[
   ['שייט על הדנובה','Vigadó Pier Danube cruise Budapest','Vigadó tér, Budapest','בערך 15 דק׳ הליכה · 1.2 ק״מ','הכי יפה במוצאי שבת, מתחנות 7–11'],
   ['קורקינט חשמלי','Andrássy út Budapest','Andrássy út, Budapest','','Lime או Tier. חונים רק בנקודות Mobi'],
@@ -5442,8 +5453,11 @@ function guestHTML0(){
      ${help}</div>`}
   if(GTAB==='gx'){
     const hn=`<a class="hotelbar" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener">${IX.nav}<span>חזרה למלון · ניווט</span></a>`;
-    return head('מסעדות ואטרקציות')+hn+`<div class="kosher" role="note"><b>לפני שאוכלים</b>בודקים תעודת כשרות בתוקף במקום עצמו. המידע כאן עלול להשתנות.</div><p class="note">"ניווט" מוביל בהליכה, "במפה" מראה את המקום. המרחקים הם מהמלון, בערך.</p>`+
-     PLACES.map((g,gi)=>`<section class="pgrp" style="--g:${gi}"><div class="ghead"><span>${g.h}</span><span class="num">${g.l.length}</span></div>${g.l.map((p,i)=>`<div class="place" style="--i:${i}"><div class="pl-t"><b>${esc(p[0])}</b><span class="ltr en">${esc(p[1])}</span></div>${p[3]?`<span class="pill p-mute">${esc(p[3])}</span>`:''}${p[4]?`<small>${esc(p[4])}</small>`:''}
+    return head('מסעדות ואטרקציות')+hn+`<div class="kosher" role="note"><b>לפני שאוכלים</b>בודקים תעודת כשרות בתוקף במקום עצמו. המידע כאן עלול להשתנות.</div><p class="note">"ניווט" פותח את המקום במפות. המרחקים הם מהמלון, בערך.</p>`+
+     EAT.map((g,gi)=>`<section class="pgrp" style="--g:${gi}"><div class="ghead"><span>${g.h}</span><span class="num">${g.l.length}</span></div>${g.l.map((p,i)=>`<div class="place eat" style="--i:${i}"><div class="pl-t"><b>${esc(p.n)}</b>${p.d?`<span class="pill p-mute">${esc(p.d)}</span>`:''}</div>
+       <div class="pl-hrs">🕒 ${hrsHTML(p.hrs)}</div>${p.k?`<div class="pl-k">✡︎ כשרות ${esc(p.k)}</div>`:''}${p.note?`<small>${esc(p.note)}</small>`:''}
+       <div class="pl-a"><a class="btn primary" href="${safeUrl(p.map)}" target="_blank" rel="noopener">${IX.nav}<span>ניווט</span></a>${p.tel?`<a class="btn" href="tel:${p.tel}">📞<span>התקשרות</span></a>`:''}</div></div>`).join('')}</section>`).join('')+
+     PLACES.map((g,gi)=>`<section class="pgrp" style="--g:${gi+3}"><div class="ghead"><span>${g.h}</span><span class="num">${g.l.length}</span></div>${g.l.map((p,i)=>`<div class="place" style="--i:${i}"><div class="pl-t"><b>${esc(p[0])}</b><span class="ltr en">${esc(p[1])}</span></div>${p[3]?`<span class="pill p-mute">${esc(p[3])}</span>`:''}${p[4]?`<small>${esc(p[4])}</small>`:''}
        <div class="pl-a"><a class="btn primary" href="${mapsGo(p[1]+' '+p[2])}" target="_blank" rel="noopener">${IX.nav}<span>ניווט</span></a><a class="btn" href="${mapsFind(p[1]+' '+p[2])}" target="_blank" rel="noopener">${IX.pin}<span>במפה</span></a></div></div>`).join('')}</section>`).join('')+
      `<p class="note">טיפ: מזמינים מונית באפליקציית Bolt או בקבלה. כרטיס אשראי מתקבל כמעט בכל מקום.</p>`}
   if(GTAB==='gl'){const h=SUB.program().replace(/<div class="page-title">[\s\S]*?<\/div>/,'');const k=progDay(),i=PROG.findIndex(x=>x.k===k),pv_=PROG[i-1],nx=PROG[i+1];
@@ -6546,10 +6560,10 @@ const MOTZ_OPEN=()=>{const n=budNow();return n.d==='2026-11-21'&&n.m>=17*60};
 function motzCard(){if(!MOTZ_OPEN()||!STAYING())return '';const d=S.settings.find(x=>x._id==='motzash')||{},j=d.join||{},ids=Object.keys(j).filter(k=>j[k]),me=meG(),inn=me&&j[me._id];
   return `<div class="motz"><b>🍽 ארוחה חופשית ברובע היהודי</b><small>${ids.length?`${ids.length} מצטרפים לשולחן משותף`:'מי שנשאר הערב: אפשר לאכול יחד'}${d.meet?' · '+esc(d.meet):''}</small><div class="motz-b"><button type="button" class="btn ${inn?'':'primary'}" id="fxMotzJoin">${inn?'✓ מצטרפ/ת':'אני מצטרף/ת'}</button><button type="button" class="btn" id="fxMotzList">איפה אוכלים</button></div></div>`}
 function motzList(){const d=S.settings.find(x=>x._id==='motzash')||{},j=d.join||{},names=S.participants.filter(p=>j[p._id]).map(p=>firstN(p.name));
-  const eat=PLACES.slice(0,2).flatMap(g=>g.l);
-  sheet(`<h3>🍽 מוצאי שבת ברובע היהודי</h3><p class="note">כל המקומות במרחק הליכה מהמלון. במוצאי שבת שעות הפתיחה משתנות: בודקים במקום, וגם תעודת כשרות בתוקף.</p>
+  const eat=EAT.flatMap(g=>g.l).filter(p=>p.ms);
+  sheet(`<h3>🍽 מוצאי שבת ברובע היהודי</h3><p class="note">כל המקומות במרחק הליכה מהמלון. אלה המקומות שפתוחים במוצאי שבת. בודקים במקום תעודת כשרות בתוקף.</p>
    ${names.length?`<div class="annq"><b>יוצאים יחד</b><div>${names.map(esc).join(' · ')}</div></div>`:''}
-   <div class="sos">${eat.map(([he,en,addr,dist,note])=>`<a class="sos-b" href="${mapsGo(en+' '+addr)}" target="_blank" rel="noopener"><b>${esc(he)}</b><small>${esc(dist)}${note?' · '+esc(note):''}</small></a>`).join('')}</div>`)}
+   <div class="sos">${eat.map(p=>`<a class="sos-b" href="${safeUrl(p.map)}" target="_blank" rel="noopener"><b>${esc(p.n)}</b><small>פתוח במוצ״ש מ־<bdi dir="ltr">${esc(p.ms)}</bdi>${p.d?' · '+esc(p.d):''}</small></a>`).join('')}</div>`)}
 async function motzJoin(){const me=meG();if(!me)return;const d=S.settings.find(x=>x._id==='motzash')||{},on=!(d.join||{})[me._id];
   if(await gset('settings/motzash',{kind:'motzash',join:{[me._id]:on}}))toast(on?'נרשמתם. נתראה בארוחה':'הוסרתם מהרשימה')}
 
@@ -6684,7 +6698,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='1df10dea';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='8f43068ac7';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
