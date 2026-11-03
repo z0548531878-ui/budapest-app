@@ -1146,34 +1146,32 @@ const GROUP_DEFAULT = [
 // במשחק הקבוצתי נבנית רשימת שאלות חדשה בכל משחק (נשמרת במסמך החדר, כך שכל השחקנים רואים אותה)
 let QUESTIONS = GROUP_DEFAULT;
 const GROUP_TEXT_TOPICS = [T2,T3,T4,T5,T6,T7,T8,T9,T10,T12,T13,T15,T16,T22,T23,T24,T26];
-const GROUP_BLOCK = 6, GROUP_TEXT_BLOCKS = 6, GROUP_POLLS = 5;
-const GROUP_TOTAL = GROUP_BLOCK*(GROUP_TEXT_BLOCKS+2) + GROUP_POLLS;
+const GROUP_TOTAL = 50, GROUP_ROUND = 10;
 function asGroupQ(q, topic){
   const order = shuffleArr(q.a.map((_,i)=>i));
   return {topic: topic||q.topic, type:'trivia', q:q.q, img:q.img||null, crop:q.crop||null, a:order.map(i=>q.a[i]), c:order.indexOf(q.c||0)};
 }
+// משחק קבוצתי: 50 שאלות ידע מעורבבות מכל המאגר (בלי סקרים), ב-5 סבבים של 10 — בין סבב לסבב טבלת ניקוד.
+// שאלות שהופיעו במשחקים קבוצתיים קודמים לא חוזרות עד שהמאגר נגמר
 async function buildGroupSet(){
-  const seenArr = await seenLoad('group'), seen = new Set(seenArr), used = [];
-  const fresh = (list) => { const f = list.filter(q=>!seen.has(qKey(q))); return (f.length >= GROUP_BLOCK ? f : list); };
-  const take = (list, n) => { const pick = shuffleArr(fresh(list)).slice(0, n); pick.forEach(q=>used.push(qKey(q))); return pick; };
-  const textPool = SOLO_QUESTIONS.filter(q=>!q.img).concat(GROUP_DEFAULT.filter(q=>q.type==='trivia' && !q.img && q.topic!==T20));
-  const byTopic = t => textPool.filter(q=>q.topic===t);
-  const blocks = [];
-  // נושא בודפשט תמיד ראשון — המסע שלנו
-  blocks.push(take(byTopic(T1), GROUP_BLOCK).map(q=>asGroupQ(q)));
-  shuffleArr(GROUP_TEXT_TOPICS.filter(t=>byTopic(t).length >= GROUP_BLOCK)).slice(0, GROUP_TEXT_BLOCKS).forEach(t=>{
-    blocks.push(take(byTopic(t), GROUP_BLOCK).map(q=>asGroupQ(q)));
-  });
-  // בלוק תמונות: 2 דגלים, 2 מקומות, תמרור 1, אישיות 1
-  const img = [];
-  [[T17,2],[T18,2],[T19,1],[T21,1]].forEach(([t,n])=>{ take(SOLO_QUESTIONS.filter(q=>q.topic===t && imgOk(q)), n).forEach(q=>img.push(asGroupQ(q, T20))); });
-  blocks.splice(3, 0, img);
-  // סקרים מהמסע — באמצע המשחק
-  const pollPool = GROUP_DEFAULT.filter(q=>q.type==='poll'), freshPolls = pollPool.filter(q=>!seen.has(qKey(q)));
-  const polls = shuffleArr(freshPolls.length >= GROUP_POLLS ? freshPolls : pollPool).slice(0, GROUP_POLLS).map(q=>{ used.push(qKey(q)); return {topic:T14, type:'poll', q:q.q, a:q.a.slice()}; });
-  blocks.splice(5, 0, polls);
-  seenSave('group', seenArr.concat(used));
-  return [].concat(...blocks);
+  const seenArr = await seenLoad('group'), seen = new Set(seenArr);
+  const pool = SOLO_QUESTIONS.filter(q=>imgOk(q));
+  let fresh = pool.filter(q=>!seen.has(qKey(q)));
+  if(fresh.length < GROUP_TOTAL) fresh = pool;
+  const usedC = new Set(), out = [];
+  for(const q of shuffleArr(fresh)){
+    if(out.length >= GROUP_TOTAL) break;
+    const c = qConcept(q); if(c && usedC.has(c)) continue; if(c) usedC.add(c);
+    out.push(q);
+  }
+  // לא שתי שאלות תמונה ברצף ולא אותו נושא ברצף, ככל האפשר
+  for(let k=1;k<out.length;k++){
+    if(out[k].topic===out[k-1].topic || (out[k].img && out[k-1].img)){
+      const j = out.findIndex((x,n)=>n>k && x.topic!==out[k-1].topic && !(x.img && out[k-1].img)); if(j>0){ const t=out[k]; out[k]=out[j]; out[j]=t; }
+    }
+  }
+  seenSave('group', seenArr.concat(out.map(qKey)));
+  return out.map((q,i)=>Object.assign(asGroupQ(q), {blk: Math.floor(i/GROUP_ROUND)}));
 }
 let lastQsetSig = '';
 function applyRoomQuestions(st){
@@ -4927,7 +4925,7 @@ const TRIP_LOCK=(()=>{try{const q=new URLSearchParams(location.search);if(q.get(
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active'); fxOnScreen(id); if(id==='s-landing') appUpdateMaybe();}
 // ---- עדכון אוטומטי: גם אפליקציה שפתוחה כבר שעות מקבלת את הגרסה החדשה ----
 // בכל עדכון מעלים את APP_BUILD ואת version.json לאותו ערך. הטעינה מחדש קורית רק במסך הפתיחה — אף פעם באמצע משחק
-const APP_BUILD = '2026-11-01-1';
+const APP_BUILD = '2026-11-03-1';
 let appNewBuild = null;
 function appUpdateCheck(){
   if(/^(localhost|127\.)/.test(location.hostname) && !window.__testUpdate) return;
@@ -5812,7 +5810,7 @@ function modeRules(mode){
     group: {title:'משחק קבוצתי 👥', items:[
       ['📲','נכנסים',`רושמים שם ושם משפחה ונכנסים לחדר ההמתנה. עד ${MAX_PLAYERS} משתתפים.`],
       ['🎤','המנחה מתחיל',`צריך מינימום ${MIN_PLAYERS} שחקנים. כשמגיעים אליו המנחה מקבל התראה ולוחץ "התחל משחק".`],
-      ['❓',`${GROUP_TOTAL} שאלות בנושאים`,'בכל משחק שאלות חדשות. בסוף כל נושא מוצגת טבלת הניקוד.'],
+      ['❓',`${GROUP_TOTAL} שאלות מכל הנושאים`,`${GROUP_TOTAL/GROUP_ROUND} סבבים של ${GROUP_ROUND} שאלות. בכל משחק שאלות חדשות, ובין סבב לסבב טבלת הניקוד.`],
       ['⚡',`${sec} שניות לשאלה`,'אפשר להחליף תשובה עד סוף הזמן. כשכולם ענו — התשובה נחשפת מיד.'],
       ['🏆','ניקוד', pts + '.'],
       ['🗳️','שאלות סקר','אין תשובה נכונה — מי שבחר כמו הרוב מקבל נקודות.'],
@@ -6136,10 +6134,33 @@ function updateHostCount(){
   const el = $('h-answer-count');
   if(el) el.textContent = answersForQ.length + ' מתוך ' + playersOrder.length;
 }
+// ---- רשימת השחקנים והניקוד נשלחת לשחקנים בתוך מסמך החדר (roster), ולא כהאזנה של כל שחקן לכל השחקנים ----
+// עם 80 שחקנים, האזנה של כל אחד לכולם = 80×80 קריאות בכל עדכון ניקוד או 'דופק' (מאות אלפי קריאות במשחק אחד,
+// מעבר למכסה היומית של Firebase). עכשיו רק המנחה מאזין לשחקנים, ומפרסם רשימה מקוצרת אחת במסמך החדר
+function rosterOf(map, order){
+  const lobby = curState.phase==='lobby';
+  return order.filter(id=>map[id] && (!lobby || lobbyActive(map[id]))).map(id=>{ const p = map[id]; return {i:id, n:p.name||'', s:p.score||0, c:p.correct||0, m:p.ms||0, a:p.answered||0, j:p.joinedAt||0}; }); // מפות ולא מערכים: Firestore לא מקבל מערך בתוך מערך
+}
+let rosterSig = '', rosterTimer = null, rosterAt = 0;
+function publishRoster(now){
+  if(role!=='host' || !roomCode) return;
+  const go = ()=>{ rosterTimer = null; const r = rosterOf(playersMap, playersOrder), sig = JSON.stringify(r);
+    if(sig===rosterSig) return; rosterSig = sig; rosterAt = Date.now(); roomRef().update({roster:r}).catch(()=>{ rosterSig=''; }); };
+  if(now){ clearTimeout(rosterTimer); go(); return; }
+  if(!rosterTimer) rosterTimer = setTimeout(go, Math.max(0, 1500 - (Date.now()-rosterAt)));
+}
+function applyRoster(st){
+  if(!st || !Array.isArray(st.roster)) return false;
+  playersMap = {}; playersOrder = [];
+  const now = Date.now();
+  st.roster.forEach(r=>{ if(!r || !r.i) return; playersMap[r.i] = {name:r.n, score:r.s, correct:r.c, ms:r.m, answered:r.a, joinedAt:r.j, hb:now}; playersOrder.push(r.i); });
+  return true;
+}
 function subscribePlayersHost(){
   hostPlayersUnsub = playersRef().orderBy('joinedAt','asc').onSnapshot(snap=>{
     playersMap={}; playersOrder=[];
     snap.docs.forEach(d=>{ playersMap[d.id]=d.data(); playersOrder.push(d.id); });
+    publishRoster(false);
     // IMPORTANT: during a live question only update the counter - never re-render (that used to reset the host's timer)
     if(curState.phase==='question') updateHostCount(); else renderHost();
   });
@@ -6206,9 +6227,11 @@ function notifyHostReady(total){
 
 function goToQuestion(idx){
   if(hostEndedFlag) return Promise.resolve();
-  const topic = QUESTIONS[idx] && QUESTIONS[idx].topic;
-  const prevTopic = idx>0 ? (QUESTIONS[idx-1] && QUESTIONS[idx-1].topic) : undefined;
-  if(topic && topic!==prevTopic){
+  const Q = QUESTIONS[idx], P = idx>0 ? QUESTIONS[idx-1] : null;
+  // משחק בסבבים (blk): מסך ביניים רק בתחילת סבב. משחק ישן לפי נושאים: בכל החלפת נושא
+  const isNew = Q && (Q.blk!=null ? (!P || P.blk!==Q.blk) : (Q.topic && Q.topic!==(P && P.topic)));
+  if(isNew){
+    const topic = Q.blk!=null ? `סבב ${Q.blk+1} מתוך ${Math.ceil(QUESTIONS.length/GROUP_ROUND)}` : Q.topic;
     return roomRef().update({phase:'intermission', qIndex:idx, introTopic:topic, revealWinners:null, phaseAt:Date.now()});
   }
   return roomRef().update({phase:'question', qIndex:idx, questionStartedAt:Date.now()+READ_MS, phaseAt:Date.now(), revealWinners:null});
@@ -6417,7 +6440,12 @@ async function hostEndQuestion(){
       }
       batch.update(playersRef().doc(a.playerId), upd);
     });
-    batch.update(roomRef(), {phase:'reveal', revealWinners:winners, phaseAt:Date.now()});
+    // הניקוד המעודכן נכנס לאותה כתיבה של החשיפה — כל השחקנים רואים את הניקוד יחד עם התשובה
+    const nm = {}; playersOrder.forEach(id=>{ nm[id] = Object.assign({}, playersMap[id]); });
+    answers.filter(a=>nm[a.playerId]).forEach(a=>{ const p = nm[a.playerId], ms = Math.min(QUESTION_MS, Math.max(0, a.answeredAt-startedAt));
+      p.answered = (p.answered||0)+1; p.ms = (p.ms||0)+ms; if(winners.includes(a.choice)){ p.score = (p.score||0)+worthAt(ms); if(q.type!=='poll') p.correct = (p.correct||0)+1; } });
+    const roster = rosterOf(nm, playersOrder); rosterSig = JSON.stringify(roster); rosterAt = Date.now();
+    batch.update(roomRef(), {phase:'reveal', revealWinners:winners, phaseAt:Date.now(), roster});
     await batch.commit();
   }catch(e){
     // leave the phase as-is; the watchdog retries automatically
@@ -6488,7 +6516,9 @@ function subscribeRoomPlayer(){
   if(playerRoomUnsub) playerRoomUnsub();
   playerRoomUnsub = roomRef().onSnapshot(snap=>{
     if(!snap.exists) return;
-    curState = snap.data(); applyRoomQuestions(curState);
+    const prev = curState; curState = snap.data(); applyRoomQuestions(curState); applyRoster(curState);
+    // באמצע שאלה רק הניקוד בכותרת מתעדכן — בלי לבנות את המסך מחדש (זה היה מאפס את השעון)
+    if(prev && prev.phase==='question' && curState.phase==='question' && prev.qIndex===curState.qIndex){ const hh=$('p-header'); if(hh) hh.innerHTML = scoreHeaderInner(); return; }
     renderPlayer();
   });
 }
@@ -6500,15 +6530,8 @@ function scoreHeaderInner(){
   const sc = me.score||0, up = lastHeaderScore!==null && sc>lastHeaderScore; lastHeaderScore = sc;
   return `<div class="score-header"><span>🏆 הניקוד שלכם: <b class="${up?'score-up':''}">${sc}</b></span><span>מקום #${myRank||'-'} מתוך ${sorted.length}</span></div>`;
 }
-function subscribeMyPlayer(){
-  if(playerListUnsub) playerListUnsub();
-  playerListUnsub = playersRef().onSnapshot(snap=>{
-    playersMap={}; playersOrder=[];
-    snap.docs.forEach(d=>{ playersMap[d.id]=d.data(); playersOrder.push(d.id); });
-    if(curState.phase==='question'){ const h=$('p-header'); if(h) h.innerHTML = scoreHeaderInner(); }
-    else renderPlayer();
-  });
-}
+// השחקן כבר לא מאזין לכל השחקנים: הרשימה והניקוד מגיעים במסמך החדר (roster) — ראו publishRoster
+function subscribeMyPlayer(){ if(playerListUnsub){ playerListUnsub(); playerListUnsub = null; } }
 function lockPlayerAnswers(q){
   const box = $('p-answers');
   if(box){
