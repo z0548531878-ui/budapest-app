@@ -2668,6 +2668,19 @@ body #view .days,body .pass .days{gap:6px!important}
 .vwr{display:flex;justify-content:space-between;gap:12px;padding:11px 14px;border-bottom:1px solid rgba(214,178,98,.12);font-size:15px}
 .vwr:last-child{border-bottom:0}.vwr span{color:var(--muted)}.vwr b{text-align:end}
 .vwr.col{flex-direction:column;gap:4px}.vwr.col p{margin:0;line-height:1.5}
+/* ===== calm motion: still logo on later launches, screens fade in without sliding, numbers don't count up ===== */
+.splash.calm{background:#050504!important}
+.splash.calm :is(.sp-ring,.sp-shine,.sp-t,.sp-line,.sp-s,.rays,.dust){display:none!important}
+.splash.calm .sp-logo{opacity:1!important;transform:none!important;width:min(42vw,170px)!important;height:min(42vw,170px)!important}
+.splash.calm .sp-logo img{opacity:1!important;animation:none!important;transform:none!important;box-shadow:none!important}
+.splash.calm.out{opacity:0!important;transform:none!important;transition:opacity .28s ease!important}
+.splash.calm.out .sp-logo{transform:none!important;opacity:1!important;transition:none!important}
+@media (prefers-reduced-motion:no-preference){
+ #view.enter>*,#view.enter[data-scr]>*{animation:calmIn .22s ease-out both!important;animation-delay:0s!important}
+ #view.enter *{animation-delay:0s!important}
+ #view.enter :is(.pc,.pl,.cube,.tile,.gc,.kpi,.fc,.sc,.ri,.pcs,.row,.grow,.gsec){animation:none!important}
+ @keyframes calmIn{from{opacity:0}to{opacity:1}}
+}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -4621,6 +4634,7 @@ async function initFire(){
 async function deriveKey(pass,salt){const enc=new TextEncoder();const base=await crypto.subtle.importKey('raw',enc.encode(pass),'PBKDF2',false,['deriveKey']);
   return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:150000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt'])}
 async function maybeSeed(w){
+  try{const c=await w.collection('tasks').limit(1).get({source:'cache'});if(!c.empty)return}catch(e){}
   const snap=await w.collection('tasks').limit(1).get(); if(!snap.empty)return;
   const ban=document.getElementById('banner');ban.innerHTML='<p class="banner">טוען את נתוני המסע בפעם הראשונה…</p>';
   const r=await fetch('seed.enc',{cache:'no-store'});if(!r.ok){ban.innerHTML='';return}
@@ -4651,7 +4665,7 @@ document.addEventListener('pointerdown',e=>{if(reduce)return;const t=e.target.cl
 
 let rq=0, firstAll=false;
 const later=()=>{if(rq)return;if(V.sub==='notes'&&document.querySelector('#sortBox .prop,#sortBox .thinking'))return;// changes arrive one list at a time (an update from Claude touches several): wait a moment and redraw once for all of them
-  rq=setTimeout(()=>requestAnimationFrame(()=>{rq=0;const all=COLS.every(c=>loaded.has(c));render(all&&!firstAll);if(all&&!firstAll)setTimeout(autoApply,800);if(all)firstAll=true}),firstAll?90:0)};
+  const allNow=COLS.every(c=>loaded.has(c));rq=setTimeout(()=>requestAnimationFrame(()=>{rq=0;const all=COLS.every(c=>loaded.has(c));render(all&&!firstAll&&!!document.querySelector('#view .skel,#view .shimmer'));if(all&&!firstAll){setTimeout(autoApply,800);window.__dataReady=1}if(all)firstAll=true}),firstAll?90:(allNow?0:450))};
 /* ===== entrance: participants (by name) / organizers (by code) ===== */
 /* organizer code: PBKDF2-SHA256 (600000 rounds, own salt). The page keeps only a SHA-256 of the derived key, the device keeps the derived key as proof */
 const ORG_SALT='d77742f9a791ee7608fc6c191780aab0',ORGV_CHK='disabled',ORG_ITER=600000,ORG_CHK='03405cce2969b704a54459c83029018c6135020db7fbc4e6be183df159c91347';
@@ -5692,7 +5706,7 @@ function mxAfter(){const v=document.getElementById('view');if(!v||!v.classList.c
   v.querySelectorAll('.card').forEach(cd=>{let k=0;cd.querySelectorAll(':scope>.row,:scope>div>.row').forEach(r=>{r.style.setProperty('--mr',Math.min(k++,12));if(low(r))r.classList.add('mxNo')})});
   let t=0;v.querySelectorAll('.tile,.cube,.gc,.hjump>button,.kpi,.fc,.sc,.ri,.pcs,.qact>button,.fbal').forEach(el=>{el.style.setProperty('--mt',Math.min(t++,12));if(low(el))el.classList.add('mxNo')});
   // numbers count up from zero when the screen opens
-  v.querySelectorAll('[data-count]').forEach(el=>{const to=+el.dataset.count;if(!isFinite(to)||to<=0)return;const pct=el.dataset.fmt==='pct',t0=performance.now(),D=900;
+  if(0)v.querySelectorAll('[data-count]').forEach(el=>{const to=+el.dataset.count;if(!isFinite(to)||to<=0)return;const pct=el.dataset.fmt==='pct',t0=performance.now(),D=900;
     (function f(n){const k=Math.min(1,(n-t0)/D),e=1-Math.pow(1-k,3),val=Math.round(to*e);el.textContent=val.toLocaleString('he-IL')+(pct?'%':'');if(k<1)requestAnimationFrame(f)})(t0)});
   // bars fill from empty
   v.querySelectorAll('.prog i,.bar i').forEach(el=>{const w=el.style.width;if(!w||w==='0%')return;el.style.transition='none';el.style.width='0';void el.offsetWidth;el.style.transition='';requestAnimationFrame(()=>requestAnimationFrame(()=>el.style.width=w))});
@@ -6672,7 +6686,7 @@ render(true);
 (()=>{const sp=document.getElementById('splash');let seen=false;try{seen=sessionStorage.getItem('splash')==='1';sessionStorage.setItem('splash','1')}catch(e){}
   // the full opening only on the very first launch; afterwards a short fade, so a quick check isn't a wait
   let first=true;try{first=!localStorage.getItem('splashSeen');localStorage.setItem('splashSeen','1')}catch(e){}
-  if(seen||reduce){sp.remove();return}if(!first)sp.classList.add('quick');const im=sp.querySelector('img');const start=()=>{sp.classList.add('go');setTimeout(()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),first?420:360)},first?1700:760)};if(im&&!im.complete){let d=0;const f=()=>{if(!d){d=1;start()}};im.addEventListener('load',f);im.addEventListener('error',f);setTimeout(f,700)}else start()})();
+  if(seen||reduce){sp.remove();return}if(!first){sp.classList.add('calm');const t0=Date.now(),done=()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),300)},w=()=>{const t=Date.now()-t0;if((window.__dataReady&&t>350)||t>3000)done();else setTimeout(w,60)};w();return}const im=sp.querySelector('img');const start=()=>{sp.classList.add('go');setTimeout(()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),first?420:360)},first?1700:760)};if(im&&!im.complete){let d=0;const f=()=>{if(!d){d=1;start()}};im.addEventListener('load',f);im.addEventListener('error',f);setTimeout(f,700)}else start()})();
 (async()=>{
   db=await initFire();
   if(!db){document.getElementById('banner').innerHTML='<p class="banner">חסר הקישור המלא של הצוות. פתחו את האפליקציה מהקישור ששלומי שלח (הוא מסתיים ב-#k=…).</p>';return}
@@ -6693,7 +6707,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='60f2923661';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='8822252d4f';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
