@@ -2725,6 +2725,84 @@ html:has(#scrim.open) #app :is(*,*::before,*::after){animation-play-state:paused
 .rm-rc.mine{background:linear-gradient(180deg,#f3d98b,#d4af37);color:#15110a;border-color:transparent}.rm-rc.mine b{color:#15110a}
 .rm-hits{display:grid;gap:8px;margin-top:10px}.rm-hit{display:grid;gap:3px;padding:12px 14px;border-radius:16px;border:1px solid rgba(214,178,98,.35);background:linear-gradient(160deg,#1d1810,#0e0c09)}
 .rm-hit b{color:#f4e6c2}.rm-hit span{color:#a69a7d;font-size:13.5px}.rm-hit span b{color:#f0d28c}
+
+/* ===== gallery: album look ===== */
+.pg-hero{position:relative;display:flex;align-items:center;gap:14px;margin:6px 0 12px;padding:16px 14px;border-radius:26px;overflow:hidden;border:1px solid rgba(240,210,140,.45);
+  background:radial-gradient(90% 120% at 100% 0,rgba(240,200,110,.22),transparent 60%),linear-gradient(165deg,#241c0f,#0b0907 75%);box-shadow:0 18px 40px -18px rgba(217,178,95,.4)}
+.pg-stack{position:relative;flex:0 0 112px;height:104px}
+.pg-pol{position:absolute;width:74px;height:84px;padding:5px 5px 14px;background:#f6efe0;border-radius:6px;box-shadow:0 8px 18px rgba(0,0,0,.55);top:10px;left:18px}
+.pg-pol img{width:100%;height:100%;object-fit:cover;border-radius:3px;display:block}
+.pg-pol.ph0{display:grid;place-items:center;background:#2a2316}.pg-pol.ph0 i{font-style:normal;font-size:24px;opacity:.6}
+.pg-pol.p0{transform:rotate(-12deg) translate(-14px,4px)}.pg-pol.p1{transform:rotate(9deg) translate(18px,2px)}.pg-pol.p2{transform:rotate(-2deg) translateY(-4px);z-index:2}
+.pg-ht{min-width:0;display:grid;gap:4px}.pg-ht>small{color:#c9b98f;font:800 13px var(--body);letter-spacing:.04em}.pg-ht>b{font:900 25px/1.15 var(--display);color:#ffe9b0}
+.pg-st{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:4px}.pg-st span{display:inline-flex;align-items:baseline;gap:4px;color:#a69a7d;font-size:12.5px}.pg-st b{color:#f0d28c;font-size:17px;font-weight:900}
+.pg-up{position:relative;overflow:hidden;width:100%;display:flex;align-items:center;gap:12px;padding:14px 16px;margin:0 0 12px;border:0;border-radius:20px;text-align:start;color:#15110a;
+  background:linear-gradient(110deg,#f6dc93,#d4a64a 55%,#f3d98b);background-size:200% 100%;box-shadow:0 10px 26px -10px rgba(217,178,95,.7),inset 0 1px 0 rgba(255,255,255,.5)}
+.pg-upi{flex:0 0 46px;height:46px;border-radius:14px;display:grid;place-items:center;background:rgba(21,17,10,.12)}.pg-upi svg{width:26px;height:26px}
+.pg-upt{flex:1;display:grid;gap:2px}.pg-upt b{font:900 17px var(--body)}.pg-upt small{font:700 12.5px var(--body);opacity:.75}
+.pg-plus{flex:0 0 36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#15110a;color:#f6dc93;font:900 24px/1 var(--body)}
+.pg-prog{position:absolute;inset-inline-start:0;bottom:0;height:4px;background:#15110a;border-radius:4px;transition:width .4s}
+.pg-up.busy{background:linear-gradient(110deg,#3a2f17,#5a4720);color:#f6dc93}
+.pg-bar{position:sticky;top:6px;z-index:4;display:flex;align-items:center;gap:8px;margin:0 -4px 14px;padding:8px;border-radius:18px;background:rgba(12,10,7,.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(214,178,98,.28)}
+.pg-chips{flex:1;min-width:0;display:flex;align-items:center;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}.pg-chips::-webkit-scrollbar{display:none}
+.pg-chips button{flex:0 0 auto;height:34px;padding:0 12px;border-radius:99px;border:1px solid rgba(214,178,98,.3);background:transparent;color:#cbbd96;font:800 13px var(--body);white-space:nowrap;transition:background .2s,color .2s}
+.pg-chips button[aria-pressed="true"]{background:linear-gradient(180deg,#f3d98b,#d4af37);color:#15110a;border-color:transparent;box-shadow:0 4px 12px -4px rgba(217,178,95,.6)}
+.pg-chips button .num{opacity:.75;font-size:12px}.pg-sep{flex:0 0 1px;height:20px;background:rgba(214,178,98,.3)}
+.pg-tools{display:flex;gap:6px}.pg-ib{width:36px;height:36px;border-radius:12px;border:1px solid rgba(214,178,98,.4);background:rgba(214,178,98,.08);color:#f0d28c;font:900 16px var(--body);display:grid;place-items:center}
+.pg-ib.on{background:#e9c46f;color:#15110a}
+.pg-show{position:relative;overflow:hidden;width:100%;display:flex;align-items:center;gap:14px;padding:16px;margin:0 0 16px;border-radius:20px;border:1px solid rgba(240,200,110,.5);background:#0b0907;color:var(--ink);text-align:start}
+.pg-sbg{position:absolute;inset:-20px;background-size:cover;background-position:center;filter:blur(14px) brightness(.45) saturate(1.2);transform:scale(1.1)}
+.pg-play{position:relative;flex:0 0 48px;height:48px;border-radius:50%;display:grid;place-items:center;background:rgba(255,240,200,.15);border:1.5px solid #f3d98b;color:#f6dc93;font-size:18px;backdrop-filter:blur(6px)}
+.pg-st2{position:relative;display:grid;gap:2px}.pg-st2 b{font:900 19px var(--display);color:#ffe9b0}.pg-st2 small{color:#e3d6b2;font-size:12.5px}
+.pg-day{position:relative;margin:0 0 18px;padding-inline-start:16px}
+.pg-day::before{content:"";position:absolute;inset-inline-start:5px;top:22px;bottom:-12px;width:2px;background:linear-gradient(180deg,rgba(240,200,110,.6),rgba(240,200,110,.05))}
+.pg-dh{position:sticky;top:64px;z-index:2;display:flex;align-items:center;gap:10px;margin:0 0 8px;padding:6px 0;background:linear-gradient(180deg,var(--bg,#0a0907) 70%,transparent)}
+.pg-dot{position:absolute;inset-inline-start:-16px;width:12px;height:12px;border-radius:50%;background:#e9c46f;box-shadow:0 0 0 4px rgba(233,196,111,.18),0 0 14px rgba(233,196,111,.6)}
+.pg-dh.ch .pg-dot{width:auto;height:auto;background:none;box-shadow:none;font-size:14px;inset-inline-start:-19px}
+.pg-dt{flex:1;display:grid;gap:1px}.pg-dt b{font:900 19px var(--display);color:#f6dc93}.pg-dt small{color:#a69a7d;font-size:12.5px}
+.pg-db{border:1px solid rgba(233,196,111,.45);background:rgba(233,196,111,.06);color:#f0d28c;border-radius:99px;padding:6px 12px;font:800 12.5px var(--body);white-space:nowrap}
+.pg-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-flow:dense;gap:5px}
+.pg-grid.feat>.ph-c:first-child{grid-column:span 2;grid-row:span 2}
+.pg-grid .ph-c{aspect-ratio:1;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#1d1810,#121009);box-shadow:0 4px 12px -6px rgba(0,0,0,.8);transition:transform .25s cubic-bezier(.2,.85,.25,1.1)}
+.pg-grid .ph-c:active{transform:scale(.95)}
+.pg-grid .ph-c img{transition:transform .3s}
+.pg-grid .ph-c.sel{transform:scale(.9);box-shadow:0 0 0 3px #e9c46f}
+.pg-grid .ph-vb{backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.25)}
+.pg-empty{display:grid;justify-items:center;gap:6px;text-align:center;padding:36px 16px;border-radius:24px;border:1px dashed rgba(214,178,98,.4);background:linear-gradient(170deg,#1a150c,#0b0907)}
+.pg-empty b{font:900 20px var(--display);color:#ffe9b0}.pg-empty small{color:#a69a7d;font-size:13.5px}.pg-cam{font-size:46px;display:inline-block}
+.pg-sel{position:fixed;inset-inline:12px;bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;border-radius:20px;
+  background:rgba(20,16,9,.94);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(233,196,111,.6);box-shadow:0 14px 34px rgba(0,0,0,.6)}
+.pg-sel>span{flex:1;color:#f4e6c2;font-weight:800}.pg-sel>span b{color:#f0d28c;font-size:20px}.pg-sel .btn{min-height:40px}
+.pg-x{width:40px;height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:transparent;color:#e9dfc4;font-size:16px}
+.phv-bg{position:absolute;inset:-40px;z-index:-1;background-size:cover;background-position:center;filter:blur(36px) brightness(.35) saturate(1.3);transform:scale(1.15);pointer-events:none}
+#phv{isolation:isolate;overflow:hidden}
+@media (prefers-reduced-motion:no-preference){
+ #view.enter .pg-hero{animation:pgIn .7s cubic-bezier(.2,.85,.25,1.06) both!important}
+ #view.enter .pg-pol.p0{animation:pgP0 .9s .15s cubic-bezier(.2,1.2,.4,1) both!important}
+ #view.enter .pg-pol.p1{animation:pgP1 .9s .25s cubic-bezier(.2,1.2,.4,1) both!important}
+ #view.enter .pg-pol.p2{animation:pgP2 .9s .35s cubic-bezier(.2,1.2,.4,1) both!important}
+ #view.enter .pg-st span{animation:pgUp .5s cubic-bezier(.2,.85,.25,1.05) both!important}
+ #view.enter .pg-st span:nth-child(2){animation-delay:.45s!important}#view.enter .pg-st span:nth-child(3){animation-delay:.55s!important}#view.enter .pg-st span:nth-child(4){animation-delay:.65s!important}#view.enter .pg-st span:nth-child(1){animation-delay:.35s!important}
+ #view.enter .pg-up{animation:pgUp .6s .2s cubic-bezier(.2,.85,.25,1.05) both!important}
+ #view .pg-up:not(.busy){animation:pgSheen 5s 1.5s ease-in-out infinite}
+ #view .pg-plus{animation:pgPulse 2.4s 1.2s ease-in-out infinite}
+ #view.enter .pg-bar{animation:pgUp .5s .3s cubic-bezier(.2,.85,.25,1.05) both!important}
+ #view.enter .pg-show{animation:pgUp .55s .35s cubic-bezier(.2,.85,.25,1.05) both!important}
+ #view .pg-sbg{animation:pgKen 14s ease-in-out infinite alternate}
+ #view.enter .pg-day .ph-c{animation:pgCell .5s cubic-bezier(.2,1.1,.4,1) both!important;animation-delay:calc(.35s + var(--d,0)*.12s + var(--i,0)*.04s)!important}
+ #view .pg-cam{animation:pgPulse 2.6s ease-in-out infinite}
+ .pg-sel{animation:pgSel .35s cubic-bezier(.2,1.2,.4,1) both}
+}
+@keyframes pgIn{from{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes pgUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes pgP0{from{opacity:0;transform:rotate(-40deg) translate(-60px,40px) scale(.6)}to{opacity:1;transform:rotate(-12deg) translate(-14px,4px)}}
+@keyframes pgP1{from{opacity:0;transform:rotate(40deg) translate(60px,40px) scale(.6)}to{opacity:1;transform:rotate(9deg) translate(18px,2px)}}
+@keyframes pgP2{from{opacity:0;transform:translateY(-60px) scale(1.3)}to{opacity:1;transform:rotate(-2deg) translateY(-4px)}}
+@keyframes pgCell{from{opacity:0;transform:scale(.7) translateY(10px)}to{opacity:1;transform:none}}
+@keyframes pgSheen{0%,70%,100%{background-position:0 0}85%{background-position:100% 0}}
+@keyframes pgPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+@keyframes pgKen{from{transform:scale(1.1)}to{transform:scale(1.3) translate(-4%,3%)}}
+@keyframes pgSel{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:no-preference){
  #view.enter .rm-hero{animation:rmHero .8s cubic-bezier(.2,.85,.25,1.08) both!important}
  #view.enter .rm-hero::after{animation:rmShine 1.4s .9s ease-out both!important}
@@ -5412,19 +5490,26 @@ function chCard(home){const c=chLive();if(!c)return '';const n=(PH||[]).filter(p
   return `<section class="chal"><div class="ch-h"><span class="ch-i">🎯</span><div><small>אתגר צילום${n?' · <span class="num">'+n+'</span> תמונות':''}</small><b>${esc(c.text)}</b></div></div><button class="btn primary" data-chup="${c._id}" style="width:100%">📷 צילום לאתגר</button>${home?'':''}</section>`}
 function photosHTML(){
   photosSub();
-  const mine=phMeId(), L=phList();
+  const mine=phMeId(), L=phList(), me=meId&&meId();
   if(PHL&&PH.length&&GUEST()&&!isPrevOrg())setTimeout(()=>{try{localStorage.setItem('phSeen',String(Math.max(...PH.map(p=>p.ts||0))))}catch(e){}},1500);
   const err=PHERR==='permission-denied'?`<div class="lockbar">צריך לעדכן את חוקי Firebase כדי שהגלריה תעבוד (ההוראות אצל Claude).</div>`:PHERR?`<div class="lockbar">הגלריה לא נטענה. בדקו שיש אינטרנט ונסו שוב.</div>`:'';
-  const fail=PHFAIL.length&&!PHBUSY?`<div class="ph-fail" role="alert"><span>${PHFAIL.length===1?'תמונה אחת לא עלתה':PHFAIL.length+' תמונות לא עלו'}. בדרך כלל זו קליטה חלשה.</span><button class="btn" data-ph-retry>ניסיון חוזר</button></div>`:'';
+  const fail=PHFAIL.length&&!PHBUSY?`<div class="ph-fail" role="alert"><span>${PHFAIL.length===1?'פריט אחד לא עלה':PHFAIL.length+' פריטים לא עלו'}. בדרך כלל זו קליטה חלשה.</span><button class="btn" data-ph-retry>ניסיון חוזר</button></div>`:'';
   const chOrg=ROLE==='org'&&!PREV?`<div class="card chorg"><b>🎯 אתגר צילום לכולם</b><div class="pkr-add"><input id="chT" class="search" type="text" placeholder="למשל: הצילום הכי יפה של הדנובה"><button class="btn primary" data-chnew>שליחה</button></div>${chNow()?`<small class="note" style="margin:0">האתגר האחרון: ${esc(chNow().text)} · <button class="glink" data-chend="${chNow()._id}">סיום</button></small>`:''}</div>`:'';
   const chP=(PH||[]).filter(p=>p.ch),chs=S.settings.filter(x=>x.kind==='challenge').sort((a,b)=>(b.at||0)-(a.at||0)).filter(c=>chP.some(p=>p.ch===c._id));
-  const chAlb=PHF==='all'&&chs.length?chs.map(c=>`<div class="ph-day ch"><b>🎯 ${esc(c.text)}</b><span class="num">${chP.filter(p=>p.ch===c._id).length}</span></div><div class="ph-grid">${chP.filter(p=>p.ch===c._id).map((p,i)=>`<button class="ph-c" data-ph="${p._id}" style="--i:${Math.min(i,8)}"><img src="${p.th}" alt="" loading="lazy"></button>`).join('')}</div>`).join(''):'';
-  return chOrg+chCard()+`<div class="ph-top"><button class="ph-up ${PHBUSY?'busy':''}" data-ph-up ${PHBUSY?'aria-disabled="true" aria-busy="true"':''}><span class="ph-upi">${PHBUSY?'<span class="gspin"></span>':IX.cam}</span><span><b>${PHBUSY||'העלאת תמונות וסרטונים'}</b><small>${PHBUSY?'אפשר להמשיך לגלוש. לא צריך ללחוץ שוב':'אפשר לבחור כמה ביחד · סרטון עד דקה וחצי'}</small></span>${PHBUSY?`<i class="ph-prog" style="width:${PHPCT}%"></i>`:''}</button></div>${fail}${err}
-   <div class="seg ph-seg"><button data-phf="all" aria-pressed="${PHF==='all'}">של כולם<span class="c num">${PH.length}</span></button><button data-phf="mine" aria-pressed="${PHF==='mine'}">שהעליתי<span class="c num">${PH.filter(p=>p.by===mine).length}</span></button></div>
-   <div class="ph-type" role="group" aria-label="סוג"><button type="button" data-pht="all" aria-pressed="${PHT==='all'}">הכל</button><button type="button" data-pht="img" aria-pressed="${PHT==='img'}">📷 תמונות <span class="num">${PH.filter(p=>!p.v).length}</span></button><button type="button" data-pht="vid" aria-pressed="${PHT==='vid'}">🎬 סרטונים <span class="num">${PH.filter(p=>p.v).length}</span></button></div>
-   ${PHL&&PH.length?(PHSEL?`<div class="ph-selbar"><b>סומנו <span class="num">${PHSEL.size}</span></b><button type="button" class="btn primary" data-phdl-sel ${PHSEL.size?'':'disabled'}>⬇ הורדת המסומנים</button><button type="button" class="btn" data-phsel-off>ביטול</button></div>`:`<div class="ph-dlbar"><button type="button" class="btn" data-phdl-all>⬇ הורדת הכל <span class="num">(${L.length})</span></button><button type="button" class="btn" data-phsel-on>☑️ סימון והורדה</button></div>`):''}
-   ${!PHL?`<div class="ph-grid">${'<div class="ph-c skel shimmer"></div>'.repeat(9)}</div>`:L.length?(L.filter(p=>!p.v).length>2&&!PHSEL?`<button class="ph-show" data-phshow><span>▶</span><b>מצגת של כל התמונות</b><small class="num">${L.filter(p=>!p.v).length} תמונות</small></button>`:'')+phDays(L).map(([k,lab,arr])=>`<div class="ph-day"><b>${lab}</b><span class="ph-dr"><span class="num">${arr.length}</span>${PHSEL?`<button type="button" class="ph-dl" data-phsel-day="${k}">סימון כל היום</button>`:`<button type="button" class="ph-dl" data-phdl-day="${k}">⬇ הורדת היום</button>`}</span></div><div class="ph-grid">${arr.map((p,i)=>phCell(p,i)).join('')}</div>`).join(''):card('',PHT==='vid'?'<b>עוד אין סרטונים</b>אפשר להעלות סרטון קצר מהכפתור למעלה 🎬':PHF==='mine'?'<b>עוד לא העליתם</b>לחצו "העלאת תמונות וסרטונים" למעלה':'<b>עוד אין תמונות</b>תהיו הראשונים לשתף רגע מהמסע 📸')}
-   ${chAlb}<p class="note">לחיצה על תמונה או סרטון פותחת אותם. משם אפשר לשתף לוואטסאפ או לשמור בטלפון.</p>`}
+  const chAlb=PHF==='all'&&!PHSEL&&chs.length?chs.map(c=>`<section class="pg-day"><header class="pg-dh ch"><span class="pg-dot">🎯</span><span class="pg-dt"><b>${esc(c.text)}</b><small>אתגר צילום · <span class="num">${chP.filter(p=>p.ch===c._id).length}</span></small></span></header><div class="pg-grid">${chP.filter(p=>p.ch===c._id).map((p,i)=>phCell(p,i)).join('')}</div></section>`).join(''):'';
+  const nImg=PH.filter(p=>!p.v).length,nVid=PH.filter(p=>p.v).length,nDays=new Set(PH.map(p=>phDayKey(p.ts))).size,nBy=new Set(PH.map(p=>p.by).filter(Boolean)).size;
+  const st=PH.filter(p=>!p.v).slice(0,3);
+  const hero=`<section class="pg-hero"><div class="pg-stack" aria-hidden="true">${[0,1,2].map(i=>st[i]?`<span class="pg-pol p${i}"><img src="${st[i].th}" alt=""></span>`:`<span class="pg-pol p${i} ph0"><i>📷</i></span>`).join('')}</div>
+    <div class="pg-ht"><small>אלבום המסע</small><b>כל הרגעים שלנו</b><div class="pg-st"><span><b class="num">${nImg}</b>תמונות</span><span><b class="num">${nVid}</b>סרטונים</span><span><b class="num">${nDays}</b>ימים</span><span><b class="num">${nBy}</b>צלמים</span></div></div></section>`;
+  const up=`<button class="pg-up ${PHBUSY?'busy':''}" data-ph-up ${PHBUSY?'aria-disabled="true" aria-busy="true"':''}><span class="pg-upi">${PHBUSY?'<span class="gspin"></span>':IX.cam}</span><span class="pg-upt"><b>${PHBUSY||'הוספת תמונות וסרטונים'}</b><small>${PHBUSY?'אפשר להמשיך לגלוש בינתיים':'כמה ביחד · סרטון עד דקה וחצי'}</small></span>${PHBUSY?`<i class="pg-prog" style="width:${PHPCT}%"></i>`:'<span class="pg-plus" aria-hidden="true">+</span>'}</button>`;
+  const chip=(at,v,on,lab,n)=>`<button type="button" ${at}="${v}" aria-pressed="${on}">${lab}${n!=null?` <span class="num">${n}</span>`:''}</button>`;
+  const bar=PHL&&PH.length?`<div class="pg-bar"><div class="pg-chips" role="group" aria-label="סינון">${chip('data-pht','all',PHT==='all'&&PHF==='all','✨ הכל',PH.length)}${chip('data-pht','img',PHT==='img','📷 תמונות',nImg)}${chip('data-pht','vid',PHT==='vid','🎬 סרטונים',nVid)}<i class="pg-sep"></i>${chip('data-phf',PHF==='mine'?'all':'mine',PHF==='mine','👤 שלי',null)}${chip('data-phf',PHF==='me'?'all':'me',PHF==='me','🏷 תויגתי',null)}</div>
+    <div class="pg-tools"><button type="button" class="pg-ib${PHSEL?' on':''}" ${PHSEL?'data-phsel-off':'data-phsel-on'} aria-label="סימון להורדה" title="סימון">☑</button><button type="button" class="pg-ib" data-phdl-all aria-label="הורדת כל מה שמוצג" title="הורדת הכל">⬇</button></div></div>`:'';
+  const selbar=PHSEL?`<div class="pg-sel" role="region" aria-label="סימון"><span><b class="num">${PHSEL.size}</b> סומנו</span><button type="button" class="btn primary" data-phdl-sel ${PHSEL.size?'':'disabled'}>⬇ הורדה</button><button type="button" class="pg-x" data-phsel-off aria-label="ביטול">✕</button></div>`:'';
+  const slides=L.filter(p=>!p.v),show=slides.length>2&&!PHSEL?`<button class="pg-show" data-phshow><span class="pg-sbg" style="background-image:url('${slides[0].th}')"></span><span class="pg-play">▶</span><span class="pg-st2"><b>מצגת המסע</b><small><span class="num">${slides.length}</span> תמונות · עם מעברים איטיים</small></span></button>`:'';
+  const days=phDays(L).map(([k,lab,arr],di)=>{const parts=lab.split(' · ');return `<section class="pg-day" style="--d:${di}"><header class="pg-dh"><span class="pg-dot"></span><span class="pg-dt"><b>${esc(parts[0])}</b><small>${esc(parts[1]||'')}${parts[1]?' · ':''}<span class="num">${arr.length}</span></small></span>${PHSEL?`<button type="button" class="pg-db" data-phsel-day="${k}">${arr.every(p=>PHSEL.has(p._id))?'ביטול סימון':'סימון היום'}</button>`:`<button type="button" class="pg-db" data-phdl-day="${k}" aria-label="הורדת היום">⬇ היום</button>`}</header><div class="pg-grid${arr.length>=4?' feat':''}">${arr.map((p,i)=>phCell(p,i)).join('')}</div></section>`}).join('');
+  const empty=`<div class="pg-empty"><span class="pg-cam">📸</span><b>${PHT==='vid'?'עוד אין סרטונים':PHF==='mine'?'עוד לא העליתם':PHF==='me'?'עוד לא תייגו אתכם':'האלבום מחכה לרגע הראשון'}</b><small>${PHF==='me'?'כשמישהו יתייג אתכם בתמונה, היא תופיע כאן':'לחצו "הוספת תמונות וסרטונים" ותהיו הראשונים'}</small></div>`;
+  return chOrg+chCard()+hero+up+fail+err+bar+(!PHL?`<div class="pg-grid">${'<div class="ph-c skel shimmer"></div>'.repeat(9)}</div>`:L.length?show+days:empty)+chAlb+selbar}
 function shrinkImg(file,max,q){return new Promise((res,rej)=>{const u=URL.createObjectURL(file),img=new Image();img.onload=()=>{let w=img.naturalWidth,h=img.naturalHeight;const f=Math.min(1,max/Math.max(w,h));w=Math.max(1,Math.round(w*f));h=Math.max(1,Math.round(h*f));
   const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);URL.revokeObjectURL(u);let d=c.toDataURL('image/jpeg',q);
   // a document holds up to 1MB: lower the quality until the picture fits
@@ -5442,7 +5527,7 @@ async function phUpload(files){
   f.addEventListener('change',()=>{const l=[...(f.files||[])];f.value='';if(l.length)phUpload(l.slice(0,30))})})();
 document.addEventListener('click',e=>{const T=e.target;if(!T.closest||document.getElementById('phv')&&document.getElementById('phv').contains(T))return;
   const phf=T.closest('[data-phf]');if(phf){e.stopPropagation();PHF=phf.dataset.phf;render();return}
-  const pht=T.closest('[data-pht]');if(pht){e.stopPropagation();PHT=pht.dataset.pht;render();return}
+  const pht=T.closest('[data-pht]');if(pht){e.stopPropagation();PHT=pht.dataset.pht;if(PHT==='all')PHF='all';render();return}
   if(T.closest('[data-phsel-on]')){e.stopPropagation();PHSEL=new Set();render();return}
   if(T.closest('[data-phsel-off]')){e.stopPropagation();PHSEL=null;render();return}
   const sd=T.closest('[data-phsel-day]');if(sd){e.stopPropagation();const a=phList().filter(p=>phDayKey(p.ts)===sd.dataset.phselDay),all=a.every(p=>PHSEL.has(p._id));a.forEach(p=>all?PHSEL.delete(p._id):PHSEL.add(p._id));render();return}
@@ -5494,7 +5579,7 @@ function phOpen(id){const L=phList();PHI=L.findIndex(p=>p._id===id);if(PHI<0)ret
 function phShow(L){const p=L[PHI];if(!p)return;let v=document.getElementById('phv');
   if(!v){v=document.createElement('div');v.id='phv';v.setAttribute('dir','rtl');v.setAttribute('role','dialog');v.setAttribute('aria-modal','true');document.body.appendChild(v);requestAnimationFrame(()=>v.classList.add('on'))}
   const own=p.by===phMeId()||(ROLE==='org'&&!PREV);
-  v.innerHTML=`<div class="phv-top"><button class="phv-b" data-phv-x aria-label="סגירה">✕</button><span><b>${esc(p.byName||'')}</b><small class="num">${tsStr(p.ts)} · ${PHI+1}/${L.length}</small></span>${ROLE==='org'&&!PREV&&!p.v?`<button class="phv-del" data-phv-star>${momentNow()&&momentNow().pid===p._id?'⭐ נבחרה':'☆ הרגע של היום'}</button>`:''}${own?'<button class="phv-del" data-phv-del>מחיקה</button>':''}</div>
+  v.innerHTML=`<div class="phv-bg" style="background-image:url('${p.th}')"></div><div class="phv-top"><button class="phv-b" data-phv-x aria-label="סגירה">✕</button><span><b>${esc(p.byName||'')}</b><small class="num">${tsStr(p.ts)} · ${PHI+1}/${L.length}</small></span>${ROLE==='org'&&!PREV&&!p.v?`<button class="phv-del" data-phv-star>${momentNow()&&momentNow().pid===p._id?'⭐ נבחרה':'☆ הרגע של היום'}</button>`:''}${own?'<button class="phv-del" data-phv-del>מחיקה</button>':''}</div>
    ${p.v?`<div class="phv-img phv-vid ld"><video id="phvVid" controls playsinline poster="${p.th}" preload="auto"></video><span class="phv-pct num" id="phvPct">טוען…</span></div>`:`<div class="phv-img ld"><img id="phvImg" src="${p.th}" alt=""></div>`}
    ${PHI>0?'<button class="phv-n prev" data-phv-go="-1" aria-label="הקודמת">›</button>':''}${PHI<L.length-1?'<button class="phv-n next" data-phv-go="1" aria-label="הבאה">‹</button>':''}
    <div class="phv-acts"><button class="btn primary" data-phv-share>${IX.wa}<span>שיתוף · וואטסאפ, אינסטגרם</span></button><button class="btn" data-phv-save>⬇<span>שמירה בטלפון</span></button></div>`;
@@ -6784,7 +6869,7 @@ function fxPaint(){const v=document.getElementById('view');if(!v)return;const ho
       B.push(wxStrip(),`<div class="sosbar"><button type="button" id="fxSos">🆘 עזרה וחירום</button><button type="button" id="fxLost">📍 הלכתי לאיבוד</button></div>`,'<p class="gcred">פותח על ידי שלומי זינגר · כל הזכויות שמורות ©</p>')}
     else{if(albumTime()){photosSub();T.unshift(albumCard())}T.push(`<div class="ftools" role="region" aria-label="פעולות מהירות"><button type="button" id="fxAnn"><i>📣</i>הודעה לכולם</button><button type="button" id="fxProg"><i>🗓</i>שינוי בלו״ז</button><button type="button" id="fxField"><i>🧭</i>מצב שטח</button><button type="button" id="fxPick"><i>📍</i>נקודת איסוף</button><button type="button" id="fxSearch"><i>🔍</i>חיפוש</button></div>`);B.push(wxStrip())}
     put(top,T.filter(Boolean).join(''));put(bot,B.filter(Boolean).join(''))}
-  if(scr==='ggi'||scr==='photos'){if(!v.querySelector('.fx-phs')){const a=v.querySelector('.ph-up');if(a){const d=document.createElement('div');d.className='fx-phs';d.innerHTML=`<button type="button" class="btn" id="fxPhMe" aria-pressed="${PHF==='me'}">🏷 תמונות שתייגו אותי בהן</button>`;a.after(d)}}}
+  if(false){if(!v.querySelector('.fx-phs')){const a=v.querySelector('.ph-up');if(a){const d=document.createElement('div');d.className='fx-phs';d.innerHTML=`<button type="button" class="btn" id="fxPhMe" aria-pressed="${PHF==='me'}">🏷 תמונות שתייגו אותי בהן</button>`;a.after(d)}}}
   if(scr==='announce')annSchedPaint();
   if(scr==='ggh')rdyFold();
   appStatLinks();reqWatch();missedCheck();backupNudge();whatsNew();annQueue()}
@@ -6858,7 +6943,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='e73cdeb4bc';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='3631c17074';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
