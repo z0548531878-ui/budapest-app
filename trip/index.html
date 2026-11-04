@@ -3494,7 +3494,8 @@ SUB.roles=function(){
 };
 
 const dayHe=d=>{try{return new Date(d+'T12:00:00').toLocaleDateString('he-IL',{weekday:'long'})}catch(e){return ''}};
-SUB.flights=function(){
+SUB.flights=function(){return flightsHTML(false)};
+function flightsHTML(guest){
   const dir=V.filter.fd||'הלוך', isOut=dir==='הלוך';
   const all=S.flights.slice().sort((a,b)=>((a.date||'')+(a.dep||'')).localeCompare((b.date||'')+(b.dep||'')));
   const fl=all.filter(f=>f.dir===dir);
@@ -3510,13 +3511,14 @@ SUB.flights=function(){
      <div class="ln"><i></i><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z" transform="rotate(90 12 12)"/></svg><i></i></div>
      <div class="pt"><span class="tm num">${esc(f.arr||'?')}</span><span class="ap">${to}</span><small>${toN}${nextDay?' · למחרת':''}</small></div></div>
     ${f.notes?`<div class="fx-note">${esc(f.notes)}</div>`:''}
-    <button class="fx-pax" data-flight="${f._id}">מי בטיסה הזאת (${pax.length}) ›</button></div>`};
-  return subHead('טיסות')+`
-   <div class="seg">${[['הלוך','✈ הלוך',paxN('הלוך')],['חזור','✈ חזור',paxN('חזור')]].map(([k,l,c])=>`<button data-filter="fd" data-val="${k}" aria-pressed="${dir===k}">${l}<span class="c num">${c}</span></button>`).join('')}</div>
+    <button class="fx-pax" ${guest?'data-gflight':'data-flight'}="${f._id}">מי בטיסה הזאת (${pax.length}) ›</button></div>`};
+  const solRow=p=>guest?`<div class="row"><div class="main"><div class="t">${esc(p.name)}</div><div class="m"><span>מזמינים טיסה בעצמם</span></div></div></div>`:`<div class="row" data-edit="participants/${p._id}" role="button" tabindex="0"><div class="main"><div class="t">${esc(p.name)}</div><div class="m"><span>מזמינים טיסה בעצמם</span></div></div></div>`;
+  return (guest?'':subHead('טיסות'))+`
+   <div class="seg">${[['הלוך','✈ הלוך',paxN('הלוך')],['חזור','✈ חזור',paxN('חזור')]].map(([k,l,c])=>`<button ${guest?'data-gfd':'data-filter="fd" data-val'}="${k}" aria-pressed="${dir===k}">${l}<span class="c num">${c}</span></button>`).join('')}</div>
    <p class="note">${isOut?`כמעט כולם טסים יחד בבוקר יום חמישי. ${fl.length>1?'יש גם טיסה מאוחרת יותר לזוג אחד.':''}`:`החזרה מתחלקת ל-${fl.length} טיסות. כל נוסע שייך לקבוצה אחת, לפי מה שרשום בכרטיס שלו.`}</p>
    <div class="fxlist">${fl.map(cardF).join('')}</div>
-   ${solo.length?`<div class="ghead"><span>${isOut?'מגיעים לבד':'חוזרים לבד'}</span><span class="num">${solo.length}</span></div>`+card(solo.map(p=>`<div class="row" data-edit="participants/${p._id}" role="button" tabindex="0"><div class="main"><div class="t">${esc(p.name)}</div><div class="m"><span>מזמינים טיסה בעצמם</span></div></div></div>`).join('')):''}
-   ${lost.length?`<div class="ghead"><span style="color:var(--warn)">לא משויכים לאף טיסה</span><span class="num">${lost.length}</span></div>`+card(lost.map(p=>`<div class="row" data-edit="participants/${p._id}" role="button" tabindex="0"><div class="main"><div class="t">${esc(p.name)}</div><div class="m"><span>לבחור ${isOut?'טיסת הלוך':'קבוצת חזור'} בכרטיס</span></div></div><span class="pill p-warn">לשייך</span></div>`).join('')):''}`;
+   ${solo.length?`<div class="ghead"><span>${isOut?'מגיעים לבד':'חוזרים לבד'}</span><span class="num">${solo.length}</span></div>`+card(solo.map(solRow).join('')):''}
+   ${lost.length&&!guest?`<div class="ghead"><span style="color:var(--warn)">לא משויכים לאף טיסה</span><span class="num">${lost.length}</span></div>`+card(lost.map(p=>`<div class="row" data-edit="participants/${p._id}" role="button" tabindex="0"><div class="main"><div class="t">${esc(p.name)}</div><div class="m"><span>לבחור ${isOut?'טיסת הלוך':'קבוצת חזור'} בכרטיס</span></div></div><span class="pill p-warn">לשייך</span></div>`).join('')):''}`;
 };
 /* the + in the middle of the tab bar adds to the screen you're on; elsewhere it asks what to add */
 function addHere(){
@@ -4452,8 +4454,8 @@ function flightSheet(id){
   const f=find('flights',id);if(!f)return; const ppl=paxOf(f).sort((a,b)=>a.name.localeCompare(b.name,'he'));
   sheet(`<h3>${f.dir==='הלוך'?'הלוך':'חזור'} · ${esc(f.label||'')}</h3><p class="note"><span class="ltr">${esc(f.flightNo||'')}</span> · ${fmtDate(f.date)} · <span class="ltr">${esc(f.dep||'')} → ${esc(f.arr||'')}</span>${f.notes?`<br>${esc(f.notes)}`:''}</p>
   <div class="ghead"><span class="num">${ppl.length} נוסעים</span></div><div class="card">${ppl.map(p=>`<div class="row" style="min-height:46px;padding:10px 14px"><div class="main">${esc(p.name)}</div></div>`).join('')||'<div class="empty">אין נוסעים משויכים</div>'}</div>
-  <div class="sheet-acts"><button class="btn" id="cpf">העתקת הרשימה</button><span class="sp"></span><button class="btn primary" id="editF">עריכה</button></div>`);
-  document.getElementById('editF').onclick=()=>editor('flights',id);
+  <div class="sheet-acts"><button class="btn" id="cpf">העתקת הרשימה</button><span class="sp"></span>${GUEST()?'':'<button class="btn primary" id="editF">עריכה</button>'}</div>`);
+  const ef=document.getElementById('editF');if(ef)ef.onclick=()=>editor('flights',id);
   document.getElementById('cpf').onclick=()=>copy(`${f.flightNo||''} · ${fmtDate(f.date)} · ${f.dep||''}\n`+ppl.map(p=>'• '+p.name).join('\n'));
 }
 function msgSheet(id){
@@ -5453,6 +5455,7 @@ function guestHTML0(){
           gkt:()=>isProd()?cube('gkt',I.box,'ערכות','מה בכל ערכה',''):'',
           grm:()=>isProd()?cube('grm',I.bed,'חדרים','מי בכל חדר',''):'',
           gcn:()=>isProd()?cube('gcn',I.phone,'ספקים','טלפונים',''):'',
+          gfl:()=>cube('gfl',I.plane,'טיסות','הלוך וחזור'),
           gm:()=>cube('gm',I.chat,'הודעות',un?un+' חדשות':'מהמארגנים',un||''),
           gd:()=>cube('gd',IX.car,'נסיעה לשדה','משותפת',rideMine()||''),
           gp:()=>cube('gp',I.people,'משתתפים','מי בא'),
@@ -5462,12 +5465,13 @@ function guestHTML0(){
           gk:()=>cube('gk',IX.tools,'כלים לדרך','זמנים ומטבע'),
           trv:()=>`<a class="gc gtrv" href="${trvHref()}" style="--i:${n++}"><i class="tsp" aria-hidden="true"></i><i class="tsp" aria-hidden="true"></i><i class="tsp" aria-hidden="true"></i><span class="gc-go" aria-hidden="true">לשחק ‹</span><span class="gc-i">${I.spark}</span><span class="gc-t">טריוויה על גלגלים</span><span class="gc-s">${open?'כל המשחקים פתוחים!':'עצמאי וראש בראש פתוחים'}</span></a>`,
           ge:()=>cube('ge',IX.coin,'חשבון משותף','מי חייב למי',(()=>{const b=me?Object.values(splitBal(me)).filter(v=>v<=-1).length:0;return b||''})())};
-        const ord=TRIPDAY()?['gs','gkt','grm','gcn','gv','gm','gi','gx','gk','gt','gz','gp','gd']:['gs','gkt','grm','gcn','gv','gm','gt','gd','gp','gx','gz','gk','gi'];
+        const ord=TRIPDAY()?['gs','gkt','grm','gcn','gv','gm','gfl','gi','gx','gk','gt','gz','gp','gd']:['gs','gkt','grm','gcn','gv','gm','gfl','gt','gd','gp','gx','gz','gk','gi'];
         // four per row, the same size as the actions above
         return ord.map(k=>C[k]()).filter(Boolean).join('')})()}
      </div>
      ${flightGroups(ppl,'חזור').map(g=>guestFlightCard(g,ppl,'חזור')).join('')}
      ${help}</div>`}
+  if(GTAB==='gfl')return head('טיסות')+flightsHTML(true);
   if(GTAB==='gx'){
     const hn=`<a class="hotelbar" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener">${IX.nav}<span>חזרה למלון · ניווט</span></a>`;
     return head('מסעדות ואטרקציות')+hn+`<div class="kosher" role="note"><b>לפני שאוכלים</b>בודקים תעודת כשרות בתוקף במקום עצמו. המידע כאן עלול להשתנות.</div><p class="note">"ניווט" פותח את המקום במפות. המרחקים הם מהמלון, בערך. שעות הפתיחה עלולות להשתנות, ובחגים הונגריים חלק מהמקומות סגורים.</p>`+
@@ -5788,6 +5792,8 @@ document.addEventListener('click',e=>{
   const n=T.closest('[data-gnav]');if(n&&n.dataset.gnav==='gadd'){e.stopPropagation();e.preventDefault();GTAB='gq';V.seg=null;render(true);window.scrollTo(0,0);setTimeout(()=>{const t=document.getElementById('reqText');if(t)t.focus({preventScroll:true})},120);return}
   if(n){e.stopPropagation();e.preventDefault();GTAB=n.dataset.gnav;V.seg=null;render(true);window.scrollTo(0,0);return}
   const s=T.closest('[data-gseg]');if(s){V.seg=s.dataset.gseg;render();return}
+  const fd=T.closest('[data-gfd]');if(fd){V.filter.fd=fd.dataset.gfd;render();return}
+  const gf=T.closest('[data-gflight]');if(gf){flightSheet(gf.dataset.gflight);return}
   const s2=T.closest('[data-gseg2]');if(s2){GSEG=s2.dataset.gseg2;render();return}
   const g=T.closest('[data-ggen]');if(g){GGEN=g.dataset.ggen;render();return}
   const ct=T.closest('[data-gcat]');if(ct){DRAFT.reqCat=ct.dataset.gcat;render();return}
@@ -6715,7 +6721,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='d898acb250';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='1d556841c8';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
