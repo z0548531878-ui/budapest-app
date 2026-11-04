@@ -2837,6 +2837,38 @@ html:has(#scrim.open) #app :is(*,*::before,*::after){animation-play-state:paused
 .rv-seats{display:flex;gap:4px;margin:0 0 6px}.rv-seats i{width:16px;height:16px;border-radius:5px;border:1.5px solid rgba(240,210,140,.6)}.rv-seats i.on{background:#e9c46f;border-color:#e9c46f}
 .rv-empty{display:grid;justify-items:center;gap:6px;text-align:center;padding:26px 14px;border-radius:22px;border:1px dashed rgba(214,178,98,.4)}
 .rv-empty span{font-size:40px}.rv-empty b{font:900 17px var(--body);color:#f4e6c2}.rv-empty small{color:#a69a7d;font-size:13px;max-width:280px;line-height:1.5}
+
+/* Kerestir v2 */
+.kz-hero2{position:relative;margin:6px 0 14px;border-radius:28px;overflow:hidden;border:1px solid rgba(240,210,140,.55);box-shadow:0 22px 46px -18px rgba(217,178,95,.5);background:#0b0907}
+.kz-ph{position:relative;aspect-ratio:588/430;overflow:hidden}.kz-ph img{width:100%;height:100%;object-fit:cover;display:block}
+.kz-ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,9,7,0) 40%,rgba(11,9,7,.92) 100%)}
+.kz-shine{position:absolute;inset:0;z-index:1;background:linear-gradient(110deg,transparent 35%,rgba(255,235,180,.25) 50%,transparent 65%);transform:translateX(-120%)}
+.kz-ht{position:relative;margin-top:-92px;padding:0 18px 18px;text-align:center;z-index:2}
+.kz-ht small{color:#e9c46f;font:800 13px var(--body);letter-spacing:.06em}.kz-ht h2{margin:2px 0 4px;font:900 34px/1.08 var(--display);color:#fff1c9;text-shadow:0 4px 18px rgba(0,0,0,.7)}.kz-ht span{color:#cbbd96;font-size:13px}
+.kz-q{position:relative;margin:0 0 16px;padding:20px 18px 14px;border-radius:22px;text-align:center;font:900 19px/1.45 var(--display);color:#ffe7a3;background:radial-gradient(90% 100% at 50% 0,rgba(240,200,110,.18),transparent 70%),#120f09;border:1px solid rgba(240,210,140,.4)}
+.kz-qm{position:absolute;top:-6px;right:14px;font-size:60px;color:rgba(233,196,111,.35);line-height:1}.kz-q cite{display:block;margin-top:8px;font:700 12px var(--body);color:#a69a7d;font-style:normal}
+.kz-p{margin:0;color:#e3d6b2;font-size:15px;line-height:1.65}.kz-p b{color:#ffe7a3;font-size:17px}.kz-p small{color:#a69a7d;font-size:12px}
+.kz-sw{font:700 12px var(--body);color:#a69a7d;margin-inline-start:6px}
+.kz-stories{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 10px;margin:0 -4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}.kz-stories::-webkit-scrollbar{display:none}
+.kz-s{position:relative;flex:0 0 82%;scroll-snap-align:center;padding:18px 16px 16px;border-radius:24px;background:linear-gradient(165deg,#2a2112,#0d0b08 70%);border:1px solid rgba(240,210,140,.45);box-shadow:0 14px 30px -16px rgba(217,178,95,.5)}
+.kz-n{position:absolute;top:12px;left:14px;font:900 40px/1 var(--display);color:rgba(233,196,111,.18)}
+.kz-se{font-size:34px;display:block}.kz-s b{display:block;margin:6px 0 6px;font:900 21px var(--display);color:#ffe7a3}.kz-s p{margin:0;color:#e3d6b2;font-size:15px;line-height:1.65}
+.kz-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 10px}.kz-stats div{display:grid;justify-items:center;gap:2px;padding:12px 4px;border-radius:18px;background:#14110a;border:1px solid rgba(214,178,98,.3);text-align:center}
+.kz-stats b{font:900 24px var(--display);color:#f6d886}.kz-stats small{color:#a69a7d;font-size:11.5px}
+@media (prefers-reduced-motion:no-preference){
+ #view .kz-ph img{animation:kzKen 18s ease-in-out infinite alternate}
+ #view.enter .kz-hero2{animation:pgIn .8s cubic-bezier(.2,.85,.25,1.06) both!important}
+ #view.enter .kz-shine{animation:rmShine 1.6s .7s ease-out both!important}
+ #view.enter .kz-ht h2{animation:kzName .9s .35s cubic-bezier(.2,.85,.25,1) both!important}
+ #view.enter .kz-q{animation:kzPop .6s .55s cubic-bezier(.2,1.3,.4,1) both!important}
+ #view.enter .kz-s{animation:kzSlide .6s cubic-bezier(.2,1.1,.4,1) both!important;animation-delay:calc(.7s + var(--i,0)*.08s)!important}
+ #view.enter .kz-stats div{animation:kzPop .5s cubic-bezier(.2,1.3,.4,1) both!important;animation-delay:calc(.8s + var(--i,0)*.12s)!important}
+}
+@keyframes kzKen{from{transform:scale(1)}to{transform:scale(1.12) translate(-2%,2%)}}
+@keyframes kzSlide{from{opacity:0;transform:translateX(-60px)}to{opacity:1;transform:none}}
+.gx-sub{display:flex;gap:6px;margin:0 0 10px;overflow-x:auto;scrollbar-width:none}.gx-sub button{flex:0 0 auto;height:32px;padding:0 14px;border-radius:99px;border:1px solid rgba(214,178,98,.3);background:transparent;color:#cbbd96;font:800 13px var(--body)}
+.gx-sub button[aria-pressed="true"]{background:#e9c46f;color:#15110a;border-color:transparent}
+.gx-cats{grid-template-columns:repeat(5,1fr)!important}.gx-cats button{font-size:12px!important}
 @media (prefers-reduced-motion:no-preference){
  #view.enter .rv-legs button{animation:kzPop .5s cubic-bezier(.2,1.3,.4,1) both!important;animation-delay:calc(var(--i,0)*.08s)!important}
  #view.enter .rv-acts button{animation:kzPop .5s cubic-bezier(.2,1.3,.4,1) both!important;animation-delay:calc(.25s + var(--i,0)*.08s)!important}
@@ -2884,7 +2916,7 @@ html:has(#scrim.open) #app :is(*,*::before,*::after){animation-play-state:paused
 .kz-st{display:grid;grid-template-columns:52px 14px minmax(0,1fr);gap:10px;align-items:start;padding:6px 2px}
 .kz-tm{color:#f0d28c;font-weight:900;font-size:16px;padding-top:1px}.kz-dt{width:12px;height:12px;margin-top:5px;border-radius:50%;background:#e9c46f;box-shadow:0 0 0 4px rgba(233,196,111,.18)}
 .kz-tx{min-width:0}.kz-tx b{display:block;color:#f6e7c1;font-size:15px}.kz-tx small{color:#a69a7d;font-size:12.5px}
-.kz-st.back .kz-dt{background:#ff8a6a;box-shadow:0 0 0 4px rgba(255,138,106,.2)}.kz-st.back .kz-tm,.kz-st.back b{color:#ffb39e}
+.kz-st.kzret .kz-dt{background:#ff8a6a;box-shadow:0 0 0 4px rgba(255,138,106,.2)}.kz-st.kzret .kz-tm,.kz-st.kzret b{color:#ffb39e}
 .kz-stay{margin:8px 4px 0;color:#cbbd96;font-size:13px;text-align:center}
 .kz-src{margin:6px 4px 0;color:#6f6650;font-size:11.5px;text-align:center}
 @media (prefers-reduced-motion:no-preference){
@@ -5370,48 +5402,120 @@ const mapsGo=(q,mode='walking')=>'https://www.google.com/maps/dir/?api=1&travelm
 // each opening time reads left to right inside the Hebrew line (otherwise 10:00–16:00 shows as 16:00–10:00)
 const hrsHTML=t=>esc(t).replace(/(\d{1,2}:\d{2})–(\d{1,2}:\d{2})/g,'<bdi dir="ltr">$1–$2</bdi>');
 
-/* ---- restaurants & attractions: one category at a time, short cards, and a "surprise me" pick ---- */
-let GXC='dairy',GXPICK=null;
-const GXCATS=[['dairy','🥐','חלבי'],['meat','🍖','בשרי'],['see','🎡','לראות'],['shop','🛍','קניות']];
-function gxItems(c){
-  if(c==='dairy'||c==='meat')return EAT.find(g=>g.h.includes(c==='dairy'?'חלבי':'בשרי')).l.map(p=>({n:p.n,d:p.d||'',sub:p.k?'כשרות '+p.k:'',hrs:p.hrs,ms:p.ms,note:p.note||'',tel:p.tel,go:safeUrl(p.map)}));
-  const L=PLACES[c==='see'?0:1].l.map(p=>({n:p[0],en:p[1],d:p[3]||'',sub:p[4]||'',hrs:p[5]||'',go:mapsGo(p[1]+' '+p[2])}));
-  if(c==='shop'){const sm=EAT.find(g=>g.h.includes('סופר'));if(sm)L.unshift(...sm.l.map(p=>({n:p.n,d:p.d||'',sub:p.k?'כשרות '+p.k:'',hrs:p.hrs,note:p.note||'',tel:p.tel,go:safeUrl(p.map)})))}return L}
-const gxEmo=c=>({dairy:'☕',meat:'🍽',see:'📸',shop:'🛍'})[c];
-function gxCard(x,c,i){return `<article class="gxc" style="--i:${i}"><span class="gx-e" aria-hidden="true">${gxEmo(c)}</span><div class="gx-m"><b>${esc(x.n)}</b>
-  <div class="gx-tags">${x.d?`<span>🚶 ${esc(x.d)}</span>`:''}${x.ms?`<span class="ms">✨ פתוח במוצ״ש מ-<bdi dir="ltr">${esc(x.ms)}</bdi></span>`:''}${x.note&&/ארוחות השבת/.test(x.note)?'<span class="ms">⭐ ארוחות השבת שלנו</span>':''}</div>
-  ${x.sub?`<small class="gx-s">${esc(x.sub)}</small>`:''}${x.hrs?`<details class="gx-h"><summary>🕒 שעות פתיחה</summary><p>${hrsHTML(x.hrs)}</p>${x.note&&!/ארוחות השבת/.test(x.note)?`<p>${esc(x.note)}</p>`:''}</details>`:''}</div>
-  <div class="gx-a"><a class="gx-b go" href="${x.go}" target="_blank" rel="noopener" aria-label="ניווט אל ${esc(x.n)}">${IX.nav}</a>${x.tel?`<a class="gx-b" href="tel:${x.tel}" aria-label="התקשרות">📞</a>`:''}</div></article>`}
-function gxScreen(){const L=gxItems(GXC);
-  return `<div class="gx-top"><a class="gx-hotel" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener">${IX.nav}<span>חזרה למלון</span></a><button type="button" class="gx-sur" data-gxsur><span class="gx-dice">🎲</span><span><b>תפתיעו אותי</b><small>בחירה אקראית לאן הולכים</small></span></button></div>
+/* ---- restaurants & attractions: kosher food, malls, stores, sights, evening — hours checked Nov 2026 (research 5.11) ---- */
+let GXC='kosher',GXK='all',GXPICK=null;
+const GX={
+ kosher:[
+  {n:'חנה',k:'m',e:'🍖',d:'14 דק׳',hrs:'א׳–ה׳ 12:00–22:30 · ו׳ 12:00–14:00',star:'ארוחות השבת שלנו',tel:'+36203951746',q:'Hanna Glatt Kosher Restaurant Kazinczy 29 Budapest'},
+  {n:'כרמל',k:'m',e:'🍖',d:'14 דק׳',hrs:'א׳–ה׳ 12:00–22:30 · ו׳ 12:00–14:00',tel:'+3613221834',q:'Carmel Restaurant Kazinczy 31 Budapest'},
+  {n:'שוק הכרמל',k:'m',e:'🥙',d:'14 דק׳',hrs:'א׳–ה׳ 12:00–24:00',ms:'19:00',tel:'+36301150242',q:'Shuk HaCarmel Kazinczy 32 Budapest'},
+  {n:'ניתאוואלו',k:'m',e:'🍔',d:'17 דק׳',hrs:'א׳–ה׳ 14:00–22:00',ms:'19:00',tel:'+36204395546',q:'Nitavalo Dob utca 32 Budapest'},
+  {n:'אשיז',k:'m',e:'🌯',d:'15 דק׳',hrs:'א׳–ה׳ 12:00–02:00',ms:'18:30',tel:'+36204180459',q:'Ashis kosher Budapest'},
+  {n:'מרקש',k:'m',e:'🍢',d:'16 דק׳',hrs:'א׳–ה׳ 12:00–24:00',tel:'+36703000075',q:'Marrakesh kosher Wesselényi 30 Budapest'},
+  {n:'פלאפל בר',k:'m',e:'🧆',d:'15 דק׳',hrs:'א׳–ה׳ 12:00–24:00',ms:'22:00',q:'Falafel Bar kosher Budapest'},
+  {n:'חומוס בר',k:'p',e:'🧆',d:'14 דק׳',hrs:'א׳–ה׳ 12:00–23:00',ms:'19:00',tel:'+36704020120',q:'Hummus Bar kosher Wesselényi 14 Budapest'},
+  {n:'קפה תל אביב',k:'d',e:'🍕',d:'14 דק׳',hrs:'א׳–ה׳ 8:30–20:30 · ו׳ 8:30–16:00',tel:'+36305721684',q:'Tel Aviv Cafe Kazinczy 28 Budapest'},
+  {n:'קפה תמר',k:'d',e:'☕',d:'13 דק׳',hrs:'א׳–ה׳ 8:00–22:00 · ו׳ 8:00–16:00',tel:'+36304167336',q:'Cafe Tamar Nagy Diófa 3 Budapest'},
+  {n:'ממילא',k:'d',e:'🍝',d:'15 דק׳',hrs:'א׳ 12:00–20:00 · ב׳–ה׳ 12:00–22:00',ms:'22:00',q:'Mamilla kosher Budapest'},
+  {n:'קושר דלי',k:'d',e:'🥗',d:'12 דק׳',hrs:'א׳ 9:00–16:00 · ב׳–ה׳ 9:00–20:00 · ו׳ 9:00–16:00',q:'Kosher Deli Síp utca 12 Budapest'},
+  {n:'ברוקלין בייגל',k:'d',e:'🥯',d:'15 דק׳ במונית',hrs:'א׳ 9:00–18:00 · ב׳–ה׳ 9:00–21:00 · ו׳ 9:00–14:30',tel:'+36303194356',q:'Brooklyn Bagel Budapest Újpesti rakpart'},
+  {n:'קיורטוש וגלידה',k:'d',e:'🍦',d:'14 דק׳',hrs:'',q:'Kosher Kurtosh Nagy Diófa 21 Budapest'},
+  {n:'מאפיית UpTown',k:'d',e:'🥐',d:'15 דק׳',hrs:'א׳–ה׳ 8:00–18:00 · ו׳ 8:00–15:00',tel:'+36304858873',q:'UpTown Bakery kosher Budapest'},
+  {n:'קושר פיאץ (סופר כשר)',k:'g',e:'🛒',d:'13 דק׳',hrs:'א׳ 10:00–16:00 · ב׳–ה׳ 8:00–19:00 · ו׳ 8:00–14:00',tel:'+36305722165',q:'Kosher Piac Dohány utca 36 Budapest'}],
+ malls:[
+  {n:'Arena Mall',e:'🏬',d:'25 דק׳ ברגל · 7 במונית',hrs:'ב׳–שבת 10:00–21:00 · א׳ 10:00–19:00',star:'הכי קרוב · פריימרק',q:'Arena Mall Budapest'},
+  {n:'WestEnd City Center',e:'🏬',d:'12 דק׳ במונית',hrs:'ב׳–שבת 10:00–21:00 · א׳ 10:00–19:00',star:'400 חנויות',q:'WestEnd City Center Budapest'},
+  {n:'Allee',e:'🏬',d:'12 דק׳ במונית',hrs:'ב׳–שבת 10:00–21:00 · א׳ 10:00–19:00',q:'Allee Budapest'},
+  {n:'Corvin Plaza',e:'🏬',d:'15 דק׳ ברגל',hrs:'',q:'Corvin Plaza Budapest'},
+  {n:'Árkád',e:'🏬',d:'מטרו M2',hrs:'ב׳–שבת 10:00–21:00 · א׳ 10:00–19:00',q:'Árkád Budapest'},
+  {n:'Mammut',e:'🏬',d:'15 דק׳ במונית',hrs:'ב׳–שבת 10:00–21:00 · א׳ 10:00–18:00',q:'Mammut Budapest'},
+  {n:'Etele Plaza',e:'🏬',d:'מטרו M4',hrs:'ב׳–שבת 10:00–21:00 · א׳ 10:00–19:00',q:'Etele Plaza Budapest'},
+  {n:'Premier Outlet',e:'🏷',d:'35 דק׳ במונית',hrs:'',q:'Premier Outlet Biatorbágy'}],
+ stores:[
+  {n:'Primark',e:'👕',d:'ב-Arena Mall, קומה 2',hrs:'ב׳–שבת 10:00–21:00 · א׳ 10:00–19:00',star:'היחיד בהונגריה',q:'Primark Arena Mall Budapest'},
+  {n:'Zara',e:'👗',d:'Arena Mall · WestEnd',hrs:'כמו שעות הקניון',q:'Zara Arena Mall Budapest'},
+  {n:'H&M',e:'👚',d:'Arena Mall · WestEnd',hrs:'כמו שעות הקניון',q:'H&M Arena Mall Budapest'},
+  {n:'Pull&Bear · Bershka',e:'🧥',d:'Arena Mall · WestEnd',hrs:'כמו שעות הקניון',q:'Bershka Arena Mall Budapest'},
+  {n:'Mango · Massimo Dutti',e:'👜',d:'WestEnd · Allee',hrs:'כמו שעות הקניון',q:'Mango WestEnd Budapest'},
+  {n:'Nike · Adidas',e:'👟',d:'WestEnd · Arena Mall',hrs:'כמו שעות הקניון',q:'Nike WestEnd City Center Budapest'},
+  {n:'LEGO Store',e:'🧱',d:'WestEnd · Allee · Árkád',hrs:'ב׳–שבת 10:00–21:00 · א׳ 10:00–19:00',q:'LEGO Store WestEnd Budapest'},
+  {n:'iStyle (אפל)',e:'📱',d:'WestEnd · Arena Mall',hrs:'כמו שעות הקניון',q:'iStyle Apple WestEnd Budapest'},
+  {n:'Decathlon',e:'⚽',d:'Arena Mall',hrs:'כמו שעות הקניון',q:'Decathlon Arena Mall Budapest'},
+  {n:'Rossmann · DM (פארם)',e:'🧴',d:'בכל קניון',hrs:'',q:'Rossmann Budapest'},
+  {n:'פורצלן Herend',e:'🫖',d:'József nádor tér 10',hrs:'ב׳–ו׳ 10:00–18:00 · שבת 10:00–14:00 · א׳ סגור',q:'Herend Porcelain Palais Herend Budapest'},
+  {n:'רחוב ואצי',e:'🛍',d:'20 דק׳ ברגל',hrs:'החנויות בערך 10:00–20:00',q:'Váci utca Budapest'},
+  {n:'אנדראשי · מותגי יוקרה',e:'💎',d:'Andrássy út',hrs:'בעיקר ב׳–שבת',q:'Andrássy út luxury shops Budapest'},
+  {n:'IKEA',e:'🪑',d:'במונית',hrs:'',q:'IKEA Budapest Örs vezér tere'}],
+ see:[
+  {n:'שייט על הדנובה',e:'🛳',d:'25 דק׳ · רציף Vigadó',hrs:'שייט ערב 17:00 ו-18:30',star:'מושלם במוצ״ש',q:'Vigadó tér Danube cruise Budapest'},
+  {n:'הפרלמנט',e:'🏛',d:'מטרו M2',hrs:'כל יום 8:00–16:00 · מזמינים מראש',q:'Hungarian Parliament Building'},
+  {n:'בית הכנסת דוהאני',e:'🕍',d:'12 דק׳',hrs:'א׳–ה׳ 10:00–16:00 · ו׳ 10:00–14:00 · שבת סגור',q:'Dohány Street Synagogue'},
+  {n:'מצודת הדייגים',e:'🏰',d:'במונית',hrs:'המרפסת העליונה 9:00–19:00',q:'Fisherman\'s Bastion Budapest'},
+  {n:'הרכבל לטירה (סיקלו)',e:'🚡',d:'Clark Ádám tér',hrs:'כל יום 8:00–22:00',q:'Budavári Sikló Budapest'},
+  {n:'גשר השלשלאות',e:'🌉',d:'25 דק׳',hrs:'פתוח תמיד · יפה בלילה',q:'Széchenyi Chain Bridge'},
+  {n:'הצ׳יטדלה · הר גלרט',e:'⛰',d:'במונית',hrs:'הפארק 8:00–22:00',q:'Citadella Budapest'},
+  {n:'השוק המרכזי',e:'🧺',d:'17 דק׳',hrs:'ב׳ 6–17 · ג׳–ו׳ 6–18 · שבת 6–15 · א׳ סגור',q:'Great Market Hall Budapest'},
+  {n:'הנעליים על הדנובה',e:'🕯',d:'במונית',hrs:'פתוח תמיד',q:'Shoes on the Danube Bank'},
+  {n:'כיכר הגיבורים ופארק העיר',e:'🗽',d:'מטרו M1',hrs:'פתוח תמיד',q:'Heroes\' Square Budapest'},
+  {n:'גן החיות',e:'🦁',d:'מטרו M1',hrs:'כל יום 9:00–16:00',q:'Budapest Zoo'},
+  {n:'טרופיקריום (כרישים)',e:'🦈',d:'25 דק׳ במונית',hrs:'כל יום 10:00–20:00',q:'Tropicarium Budapest'},
+  {n:'בית החולים בסלע',e:'🪨',d:'במונית',hrs:'כל יום 10:00–19:00 · סיורים',q:'Hospital in the Rock Budapest'},
+  {n:'הרכבת של הילדים',e:'🚂',d:'בהרים, במונית',hrs:'כל יום חוץ מב׳',q:'Children\'s Railway Budapest'}],
+ night:[
+  {n:'שוק חג המולד · וורשמרטי',e:'🎄',d:'25 דק׳',hrs:'א׳–ה׳ 11:00–21:00 · ו׳–שבת 11:00–22:00',star:'פתוח בזמן המסע',q:'Vörösmarty tér Christmas market'},
+  {n:'שוק חג המולד · הבזיליקה',e:'✨',d:'30 דק׳',hrs:'כל יום 11:00–22:00 · מופע אורות מ-17:30',q:'Advent Bazilika Budapest'},
+  {n:'גלגל ענק Budapest Eye',e:'🎡',d:'25 דק׳',hrs:'א׳–ה׳ 11:00–23:00 · ו׳–שבת 11:00–24:00',q:'Budapest Eye'},
+  {n:'מוזיאון הפינבול',e:'🕹',d:'במונית',hrs:'ד׳–ו׳ 16:00–24:00 · שבת 13:00–24:00 · א׳ 11:00–22:00',star:'משחקים בלי הגבלה',q:'Flippermúzeum Budapest'},
+  {n:'קזינו Corvin',e:'🎰',d:'15 דק׳ ברגל',hrs:'פתוח 24/7 · מגיל 18 · עם דרכון',q:'Las Vegas Casino Corvin Sétány'},
+  {n:'קזינו Sofitel',e:'🎲',d:'10 דק׳ במונית',hrs:'פתוח 24/7 · מגיל 18 · עם דרכון',q:'Las Vegas Casino Sofitel Budapest'},
+  {n:'קזינו Tropicana',e:'🃏',d:'במונית',hrs:'פתוח 24/7 · מגיל 18 · עם דרכון',q:'Las Vegas Casino Tropicana Budapest'},
+  {n:'חדרי בריחה',e:'🔐',d:'ברובע היהודי',hrs:'לפי הזמנה',q:'escape room Budapest District VII'}]};
+const GXCATS=[['kosher','🍽','אוכל כשר'],['malls','🏬','קניונים'],['stores','🛍','חנויות'],['see','📸','לראות'],['night','🌙','ערב']];
+const GXKS=[['all','הכל'],['m','בשרי'],['d','חלבי'],['p','פרווה'],['g','סופר']];
+const gxPlaceGo=x=>mapsGo(x.q);
+function gxCard(x,c,i){return `<article class="gxc" style="--i:${i}"><span class="gx-e" aria-hidden="true">${x.e||'📍'}</span><div class="gx-m"><b>${esc(x.n)}</b>
+  <div class="gx-tags">${x.d?`<span>📍 ${esc(x.d)}</span>`:''}${x.ms?`<span class="ms">✨ מוצ״ש מ-<bdi dir="ltr">${esc(x.ms)}</bdi></span>`:''}${x.star?`<span class="ms">⭐ ${esc(x.star)}</span>`:''}</div>
+  ${x.hrs?`<small class="gx-s">🕒 ${hrsHTML(x.hrs)}</small>`:''}</div>
+  <div class="gx-a"><a class="gx-b go" href="${gxPlaceGo(x)}" target="_blank" rel="noopener" aria-label="ניווט אל ${esc(x.n)}">${IX.nav}</a>${x.tel?`<a class="gx-b" href="tel:${x.tel}" aria-label="התקשרות">📞</a>`:''}</div></article>`}
+function gxScreen(){let L=GX[GXC]||[];if(GXC==='kosher'&&GXK!=='all')L=L.filter(x=>x.k===GXK);
+  return `<div class="gx-top"><a class="gx-hotel" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener">${IX.nav}<span>למלון</span></a><button type="button" class="gx-sur" data-gxsur><span class="gx-dice">🎲</span><span><b>תפתיעו אותי</b><small>לאן הולכים עכשיו?</small></span></button></div>
   <div class="gx-pick" id="gxPick" aria-live="polite">${GXPICK?gxCard(GXPICK.x,GXPICK.c,0):''}</div>
   <div class="gx-cats" role="tablist">${GXCATS.map(([k,e,l])=>`<button type="button" role="tab" data-gxc="${k}" aria-selected="${GXC===k}"><span>${e}</span>${l}</button>`).join('')}</div>
-  ${GXC==='dairy'||GXC==='meat'?'<p class="gx-ko">✡︎ בודקים תעודת כשרות בתוקף במקום עצמו</p>':''}
-  <div class="gx-list" data-c="${GXC}">${L.map((x,i)=>gxCard(x,GXC,i)).join('')}</div>
-  <p class="gx-tip">🚕 מונית: Bolt או דרך הקבלה · 💳 אשראי מתקבל כמעט בכל מקום</p>`}
-document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-gxc],[data-gxsur]');if(!t)return;e.stopPropagation();
+  ${GXC==='kosher'?`<div class="gx-sub">${GXKS.map(([k,l])=>`<button type="button" data-gxk="${k}" aria-pressed="${GXK===k}">${l}</button>`).join('')}</div>`:''}
+  ${GXC==='night'?'<p class="gx-ko">🎰 בקזינו: מגיל 18, חובה דרכון (רישיון נהיגה לא מתקבל)</p>':GXC==='malls'||GXC==='stores'?'<p class="gx-ko">🛍 ביום ראשון הקניונים נסגרים מוקדם, ו-Herend והשוק המרכזי סגורים</p>':''}
+  <div class="gx-list">${L.map((x,i)=>gxCard(x,GXC,i)).join('')}</div>
+  <p class="gx-tip">🚕 מונית: Bolt או דרך הקבלה · השעות נבדקו לנובמבר, ועדיין כדאי לוודא</p>`}
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-gxc],[data-gxk],[data-gxsur]');if(!t)return;e.stopPropagation();
   if(t.dataset.gxc){GXC=t.dataset.gxc;GXPICK=null;render(true);return}
-  // slot machine: names spin fast, slow down, and land on one place
-  const all=GXCATS.flatMap(([c])=>gxItems(c).map(x=>({x,c}))),box=document.getElementById('gxPick');if(!box||t.disabled)return;t.disabled=true;
+  if(t.dataset.gxk){GXK=t.dataset.gxk;render();return}
+  const all=Object.entries(GX).flatMap(([c,a])=>a.map(x=>({x,c}))),box=document.getElementById('gxPick');if(!box||t.disabled)return;t.disabled=true;
   const end=all[Math.floor(Math.random()*all.length)];let k=0,d=40;box.classList.add('spin');
-  const step=()=>{const r=all[Math.floor(Math.random()*all.length)];box.innerHTML=`<div class="gx-slot"><span>${gxEmo(r.c)}</span><b>${esc(r.x.n)}</b></div>`;k++;d*=1.13;
+  const step=()=>{const r=all[Math.floor(Math.random()*all.length)];box.innerHTML=`<div class="gx-slot"><span>${r.x.e||'📍'}</span><b>${esc(r.x.n)}</b></div>`;k++;d*=1.13;
     if(k<20)setTimeout(step,d);else{GXPICK=end;box.classList.remove('spin');box.innerHTML=gxCard(end.x,end.c,0);box.firstElementChild.classList.add('won');t.disabled=false}};step()},true);
 
-/* ---- Kerestir: a candle, short readable facts, and what to bring ---- */
+/* ---- Kerestir: portrait, the open house, stories to swipe, and the day of our visit ---- */
+const KZST=[
+ ['🐭','העכברים והאסם','סוחר תבואה בא בייאוש: מאות עכברים הורסים לו את האסם. הרבי שאל איך הכומר בעיר נוהג ביהודים, וכשהתברר שהוא קשה אליהם אמר: ״לך ואמור לעכברים שר׳ שייעלה אומר ללכת לחצר של הכומר״. מאות עכברים יצאו מיד. מאז תולים רבים את תמונתו בבית.'],
+ ['📜','התיק שנאכל','יהודי שערק מהצבא נידון למוות, ומשפחתו באה לבכות לפני הרבי. כששמש בית המשפט הלך להביא את התיק מחדרו של השופט, גילה שעכברים אכלו אותו עד הדף האחרון.'],
+ ['🍞','הלחמים הענקיים','במלחמת העולם הראשונה ציווה לאפות לחמים ענקיים, ״כמו צמיג של משאית״. אורח רעב מתבייש לחתוך פרוסה עבה מלחם קטן, אבל מלחם ענק לא רואים כמה חתכת. וכשראה עני מנגב את הצלחת, מילא אותה שוב: ״אתה עוד לא קיבלת״.'],
+ ['🥣','מערבבים ומחלקים','במוצאי שבת הגיע מחנה שלם של חיילים, ואמרו לו שאין מספיק בורשט. הוא ניגש לסיר שנשאר בו מעט, ערבב, ודלה כף מלאה שוב ושוב, עד שכולם שבעו. ״כאשר ישעיה מחלק, יש מספיק לכולם״.'],
+ ['🥔','תפוחי אדמה לפסח','בערב פסח לא היו תפוחי אדמה בעיירה. לגוי אחד היה מחסן מלא, והוא דרש בתמורה את העולם הבא של הרבי. הרבי הסכים מיד: ״מה שווה לי העולם הבא, אם ליהודים אין מה לאכול בפסח?״'],
+ ['🐟','הרשתות המלאות','בנהר בודרוג נגמרו הדגים, והדייגים נשארו בלי פרנסה. יחזקאל טאוב בא אל הרבי, והרבי אמר לו: ״אל תדאג, מחר יהיו דגים״. למחרת היו כל הרשתות מלאות.'],
+ ['🍰','הקוגל','נכד של עגלון מקרעסטיר, שגדל בבודפשט רחוק מהדת, אכל אצל הרבי קוגל, ומאז לא היה מסוגל לאכול אוכל לא כשר. ״טריפות הוא כבר לא יכול לאכול!״ אמר הרבי, והמשפחה כולה חזרה בתשובה.'],
+ ['🎧','שלוש שעות של כבוד','בשבתות כולם יצאו בשקט באמצע הדרשה הארוכה של הרב וחזרו לסופה. רק ר׳ ישעיה ישב שלוש וארבע שעות והקשיב לכל מילה. ״זה הכוח שעומד מאחורי כל המופתים שלו״ (מדברי הרב זאיד בעלון).']];
 function kzScreen(){
   const thu=PROG.find(x=>x.k==='thu'),it=thu?progItems(thu).filter(x=>/קרעסטיר|ציון|סעודת הישועות|חזרה/.test(x.ti+' '+x.sub)):[],visit=todayISO()==='2026-11-19';
-  const day=it.length?`<section class="kz-sec"><h3 class="kz-h">⏱ היום שלנו בקרעסטיר</h3><div class="kz-tl">${it.map((x,i)=>`<div class="kz-st${/חזרה|יציאה/.test(x.ti)?' back':''}" style="--i:${i}"><span class="kz-tm num">${esc(x.tm||'—')}</span><span class="kz-dt"></span><span class="kz-tx"><b>${esc(x.ti)}</b>${x.sub?`<small>${esc(x.sub)}</small>`:''}</span></div>`).join('')}</div><p class="kz-stay">👥 נשארים עם הקבוצה · שעת החזרה מתעדכנת בלוח המסע</p></section>`:'';
-  const facts=[['🙏','בעל מופת','רבים באו אליו לברכה ולישועה'],['🍞','מכניס אורחים','שולחן מלא בשפע, שאף אחד לא ייצא רעב'],['🌿','תלמיד רבי מרדכי מנדבורנה','ובקרעסטיר קבע את חצרו'],['🕯','ג׳ באייר','יום ההילולא · עשרות אלפים מגיעים לציון']];
-  const bring=[['📖','ספר תהילים'],['✉️','קוויטל: שם + שם האם'],['👔','לבוש צנוע'],['🤫','שקט וכבוד למקום'],['👥','נשארים עם הקבוצה']];
-  return `<section class="kz-hero"><div class="kz-candle" aria-hidden="true"><i class="kz-fl"></i><i class="kz-wk"></i><i class="kz-wax"></i></div>
-    <small class="kz-pre">החסידות והציון</small><h2 class="kz-name">רבי ישעיה׳לה<br>מקרעסטיר <span>זי״ע</span></h2>
-    <div class="kz-life"><span><b class="num">1851</b>ה׳תרי״א</span><i></i><span><b class="num">1925</b>ג׳ אייר ה׳תרפ״ה</span></div>
-    <p class="kz-where">📍 Bodrogkeresztúr · צפון־מזרח הונגריה, ליד מישקולץ</p></section>
+  const day=it.length?`<section class="kz-sec"><h3 class="kz-h">⏱ היום שלנו בקרעסטיר</h3><div class="kz-tl">${it.map((x,i)=>`<div class="kz-st${/חזרה|יציאה/.test(x.ti)?' kzret':''}" style="--i:${i}"><span class="kz-tm num">${esc(x.tm||'—')}</span><span class="kz-dt"></span><span class="kz-tx"><b>${esc(x.ti)}</b>${x.sub?`<small>${esc(x.sub)}</small>`:''}</span></div>`).join('')}</div></section>`:'';
+  return `<section class="kz-hero2"><div class="kz-ph"><img src="kerestir.jpg" alt="ר׳ שייעלה מקרעסטיר"><i class="kz-shine"></i></div>
+    <div class="kz-ht"><small>בעל המופתים מהונגריה</small><h2>ר׳ שייעלה<br>מקרעסטיר</h2><span>זי״ע · תרי״א–תרפ״ה · 1851–1925</span></div></section>
    ${visit?day:''}
-   <section class="kz-sec"><h3 class="kz-h">מי היה</h3><div class="kz-facts">${facts.map(([e,t,d],i)=>`<div class="kz-f" style="--i:${i}"><span class="kz-fe">${e}</span><b>${t}</b><small>${d}</small></div>`).join('')}</div></section>
-   <section class="kz-sec"><h3 class="kz-h">מה לוקחים לציון</h3><div class="kz-bring">${bring.map(([e,t],i)=>`<div class="kz-b" style="--i:${i}"><span>${e}</span>${t}</div>`).join('')}</div></section>
+   <blockquote class="kz-q"><span class="kz-qm">״</span>כל הצדיקים מכוונים ״רזין דרזין״,<br>ואני מכוון ״לשובע ולא לרזון״<cite>ר׳ שייעלה, לפני תקיעת שופר</cite></blockquote>
+   <section class="kz-sec"><h3 class="kz-h">🏠 הפונדקאי של כולם</h3><p class="kz-p">הוא קרא לביתו ״אכסניה״ ולעצמו ״פונדקאי״: ״בגלל שאני לא לוקח כסף, אני לא פונדקאי?!״. כל עובר אורח קיבל אוכל ומיטה, והרבי הגיש בעצמו. הוא היה אומר שהוא האב״ד של קרעסטיר: <b>א</b>ורחים, <b>ב</b>ורחים <small>(מי שברח מהגיוס)</small> ו<b>ד</b>ורכים <small>(עובדי הכרמים)</small>.</p></section>
+   <section class="kz-sec"><h3 class="kz-h">📖 סיפורים <small class="kz-sw">החליקו ‹</small></h3><div class="kz-stories">${KZST.map(([e,t,x],i)=>`<article class="kz-s" style="--i:${i}"><span class="kz-n num">${i+1}</span><span class="kz-se">${e}</span><b>${t}</b><p>${x}</p></article>`).join('')}</div></section>
+   <section class="kz-sec"><h3 class="kz-h">🕯 הציון היום</h3><div class="kz-stats">${[['2,000','אחרי הספרים הראשונים'],['10,000','ב-2017'],['35,000','שיא ב-2023']].map(([n,l],i)=>`<div style="--i:${i}"><b class="num" data-kzn="${n.replace(/,/g,'')}">${n}</b><small>${l}</small></div>`).join('')}</div>
+    <p class="kz-p">ביום ההילולא, ג׳ באייר, מגיעים מכל העולם. מחלקים ארוחות לעילוי נשמתו, וסעודת מלווה מלכה, שהייתה הסעודה האהובה עליו, נקשרה בשמו כסגולה לישועה.</p></section>
    ${visit?'':day}
-   <p class="kz-src">מקורות: ויקיפדיה, המכלול, JTA</p>`}
+   <p class="kz-src">הסיפורים נמסרו בעל פה ומובאים כפי שסופרו · מקורות: JewishGen, הקול היהודי, הידברות, משפחה</p>`}
 const EAT=[
  {h:'🛒 סופרמרקט',l:[
   {n:'סופרמרקט כשר',hrs:'א׳ 10:00–16:00 · ב׳–ה׳ 8:00–19:00 · ו׳ 8:00–15:00',tel:'+36305722165',map:'https://maps.app.goo.gl/VnngjVsJ593NVGxn7',d:'4 דק׳ הליכה'}]},
@@ -5698,8 +5802,12 @@ async function phUpload(files){
   const me=meG(), by=phMeId(), byName=me?firstN(me.name)+' '+famKey(me.name).last:(ME||'מארגן');let ok=0;PHFAIL=[];
   for(let i=0;i<files.length;i++){PHBUSY=`מעלים ${i+1} מתוך ${files.length}…`;PHPCT=Math.round(i/files.length*100);render();
     if(/^video\//.test(files[i].type||'')){try{await vidUpload(files[i],by,byName,i,files.length);ok++}catch(e){console.warn('video',e);if(e&&e.code==='permission-denied'){PHERR='permission-denied';break}if(e&&e.msg)toast(e.msg);else PHFAIL.push(files[i])}continue}
-    try{const big=await shrinkImg(files[i],1600,.82),th=await shrinkImg(files[i],420,.7),ts=Date.now(),id='ph_'+ts.toString(36)+Math.random().toString(36).slice(2,6);
-      await db.doc('photobig/'+id).set({src:big.d,ts});await db.doc('photos/'+id).set({th:th.d,w:big.w,h:big.h,by,byName,ts,...(PHCH?{ch:PHCH}:{})});ok++}
+    try{const th=await shrinkImg(files[i],480,.75),ts=Date.now(),id='ph_'+ts.toString(36)+Math.random().toString(36).slice(2,6);
+      // full quality: the original file as it came from the phone, saved in pieces (like videos). A format browsers can't show (HEIC) becomes a high-quality JPEG
+      const f0=files[i],okType=/^image\/(jpeg|png|webp|gif)$/.test(f0.type||''),src=okType&&f0.size<=VMAX?f0:await new Promise(r=>{const u=URL.createObjectURL(f0),im=new Image();im.onload=()=>{const k=Math.min(1,4096/Math.max(im.naturalWidth,im.naturalHeight)),c=document.createElement('canvas');c.width=Math.round(im.naturalWidth*k);c.height=Math.round(im.naturalHeight*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(b=>r(b),'image/jpeg',.93)};im.onerror=()=>{URL.revokeObjectURL(u);r(null)};im.src=u});
+      if(!src)throw new Error('img');const dim=await new Promise(r=>{const u=URL.createObjectURL(src),im=new Image();im.onload=()=>{r({w:im.naturalWidth,h:im.naturalHeight});URL.revokeObjectURL(u)};im.onerror=()=>r({w:0,h:0});im.src=u});
+      const n=Math.ceil(src.size/VCH);for(let j=0;j<n;j++){PHBUSY=`מעלים ${i+1} מתוך ${files.length}${n>1?' · '+Math.round(j/n*100)+'%':''}…`;render();await db.doc('photobig/'+id+'_'+j).set({src:await readURL(src.slice(j*VCH,(j+1)*VCH)),ts,i:j})}
+      await db.doc('photos/'+id).set({th:th.d,w:dim.w,h:dim.h,n,mime:src.type||'image/jpeg',size:src.size,by,byName,ts,...(PHCH?{ch:PHCH}:{})});ok++}
     catch(e){console.warn('photo',e);if(e&&e.code==='permission-denied'){PHERR='permission-denied';break}PHFAIL.push(files[i])}}
   PHBUSY='';PHPCT=0;PHCH='';render();toast(ok?(ok===1?'התמונה עלתה':`${ok} תמונות עלו`)+(PHFAIL.length?` · ${PHFAIL.length} לא עלו`:''):'ההעלאה לא הצליחה. אפשר לנסות שוב')}
 (()=>{const f=document.createElement('input');f.type='file';f.accept='image/*,video/*';f.multiple=true;f.id='phFile';f.hidden=true;document.body.appendChild(f);
@@ -5740,7 +5848,7 @@ async function vidUpload(file,by,byName,k,of){
 async function vidBlob(p,prog){if(PHBIG[p._id])return PHBIG[p._id];let got=0;
   const parts=await Promise.all(Array.from({length:p.n||0},(_,i)=>db.doc('photobig/'+p._id+'_'+i).get().then(d=>{got++;prog&&prog(got/(p.n||1));return d.exists?fetch(d.data().src).then(r=>r.blob()):null})));
   if(parts.some(x=>!x))throw new Error('missing');const u=URL.createObjectURL(new Blob(parts,{type:p.mime||'video/mp4'}));PHBIG[p._id]=u;return u}
-async function phBig(p){if(p.v)return vidBlob(p);if(PHBIG[p._id])return PHBIG[p._id];try{const d=await db.doc('photobig/'+p._id).get();const s=d.exists&&d.data().src;if(s){PHBIG[p._id]=s;return s}}catch(e){}return p.th}
+async function phBig(p){if(p.v||p.n)return vidBlob(p);if(PHBIG[p._id])return PHBIG[p._id];try{const d=await db.doc('photobig/'+p._id).get();const s=d.exists&&d.data().src;if(s){PHBIG[p._id]=s;return s}}catch(e){}return p.th}
 async function phFile(p){const src=await phBig(p),b=await (await fetch(src)).blob();if(p.v){const ext=/quicktime/.test(p.mime||'')?'mov':/webm/.test(p.mime||'')?'webm':'mp4';return new File([b],'budapest-'+p._id+'.'+ext,{type:p.mime||'video/mp4'})}return new File([b],'budapest-'+p._id+'.jpg',{type:'image/jpeg'})}
 /* download a set: up to 20 at once (the phone's share sheet saves them to the gallery); a bigger set is offered in parts, one tap each */
 async function phSaveSet(L,label){if(!L.length){toast('אין מה להוריד');return}
@@ -7113,7 +7221,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='caa8c3065c';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='0804ebf0ca';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
