@@ -4333,11 +4333,11 @@ async function save(c,id,data){
       const d={};for(const k of Object.keys(data)){if(k!=='_id'&&JSON.stringify(data[k])!==JSON.stringify(prev[k]))d[k]=data[k]}
       const FV=window.firebase&&firebase.firestore&&firebase.firestore.FieldValue;
       if(FV)for(const k of Object.keys(prev)){if(k!=='_id'&&!(k in data)&&prev[k]!==undefined)d[k]=FV.delete()}
-      if(Object.keys(d).length)commit(db.doc(c+'/'+id).set(d,{merge:true}))}
-    else commit(db.doc(c+'/'+id).set(data))
+      if(Object.keys(d).length){const bt=db.batch();bt.set(db.doc(c+'/'+id),d,{merge:true});logIn(bt,'edit',c,id,data,prev);commit(bt.commit())}}
+    else{const bt=db.batch();bt.set(db.doc(c+'/'+id),data);logIn(bt,'set',c,id,data,prev);commit(bt.commit())}
   }catch(err){toast(failMsg(err));return false}
   try{linkSync(c,id,data,prev)}catch(e){}
-  logAct(prev?'edit':'set',c,id,data,prev);return true
+  return true
 }
 // keeps shopping items and expenses in step: a paid expense marks its items as ordered, a changed item price moves its expense by the difference
 function linkSync(c,id,data,prev){
@@ -4358,28 +4358,31 @@ async function add(c,data){
   if(!db){toast('אין עדיין חיבור לנתוני המסע. פתחו את האפליקציה מהקישור של הצוות');return false}
   data.order=Math.max(0,...S[c].map(x=>+x.order||0))+1;
   const ref=db.collection(c).doc();
-  try{commit(ref.set(data))}catch(err){toast(failMsg(err));return false}
-  logAct('add',c,ref.id,data);return true
+  try{const bt=db.batch();bt.set(ref,data);logIn(bt,'add',c,ref.id,data);commit(bt.commit())}catch(err){toast(failMsg(err));return false}
+  return true
 }
 // Deleting keeps a copy in trash (the rules refuse a delete without one), so it can be restored from the settings screen
 const trashIn=(bt,c,id,d)=>{if(c!=='attendance')bt.set(db.collection('trash').doc(c+'__'+id),{col:c,rid:id,...(d?{data:strip(d)}:{}),by:ME||'',at:new Date().toISOString()},{merge:true})};
 async function remove(c,id,d){
   if(!db){toast('אין עדיין חיבור לנתוני המסע. פתחו את האפליקציה מהקישור של הצוות');return false}
-  try{const bt=db.batch();trashIn(bt,c,id,d);bt.delete(db.doc(c+'/'+id));commit(bt.commit(),true)}catch(err){toast(failMsg(err,true));return false}
-  logAct('delete',c,id,d);return true
+  try{const bt=db.batch();trashIn(bt,c,id,d);bt.delete(db.doc(c+'/'+id));logIn(bt,'delete',c,id,d);commit(bt.commit(),true)}catch(err){toast(failMsg(err,true));return false}
+  return true
 }
 const NOLOG=['activity','attendance','settings','trash'];
 const ttl=d=>String((d&&(d.title||d.name||d.item||d.donor||d.occupants||d.text))||'').replace(/\s+/g,' ').slice(0,70);
 const showV=v=>v===true?'כן':v===false?'לא':v===''||v==null?'ריק':typeof v==='number'?v.toLocaleString('he-IL'):String(v).slice(0,40);
 function diff(c,a,b){const fs=(F[c]&&F[c].fields)||[];return fs.filter(f=>JSON.stringify(a[f.k]??'')!==JSON.stringify(b[f.k]??'')).map(f=>`${f.l}: ${showV(b[f.k])}`).join(' · ')}
-function logAct(act,c,id,data,prev){
-  if(!db||NOLOG.includes(c))return;
-  if(act==='set'){if(c==='notes')return;act='add'}
-  if(c==='notes'&&act==='edit')return;
+function actEntry(act,c,id,data,prev){
+  if(!db||NOLOG.includes(c))return null;
+  if(act==='set'){if(c==='notes')return null;act='add'}
+  if(c==='notes'&&act==='edit')return null;
   const change=act==='edit'&&prev?diff(c,prev,data):'';
-  if(act==='edit'&&!change)return;
-  db.collection('activity').add({by:ME||'',at:new Date().toISOString(),act,col:c,rid:id||'',title:ttl(data||prev),change}).catch(()=>{});
+  if(act==='edit'&&!change)return null;
+  return {by:ME||'',at:new Date().toISOString(),act,col:c,rid:id||'',title:ttl(data||prev),change};
 }
+function logAct(act,c,id,data,prev){const e=actEntry(act,c,id,data,prev);if(e)db.collection('activity').add(e).catch(()=>{})}
+// adds the log line to a batch, so it lands (or is refused) together with the change it describes
+const logIn=(bt,act,c,id,data,prev)=>{const e=actEntry(act,c,id,data,prev);if(e)bt.set(db.collection('activity').doc(),e)};
 const ROLLED={},ROLL_HOLD=2500;let ROLL_PUB='';
 async function roll(pid){
   const ses=curSes().k, id=ses+'__'+pid, cur=find('attendance',id);
@@ -5835,13 +5838,16 @@ document.addEventListener('click',e=>{
   if(T.closest('[data-ride-pub]')){if(blockPrev()||!me)return;const from=(DRAFT.rdFrom||(rideDir()==='ret'?'המלון':'')).trim(),time=(DRAFT.rdTime||'').trim();if(!from){toast('כתבו מאיפה יוצאים');return}if(!time){toast('בחרו שעת יציאה');return}
     const ts=Date.now();gset('settings/ride_'+ts,{kind:'ride',dir:rideDir(),type:RFORM,by:me._id,byName:coupleLabel(ppl,me),phone:me.phone||'',from,time,seats:Math.max(1,Math.min(8,+DRAFT.rdSeats||(RFORM==='seek'?ppl.length:3))),note:(DRAFT.rdNote||'').trim(),join:[],ts}).then(ok=>{if(ok){RFORM='';DRAFT.rdFrom='';DRAFT.rdTime='';DRAFT.rdSeats='';DRAFT.rdNote='';toast('פורסם. כולם רואים את הנסיעה');render()}});return}
   const rj=T.closest('[data-ride-join],[data-ride-leave]');if(rj){if(blockPrev()||!me)return;const id=rj.dataset.rideJoin||rj.dataset.rideLeave,r=S.settings.find(x=>x._id===id);if(!r)return;const ids=ppl.map(p=>p._id);
-    let J=(r.join||[]).filter(j=>!ids.includes(j));if(rj.dataset.rideJoin){const add=r.type==='seek'?[me._id]:ids;if(r.type!=='seek'&&J.length+add.length>(+r.seats||0)){toast('אין מספיק מקום בנסיעה הזו');return}J=J.concat(add)}
-    gset('settings/'+id,{join:J}).then(ok=>{if(ok)toast(rj.dataset.rideJoin?'הצטרפתם! כדאי לשלוח וואטסאפ לתיאום':'ההצטרפות בוטלה')});return}
+    const J=(r.join||[]).filter(j=>!ids.includes(j)),FV=firebase.firestore.FieldValue;let upd;
+    if(rj.dataset.rideJoin){const add=r.type==='seek'?[me._id]:ids;if(r.type!=='seek'&&J.length+add.length>(+r.seats||0)){toast('אין מספיק מקום בנסיעה הזו');return}upd={join:FV.arrayUnion(...add)}}
+    else upd={join:FV.arrayRemove(...ids)};
+    gset('settings/'+id,upd).then(ok=>{if(ok)toast(rj.dataset.rideJoin?'הצטרפתם! כדאי לשלוח וואטסאפ לתיאום':'ההצטרפות בוטלה')});return}
   const rdl=T.closest('[data-ride-del]');if(rdl){if(blockPrev())return;if(!confirm('למחוק את הנסיעה?'))return;gset('settings/'+rdl.dataset.rideDel,{hidden:true}).then(ok=>{if(ok)toast('הנסיעה נמחקה')});return}
   const dn=T.closest('[data-g-done]');if(dn){if(blockPrev())return;gset('tasks/'+dn.dataset.gDone,{status:'בוצע'}).then(ok=>{if(ok)toast('נרשמה כבוצעה. כל הכבוד!')});return}
   const un=T.closest('[data-g-undo]');if(un){if(blockPrev())return;gset('tasks/'+un.dataset.gUndo,{status:'לביצוע'});return}
   if(T.closest('[data-g-req]')){if(blockPrev())return;const txt=(DRAFT.reqText||'').trim();if(txt.length<3){toast('כתבו מה צריך');return}
-    const ts=Date.now();gset('settings/req_'+ts,{kind:'req',by:me._id,byName:ppl.map(p=>p.name).join(' ו'),cat:DRAFT.reqCat,text:txt,status:'חדש',note:'',ts}).then(ok=>{if(ok){DRAFT.reqText='';toast('הבקשה נשלחה למארגנים. התשובה תופיע כאן');render();const a=document.querySelector('#view .annlist .ann');if(a){burst(a);a.scrollIntoView({block:'nearest',behavior:reduce?'auto':'smooth'})}}});return}
+    if(DRAFT.reqBusy){toast('שולחים… רגע');return}DRAFT.reqBusy=1;setTimeout(()=>{DRAFT.reqBusy=0},8000);
+    const ts=DRAFT.reqTs||(DRAFT.reqTs=Date.now());gset('settings/req_'+ts,{kind:'req',by:me._id,byName:ppl.map(p=>p.name).join(' ו'),cat:DRAFT.reqCat,text:txt,status:'חדש',note:'',ts}).then(ok=>{DRAFT.reqBusy=0;if(ok){DRAFT.reqText='';DRAFT.reqTs=0;toast('הבקשה נשלחה למארגנים. התשובה תופיע כאן');render();const a=document.querySelector('#view .annlist .ann');if(a){burst(a);a.scrollIntoView({block:'nearest',behavior:reduce?'auto':'smooth'})}}});return}
 },true);
 
 /* ===== ערכות: kits view over the packing collection ===== */
@@ -6723,7 +6729,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='89de891b58';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='6411545afc';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>

@@ -130,3 +130,35 @@ test('organizers: the rides and photos tiles follow the rides and let them uploa
   await expect(page.locator('.ph-c')).toHaveCount(1);
   expect((await db.list(`${T}/photos`))[0].data.byName).toBe('שלומי');
 });
+
+test('rides: two people join the same car at the same time, both stay on the list', async ({ browser, db }) => {
+  await seed(db);
+  await db.put(`${T}/settings/ride_1`, { kind: 'ride', dir: 'out', type: 'car', by: 'p1', byName: 'אבי כהן', from: 'בני ברק', time: '05:15', seats: 3, note: '', join: [], ts: 1 });
+  const p2 = await guest(browser, db, 'p2'); await tab(p2, 'gd');
+  const p3 = await guest(browser, db, 'p3'); await tab(p3, 'gd');
+  // both screens still show the car as empty when they tap
+  await Promise.all([p2.locator('[data-ride-join]').click(), p3.locator('[data-ride-join]').click()]);
+  await expect.poll(async () => ((await db.get(`${T}/settings/ride_1`))!.join as string[]).slice().sort()).toEqual(['p2', 'p3']);
+  // leaving removes only that person
+  await p2.locator('[data-ride-leave]').click();
+  await expect.poll(async () => (await db.get(`${T}/settings/ride_1`))!.join).toEqual(['p3']);
+});
+
+test('requests: a double tap sends one request', async ({ browser, db }) => {
+  await seed(db);
+  const page = await guest(browser, db, 'p2');
+  await tab(page, 'gq');
+  await page.locator('#reqText').fill('צריך מיטת תינוק בחדר');
+  await page.evaluate(() => { const b = document.querySelector('[data-g-req]') as HTMLElement; b.click(); b.click(); });
+  await expect.poll(async () => (await db.list(`${T}/settings`)).filter((d: any) => d.data.kind === 'req').length).toBe(1);
+  await page.waitForTimeout(800);
+  expect((await db.list(`${T}/settings`)).filter((d: any) => d.data.kind === 'req').length).toBe(1);
+});
+
+test('organizers: an edit and its activity-log line are saved together', async ({ browser, db }) => {
+  await seed(db);
+  const { page } = await openTrip(browser, db);
+  await page.evaluate(`save('participants','p2',{...find('participants','p2'),phone:'0509999999'})`);
+  await expect.poll(async () => (await db.get(`${T}/participants/p2`))!.phone).toBe('0509999999');
+  await expect.poll(async () => (await db.list(`${T}/activity`)).filter((d: any) => d.data.rid === 'p2' && d.data.act === 'edit').length).toBe(1);
+});
