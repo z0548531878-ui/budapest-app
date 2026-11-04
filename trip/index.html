@@ -2813,6 +2813,41 @@ html:has(#scrim.open) #app :is(*,*::before,*::after){animation-play-state:paused
 .gx-b.go{background:linear-gradient(180deg,#f3d98b,#d4af37);color:#15110a;border-color:transparent;box-shadow:0 6px 14px -6px rgba(217,178,95,.8)}.gx-b svg{width:19px;height:19px}
 .gxc.won{border-color:#f0d28c;box-shadow:0 0 0 2px rgba(240,210,140,.5),0 14px 30px -12px rgba(240,200,110,.6)}
 .gx-tip{margin:14px 4px 0;color:#8e8366;font-size:12.5px;text-align:center}
+
+/* ===== shared rides ===== */
+.rv-legs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:6px 0 12px}
+.rv-legs button{position:relative;display:grid;justify-items:center;gap:2px;padding:12px 4px 10px;border-radius:18px;border:1px solid rgba(214,178,98,.3);background:linear-gradient(160deg,#1c170f,#0d0b08);color:#cbbd96;text-align:center;transition:transform .25s,background .25s}
+.rv-legs button[aria-selected="true"]{background:linear-gradient(170deg,#f6dc93,#d4a64a);color:#15110a;border-color:transparent;box-shadow:0 10px 24px -10px rgba(217,178,95,.8);transform:translateY(-3px)}
+.rv-le{font-size:26px;line-height:1.1}.rv-legs b{font:900 15px var(--body)}.rv-legs small{font:700 11px/1.25 var(--body);opacity:.8}
+.rv-legs i{position:absolute;top:6px;inset-inline-end:6px;min-width:20px;height:20px;border-radius:10px;background:#15110a;color:#f6dc93;font:900 11px/20px var(--body);font-style:normal}
+.rv-legs button[aria-selected="true"] i{background:#15110a}
+.rv-fl{display:flex;gap:12px;align-items:center;padding:12px 14px;margin:0 0 10px;border-radius:18px;border:1px solid rgba(120,170,240,.35);background:linear-gradient(160deg,#121a28,#0b0d12)}
+.rv-pl{flex:0 0 40px;height:40px;border-radius:12px;display:grid;place-items:center;background:rgba(120,170,240,.15);color:#9cc7f0}.rv-pl svg{width:22px;height:22px}
+.rv-fl small{display:block;color:#8ea6c4;font-size:12px}.rv-fl span{color:#dce8f7;font-size:14px}.rv-fl b{color:#fff}
+.rv-how{list-style:none;margin:0 0 12px;padding:10px 12px;display:grid;gap:6px;border-radius:16px;border:1px dashed rgba(214,178,98,.35)}
+.rv-how li{display:flex;align-items:center;gap:10px;color:#cbbd96;font-size:13.5px}.rv-how span{flex:0 0 24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#e9c46f;color:#15110a;font:900 13px var(--body)}
+.rv-acts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 14px}
+.rv-acts button{display:grid;justify-items:center;gap:3px;padding:14px 6px;border-radius:18px;border:1px solid rgba(240,210,140,.45);background:linear-gradient(170deg,#2a2112,#0e0c08);color:#f4e6c2;text-align:center}
+.rv-acts span{font-size:30px}.rv-acts b{font:900 14px/1.2 var(--body)}.rv-acts small{color:#a69a7d;font-size:11.5px}
+.rv-acts button:active{transform:scale(.95)}
+.rv-h{display:flex;align-items:center;gap:8px;margin:4px 4px 10px;font:900 19px var(--display);color:#f0d28c}.rv-h .num{margin-inline-start:auto;font-size:14px;color:#a69a7d}
+.rv-route{display:flex;align-items:center;gap:10px;margin:8px 0 6px}.rv-route span,.rv-route b{font:800 15px var(--body);color:#f6e7c1;white-space:nowrap}
+.rv-route i{position:relative;flex:1;height:2px;background:repeating-linear-gradient(90deg,rgba(240,210,140,.7) 0 6px,transparent 6px 11px)}
+.rv-route em{position:absolute;top:-12px;font-style:normal;font-size:17px;right:0;transform:scaleX(-1)}
+.rv-seats{display:flex;gap:4px;margin:0 0 6px}.rv-seats i{width:16px;height:16px;border-radius:5px;border:1.5px solid rgba(240,210,140,.6)}.rv-seats i.on{background:#e9c46f;border-color:#e9c46f}
+.rv-empty{display:grid;justify-items:center;gap:6px;text-align:center;padding:26px 14px;border-radius:22px;border:1px dashed rgba(214,178,98,.4)}
+.rv-empty span{font-size:40px}.rv-empty b{font:900 17px var(--body);color:#f4e6c2}.rv-empty small{color:#a69a7d;font-size:13px;max-width:280px;line-height:1.5}
+@media (prefers-reduced-motion:no-preference){
+ #view.enter .rv-legs button{animation:kzPop .5s cubic-bezier(.2,1.3,.4,1) both!important;animation-delay:calc(var(--i,0)*.08s)!important}
+ #view.enter .rv-acts button{animation:kzPop .5s cubic-bezier(.2,1.3,.4,1) both!important;animation-delay:calc(.25s + var(--i,0)*.08s)!important}
+ #view.enter .rv-c{animation:gxIn .5s cubic-bezier(.2,1.1,.4,1) both!important;animation-delay:calc(.3s + var(--i,0)*.07s)!important}
+ #view .rv-route em{animation:rvDrive 3.2s ease-in-out infinite}
+ #view .rv-legs button[aria-selected="true"] .rv-le{animation:rvBob 2.4s ease-in-out infinite}
+ #view .rv-empty span{animation:rvBob 2.4s ease-in-out infinite}
+ .rv-form{animation:kzPop .4s cubic-bezier(.2,1.3,.4,1) both}
+}
+@keyframes rvDrive{0%{right:0}100%{right:calc(100% - 18px)}}
+@keyframes rvBob{0%,100%{transform:none}50%{transform:translateY(-4px) rotate(-4deg)}}
 @media (prefers-reduced-motion:no-preference){
  #view.enter .gx-top{animation:gxDrop .55s cubic-bezier(.2,1.2,.4,1) both!important}
  #view .gx-dice{animation:gxWob 3s 1s ease-in-out infinite}
@@ -5537,37 +5572,43 @@ const RIDE_T={car:['🚗','יש לי מקום ברכב','מצטרפים לרכב
 const rideList=dir=>S.settings.filter(x=>x.kind==='ride'&&!x.hidden&&x.dir===dir).sort((a,b)=>String(a.time||'99').localeCompare(String(b.time||'99'))||(a.ts||0)-(b.ts||0));
 const rideMine=()=>{const me=meG();if(!me)return 0;const ids=coupleOf(me).map(p=>p._id);return S.settings.filter(x=>x.kind==='ride'&&!x.hidden&&(ids.includes(x.by)||(x.join||[]).some(j=>ids.includes(j)))).length};
 let RDIR='', RFORM='';
-const rideDir=()=>RDIR||(todayISO()>='2026-11-20'?'ret':'out');
+const rideDir=()=>RDIR||(todayISO()>='2026-11-22'?'home':todayISO()>='2026-11-20'?'ret':'out');
+// the three legs of the trip that need a ride: home → TLV, hotel → BUD, and TLV → home after landing
+const RLEG={out:{e:'🏠',t:'הלוך',s:'מהבית לנתב״ג',from:'',to:'נתב״ג',ph:'עיר או שכונה, למשל בני ברק'},ret:{e:'🏨',t:'חזור',s:'מהמלון לשדה בבודפשט',from:'המלון',to:'שדה BUD',ph:'למשל המלון'},home:{e:'🛬',t:'הביתה',s:'מנתב״ג הביתה',from:'נתב״ג',to:'',ph:''}};
+const rLeg=d=>RLEG[d]||RLEG.out;
 // a one-line summary of the ride before it's published
-function rdSumTxt(t,isOut){const f=(DRAFT.rdFrom||(isOut?'':'המלון')).trim(),tm=DRAFT.rdTime||'',n=+(DRAFT.rdSeats||(t==='seek'?1:3))||0;
-  return `יפורסם: ${f?'מ'+esc(f):'(עוד לא כתבתם מאיפה)'} ל${isOut?'נתב״ג':'שדה בבודפשט'}${tm?' · יציאה ב־'+esc(tm):''} · ${t==='seek'?`${n} ${n===1?'אדם מחפש':'אנשים מחפשים'}`:`${n} ${n===1?'מקום פנוי':'מקומות פנויים'}`}`}
+function rdSumTxt(t,isOut){const d=rideDir(),L=rLeg(d),f=d==='home'?'נתב״ג':(DRAFT.rdFrom||L.from).trim(),to=d==='home'?(DRAFT.rdTo||'').trim():L.to,tm=DRAFT.rdTime||'',n=+(DRAFT.rdSeats||(t==='seek'?1:3))||0;
+  return `יפורסם: ${f?'מ'+esc(f):'(עוד לא כתבתם מאיפה)'} ל${to?esc(to):'(עוד לא כתבתם לאן)'}${tm?' · יציאה ב־'+esc(tm):''} · ${t==='seek'?`${n} ${n===1?'אדם מחפש':'אנשים מחפשים'}`:`${n} ${n===1?'מקום פנוי':'מקומות פנויים'}`}`}
 function ridesHTML(ppl,me){
-  const dir=rideDir(), isOut=dir==='out', L=rideList(dir), ids=ppl.map(p=>p._id), g=flightGroups(ppl,isOut?'הלוך':'חזור')[0], f=g&&g.f;
+  const dir=rideDir(), LG=rLeg(dir), isOut=dir==='out', isHome=dir==='home', L=rideList(dir), ids=ppl.map(p=>p._id), g=flightGroups(ppl,isOut?'הלוך':'חזור')[0], f=g&&g.f;
   let k=0;
-  const fh=f?(()=>{const at=fltAt(f),be=new Date(at-(isOut?3:2.5)*36e5).toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit',timeZone:isOut?'Asia/Jerusalem':'Europe/Budapest'});
+  const legs=`<div class="rv-legs" role="tablist">${Object.entries(RLEG).map(([d,x],i)=>`<button type="button" role="tab" data-rdir="${d}" aria-selected="${d===dir}" style="--i:${i}"><span class="rv-le">${x.e}</span><b>${x.t}</b><small>${x.s}</small>${rideList(d).length?`<i class="num">${rideList(d).length}</i>`:''}</button>`).join('')}</div>`;
+  const how=`<ol class="rv-how"><li><span>1</span>מפרסמים נסיעה, או מצטרפים לאחת שכבר יש</li><li><span>2</span>מי שפרסם מקבל התראה כשמצטרפים</li><li><span>3</span>את הפרטים סוגרים בוואטסאפ</li></ol>`;
+  const fh=f?(()=>{const at=fltAt(f);let line;
+    if(isHome)line=`נוחתים בנתב״ג בערך ב-<b class="num">${esc(f.arr||'')}</b> · מתאמים מראש מי אוסף ולאן`;
+    else{const be=new Date(at-(isOut?3:2.5)*36e5).toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit',timeZone:isOut?'Asia/Jerusalem':'Europe/Budapest'});line=`להיות ${isOut?'בנתב״ג':'בשדה בבודפשט'} עד <b class="num">${be}</b>`}
     const mates=isOut?[]:paxOf(f).filter(p=>!ids.includes(p._id));
-    return `<div class="rd-fl" style="--i:${k++}"><span class="rd-pl">${I.plane}</span><div><small>הטיסה שלכם · ${isOut?'הלוך':'חזור'}</small><b><span class="ltr num">${esc(f.flightNo||'')}</span> · ${esc(dayHe(f.date))} ${fmtDate(f.date)} · המראה <span class="num">${esc(f.dep||'')}</span></b><span>כדאי להיות ${isOut?'בנתב״ג':'בשדה בבודפשט'} עד <b class="num">${be}</b></span></div></div>
-      ${mates.length?`<details class="rd-mates" style="--i:${k++}"><summary>${mates.length} משתתפים טסים איתכם באותה טיסה ›</summary><div>${mates.map(p=>`<span>${esc(p.name)}</span>`).join('')}</div></details>`:''}`})():'';
-  const form=RFORM?`<div class="rd-form" style="--i:${k++}"><div class="rd-fh">${RIDE_T[RFORM][0]} ${RIDE_T[RFORM][1]}<button class="rd-x" data-rform="" aria-label="סגירה">✕</button></div>
-     <label><small>${isOut?'יוצאים מ־':'יוצאים מ־'}</small><input class="gin2" id="rdFrom" data-draft="rdFrom" placeholder="${isOut?'עיר או שכונה, למשל בני ברק':'למשל המלון'}" value="${esc(DRAFT.rdFrom||(isOut?'':'המלון'))}"></label>
-     <div class="rd-2"><label><small>שעת יציאה</small><input class="gin2 num" id="rdTime" data-draft="rdTime" type="time" value="${esc(DRAFT.rdTime||'')}"></label>${RFORM!=='seek'?`<label><small>מקומות פנויים</small><input class="gin2 num" id="rdSeats" data-draft="rdSeats" type="number" inputmode="numeric" min="1" max="8" value="${esc(DRAFT.rdSeats||'3')}"></label>`:`<label><small>כמה אנשים מחפשים</small><input class="gin2 num" id="rdSeats" data-draft="rdSeats" type="number" inputmode="numeric" min="1" max="8" value="${esc(DRAFT.rdSeats||String(ppl.length))}"></label>`}</div>
-     <label><small>הערה (לא חובה)</small><input class="gin2" id="rdNote" data-draft="rdNote" placeholder="${RFORM==='taxi'?'למשל: מזמינים Bolt מהלובי':'למשל: יש מקום למזוודה גדולה'}" value="${esc(DRAFT.rdNote||'')}"></label>
+    return `<div class="rv-fl"><span class="rv-pl">${I.plane}</span><div><small>${isHome?'טיסת החזור שלכם':'הטיסה שלכם'} · <span class="ltr num">${esc(f.flightNo||'')}</span> · ${esc(dayHe(f.date))} ${fmtDate(f.date)}</small><span>${line}</span></div></div>
+      ${mates.length?`<details class="rd-mates"><summary>👥 ${mates.length} מהקבוצה באותה טיסה ›</summary><div>${mates.map(p=>`<span>${esc(p.name)}</span>`).join('')}</div></details>`:''}`})():'';
+  const actions=[['car','🚗',isHome?'יש לי מקום ברכב':'יש לי מקום ברכב','מציעים מקום'],['seek','🙋','מחפשים טרמפ','מבקשים מקום'],['taxi','🚕','חולקים מונית','מתחלקים בעלות']];
+  const form=RFORM?`<div class="rd-form rv-form"><div class="rd-fh">${RIDE_T[RFORM][0]} ${RIDE_T[RFORM][1]}<button class="rd-x" data-rform="" aria-label="סגירה">✕</button></div>
+     ${isHome?`<label><small>לאן נוסעים מנתב״ג?</small><input class="gin2" id="rdTo" data-draft="rdTo" placeholder="עיר או שכונה, למשל בני ברק" value="${esc(DRAFT.rdTo||'')}"></label>`:`<label><small>יוצאים מ־</small><input class="gin2" id="rdFrom" data-draft="rdFrom" placeholder="${LG.ph}" value="${esc(DRAFT.rdFrom||LG.from)}"></label>`}
+     <div class="rd-2"><label><small>${isHome?'שעה (בערך, אחרי הנחיתה)':'שעת יציאה'}</small><input class="gin2 num" id="rdTime" data-draft="rdTime" type="time" value="${esc(DRAFT.rdTime||'')}"></label><label><small>${RFORM==='seek'?'כמה אנשים':'מקומות פנויים'}</small><input class="gin2 num" id="rdSeats" data-draft="rdSeats" type="number" inputmode="numeric" min="1" max="8" value="${esc(DRAFT.rdSeats||(RFORM==='seek'?String(ppl.length):'3'))}"></label></div>
+     <label><small>הערה (לא חובה)</small><input class="gin2" id="rdNote" data-draft="rdNote" placeholder="${RFORM==='taxi'?'למשל: מזמינים Gett מהיציאה':'למשל: יש מקום למזוודה גדולה'}" value="${esc(DRAFT.rdNote||'')}"></label>
      <p class="rd-sum2" id="rdSum" aria-live="polite">${rdSumTxt(RFORM,isOut)}</p>
-     <button class="btn primary" data-ride-pub style="width:100%">פרסום לכל המשתתפים</button></div>`:
-    `<div class="rd-new" style="--i:${k++}">${Object.entries(RIDE_T).map(([t,[ic,l]])=>`<button data-rform="${t}"><span>${ic}</span><b>${l}</b></button>`).join('')}</div>`;
+     <button class="btn primary" data-ride-pub style="width:100%">🚀 פרסום לכל המשתתפים</button></div>`
+    :`<div class="rv-acts">${actions.map(([t,e,l,sub],i)=>`<button type="button" data-rform="${t}" style="--i:${i}"><span>${e}</span><b>${l}</b><small>${sub}</small></button>`).join('')}</div>`;
   const rc=r=>{const T=RIDE_T[r.type]||RIDE_T.car, mine=ids.includes(r.by), J=(r.join||[]), inJ=J.some(j=>ids.includes(j)), seats=+r.seats||0, left=r.type==='seek'?null:Math.max(0,seats-J.length), full=left===0;
     const names=J.map(j=>{const p=S.participants.find(x=>x._id===j);return p?firstN(p.name)+' '+famKey(p.name).last:''}).filter(Boolean);
-    const who=S.participants.find(x=>x._id===r.by), ph=(who&&who.phone)||r.phone;
-    return `<div class="rd-c ${r.type} ${mine?'mine':''} ${inJ?'in':''}" style="--i:${k++}"><div class="rd-ch"><span class="rd-ic">${T[0]}</span><div><b>${esc(r.byName||'')}${mine||inJ?' <span class="pill p-gold rd-my">הנסיעה שלי</span>':''}</b><small>${T[1]}${r.type==='seek'?(seats>1?` · ${seats} אנשים`:''):` · ${full?'מלא':left+' מקומות פנויים'}`}</small></div>${r.time?`<span class="rd-tm num">${esc(r.time)}</span>`:''}</div>
-     <div class="rd-route"><span>${esc(r.from||(isOut?'?':'המלון'))}</span><i></i><b>${isOut?'נתב״ג':'שדה התעופה BUD'}</b></div>
+    const who=S.participants.find(x=>x._id===r.by), ph=(who&&who.phone)||r.phone, to=r.to||LG.to||'?', from=r.from||LG.from||'?';
+    const dots=r.type==='seek'?'':`<span class="rv-seats" aria-label="${left} מקומות פנויים">${Array.from({length:Math.min(8,seats)},(_,i)=>`<i class="${i<J.length?'on':''}"></i>`).join('')}</span>`;
+    return `<article class="rd-c rv-c ${r.type} ${mine?'mine':''} ${inJ?'in':''}" style="--i:${k++}"><div class="rd-ch"><span class="rd-ic">${T[0]}</span><div><b>${esc(r.byName||'')}${mine||inJ?' <span class="pill p-gold rd-my">שלי</span>':''}</b><small>${T[1]}${r.type==='seek'?(seats>1?` · ${seats} אנשים`:'')+(J.length?' · נמצא ✓':''):` · ${full?'מלא':left+' פנויים'}`}</small></div>${r.time?`<span class="rd-tm num">${esc(r.time)}</span>`:''}</div>
+     <div class="rv-route"><span>${esc(from)}</span><i><em>${r.type==='taxi'?'🚕':'🚗'}</em></i><b>${esc(to)}</b></div>${dots}
      ${r.note?`<p>${esc(r.note)}</p>`:''}
      ${names.length?`<div class="rd-j">${names.map(n=>`<span>${esc(n)}</span>`).join('')}</div>`:''}
-     <div class="gta">${mine?`<button class="btn ghost" data-ride-del="${r._id}">מחיקה</button>`:inJ?`<button class="btn ghost" data-ride-leave="${r._id}">↩ ביטול ההצטרפות</button>`:full?'<span class="pill p-mute">אין מקום</span>':`<button class="btn primary" data-ride-join="${r._id}">${T[2]}</button>`}${!mine&&ph?`<a class="btn" href="${waLink(ph,`היי, לגבי הנסיעה ל${isOut?'נתב״ג':'שדה בבודפשט'}${r.time?' ב־'+r.time:''}`)}" target="_blank" rel="noopener">${IX.wa}<span>וואטסאפ</span></a>`:''}</div></div>`};
-  return `<div class="seg rd-seg"><button data-rdir="out" aria-pressed="${isOut}">🇮🇱 הלוך · לנתב״ג<span class="c num">${rideList('out').length}</span></button><button data-rdir="ret" aria-pressed="${!isOut}">🇭🇺 חזור · לשדה בבודפשט<span class="c num">${rideList('ret').length}</span></button></div>
-    ${fh}${form}
-    <div class="ghead"><span>${isOut?'נסיעות לנתב״ג':'נסיעות לשדה בבודפשט'}</span><span class="num">${L.length}</span></div>
-    <div class="rd-list">${L.map(rc).join('')||card('',`<b>עוד אין נסיעות</b>${isOut?'יש לכם רכב או שאתם מחפשים טרמפ? פרסמו כאן, וכולם יראו':'מחלקים מונית מהמלון לשדה? פרסמו ותמלאו את המונית'}`)}</div>
-    <p class="note">כשמישהו מצטרף לנסיעה שפרסמתם, תקבלו התראה. את הפרטים סוגרים בוואטסאפ.</p>`}
+     <div class="gta">${mine?`<button class="btn ghost" data-ride-del="${r._id}">מחיקה</button>`:inJ?`<button class="btn ghost" data-ride-leave="${r._id}">↩ ביטול</button>`:full?'<span class="pill p-mute">אין מקום</span>':`<button class="btn primary" data-ride-join="${r._id}">${T[2]}</button>`}${!mine&&ph?`<a class="btn" href="${waLink(ph,`היי, לגבי הנסיעה ${from}–${to}${r.time?' ב־'+r.time:''}`)}" target="_blank" rel="noopener">${IX.wa}<span>וואטסאפ</span></a>`:''}</div></article>`};
+  return legs+fh+(L.length||RFORM?'':how)+form+`<h3 class="rv-h">${LG.e} ${LG.s} <span class="num">${L.length}</span></h3>
+    <div class="rd-list">${L.map(rc).join('')||`<div class="rv-empty"><span>${isHome?'🛬':isOut?'🚗':'🚕'}</span><b>עוד אין נסיעות ${LG.s}</b><small>${isHome?'נוחתים באמצע הלילה? פרסמו לאן אתם נוסעים, ומי שבאותו כיוון יצטרף':isOut?'יש לכם רכב או שאתם מחפשים טרמפ? פרסמו, וכולם יראו':'מתחלקים במונית מהמלון לשדה? פרסמו ותמלאו אותה'}</small></div>`}</div>`}
 /* ---- photos from the trip: 'photos' holds a small preview, 'photobig' the full picture (read only when opened) ---- */
 let PH=[], PHL=false, PHERR='', PHSUB=null, PHF='all', PHBUSY='', PHPCT=0, PHFAIL=[], PHT='all', PHSEL=null;
 // what the gallery shows now: uploader filter, tagged filter, and pictures / videos
@@ -5936,7 +5977,7 @@ function guestHTML0(){
   if(GTAB==='gcn'&&isProd()){const C=S.contacts.slice().sort((a,b)=>(a.order||0)-(b.order||0));
     return head('ספקים ואנשי קשר')+`<div class="vwl">${C.map(c=>`<div class="vwr"><span><b style="color:var(--text,#f4ead2)">${esc(c.name||'')}</b>${[c.role,c.person,c.notes].filter(Boolean).map(t=>`<br><small>${esc(t)}</small>`).join('')}</span><b>${c.phone?`<a href="tel:${esc(String(c.phone).replace(/[^\d+]/g,''))}">${esc(c.phone)}</a><br><a href="${waLink(c.phone)}" target="_blank" rel="noopener"><small>וואטסאפ</small></a>`:''}</b></div>`).join('')}</div>`}
   if(GTAB==='gy')return head('צ׳אט המסע')+chatHTML();
-  if(GTAB==='gd')return head('נסיעה משותפת לשדה')+`<p class="note">מתאמים ביחד את הדרך לשדה: מי שיש לו מקום ברכב, מי שמחפש טרמפ, ומי שרוצה לחלוק מונית.</p>`+ridesHTML(ppl,me);
+  if(GTAB==='gd')return head('נסיעה משותפת')+ridesHTML(ppl,me);
   if(GTAB==='gi')return head('תמונות מהמסע')+photosHTML();
   if(GTAB==='gc')return packHTML(head);
   if(GTAB==='ge')return splitHTML(head,me);
@@ -6161,8 +6202,8 @@ document.addEventListener('click',e=>{
   const ins=T.closest('[data-g-ins],[data-g-insu]');if(ins){if(blockPrev())return;const on=ins.hasAttribute('data-g-ins');ppl.forEach(p=>gset('participants/'+p._id,{insDone:on}));if(on)toast('נרשם. נסיעה בטוחה!');return}
   const gt=T.closest('[data-g-gt],[data-g-gtu]');if(gt){if(blockPrev())return;const id=gt.dataset.gGt||gt.dataset.gGtu,on=!!gt.dataset.gGt,d={};ppl.forEach(p=>d[p._id]=on);
     gset('settings/'+id,{done:d}).then(ok=>{if(ok&&on)toast('נרשם. תודה!')});return}
-  if(T.closest('[data-ride-pub]')){if(blockPrev()||!me)return;const from=(DRAFT.rdFrom||(rideDir()==='ret'?'המלון':'')).trim(),time=(DRAFT.rdTime||'').trim();if(!from){toast('כתבו מאיפה יוצאים');return}if(!time){toast('בחרו שעת יציאה');return}
-    const ts=Date.now();gset('settings/ride_'+ts,{kind:'ride',dir:rideDir(),type:RFORM,by:me._id,byName:coupleLabel(ppl,me),phone:me.phone||'',from,time,seats:Math.max(1,Math.min(8,+DRAFT.rdSeats||(RFORM==='seek'?ppl.length:3))),note:(DRAFT.rdNote||'').trim(),join:[],ts}).then(ok=>{if(ok){RFORM='';DRAFT.rdFrom='';DRAFT.rdTime='';DRAFT.rdSeats='';DRAFT.rdNote='';toast('פורסם. כולם רואים את הנסיעה');render()}});return}
+  if(T.closest('[data-ride-pub]')){if(blockPrev()||!me)return;const dd=rideDir(),home=dd==='home',from=home?'נתב״ג':(DRAFT.rdFrom||rLeg(dd).from).trim(),to=home?(DRAFT.rdTo||'').trim():rLeg(dd).to,time=(DRAFT.rdTime||'').trim();if(home&&!to){toast('כתבו לאן נוסעים');return}if(!from){toast('כתבו מאיפה יוצאים');return}if(!time){toast('בחרו שעת יציאה');return}
+    const ts=Date.now();gset('settings/ride_'+ts,{kind:'ride',dir:rideDir(),type:RFORM,by:me._id,byName:coupleLabel(ppl,me),phone:me.phone||'',from,to,time,seats:Math.max(1,Math.min(8,+DRAFT.rdSeats||(RFORM==='seek'?ppl.length:3))),note:(DRAFT.rdNote||'').trim(),join:[],ts}).then(ok=>{if(ok){RFORM='';DRAFT.rdFrom='';DRAFT.rdTo='';DRAFT.rdTime='';DRAFT.rdSeats='';DRAFT.rdNote='';toast('פורסם. כולם רואים את הנסיעה');render()}});return}
   const rj=T.closest('[data-ride-join],[data-ride-leave]');if(rj){if(blockPrev()||!me)return;const id=rj.dataset.rideJoin||rj.dataset.rideLeave,r=S.settings.find(x=>x._id===id);if(!r)return;const ids=ppl.map(p=>p._id);
     const J=(r.join||[]).filter(j=>!ids.includes(j)),FV=firebase.firestore.FieldValue;let upd;
     if(rj.dataset.rideJoin){const add=r.type==='seek'?[me._id]:ids;if(r.type!=='seek'&&J.length+add.length>(+r.seats||0)){toast('אין מספיק מקום בנסיעה הזו');return}upd={join:FV.arrayUnion(...add)}}
@@ -6393,12 +6434,12 @@ SUB.rides=function(){
   let k=0;
   const rc=r=>{const T=RIDE_T[r.type]||RIDE_T.car,J=r.join||[],left=r.type==='seek'?null:Math.max(0,(+r.seats||0)-J.length),who=S.participants.find(x=>x._id===r.by),ph=(who&&who.phone)||r.phone;
     return `<div class="rd-c ${r.type}" style="--i:${k++}"><div class="rd-ch"><span class="rd-ic">${T[0]}</span><div><b>${esc(r.byName||'')}</b><small>${T[1]}${r.type==='seek'?((+r.seats||1)>1?` · ${r.seats} אנשים`:'')+(J.length?' · נמצא טרמפ ✓':''):` · ${left===0?'מלא':left+' מקומות פנויים'}`}</small></div>${r.time?`<span class="rd-tm num">${esc(r.time)}</span>`:''}</div>
-     <div class="rd-route"><span>${esc(r.from||'')}</span><i></i><b>${isOut?'נתב״ג':'שדה התעופה BUD'}</b></div>${r.note?`<p>${esc(r.note)}</p>`:''}
+     <div class="rd-route"><span>${esc(r.from||rLeg(r.dir).from)}</span><i></i><b>${esc(r.to||rLeg(r.dir).to)}</b></div>${r.note?`<p>${esc(r.note)}</p>`:''}
      ${J.length?`<div class="rd-j">${J.map(j=>`<span>${esc(nm(j))}</span>`).join('')}</div>`:''}
      <div class="gta">${ph?`<a class="btn" href="${waLink(ph)}" target="_blank" rel="noopener">${IX.wa}<span>וואטסאפ</span></a>`:''}<button class="btn ghost" data-ride-hide="${r._id}">הסרה</button></div></div>`};
   const none=S.participants.filter(p=>!inRide.has(p._id)&&(isOut?p.outbound!=='נפרד':p.returnGroup!=='עצמאי'));
   return subHead('נסיעות לשדה',`<span class="cnt num">${L.length}</span>`)+`<p class="note">מה המשתתפים תיאמו ביניהם בדרך לשדה. המשתתפים מפרסמים ומצטרפים באפליקציה שלהם.</p>
-   <div class="seg rd-seg"><button data-rdir="out" aria-pressed="${isOut}">🇮🇱 הלוך · לנתב״ג<span class="c num">${rideList('out').length}</span></button><button data-rdir="ret" aria-pressed="${!isOut}">🇭🇺 חזור · לשדה בבודפשט<span class="c num">${rideList('ret').length}</span></button></div>
+   <div class="seg rd-seg">${Object.entries(RLEG).map(([d,x])=>`<button data-rdir="${d}" aria-pressed="${rideDir()===d}">${x.e} ${x.t}<span class="c num">${rideList(d).length}</span></button>`).join('')}</div>
    <div class="rd-sum">${[['🚗',L.filter(r=>r.type==='car').length,'רכבים'],['🚕',L.filter(r=>r.type==='taxi').length,'מוניות'],['💺',`${taken}/${seats}`,'מקומות תפוסים'],['🙋',seek.length,'עוד מחפשים']].map(([e,v,l],i)=>`<div style="--i:${i}"><span>${e}</span><b class="num">${v}</b><small>${l}</small></div>`).join('')}</div>
    <div class="rd-list">${L.map(rc).join('')||card('','<b>עוד אין נסיעות</b>כשמשתתפים יפרסמו נסיעה או יחפשו טרמפ, זה יופיע כאן')}</div>
    <details class="rd-mates"><summary>${none.length} משתתפים שלא תיאמו נסיעה באפליקציה ›</summary><p class="note" style="margin:6px 0">זה לא אומר שאין להם איך להגיע, רק שלא פרסמו ולא הצטרפו לנסיעה כאן.</p><div>${none.map(p=>`<span>${esc(p.name)}</span>`).join('')}</div></details>`};
@@ -7072,7 +7113,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='42eb1aecb4';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='caa8c3065c';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
