@@ -28,8 +28,15 @@
 <style>
   html,body{margin:0;height:100%;background:#0b0a07;overflow:hidden;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;}
   /* המשחק עצמו (הדף הראשי) מוצג על כל המסך */
-  #game{position:fixed;left:env(safe-area-inset-left,0px);right:env(safe-area-inset-right,0px);top:env(safe-area-inset-top,0px);bottom:env(safe-area-inset-bottom,0px);
-    width:calc(100% - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px));height:calc(100% - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));border:0;background:#0b0a07;}
+  #game{position:fixed;left:env(safe-area-inset-left,0px);right:env(safe-area-inset-right,0px);top:calc(env(safe-area-inset-top,0px) + 46px);bottom:env(safe-area-inset-bottom,0px);
+    width:calc(100% - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px));height:calc(100% - env(safe-area-inset-top,0px) - 46px - env(safe-area-inset-bottom,0px));border:0;background:#0b0a07;}
+  /* פס חזרה למעלה: לאפליקציית המסע ולמסך הבית של הטריוויה (באייפון אין כפתור חזרה) */
+  #bar{position:fixed;left:0;right:0;top:0;z-index:5;height:46px;padding:env(safe-area-inset-top,0px) calc(10px + env(safe-area-inset-right,0px)) 0 calc(10px + env(safe-area-inset-left,0px));
+    display:flex;align-items:center;gap:8px;background:#0b0a07;border-bottom:1px solid rgba(212,175,55,.28);}
+  #bar button{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:17px;border:1px solid rgba(212,175,55,.55);background:rgba(212,175,55,.10);
+    color:#F3D98B;font:800 14.5px/1 system-ui,-apple-system,Arial,sans-serif;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;}
+  #bar button:active{transform:scale(.96);background:rgba(212,175,55,.22);}
+  #bar .sp{flex:1}
   /* חלון ההתקנה — מופיע מיד כשנכנסים מהדפדפן */
   #veil{position:fixed;inset:0;z-index:10;background:rgba(5,4,2,.72);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:none;align-items:flex-end;justify-content:center;}
   #veil.on{display:flex;animation:fade .3s ease-out both;}
@@ -53,6 +60,7 @@
 </style>
 </head>
 <body>
+<div id="bar" role="navigation" aria-label="ניווט"><button type="button" id="toApp">→ לאפליקציית המסע</button><span class="sp"></span><button type="button" id="toHome">🏠 בית הטריוויה</button></div>
 <iframe id="game" title="טריוויה על גלגלים" allow="autoplay; screen-wake-lock; fullscreen; clipboard-write"></iframe>
 <div id="veil" role="dialog" aria-modal="true" aria-label="התקנת הטריוויה כאפליקציה"><div class="sheet" id="sheet"></div></div>
 <script>
@@ -60,6 +68,11 @@
   // המשחק נמצא בדף הראשי של האתר (שתי תיקיות למעלה). ?app=1 אומר לו לא לחזור לכאן.
   var f=document.getElementById('game'), q=location.search?location.search+'&app=1':'?app=1';
   f.src='../../'+q+location.hash;
+  var HOME='../../'+q; // מסך הבית של המשחק: בלי #group / קוד חדר
+  // באמצע משחק שואלים לפני שיוצאים; במסך הבית של המשחק יוצאים מיד
+  function midGame(){ try{ var d=f.contentDocument, a=d&&d.querySelector('.screen.active'); return !!(a && !/^s-(landing|loading|setup-missing)$/.test(a.id)); }catch(e){ return false; } }
+  document.getElementById('toApp').onclick=function(){ if(midGame() && !confirm('לצאת מהמשחק ולחזור לאפליקציית המסע?')) return; location.href='../'; };
+  document.getElementById('toHome').onclick=function(){ if(midGame() && !confirm('לצאת מהמשחק הזה ולחזור למסך הבית של הטריוויה?')) return; f.src=HOME+(HOME.indexOf('?')<0?'?':'&')+'h='+Date.now(); };
 
   var ua=navigator.userAgent, ios=/iPhone|iPad|iPod/i.test(ua) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1), android=/Android/i.test(ua);
   var inApp=/FBAN|FBAV|FB_IAB|Instagram|WhatsApp|Telegram|Line\/|MicroMessenger|Snapchat|TikTok|; wv\)/i.test(ua) || (ios && !/Safari\//.test(ua));
