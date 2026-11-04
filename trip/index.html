@@ -2811,7 +2811,7 @@ html:has(#scrim.open) #app :is(*,*::before,*::after){animation-play-state:paused
  #view.enter .rm-chips span,#view.enter .rm-who{animation:rmUp .55s .75s cubic-bezier(.2,.85,.25,1.05) both!important}
  #view.enter .rm-n{animation:rmUp .5s cubic-bezier(.2,.85,.25,1.05) both!important;animation-delay:calc(.9s + var(--k)*.08s)!important}
  #view.enter .rm-glow{animation:rmPulse 3.6s ease-in-out infinite!important}
- #view[data-scr="gr"] .rm-key{animation:rmSwing 4s 2s ease-in-out infinite}
+ #view:is([data-scr="gr"],[data-scr="myroom"]) .rm-key{animation:rmSwing 4s 2s ease-in-out infinite}
 }
 @keyframes rmHero{from{opacity:0;transform:translateY(24px) scale(.94)}to{opacity:1;transform:none}}
 @keyframes rmShine{to{transform:translateX(120%)}}
@@ -2947,8 +2947,8 @@ const rmFloors=b=>{const m=new Map();S.rooms.filter(x=>bOf(x)===b&&(x.occupants|
   return [...m.entries()].sort((x,y)=>(+y[0]||0)-(+x[0]||0)).map(([f,a])=>[f,a.sort((x,y)=>String(x.roomNumber||'').localeCompare(String(y.roomNumber||''),'he',{numeric:true}))])};
 const rmIni=t=>{const w=String(t||'').replace(/^הרב\s+/,'').trim().split(/\s+/);return (w[w.length-1]||'').slice(0,1)};
 function roomScreen(ppl){
-  if(RHID())return `<div class="rm-wait"><span class="rm-wk">🔑</span><b>שיבוץ החדרים יפורסם בקרוב</b><small>המארגנים יעדכנו כאן את החדר שלכם</small></div>`;
-  const rid=(ppl.find(p=>p.roomId)||{}).roomId, r=gRoom(rid);
+  if(GUEST()&&RHID())return `<div class="rm-wait"><span class="rm-wk">🔑</span><b>שיבוץ החדרים יפורסם בקרוב</b><small>המארגנים יעדכנו כאן את החדר שלכם</small></div>`;
+  const rid=(ppl.find(p=>p.roomId)||{}).roomId, r=GUEST()?gRoom(rid):(rid&&S.rooms.find(x=>x._id===rid));
   const digits=String(r&&r.roomNumber||'').split('').map((d,i)=>`<span class="d" style="--k:${i}">${esc(d)}</span>`).join('');
   const hero=r?`<section class="rm-hero"><div class="rm-glow"></div><div class="rm-key" aria-hidden="true">🔑</div><small class="rm-lb">החדר שלכם</small>
     <div class="rm-num num" aria-label="חדר ${esc(r.roomNumber||'')}">${digits||'—'}</div>${r.roomNumber?'':'<small class="rm-lb">המלון עוד לא מסר מספר חדר</small>'}
@@ -4186,18 +4186,18 @@ const TILE_DEFS=()=>{const pk=S.packing.filter(x=>!x.sug||kst(x,'ordered')),pd=p
  ['flights','plane','טיסות',`${S.flights.length} טיסות`,'c6'],
  ['files','file','מסמכים',`${S.files.filter(f=>f._id!=='f00').length} מסמכים · ${S.contacts.length} אנשים`,'c8'],
  ['attendance','people','ספירת נוכחות','לאוטובוס','c9'],
- ['reqs','tasks','בקשות ואישורים',`${pendN()} ממתינות`,'c12'], ['announce','chat','הודעות',`${annList().length} פורסמו · ${msgDue().length} לשלוח`,'c13'], ['trivia','spark','טריוויה','משחק לאוטובוס','c10'],['rav','mic','הקלטת הרב',(()=>{const n=S.settings.filter(x=>x.kind==='audio'&&!x.hidden).length;return n?n+' פורסמו':'להעלאה לכולם'})(),'c14'],['tasks','tasks','משימות',`${S.tasks.filter(t=>t.status!=='בוצע').length} פתוחות`,'c3'],['photos','cam','תמונות מהמסע',PHL?`${PH.length} תמונות · העלאה`:'צפייה והעלאה','c7'],['rides','car','נסיעות לשדה',`${S.settings.filter(x=>x.kind==='ride'&&!x.hidden).length} נסיעות`,'c4'],
+ ['reqs','tasks','בקשות ואישורים',`${pendN()} ממתינות`,'c12'], ['announce','chat','הודעות',`${annList().length} פורסמו · ${msgDue().length} לשלוח`,'c13'], ['trivia','spark','טריוויה','משחק לאוטובוס','c10'],['rav','mic','הקלטת הרב',(()=>{const n=S.settings.filter(x=>x.kind==='audio'&&!x.hidden).length;return n?n+' פורסמו':'להעלאה לכולם'})(),'c14'],['tasks','tasks','משימות',`${S.tasks.filter(t=>t.status!=='בוצע').length} פתוחות`,'c3'],['photos','cam','תמונות מהמסע',PHL?`${PH.length} תמונות · העלאה`:'צפייה והעלאה','c7'],['myroom','bed','החדר שלי',(()=>{const r=orgRoom();return r&&r.roomNumber?'חדר '+r.roomNumber+' · כל השיבוצים':'כל השיבוצים'})(),'c5'],['rides','car','נסיעות לשדה',`${S.settings.filter(x=>x.kind==='ride'&&!x.hidden).length} נסיעות`,'c4'],
  ['roles','spark','תפקידים',`${Object.keys(rolesMap()).length} עם תפקיד`,'c11'],
  ]};
 // trivia link: carries the user's full name so the game does not ask for it (not in organizer preview)
 const trvHref=()=>{let nm='';try{nm=GUEST()?(PREV?'':(meG()||{}).name||''):(typeof ME==='string'?ME:'')}catch(e){}nm=String(nm||'').trim();return (GUEST()?'trivia/?lock=1':'trivia/')+(nm.split(/\s+/).length>=2?(GUEST()?'&':'?')+'name='+encodeURIComponent(nm):'')};
-const TORD=['passports','people','tasks','announce','program','reqs','trivia','appusers','photos','rides','rav','roles','flights','rooms','kits','shops','files','attendance'];
+const TORD=['passports','people','tasks','announce','program','reqs','trivia','appusers','photos','myroom','rides','rav','roles','flights','rooms','kits','shops','files','attendance'];
 // gold = something there is waiting for you; the rest stay dark, so the eye goes straight to what's open
 const tileHot=k=>{try{return ({reqs:pendN()>0,passports:S.participants.some(p=>!p.passport),announce:msgDue().length>0})[k]||false}catch(e){return false}};
 const msgDue=()=>{const t=todayISO();return S.messages.filter(m=>!m.sent&&m.date&&m.date<=t)};
 // short names that fit a quarter-width tile (the full name stays as its label for screen readers)
 const TSUBS={trivia:'לאוטובוס',photos:'מהמסע',rav:'דברי הרב'};
-const TSHORT={appusers:'באפליקציה',reqs:'בקשות',rav:'הקלטות',photos:'תמונות',rides:'נסיעות',attendance:'נוכחות'};
+const TSHORT={myroom:'החדר שלי',appusers:'באפליקציה',reqs:'בקשות',rav:'הקלטות',photos:'תמונות',rides:'נסיעות',attendance:'נוכחות'};
 const homeTiles=()=>`<section class="sec"><div class="sec-h"><h3>הכל במקום אחד</h3><span class="sec-k"><i></i>מחכה לטיפול</span></div><div class="cubes tiles">${TILE_DEFS().filter(x=>!['tasks','shops','program'].includes(x[0])).sort((a,b)=>TORD.indexOf(a[0])-TORD.indexOf(b[0])).map(([k,ic,l0,s0,c],i)=>{const l=TSHORT[k]||l0;let s=String(s0||'').split(' · ')[0].split(' + ')[0];if(s.length>11)s=TSUBS[k]||'';return (k==='trivia'?`<a class="cube ${c}" href="${trvHref()}" style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></a>`:`<button class="cube ${c}${tileHot(k)?' hot':''}" aria-label="${esc(l0+(s?' · '+s:''))}" ${k==='tasks'?'data-go="tasks"':`data-go="more" data-opts='{"sub":"${k}"}'`} style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></button>`)}).join('')}</div></section>`;
 
 
@@ -6267,6 +6267,11 @@ SUB.announce=function(){
    <div class="joinbar"><div><b class="num">${joined.length}/${S.participants.length}</b><span>נכנסו לאפליקציה ויראו את ההודעה</span></div><div class="prog"><i data-w="${S.participants.length?Math.round(joined.length/S.participants.length*100):0}%" style="width:0"></i></div>
     ${not.length?`<details><summary class="note">מי עוד לא נכנס (${not.length}) ›</summary><div class="nonelist" style="margin-top:8px">${not.map(p=>`<span>${esc(p.name)}</span>`).join('')}</div></details>`:'<p class="note">כל המשתתפים נכנסו 🎉</p>'}</div>
    ${L.length?`<div class="ghead"><span>פורסמו</span><span class="num">${L.length}</span></div><div class="annlist">${L.map(a=>`<div class="ann ${a.to&&a.to.length?'personal':''}"><div class="ah"><b>${esc(a.title||'הודעה')}</b>${a.to&&a.to.length?`<span class="pill p-mute">אישית · ${esc(a.toName||'')}</span>`:''}<small>${tsStr(a.ts)}</small></div><p>${esc(a.text||'').replace(/\n/g,'<br>')}</p><div class="gta"><button class="btn ghost" data-ann-hide="${a._id}">הסתרה</button></div></div>`).join('')}</div>`:card('','<b>עוד לא פורסמה הודעה</b>')}`};
+// organizers: their own room (by the name they picked) and everyone's rooms, also while the allocation is still a draft
+const ORGP={'שלומי':'שלומי זינגר','איציק':'איציק שרייבר','יעל':'יעל שרייבר'};
+const orgSelf=()=>{const n=ORGP[ME]||'';return S.participants.find(p=>p.name===n)||(ME?S.participants.find(p=>String(p.name||'').startsWith(ME+' ')):null)||null};
+const orgRoom=()=>{const me=orgSelf();return me&&me.roomId?S.rooms.find(x=>x._id===me.roomId):null};
+SUB.myroom=function(){const me=orgSelf();return subHead('החדר שלי','')+(RHID()?'<p class="note" style="margin:0 0 10px">🔒 השיבוץ עדיין לא פורסם למשתתפים. רק המארגנים רואים אותו.</p>':'')+roomScreen(me?coupleOf(me):[])};
 SUB.photos=function(){return subHead('תמונות מהמסע',PHL?`<span class="cnt num">${PH.length}</span>`:'')+photosHTML()};
 SUB.rides=function(){
   const dir=rideDir(), isOut=dir==='out', L=rideList(dir);
@@ -6943,7 +6948,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='3631c17074';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='8bfe2614a0';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
