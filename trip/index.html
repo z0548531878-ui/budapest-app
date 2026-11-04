@@ -2787,6 +2787,86 @@ html:has(#scrim.open) #app :is(*,*::before,*::after){animation-play-state:paused
 /* countdown: a calm tick, no flashing (the digit never fades out) */
 @keyframes tick{0%{transform:translateY(-2px);opacity:.75}100%{transform:none;opacity:1}}
 @keyframes cdflip{0%{transform:translateY(-3px);opacity:.75}100%{transform:none;opacity:1}}
+
+/* ===== restaurants & attractions ===== */
+.gx-top{display:grid;grid-template-columns:auto 1fr;gap:8px;margin:6px 0 10px}
+.gx-hotel{display:flex;align-items:center;gap:6px;padding:0 14px;border-radius:16px;border:1px solid rgba(214,178,98,.4);color:#f0d28c;text-decoration:none;font:800 13.5px var(--body);background:rgba(214,178,98,.07)}.gx-hotel svg{width:18px;height:18px}
+.gx-sur{display:flex;align-items:center;gap:10px;padding:10px 14px;border:0;border-radius:16px;text-align:start;color:#15110a;background:linear-gradient(115deg,#f6dc93,#d4a64a 60%,#f3d98b);box-shadow:0 8px 22px -10px rgba(217,178,95,.8)}
+.gx-sur b{display:block;font:900 16px var(--body)}.gx-sur small{font:700 11.5px var(--body);opacity:.75}.gx-dice{font-size:26px;display:inline-block}
+.gx-sur:disabled .gx-dice{animation:gxRoll .5s linear infinite}
+.gx-pick:empty{display:none}.gx-pick{margin:0 0 12px}
+.gx-slot{display:flex;align-items:center;justify-content:center;gap:10px;min-height:78px;border-radius:20px;border:2px dashed rgba(240,210,140,.6);background:#14110a;font:900 20px var(--display);color:#ffe9b0}
+.gx-slot span{font-size:26px}
+.gx-cats{position:sticky;top:6px;z-index:3;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:4px;margin:0 0 10px;border-radius:16px;background:rgba(12,10,7,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(214,178,98,.28)}
+.gx-cats button{display:grid;justify-items:center;gap:1px;padding:7px 2px;border:0;border-radius:12px;background:transparent;color:#a69a7d;font:800 13px var(--body);transition:background .25s,color .25s,transform .2s}
+.gx-cats button span{font-size:20px;transition:transform .3s cubic-bezier(.3,1.6,.5,1)}
+.gx-cats button[aria-selected="true"]{background:linear-gradient(180deg,#f3d98b,#d4af37);color:#15110a}.gx-cats button[aria-selected="true"] span{transform:scale(1.2) rotate(-8deg)}
+.gx-ko{margin:0 0 10px;padding:7px 12px;border-radius:12px;background:rgba(127,209,165,.08);border:1px solid rgba(127,209,165,.35);color:#9fe0bd;font:700 12.5px var(--body);text-align:center}
+.gx-list{display:grid;gap:8px}
+.gxc{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;padding:12px;border-radius:20px;border:1px solid rgba(214,178,98,.28);background:linear-gradient(160deg,#1c170f,#0d0b08)}
+.gx-e{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:22px;background:rgba(240,210,140,.1);border:1px solid rgba(240,210,140,.3)}
+.gx-m{min-width:0;display:grid;gap:4px}.gx-m>b{font:900 17px var(--body);color:#f6e7c1}
+.gx-tags{display:flex;flex-wrap:wrap;gap:4px}.gx-tags span{font:700 11.5px var(--body);color:#cbbd96;background:rgba(255,255,255,.05);border-radius:8px;padding:2px 7px}.gx-tags .ms{color:#15110a;background:#e9c46f}
+.gx-s{color:#9d916f;font-size:12px}
+.gx-h summary{cursor:pointer;color:#bfae84;font:700 12px var(--body);list-style:none}.gx-h summary::-webkit-details-marker{display:none}.gx-h p{margin:4px 0 0;color:#cbbd96;font-size:12.5px;line-height:1.5}
+.gx-a{display:grid;gap:6px}.gx-b{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;text-decoration:none;font-size:17px;border:1px solid rgba(214,178,98,.4);color:#f0d28c;background:rgba(214,178,98,.08)}
+.gx-b.go{background:linear-gradient(180deg,#f3d98b,#d4af37);color:#15110a;border-color:transparent;box-shadow:0 6px 14px -6px rgba(217,178,95,.8)}.gx-b svg{width:19px;height:19px}
+.gxc.won{border-color:#f0d28c;box-shadow:0 0 0 2px rgba(240,210,140,.5),0 14px 30px -12px rgba(240,200,110,.6)}
+.gx-tip{margin:14px 4px 0;color:#8e8366;font-size:12.5px;text-align:center}
+@media (prefers-reduced-motion:no-preference){
+ #view.enter .gx-top{animation:gxDrop .55s cubic-bezier(.2,1.2,.4,1) both!important}
+ #view .gx-dice{animation:gxWob 3s 1s ease-in-out infinite}
+ #view.enter .gxc{animation:gxIn .5s cubic-bezier(.2,1.1,.4,1) both!important;animation-delay:calc(.12s + var(--i,0)*.06s)!important}
+ .gxc.won{animation:gxWon .6s cubic-bezier(.2,1.5,.4,1) both}
+ .gx-pick.spin .gx-slot b{animation:gxBlur .12s linear infinite}
+}
+@keyframes gxDrop{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+@keyframes gxIn{from{opacity:0;transform:translateX(-26px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes gxWon{0%{transform:scale(.8);opacity:0}60%{transform:scale(1.04)}100%{transform:none;opacity:1}}
+@keyframes gxRoll{to{transform:rotate(360deg)}}
+@keyframes gxWob{0%,80%,100%{transform:none}85%{transform:rotate(-18deg)}90%{transform:rotate(14deg)}95%{transform:rotate(-6deg)}}
+@keyframes gxBlur{0%{transform:translateY(-4px);opacity:.6}100%{transform:translateY(4px);opacity:1}}
+/* ===== Kerestir ===== */
+.kz-hero{position:relative;overflow:hidden;text-align:center;margin:6px 0 16px;padding:22px 16px 18px;border-radius:28px;border:1px solid rgba(240,210,140,.5);
+  background:radial-gradient(70% 55% at 50% 18%,rgba(255,190,90,.28),transparent 70%),linear-gradient(175deg,#221a0d,#070605 75%)}
+.kz-candle{position:relative;width:34px;height:84px;margin:0 auto 6px}
+.kz-wax{position:absolute;left:5px;right:5px;bottom:0;height:46px;border-radius:5px 5px 3px 3px;background:linear-gradient(90deg,#d9c9a3,#fff8e6 45%,#c9b68b)}
+.kz-wk{position:absolute;left:50%;bottom:46px;width:2px;height:8px;margin-left:-1px;background:#3a2a14}
+.kz-fl{position:absolute;left:50%;bottom:52px;width:18px;height:30px;margin-left:-9px;border-radius:50% 50% 45% 45%/65% 65% 35% 35%;background:radial-gradient(circle at 50% 75%,#fff 0,#ffe39a 25%,#ffb347 55%,rgba(255,120,30,0) 72%);transform-origin:50% 90%;filter:drop-shadow(0 0 14px rgba(255,190,90,.9))}
+.kz-pre{color:#c9b98f;font:800 13px var(--body);letter-spacing:.06em}
+.kz-name{margin:4px 0 10px;font:900 30px/1.15 var(--display);color:#ffe9b0}.kz-name span{font-size:20px;color:#d9b866}
+.kz-life{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 auto 10px;max-width:300px}
+.kz-life span{display:grid;color:#a69a7d;font-size:12px}.kz-life b{color:#f0d28c;font-size:20px;font-family:var(--display)}
+.kz-life i{flex:1;height:2px;background:linear-gradient(90deg,transparent,#e9c46f,transparent);transform-origin:center}
+.kz-where{margin:0;color:#cbbd96;font-size:13px}
+.kz-sec{margin:0 0 16px}.kz-h{margin:0 4px 10px;font:900 20px var(--display);color:#f0d28c}
+.kz-facts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kz-f{display:grid;gap:4px;padding:14px 12px;border-radius:20px;border:1px solid rgba(214,178,98,.3);background:linear-gradient(160deg,#1d1810,#0d0b08)}
+.kz-fe{font-size:28px}.kz-f b{font:900 16px var(--body);color:#f6e7c1;line-height:1.25}.kz-f small{color:#a69a7d;font-size:13px;line-height:1.45}
+.kz-bring{display:flex;flex-wrap:wrap;gap:8px}
+.kz-b{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:99px;background:rgba(240,210,140,.09);border:1px solid rgba(240,210,140,.35);color:#f4e6c2;font:800 14.5px var(--body)}.kz-b span{font-size:18px}
+.kz-tl{position:relative;display:grid;gap:4px;padding:12px;border-radius:20px;border:1px solid rgba(240,210,140,.45);background:linear-gradient(170deg,#241c0f,#0b0907)}
+.kz-st{display:grid;grid-template-columns:52px 14px minmax(0,1fr);gap:10px;align-items:start;padding:6px 2px}
+.kz-tm{color:#f0d28c;font-weight:900;font-size:16px;padding-top:1px}.kz-dt{width:12px;height:12px;margin-top:5px;border-radius:50%;background:#e9c46f;box-shadow:0 0 0 4px rgba(233,196,111,.18)}
+.kz-tx{min-width:0}.kz-tx b{display:block;color:#f6e7c1;font-size:15px}.kz-tx small{color:#a69a7d;font-size:12.5px}
+.kz-st.back .kz-dt{background:#ff8a6a;box-shadow:0 0 0 4px rgba(255,138,106,.2)}.kz-st.back .kz-tm,.kz-st.back b{color:#ffb39e}
+.kz-stay{margin:8px 4px 0;color:#cbbd96;font-size:13px;text-align:center}
+.kz-src{margin:6px 4px 0;color:#6f6650;font-size:11.5px;text-align:center}
+@media (prefers-reduced-motion:no-preference){
+ #view .kz-fl{animation:kzFl 1.6s ease-in-out infinite alternate}
+ #view.enter .kz-hero{animation:gxDrop .7s cubic-bezier(.2,1.1,.4,1) both!important}
+ #view.enter .kz-candle{animation:kzRise .9s .15s cubic-bezier(.2,1.3,.4,1) both!important}
+ #view.enter .kz-name{animation:kzName .8s .35s cubic-bezier(.2,.85,.25,1) both!important}
+ #view.enter .kz-life i{animation:kzLine .9s .7s cubic-bezier(.2,.85,.25,1) both!important}
+ #view.enter .kz-f{animation:kzPop .55s cubic-bezier(.2,1.3,.4,1) both!important;animation-delay:calc(.5s + var(--i,0)*.1s)!important}
+ #view.enter .kz-b{animation:kzPop .5s cubic-bezier(.2,1.3,.4,1) both!important;animation-delay:calc(.8s + var(--i,0)*.07s)!important}
+ #view.enter .kz-st{animation:gxIn .5s cubic-bezier(.2,1.1,.4,1) both!important;animation-delay:calc(.4s + var(--i,0)*.1s)!important}
+}
+@keyframes kzFl{0%{transform:scale(1,1) rotate(-2deg)}50%{transform:scale(.94,1.08) rotate(2deg)}100%{transform:scale(1.04,.95) rotate(-1deg)}}
+@keyframes kzRise{from{opacity:0;transform:translateY(20px) scale(.6)}to{opacity:1;transform:none}}
+@keyframes kzName{from{opacity:0;letter-spacing:.2em;filter:blur(6px)}to{opacity:1;letter-spacing:normal;filter:none}}
+@keyframes kzLine{from{transform:scaleX(0)}to{transform:none}}
+@keyframes kzPop{from{opacity:0;transform:scale(.85) translateY(10px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:no-preference){.trvp.trv-dance{animation:trvDance .5s ease-in-out 4!important}}
 @keyframes trvDance{0%,100%{transform:none}25%{transform:rotate(-8deg) scale(1.08)}50%{transform:translateY(-6px) scale(1.12)}75%{transform:rotate(8deg) scale(1.08)}}
 @media (prefers-reduced-motion:no-preference){
@@ -5254,6 +5334,49 @@ const mapsGo=(q,mode='walking')=>'https://www.google.com/maps/dir/?api=1&travelm
    ms: open on Saturday night (motzash) */
 // each opening time reads left to right inside the Hebrew line (otherwise 10:00–16:00 shows as 16:00–10:00)
 const hrsHTML=t=>esc(t).replace(/(\d{1,2}:\d{2})–(\d{1,2}:\d{2})/g,'<bdi dir="ltr">$1–$2</bdi>');
+
+/* ---- restaurants & attractions: one category at a time, short cards, and a "surprise me" pick ---- */
+let GXC='dairy',GXPICK=null;
+const GXCATS=[['dairy','🥐','חלבי'],['meat','🍖','בשרי'],['see','🎡','לראות'],['shop','🛍','קניות']];
+function gxItems(c){
+  if(c==='dairy'||c==='meat')return EAT.find(g=>g.h.includes(c==='dairy'?'חלבי':'בשרי')).l.map(p=>({n:p.n,d:p.d||'',sub:p.k?'כשרות '+p.k:'',hrs:p.hrs,ms:p.ms,note:p.note||'',tel:p.tel,go:safeUrl(p.map)}));
+  const L=PLACES[c==='see'?0:1].l.map(p=>({n:p[0],en:p[1],d:p[3]||'',sub:p[4]||'',hrs:p[5]||'',go:mapsGo(p[1]+' '+p[2])}));
+  if(c==='shop'){const sm=EAT.find(g=>g.h.includes('סופר'));if(sm)L.unshift(...sm.l.map(p=>({n:p.n,d:p.d||'',sub:p.k?'כשרות '+p.k:'',hrs:p.hrs,note:p.note||'',tel:p.tel,go:safeUrl(p.map)})))}return L}
+const gxEmo=c=>({dairy:'☕',meat:'🍽',see:'📸',shop:'🛍'})[c];
+function gxCard(x,c,i){return `<article class="gxc" style="--i:${i}"><span class="gx-e" aria-hidden="true">${gxEmo(c)}</span><div class="gx-m"><b>${esc(x.n)}</b>
+  <div class="gx-tags">${x.d?`<span>🚶 ${esc(x.d)}</span>`:''}${x.ms?`<span class="ms">✨ פתוח במוצ״ש מ-<bdi dir="ltr">${esc(x.ms)}</bdi></span>`:''}${x.note&&/ארוחות השבת/.test(x.note)?'<span class="ms">⭐ ארוחות השבת שלנו</span>':''}</div>
+  ${x.sub?`<small class="gx-s">${esc(x.sub)}</small>`:''}${x.hrs?`<details class="gx-h"><summary>🕒 שעות פתיחה</summary><p>${hrsHTML(x.hrs)}</p>${x.note&&!/ארוחות השבת/.test(x.note)?`<p>${esc(x.note)}</p>`:''}</details>`:''}</div>
+  <div class="gx-a"><a class="gx-b go" href="${x.go}" target="_blank" rel="noopener" aria-label="ניווט אל ${esc(x.n)}">${IX.nav}</a>${x.tel?`<a class="gx-b" href="tel:${x.tel}" aria-label="התקשרות">📞</a>`:''}</div></article>`}
+function gxScreen(){const L=gxItems(GXC);
+  return `<div class="gx-top"><a class="gx-hotel" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener">${IX.nav}<span>חזרה למלון</span></a><button type="button" class="gx-sur" data-gxsur><span class="gx-dice">🎲</span><span><b>תפתיעו אותי</b><small>בחירה אקראית לאן הולכים</small></span></button></div>
+  <div class="gx-pick" id="gxPick" aria-live="polite">${GXPICK?gxCard(GXPICK.x,GXPICK.c,0):''}</div>
+  <div class="gx-cats" role="tablist">${GXCATS.map(([k,e,l])=>`<button type="button" role="tab" data-gxc="${k}" aria-selected="${GXC===k}"><span>${e}</span>${l}</button>`).join('')}</div>
+  ${GXC==='dairy'||GXC==='meat'?'<p class="gx-ko">✡︎ בודקים תעודת כשרות בתוקף במקום עצמו</p>':''}
+  <div class="gx-list" data-c="${GXC}">${L.map((x,i)=>gxCard(x,GXC,i)).join('')}</div>
+  <p class="gx-tip">🚕 מונית: Bolt או דרך הקבלה · 💳 אשראי מתקבל כמעט בכל מקום</p>`}
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-gxc],[data-gxsur]');if(!t)return;e.stopPropagation();
+  if(t.dataset.gxc){GXC=t.dataset.gxc;GXPICK=null;render(true);return}
+  // slot machine: names spin fast, slow down, and land on one place
+  const all=GXCATS.flatMap(([c])=>gxItems(c).map(x=>({x,c}))),box=document.getElementById('gxPick');if(!box||t.disabled)return;t.disabled=true;
+  const end=all[Math.floor(Math.random()*all.length)];let k=0,d=40;box.classList.add('spin');
+  const step=()=>{const r=all[Math.floor(Math.random()*all.length)];box.innerHTML=`<div class="gx-slot"><span>${gxEmo(r.c)}</span><b>${esc(r.x.n)}</b></div>`;k++;d*=1.13;
+    if(k<20)setTimeout(step,d);else{GXPICK=end;box.classList.remove('spin');box.innerHTML=gxCard(end.x,end.c,0);box.firstElementChild.classList.add('won');t.disabled=false}};step()},true);
+
+/* ---- Kerestir: a candle, short readable facts, and what to bring ---- */
+function kzScreen(){
+  const thu=PROG.find(x=>x.k==='thu'),it=thu?progItems(thu).filter(x=>/קרעסטיר|ציון|סעודת הישועות|חזרה/.test(x.ti+' '+x.sub)):[],visit=todayISO()==='2026-11-19';
+  const day=it.length?`<section class="kz-sec"><h3 class="kz-h">⏱ היום שלנו בקרעסטיר</h3><div class="kz-tl">${it.map((x,i)=>`<div class="kz-st${/חזרה|יציאה/.test(x.ti)?' back':''}" style="--i:${i}"><span class="kz-tm num">${esc(x.tm||'—')}</span><span class="kz-dt"></span><span class="kz-tx"><b>${esc(x.ti)}</b>${x.sub?`<small>${esc(x.sub)}</small>`:''}</span></div>`).join('')}</div><p class="kz-stay">👥 נשארים עם הקבוצה · שעת החזרה מתעדכנת בלוח המסע</p></section>`:'';
+  const facts=[['🙏','בעל מופת','רבים באו אליו לברכה ולישועה'],['🍞','מכניס אורחים','שולחן מלא בשפע, שאף אחד לא ייצא רעב'],['🌿','תלמיד רבי מרדכי מנדבורנה','ובקרעסטיר קבע את חצרו'],['🕯','ג׳ באייר','יום ההילולא · עשרות אלפים מגיעים לציון']];
+  const bring=[['📖','ספר תהילים'],['✉️','קוויטל: שם + שם האם'],['👔','לבוש צנוע'],['🤫','שקט וכבוד למקום'],['👥','נשארים עם הקבוצה']];
+  return `<section class="kz-hero"><div class="kz-candle" aria-hidden="true"><i class="kz-fl"></i><i class="kz-wk"></i><i class="kz-wax"></i></div>
+    <small class="kz-pre">החסידות והציון</small><h2 class="kz-name">רבי ישעיה׳לה<br>מקרעסטיר <span>זי״ע</span></h2>
+    <div class="kz-life"><span><b class="num">1851</b>ה׳תרי״א</span><i></i><span><b class="num">1925</b>ג׳ אייר ה׳תרפ״ה</span></div>
+    <p class="kz-where">📍 Bodrogkeresztúr · צפון־מזרח הונגריה, ליד מישקולץ</p></section>
+   ${visit?day:''}
+   <section class="kz-sec"><h3 class="kz-h">מי היה</h3><div class="kz-facts">${facts.map(([e,t,d],i)=>`<div class="kz-f" style="--i:${i}"><span class="kz-fe">${e}</span><b>${t}</b><small>${d}</small></div>`).join('')}</div></section>
+   <section class="kz-sec"><h3 class="kz-h">מה לוקחים לציון</h3><div class="kz-bring">${bring.map(([e,t],i)=>`<div class="kz-b" style="--i:${i}"><span>${e}</span>${t}</div>`).join('')}</div></section>
+   ${visit?'':day}
+   <p class="kz-src">מקורות: ויקיפדיה, המכלול, JTA</p>`}
 const EAT=[
  {h:'🛒 סופרמרקט',l:[
   {n:'סופרמרקט כשר',hrs:'א׳ 10:00–16:00 · ב׳–ה׳ 8:00–19:00 · ו׳ 8:00–15:00',tel:'+36305722165',map:'https://maps.app.goo.gl/VnngjVsJ593NVGxn7',d:'4 דק׳ הליכה'}]},
@@ -5712,15 +5835,7 @@ function guestHTML0(){
      ${flightGroups(ppl,'חזור').map(g=>guestFlightCard(g,ppl,'חזור')).join('')}
      ${help}</div>`}
   if(GTAB==='gfl')return head('טיסות')+flightsHTML(true);
-  if(GTAB==='gx'){
-    const hn=`<a class="hotelbar" href="${mapsGo(HOTEL.q)}" target="_blank" rel="noopener">${IX.nav}<span>חזרה למלון · ניווט</span></a>`;
-    return head('מסעדות ואטרקציות')+hn+`<div class="kosher" role="note"><b>לפני שאוכלים</b>בודקים תעודת כשרות בתוקף במקום עצמו. המידע כאן עלול להשתנות.</div><p class="note">"ניווט" פותח את המקום במפות. המרחקים הם מהמלון, בערך. שעות הפתיחה עלולות להשתנות, ובחגים הונגריים חלק מהמקומות סגורים.</p>`+
-     EAT.map((g,gi)=>`<section class="pgrp" style="--g:${gi}"><div class="ghead"><span>${g.h}</span><span class="num">${g.l.length}</span></div>${g.l.map((p,i)=>`<div class="place eat" style="--i:${i}"><div class="pl-t"><b>${esc(p.n)}</b>${p.d?`<span class="pill p-mute">${esc(p.d)}</span>`:''}</div>
-       <div class="pl-hrs">🕒 ${hrsHTML(p.hrs)}</div>${p.k?`<div class="pl-k">✡︎ כשרות ${esc(p.k)}</div>`:''}${p.note?`<small>${esc(p.note)}</small>`:''}
-       <div class="pl-a"><a class="btn primary" href="${safeUrl(p.map)}" target="_blank" rel="noopener">${IX.nav}<span>ניווט</span></a>${p.tel?`<a class="btn" href="tel:${p.tel}">📞<span>התקשרות</span></a>`:''}</div></div>`).join('')}</section>`).join('')+
-     PLACES.map((g,gi)=>`<section class="pgrp" style="--g:${gi+3}"><div class="ghead"><span>${g.h}</span><span class="num">${g.l.length}</span></div>${g.l.map((p,i)=>`<div class="place" style="--i:${i}"><div class="pl-t"><b>${esc(p[0])}</b><span class="ltr en">${esc(p[1])}</span></div>${p[3]?`<span class="pill p-mute">${esc(p[3])}</span>`:''}${p[5]?`<div class="pl-hrs">🕒 ${hrsHTML(p[5])}</div>`:''}${p[4]?`<small>${hrsHTML(p[4])}</small>`:''}
-       <div class="pl-a"><a class="btn primary" href="${mapsGo(p[1]+' '+p[2])}" target="_blank" rel="noopener">${IX.nav}<span>ניווט</span></a><a class="btn" href="${mapsFind(p[1]+' '+p[2])}" target="_blank" rel="noopener">${IX.pin}<span>במפה</span></a></div></div>`).join('')}</section>`).join('')+
-     `<p class="note">טיפ: מזמינים מונית באפליקציית Bolt או בקבלה. כרטיס אשראי מתקבל כמעט בכל מקום.</p>`}
+  if(GTAB==='gx')return head('מסעדות ואטרקציות')+gxScreen();
   if(GTAB==='gl'){const h=SUB.program().replace(/<div class="page-title">[\s\S]*?<\/div>/,'');const k=progDay(),i=PROG.findIndex(x=>x.k===k),pv_=PROG[i-1],nx=PROG[i+1];
     return head('לוח המסע')+h.replace('<div class="parch">','<div class="swhint">‹ החליקו ימינה ושמאלה בין הימים ›</div><div class="parch">')+`<div class="daynav">${pv_?`<button data-gday="${pv_.k}"><span>›</span> ${pv_.tab}</button>`:'<i></i>'}${nx?`<button data-gday="${nx.k}">${nx.tab} <span>‹</span></button>`:'<i></i>'}</div>`}
   if(GTAB==='gp'){
@@ -5744,25 +5859,7 @@ function guestHTML0(){
      <div class="pcards">${listH||'<div class="card"><div class="empty"><b>לא מצאנו שם כזה</b>נסו רק שם פרטי או רק שם משפחה</div></div>'}</div>
      <p class="note">הרשימה לפי זוגות. לחיצה על סמל הוואטסאפ פותחת שיחה.</p>`}
   if(GTAB==='gr')return head('החדר שלי')+roomScreen(ppl);
-  if(GTAB==='gz'){
-    const thu=PROG.find(x=>x.k==='thu'),it=thu?progItems(thu).filter(x=>/קרעסטיר|ציון|סעודת הישועות|חזרה/.test(x.ti+' '+x.sub)):[];
-    // on the day of the visit our own schedule comes first; the return time and "stay with the group" stand out
-    const ourDay=it.length?`<div class="kzc kzday"><h4>היום שלנו בקרעסטיר</h4><div class="kzt">${it.map(x=>`<div class="${/חזרה|יציאה/.test(x.ti)?'kzback':''}"><span class="num">${esc(x.tm||'—')}</span><b>${esc(x.ti)}</b><small>${esc(x.sub||'')}</small></div>`).join('')}</div><p class="kzstay">נשארים עם הקבוצה ועם המארגנים. שעת החזרה מתעדכנת בלוח המסע.</p></div>`:'',visit=todayISO()==='2026-11-19';
-    return head('קרעסטיר')+`<div class="kzh"><small>החסידות והציון</small><b>רבי ישעיה׳לה מקרעסטיר זי״ע</b><span>ה׳תרי״א (1851) – ג׳ באייר ה׳תרפ״ה (1925)</span></div>${visit?ourDay:''}
-     <div class="kzc"><h4>מי היה</h4><ul>
-      <li>רבי ישעיה שטיינר, ידוע בכינוי <b>״רבי ישעיה׳לה קערעסטירער״</b>, מייסד חסידות קרעסטיר.</li>
-      <li>כיהן כאדמו״ר בקרעסטיר (Bodrogkeresztúr), עיירה בצפון־מזרח הונגריה, סמוך לעיר מישקולץ.</li>
-      <li>נמנה עם תלמידי רבי מרדכי מנדבורנה, ובקרעסטיר התיישב וקבע את חצרו.</li>
-      <li>נודע כבעל מופת, כנדיב לב וכמכניס אורחים: על שולחנו הוגשו מאכלים בשפע, כדי שאיש לא יצא רעב, ורבים באו אליו לברכה ולישועה.</li></ul></div>
-     <div class="kzc"><h4>הציון</h4><ul>
-      <li>נפטר בג׳ באייר ה׳תרפ״ה ונקבר בבית העלמין היהודי בקרעסטיר, שם עומד היום אוהל על הציון.</li>
-      <li>בשנים האחרונות מגיעים לקרעסטיר מדי שנה, סביב יום ההילולא, עשרות אלפי יהודים.</li></ul></div>
-     ${visit?'':ourDay}
-     <div class="kzc"><h4>לקראת העלייה לציון</h4><ul>
-      <li>מנהג נפוץ בעלייה לציוני צדיקים: להביא ספר תהילים, ופתק (קוויטל) עם שם ושם האם של מי שמתפללים עליו.</li>
-      <li>הציון הוא בית קברות: לבוש צנוע, שקט וכבוד למקום ולאנשים שמתפללים שם.</li>
-      <li>נשארים עם הקבוצה ועם המארגנים, ושעת הנסיעה חזרה מתעדכנת בלוח המסע.</li></ul></div>
-     <p class="note kzs">מקורות: ויקיפדיה, אתר המכלול ועיתונות (JTA). לפרטי הציון ומנהגי המקום, מומלץ להתייעץ עם המארגנים.</p>`}
+  if(GTAB==='gz')return head('קרעסטיר')+kzScreen();
   if(GTAB==='gs'&&me&&me.kitter){
     if(RHID())return head('סידור ערכות בחדרים')+card('','<b>🔒 שיבוץ החדרים עוד לא פורסם</b>');
     const rp=roomsPlaced(),rooms=S.rooms.slice().sort((a,b)=>String(a.roomNumber||'zzz').localeCompare(String(b.roomNumber||'zzz'),undefined,{numeric:true})||byOrder(a,b)),
@@ -6975,7 +7072,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='68b3c794f3';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='42eb1aecb4';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
