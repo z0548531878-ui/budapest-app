@@ -2855,6 +2855,35 @@ html:has(#scrim.open) #app :is(*,*::before,*::after){animation-play-state:paused
 .kz-se{font-size:34px;display:block}.kz-s b{display:block;margin:6px 0 6px;font:900 21px var(--display);color:#ffe7a3}.kz-s p{margin:0;color:#e3d6b2;font-size:15px;line-height:1.65}
 .kz-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 10px}.kz-stats div{display:grid;justify-items:center;gap:2px;padding:12px 4px;border-radius:18px;background:#14110a;border:1px solid rgba(214,178,98,.3);text-align:center}
 .kz-stats b{font:900 24px var(--display);color:#f6d886}.kz-stats small{color:#a69a7d;font-size:11.5px}
+
+/* ===== tasks (participant) ===== */
+.tk-hero{display:flex;align-items:center;gap:14px;margin:6px 0 12px;padding:16px;border-radius:24px;border:1px solid rgba(240,210,140,.45);background:radial-gradient(90% 120% at 100% 0,rgba(240,200,110,.2),transparent 60%),linear-gradient(165deg,#221a0e,#0b0907 75%)}
+.tk-ring{position:relative;flex:0 0 76px;height:76px}.tk-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.tk-bg{fill:none;stroke:rgba(214,178,98,.18);stroke-width:7}.tk-fg{fill:none;stroke:#e9c46f;stroke-width:7;stroke-linecap:round;stroke-dashoffset:var(--o)}
+.tk-ring b{position:absolute;inset:0;display:grid;place-items:center;font:900 19px var(--body);color:#ffe7a3}
+.tk-ht{display:grid;gap:3px}.tk-ht small{color:#c9b98f;font:800 12.5px var(--body)}.tk-ht b{font:900 22px var(--display);color:#ffe9b0}.tk-ht span{color:#a69a7d;font-size:13px}
+.tk-tabs{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin:0 0 10px;border-radius:16px;background:#120f0a;border:1px solid rgba(214,178,98,.28)}
+.tk-tabs button{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:6px;height:44px;border:0;background:transparent;color:#a69a7d;font:900 15px var(--body);transition:color .3s}
+.tk-tabs button[aria-selected="true"]{color:#15110a}.tk-tabs i{font-style:normal;min-width:22px;height:22px;border-radius:11px;background:rgba(214,178,98,.2);font:900 12px/22px var(--body)}
+.tk-tabs button[aria-selected="true"] i{background:#15110a;color:#f6dc93}
+.tk-ind{position:absolute;top:4px;bottom:4px;right:4px;width:calc(50% - 6px);border-radius:12px;background:linear-gradient(180deg,#f3d98b,#d4af37);transform:translateX(calc(var(--x)*(-100% - 4px)));transition:transform .35s cubic-bezier(.3,1.3,.5,1)}
+.tk-how{margin:0 0 10px;padding:10px 12px;border-radius:14px;background:rgba(240,210,140,.07);border:1px dashed rgba(240,210,140,.35);color:#e3d6b2;font-size:14px}.tk-how b{color:#ffe7a3}
+.tk-list{display:grid;gap:10px}
+.tk-empty{display:grid;justify-items:center;gap:6px;text-align:center;padding:30px 16px;border-radius:22px;border:1px dashed rgba(214,178,98,.4)}
+.tk-empty span{font-size:42px}.tk-empty b{font:900 18px var(--body);color:#f4e6c2}.tk-empty small{color:#a69a7d;font-size:13.5px;max-width:280px}
+.tk-done{margin-top:6px;border-radius:18px;border:1px solid rgba(127,209,165,.3);background:rgba(127,209,165,.05);padding:4px 10px}
+.tk-done summary{cursor:pointer;padding:10px 4px;color:#9fe0bd;font:900 15px var(--body);list-style:none}.tk-done summary::-webkit-details-marker{display:none}
+.tk-done>*:not(summary){opacity:.7;margin-bottom:8px}
+@media (prefers-reduced-motion:no-preference){
+ #view.enter .tk-hero{animation:pgIn .7s cubic-bezier(.2,.85,.25,1.06) both!important}
+ #view.enter .tk-fg{animation:tkRing 1.2s .3s cubic-bezier(.3,.8,.3,1) both!important}
+ #view.enter .tk-ht b{animation:kzName .8s .3s cubic-bezier(.2,.85,.25,1) both!important}
+ #view.enter .tk-tabs{animation:pgUp .5s .2s both!important}
+ #view.enter .tk-list>*{animation:gxIn .5s cubic-bezier(.2,1.1,.4,1) both!important}
+ #view.enter .tk-list>*:nth-child(2){animation-delay:.42s!important}#view.enter .tk-list>*:nth-child(3){animation-delay:.5s!important}#view.enter .tk-list>*:nth-child(n+4){animation-delay:.58s!important}#view.enter .tk-list>*:first-child{animation-delay:.34s!important}
+ #view .tk-empty span{animation:rvBob 2.4s ease-in-out infinite}
+}
+@keyframes tkRing{from{stroke-dashoffset:190}to{stroke-dashoffset:var(--o)}}
 @media (prefers-reduced-motion:no-preference){
  #view .kz-ph img{animation:kzKen 18s ease-in-out infinite alternate}
  #view.enter .kz-hero2{animation:pgIn .8s cubic-bezier(.2,.85,.25,1.06) both!important}
@@ -5552,7 +5581,7 @@ const PLACES=[
 
 // a tapped notification opens the app on its screen (the service worker opens ./#tab=gl)
 let GKIT='todo';
-let GTAB=(()=>{try{const m=location.hash.match(/tab=(g[a-z])\b/);return m&&GNAV.concat([['gm'],['gk'],['gx'],['gp'],['gf'],['gt'],['gq'],['gi']]).some(n=>n[0]===m[1])?m[1]:'gh'}catch(e){return 'gh'}})(), GSEG='open', GGEN='all', GQ='';
+let GTAB=(()=>{try{const m=location.hash.match(/tab=(g[a-z])\b/);return m&&GNAV.concat([['gm'],['gk'],['gx'],['gp'],['gf'],['gt'],['gq'],['gi']]).some(n=>n[0]===m[1])?m[1]:'gh'}catch(e){return 'gh'}})(), GSEG='mine', GGEN='all', GQ='';
 const DRAFT={annTitle:'',annText:'',reqText:'',reqCat:'אחר'};
 const meG=()=>{if(PREV&&ROLE==='org'){return (PREVID&&S.participants.find(p=>p._id===PREVID))||S.participants.find(p=>p.name==='חיים פולק')||S.participants.find(p=>p.name==='שלומי זינגר')||null}return S.participants.find(p=>p._id===ROLE.slice(6))||null};
 const isPrevOrg=()=>PREV&&ROLE==='org';
@@ -6020,10 +6049,17 @@ function guestHTML0(){
   if(GTAB==='gt'){
     const ciL=ciTasks(ppl), gtL=gtList(), mine=myTasks(ppl), openL=S.tasks.filter(t=>t.open==='כן'&&t.status!=='בוצע'&&!t.owner&&(!t.claimBy||t.claimStatus==='ממתין לאישור')&&!(t.claimStatus==='ממתין לאישור'&&!ppl.some(p=>p.name===t.claimBy)));
     const showL=GSEG==='open'?openL:mine;
-    return head('משימות')+`<div class="seg"><button data-gseg2="open" aria-pressed="${GSEG==='open'}">פתוחות<span class="c num">${openL.length}</span></button><button data-gseg2="mine" aria-pressed="${GSEG==='mine'}">המשימות שלי<span class="c num">${mine.length+ciL.length+gtL.length+preTaskN(ppl,ciL)}</span></button></div>
-     <p class="note">${GSEG==='open'?'משימות שמחכות למתנדבים. לחצו "אני לוקח/ת", והמארגנים יאשרו.':'אלה המשימות שלכם. כשמסיימים, לוחצים "סיימתי".'}</p>
-     <div class="gtasks">${GSEG==='mine'?preTasks(ppl,ciL)+ciL.filter(c=>!c.done).map(ciCard).join('')+gtL.filter(t=>!gtDone(t,ppl)).map(t=>gtCard(t,ppl)).join('')+showL.filter(t=>t.status!=='בוצע').map(t=>taskCard(t,GSEG,ppl)).join('')
-       +((d=>d?`<h3 class="gdone-h">הושלמו</h3>${d}`:'')(ciL.filter(c=>c.done).map(ciCard).join('')+showL.filter(t=>t.status==='בוצע').map(t=>taskCard(t,GSEG,ppl)).join('')+gtL.filter(t=>gtDone(t,ppl)).map(t=>gtCard(t,ppl)).join(''))):showL.map(t=>taskCard(t,GSEG,ppl)).join('')}${GSEG==='mine'&&(ciL.length||gtL.length)?'':(showL.length?'':card('', GSEG==='open'?'<b>כל המשימות כבר נלקחו</b>תודה על הרצון לעזור! כשתהיה משימה חדשה, היא תופיע כאן':'<b>עוד אין לכם משימות</b>רוצים לעזור? בלשונית "פתוחות" יש משימות שמחכות למתנדבים'))}</div>`}
+    const pre=preTasks(ppl,ciL),preN=preTaskN(ppl,ciL),total=mine.length+ciL.length+gtL.length+preN,done=ciL.filter(c=>c.done).length+gtL.filter(t=>gtDone(t,ppl)).length+mine.filter(t=>t.status==='בוצע').length,left=Math.max(0,total-done),pct=total?Math.round(done/total*100):100,C=2*Math.PI*30;
+    const hero=`<section class="tk-hero"><div class="tk-ring"><svg viewBox="0 0 72 72" aria-hidden="true"><circle cx="36" cy="36" r="30" class="tk-bg"/><circle cx="36" cy="36" r="30" class="tk-fg" style="stroke-dasharray:${C};--o:${C*(1-pct/100)}"/></svg><b class="num">${pct}%</b></div>
+      <div class="tk-ht"><small>המשימות שלכם</small><b>${left?`נשארו <span class="num">${left}</span> ${left===1?'משימה':'משימות'}`:'הכל מוכן! 🎉'}</b><span>${left?'כל משימה שמסיימים, מסמנים כאן':'אין לכם משהו פתוח. תודה!'}</span></div></section>`;
+    const tabs=`<div class="tk-tabs" role="tablist"><button role="tab" data-gseg2="mine" aria-selected="${GSEG==='mine'}"><span>✅</span>שלי<i class="num">${left}</i></button><button role="tab" data-gseg2="open" aria-selected="${GSEG==='open'}"><span>🙋</span>לעזור לצוות<i class="num">${openL.length}</i></button><span class="tk-ind" style="--x:${GSEG==='mine'?0:1}"></span></div>`;
+    const how=GSEG==='open'?'<p class="tk-how">🙋 בחרו משימה ולחצו <b>"אני לוקח/ת"</b>. המארגנים יאשרו, והיא תעבור ל"שלי".</p>':'';
+    let body;
+    if(GSEG==='mine'){const openPart=pre+ciL.filter(c=>!c.done).map(ciCard).join('')+gtL.filter(t=>!gtDone(t,ppl)).map(t=>gtCard(t,ppl)).join('')+showL.filter(t=>t.status!=='בוצע').map(t=>taskCard(t,GSEG,ppl)).join('');
+      const donePart=ciL.filter(c=>c.done).map(ciCard).join('')+showL.filter(t=>t.status==='בוצע').map(t=>taskCard(t,GSEG,ppl)).join('')+gtL.filter(t=>gtDone(t,ppl)).map(t=>gtCard(t,ppl)).join('');
+      body=(openPart||`<div class="tk-empty"><span>🎉</span><b>אין לכם משימות פתוחות</b><small>רוצים לעזור? בלשונית "לעזור לצוות" יש משימות שמחכות למתנדבים</small></div>`)+(donePart?`<details class="tk-done"><summary>✓ הושלמו <span class="num">${done}</span></summary>${donePart}</details>`:'')}
+    else body=showL.map(t=>taskCard(t,GSEG,ppl)).join('')||`<div class="tk-empty"><span>💛</span><b>כל המשימות כבר נלקחו</b><small>תודה על הרצון לעזור! משימה חדשה תופיע כאן</small></div>`;
+    return head('משימות')+hero+tabs+how+`<div class="gtasks tk-list">${body}</div>`}
   if(GTAB==='gm'){
     const L=annList(), seen=annSeen();
     const h=head('הודעות')+(L.length?`<div class="annlist">${L.map(a=>`<div class="ann ${(a.ts||0)>seen?'new':''} ${a.to&&a.to.length?'personal':''}"><div class="ah"><b>${esc(a.title||'הודעה')}</b>${a.to&&a.to.length?'<span class="pill p-mute">אישית</span>':''}${(a.ts||0)>seen?'<span class="pill p-gold">חדש</span>':''}</div><p>${esc(a.text||'').replace(/\n/g,'<br>')}</p><small>${tsStr(a.ts)}</small></div>`).join('')}</div>`:card('','<b>אין הודעות חדשות</b>כשהמארגנים יפרסמו עדכון, הוא יופיע כאן'));
@@ -7221,7 +7257,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='0804ebf0ca';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='f1e5f58d31';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
