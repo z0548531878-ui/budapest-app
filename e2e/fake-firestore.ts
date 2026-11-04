@@ -17,6 +17,7 @@ function resolve(cur: any, v: any): any {
   if (!isFv(v)) return clone(v);
   if (v.__fv === 'inc') return (typeof cur === 'number' ? cur : 0) + v.n;
   if (v.__fv === 'union') return [...(Array.isArray(cur) ? cur : []), ...v.arr.filter((x: any) => !(cur || []).includes(x))];
+  if (v.__fv === 'remove') return (Array.isArray(cur) ? cur : []).filter((x: any) => !v.arr.includes(x));
   if (v.__fv === 'ts') return Date.now();
   throw new Error('unknown sentinel ' + v.__fv);
 }
@@ -200,6 +201,7 @@ const SHIM = String.raw`(() => {
   firestore.FieldValue = {
     increment: n => ({ __fv: 'inc', n }),
     arrayUnion: (...arr) => ({ __fv: 'union', arr }),
+    arrayRemove: (...arr) => ({ __fv: 'remove', arr }),
     delete: () => ({ __fv: 'delete' }),
     serverTimestamp: () => ({ __fv: 'ts' }),
   };
