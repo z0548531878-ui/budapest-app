@@ -2776,6 +2776,16 @@ html:has(#scrim.open) #app :is(*,*::before,*::after){animation-play-state:paused
 .pg-x{width:40px;height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:transparent;color:#e9dfc4;font-size:16px}
 .phv-bg{position:absolute;inset:-40px;z-index:-1;background-size:cover;background-position:center;filter:blur(36px) brightness(.35) saturate(1.3);transform:scale(1.15);pointer-events:none}
 #phv{isolation:isolate;overflow:hidden}
+
+/* trivia button: a bit bigger, and on opening the app it pops in the middle of the screen, flies to its place and dances */
+.trvp{padding:10px 13px!important;border-radius:18px!important;column-gap:9px!important}
+.trvp-sp{width:38px!important;height:38px!important;border-radius:12px!important}.trvp-sp svg{width:21px!important;height:21px!important}
+.trvp-t{font-size:14px!important}.trvp-go{font-size:12px!important;padding:3px 10px!important}
+.trv-fly{position:fixed;z-index:9500;margin:0!important;pointer-events:none;animation:none!important}
+.trv-dim{position:fixed;inset:0;z-index:9490;background:radial-gradient(circle at 50% 45%,rgba(240,200,110,.22),rgba(0,0,0,.6) 60%);opacity:0;transition:opacity .35s;pointer-events:none}
+.trv-dim.on{opacity:1}
+@media (prefers-reduced-motion:no-preference){.trvp.trv-dance{animation:trvDance .55s ease-in-out 4!important}}
+@keyframes trvDance{0%,100%{transform:none}25%{transform:rotate(-8deg) scale(1.08)}50%{transform:translateY(-6px) scale(1.12)}75%{transform:rotate(8deg) scale(1.08)}}
 @media (prefers-reduced-motion:no-preference){
  #view.enter .pg-hero{animation:pgIn .7s cubic-bezier(.2,.85,.25,1.06) both!important}
  #view.enter .pg-pol.p0{animation:pgP0 .9s .15s cubic-bezier(.2,1.2,.4,1) both!important}
@@ -4883,6 +4893,8 @@ const nskel=s=>normName(s).replace(/[יו]/g,'');
 function matchGuest(inp){
   const n=normName(inp);if(n.length<2)return null;
   const exact=S.participants.filter(p=>normName(p.name)===n);if(exact.length===1)return exact[0];
+  // other spellings the person may type (participants.aka), e.g. זעיד / זאיד
+  const aka=S.participants.filter(p=>Array.isArray(p.aka)&&p.aka.some(a=>normName(a)===n||nskel(a)===nskel(n)));if(aka.length===1)return aka[0];
   const partial=S.participants.filter(p=>{const f=normName(p.name).split(' '),tk=n.split(' ');return tk.length>=2&&tk.every(t=>f.includes(t))});if(partial.length===1)return partial[0];
   const k=nskel(n);if(k.length<3)return null;
   const fuzzy=S.participants.filter(p=>nskel(p.name)===k);if(fuzzy.length===1)return fuzzy[0];
@@ -6878,7 +6890,18 @@ function fxPaint(){const v=document.getElementById('view');if(!v)return;const ho
   if(scr==='announce')annSchedPaint();
   if(scr==='ggh')rdyFold();
   appStatLinks();reqWatch();missedCheck();backupNudge();whatsNew();annQueue()}
-{const _fp=render;render=function(a){_fp(a);try{rdyCount()}catch(e){}try{fxPaint()}catch(e){console.warn('fx',e)}}}
+{const _fp=render;render=function(a){_fp(a);try{rdyCount()}catch(e){}try{fxPaint()}catch(e){console.warn('fx',e)}try{trvIntro()}catch(e){}}}
+/* once per app open: the trivia button jumps out big in the middle, then flies to its spot and dances there */
+let TRV_INTRO=false;
+function trvIntro(){if(TRV_INTRO||reduce||!GUEST()||PREV||GTAB!=='gh')return;const el=document.querySelector('#view .trvp');if(!el)return;
+  if(document.getElementById('splash')){setTimeout(trvIntro,300);return}
+  TRV_INTRO=true;setTimeout(()=>{const t=document.querySelector('#view .trvp');if(!t)return;const r=t.getBoundingClientRect();if(!r.width)return;
+    const c=t.cloneNode(true);c.classList.add('trv-fly');c.style.cssText+=`left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px`;
+    const dim=document.createElement('div');dim.className='trv-dim';document.body.append(dim,c);t.style.visibility='hidden';requestAnimationFrame(()=>dim.classList.add('on'));
+    const dx=innerWidth/2-(r.left+r.width/2),dy=innerHeight*.42-(r.top+r.height/2);
+    const a=c.animate([{transform:`translate(${dx}px,${dy}px) scale(.2) rotate(-25deg)`,opacity:0},{transform:`translate(${dx}px,${dy}px) scale(2.5) rotate(6deg)`,opacity:1,offset:.28},{transform:`translate(${dx}px,${dy}px) scale(2.2) rotate(-4deg)`,offset:.42},{transform:`translate(${dx}px,${dy}px) scale(2.35) rotate(3deg)`,offset:.56},{transform:`translate(${dx*.4}px,${dy*.4-40}px) scale(1.5) rotate(-6deg)`,offset:.8},{transform:'none',opacity:1}],{duration:2300,easing:'cubic-bezier(.45,.05,.3,1)'});
+    setTimeout(()=>dim.classList.remove('on'),1500);
+    a.onfinish=()=>{c.remove();dim.remove();t.style.visibility='';t.classList.add('trv-dance');setTimeout(()=>t.classList.remove('trv-dance'),2400)}},700)}
 document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;const id=(t.closest('[id]')||{}).id;
   if(id==='fxSos'){sosSheet();return}if(id==='fxLost'){lostSend();return}if(id==='fxField'){fieldSheet();return}if(id==='fxAnn'){go('more',{sub:'announce'});return}if(id==='fxProg'){go('more',{sub:'program'});return}if(id==='fxPick'){pickupSheet();return}if(id==='fxSearch'){gSearch();return}
   if(id==='fxPhSave'){phSaveDay();return}if(id==='fxAlbShare'){albumShare();return}if(id==='fxKer'){kerSheet();return}if(id==='fxMotzJoin'){motzJoin();return}if(id==='fxMotzList'){motzList();return}if(id==='fxFace'){faceSheet();return}if(id==='fxThx'){thxSheet();return}if(id==='fxThxOpen'){thxReveal();return}if(id==='fxAlbSave'){albumSave();return}if(id==='fxAlbOpen'){if(GUEST()){GTAB='gi';render(true)}else go('more',{sub:'photos'});scrollTo(0,0);return}if(id==='fxPhMe'){PHF=PHF==='me'?'all':'me';render();return}
@@ -6948,7 +6971,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='8bfe2614a0';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='58b3cfe5d5';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
