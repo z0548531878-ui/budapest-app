@@ -2874,6 +2874,39 @@ html:has(#scrim.open) #app :is(*,*::before,*::after){animation-play-state:paused
 .tk-done{margin-top:6px;border-radius:18px;border:1px solid rgba(127,209,165,.3);background:rgba(127,209,165,.05);padding:4px 10px}
 .tk-done summary{cursor:pointer;padding:10px 4px;color:#9fe0bd;font:900 15px var(--body);list-style:none}.tk-done summary::-webkit-details-marker{display:none}
 .tk-done>*:not(summary){opacity:.7;margin-bottom:8px}
+
+/* ===== chat v2 ===== */
+.ch-head{display:flex;align-items:center;gap:12px;margin:0 0 12px;padding:12px 14px;border-radius:20px;border:1px solid rgba(240,210,140,.4);background:linear-gradient(120deg,#16202f,#0d0f14)}
+.ch-head.f{background:linear-gradient(120deg,#2a1520,#120c0f);border-color:rgba(240,170,190,.4)}
+.ch-hi{flex:0 0 46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:24px;background:rgba(255,255,255,.08)}
+.ch-head b{display:block;font:900 20px var(--display);color:#ffe9b0}.ch-head small{color:#b9ad8c;font-size:12.5px}
+.chl{gap:2px!important;padding-bottom:150px!important}
+.chd{align-self:stretch!important;display:flex;align-items:center;gap:10px;margin:14px 0 8px;background:none!important;padding:0!important}
+.chd::before,.chd::after{content:"";flex:1;height:1px;background:rgba(214,178,98,.25)}.chd span{font:800 12.5px var(--body);color:#c9b98f;background:rgba(214,178,98,.1);padding:3px 12px;border-radius:99px}
+.chr{display:flex;align-items:flex-end;gap:8px;margin-top:8px}.chr.cont{margin-top:2px}.chr.mi{justify-content:flex-start;flex-direction:row-reverse}
+.chr:not(.mi){justify-content:flex-start}
+.cha{flex:0 0 34px;height:34px;border-radius:50%;display:grid;place-items:center;font:900 15px var(--display);color:#15110a;background:linear-gradient(180deg,#f6dc93,#c99a3d)}.cha:empty{background:none}
+.cha.org{background:linear-gradient(180deg,#9cc7f0,#4e86c8)}
+.chr .chm{max-width:78%;align-self:auto!important;padding:9px 13px 6px!important;border-radius:18px!important;background:#1d1a13!important;border:1px solid rgba(214,178,98,.16)!important;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.chr .chm.tail{border-bottom-right-radius:6px!important}
+.chr.mi .chm{background:linear-gradient(170deg,#f3d98b,#d7ae52)!important;color:#15110a;border:0!important}.chr.mi .chm.tail{border-bottom-right-radius:18px!important;border-bottom-left-radius:6px!important}
+.chr .chm p{margin:2px 0 0!important;font-size:17px!important;line-height:1.45!important}.chr.mi .chm p{color:#15110a}
+.chr .chm p a{color:#9cc7f0;text-decoration:underline}.chr.mi .chm p a{color:#15110a}
+.chn{font-size:13.5px!important}.chn i{font-style:normal;font-size:11px;background:rgba(156,199,240,.18);color:#9cc7f0;padding:1px 6px;border-radius:6px;margin-inline-start:4px}
+.chr .cht{font-size:11.5px!important;text-align:left;opacity:.75;margin-top:2px!important}.chr.mi .cht{color:#3b2f16!important}.chr.mi .chx{color:#3b2f16}
+.chr.mi .chv{background:rgba(21,17,10,.12);color:#15110a}
+.ch-empty{display:grid;justify-items:center;gap:6px;text-align:center;margin:30px 0;padding:26px 14px;border-radius:22px;border:1px dashed rgba(214,178,98,.4)}
+.ch-empty span{font-size:44px}.ch-empty b{font:900 18px var(--body);color:#f4e6c2}.ch-empty small{color:#a69a7d;font-size:13.5px}
+.chbar{flex-wrap:wrap;padding:8px 10px 10px!important;background:rgba(11,10,8,.96)!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.ch-quick{flex:0 0 100%;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}.ch-quick::-webkit-scrollbar{display:none}
+.ch-quick button{flex:0 0 auto;height:30px;padding:0 12px;border-radius:99px;border:1px solid rgba(214,178,98,.3);background:#1b1812;color:#f0d28c;font:700 13.5px var(--body)}
+.chbar .search{border-radius:22px!important;min-height:46px}.chb{width:46px!important;height:46px!important}
+@media (prefers-reduced-motion:no-preference){
+ .chr:last-child .chm{animation:chPop .35s cubic-bezier(.2,1.4,.4,1) both}
+ #view.enter .ch-head{animation:pgIn .5s cubic-bezier(.2,.85,.25,1.06) both!important}
+ .ch-quick button:active{transform:scale(.9)}
+}
+@keyframes chPop{from{opacity:0;transform:translateY(10px) scale(.92)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:no-preference){
  #view.enter .tk-hero{animation:pgIn .7s cubic-bezier(.2,.85,.25,1.06) both!important}
  #view.enter .tk-fg{animation:tkRing 1.2s .3s cubic-bezier(.3,.8,.3,1) both!important}
@@ -5329,14 +5362,16 @@ function chatHTML(){
   if(chLocked())return `<div class="chlock"><span aria-hidden="true">🔒</span><b>הצ׳אט ייפתח ביום ראשון, 15.11</b><p>בשבוע של המסע נפתח כאן צ׳אט לכל משתתפי המסע. עד אז, עדכונים מהמארגנים מגיעים במסך ההודעות.</p></div>`;
   const me=chMe(),L=chMsgs(),isOrg=!GUEST();let last='',h='';
   if(chOpen()){try{const t=L.length?L[L.length-1].ts:0;if(t>chSeen())localStorage.setItem('chSeen',String(t))}catch(e){}}
-  L.forEach(m=>{const d=chDay(m.ts);if(d!==last){h+=`<div class="chd">${d}</div>`;last=d}
-    const mine=me&&m.by===me.id,org=String(m.by).startsWith('org:');
-    h+=`<div class="chm${mine?' me':''}">${mine?'':`<small class="chn">${esc(m.nm||'')}${org&&m.nm!=='מארגן'?' · מארגן':''}</small>`}${m.voice?`<button class="chv" data-chplay="${m._id}"><span>▶</span> הודעה קולית · ${Math.floor((m.sec||0)/60)}:${String((m.sec||0)%60).padStart(2,'0')}</button><div id="chP_${m._id}">${CHBLOB[m._id]?`<audio controls src="${CHBLOB[m._id]}" style="width:100%;margin-top:6px"></audio>`:''}</div>`:`<p>${esc(m.text||'')}</p>`}<small class="cht">${chTime(m.ts)}${(mine||isOrg)?` · <button class="chx" data-chdel="${m._id}">מחיקה</button>`:''}</small></div>`});
-  if(!L.length)h='<p class="note" style="text-align:center;margin:30px 0">עוד אין הודעות. אפשר להתחיל 🙂</p>';
+  const today=new Date().toDateString(),yest=new Date(Date.now()-864e5).toDateString(),dayLab=ts=>{const d=new Date(ts).toDateString();return d===today?'היום':d===yest?'אתמול':chDay(ts)};let prev=null;
+  L.forEach((m,k)=>{const d=dayLab(m.ts);if(d!==last){h+=`<div class="chd"><span>${d}</span></div>`;last=d;prev=null}
+    const mine=me&&m.by===me.id,org=String(m.by).startsWith('org:'),cont=prev&&prev.by===m.by&&m.ts-prev.ts<5*60000,nx=L[k+1],tail=!(nx&&nx.by===m.by&&nx.ts-m.ts<5*60000&&dayLab(nx.ts)===d);prev=m;
+    const ini=String(m.nm||'?').replace(/^הרב(נית)?\s+/,'').trim().slice(0,1);
+    h+=`<div class="chr${mine?' mi':''}${cont?' cont':''}">${mine?'':`<span class="cha${org?' org':''}" aria-hidden="true">${tail?esc(ini):''}</span>`}<div class="chm${tail?' tail':''}">${mine||cont?'':`<small class="chn">${esc(m.nm||'')}${org&&m.nm!=='מארגן'?' <i>מארגן</i>':''}</small>`}${m.voice?`<button class="chv" data-chplay="${m._id}"><span>▶</span> הודעה קולית · ${Math.floor((m.sec||0)/60)}:${String((m.sec||0)%60).padStart(2,'0')}</button><div id="chP_${m._id}">${CHBLOB[m._id]?`<audio controls src="${CHBLOB[m._id]}" style="width:100%;margin-top:6px"></audio>`:''}</div>`:`<p>${esc(m.text||'').replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>')}</p>`}<small class="cht">${chTime(m.ts)}${(mine||isOrg)?` · <button class="chx" data-chdel="${m._id}">מחיקה</button>`:''}</small></div></div>`});
+  if(!L.length)h=`<div class="ch-empty"><span>💬</span><b>עוד אין הודעות כאן</b><small>כתבו את ההודעה הראשונה ל${chRoom()==='f'?'נשים':'גברים'} של המסע</small></div>`;
   const rec=CHREC?`<div class="chrec"><b>● מקליט <span id="chSec">0</span> שנ׳</b><button class="btn" data-chcancel>ביטול</button><button class="btn primary" data-chstop>שליחה</button></div>`:
-    `<div class="chbar"><input id="chIn" class="search" type="text" maxlength="800" placeholder="כתבו הודעה…" autocomplete="off" enterkeyhint="send"><button class="chb" data-chmic aria-label="הקלטה">🎙</button><button class="chb go" data-chsend aria-label="שליחה">➤</button></div>`;
+    `<div class="chbar"><div class="ch-quick">${['👍','🙏','❤️','😂','מזל טוב! 🎉','שבת שלום 🕯','תודה רבה 🙏'].map(q=>`<button type="button" data-chq="${q}">${q}</button>`).join('')}</div><input id="chIn" class="search" type="text" maxlength="800" placeholder="כתבו הודעה…" autocomplete="off" enterkeyhint="send"><button class="chb" data-chmic aria-label="הקלטה">🎙</button><button class="chb go" data-chsend aria-label="שליחה">➤</button></div>`;
   const room=chRoom();
-  return `<div class="chat">${isOrg?`<div class="tk-tabs ch-rooms" role="tablist"><button role="tab" data-chroom="m" aria-selected="${room==='m'}"><span>👨</span>צ׳אט הגברים</button><button role="tab" data-chroom="f" aria-selected="${room==='f'}"><span>👩</span>צ׳אט הנשים</button><span class="tk-ind" style="--x:${room==='m'?0:1}"></span></div>`:''}<p class="note" style="margin:0 0 8px">${room==='f'?'👩 צ׳אט הנשים של המסע':'👨 צ׳אט הגברים של המסע'} · טקסט והקלטות קוליות${todayISO()<'2026-11-17'?' · התראות על הודעות יתחילו ב-17.11':''}</p><div class="chl" id="chL">${h}</div>${rec}</div>`}
+  return `<div class="chat">${isOrg?`<div class="tk-tabs ch-rooms" role="tablist"><button role="tab" data-chroom="m" aria-selected="${room==='m'}"><span>👨</span>צ׳אט הגברים</button><button role="tab" data-chroom="f" aria-selected="${room==='f'}"><span>👩</span>צ׳אט הנשים</button><span class="tk-ind" style="--x:${room==='m'?0:1}"></span></div>`:''}<div class="ch-head ${room}"><span class="ch-hi">${room==='f'?'👩':'👨'}</span><div><b>${room==='f'?'צ׳אט הנשים':'צ׳אט הגברים'}</b><small><span class="num">${S.participants.filter(p=>(p.gender==='אישה')===(room==='f')).length}</span> משתתפים · טקסט והקלטות${todayISO()<'2026-11-17'?' · התראות מ-17.11':''}</small></div></div><div class="chl" id="chL">${h}</div>${rec}</div>`}
 async function chPost(o){if(!db)return toast('אין חיבור');const me=chMe();if(!me)return toast('לא זוהה שם');const ts=Date.now(),id='chat_'+ts.toString(36)+Math.random().toString(36).slice(2,6);
   await db.doc('settings/'+id).set({kind:'gchat',g:chRoom(),by:me.id,nm:me.nm,ts,...o});return id}
 async function chSend(){if(blockPrev()||chLocked())return;const i=document.getElementById('chIn');if(!i)return;const t=i.value.trim().slice(0,800);if(!t)return;i.value='';try{await chPost({text:t})}catch(e){i.value=t;toast('לא נשלח. נסו שוב')}}
@@ -5359,6 +5394,7 @@ setInterval(()=>{try{if(!loaded.has('settings')||!ROLE||PREV||chLocked()||(GUEST
 {const _rc=render;render=function(a){_rc(a);try{if(chOpen()){const n=chMsgs().length;if(n!==CHN||a){CHN=n;window.scrollTo(0,document.body.scrollHeight)}}}catch(e){}}}
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target&&e.target.id==='chIn'){e.preventDefault();chSend()}});
 document.addEventListener('click',async e=>{const T=e.target;
+  const cq=T.closest('[data-chq]');if(cq){if(blockPrev())return;chPost({text:cq.dataset.chq}).catch(()=>toast('לא נשלח. נסו שוב'));return}
   if(T.closest('[data-chsend]')){chSend();return}
   const pl=T.closest('[data-chplay]');if(pl){const m=S.settings.find(x=>x._id===pl.dataset.chplay);if(m)chPlay(m,document.getElementById('chP_'+m._id));return}
   const dl=T.closest('[data-chdel]');if(dl){if(blockPrev())return;const m=S.settings.find(x=>x._id===dl.dataset.chdel);if(!m||!confirm('למחוק את ההודעה?'))return;
@@ -7180,7 +7216,7 @@ function fxPaint(){const v=document.getElementById('view');if(!v)return;const ho
   if(scr==='announce')annSchedPaint();
   if(scr==='ggh')rdyFold();
   appStatLinks();reqWatch();missedCheck();backupNudge();whatsNew();annQueue()}
-{const _fp=render;render=function(a){_fp(a);try{rdyCount()}catch(e){}try{fxPaint()}catch(e){console.warn('fx',e)}try{trvIntro()}catch(e){}}}
+{const _fp=render;render=function(a){_fp(a);try{const l=document.getElementById('chL');if(l){const n=l.children.length;if(n!==window.__chN){window.__chN=n;requestAnimationFrame(()=>scrollTo({top:document.body.scrollHeight,behavior:a?'auto':'smooth'}))}}}catch(e){}try{rdyCount()}catch(e){}try{fxPaint()}catch(e){console.warn('fx',e)}try{trvIntro()}catch(e){}}}
 /* once per app open: the trivia button jumps out big in the middle, then flies to its spot and dances there */
 let TRV_INTRO=false;
 function trvIntro(){if(TRV_INTRO||reduce||!GUEST()||PREV||GTAB!=='gh')return;const el=document.querySelector('#view .trvp');if(!el)return;
@@ -7262,7 +7298,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='4e6fd8d395';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='310dc26a3b';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
