@@ -3158,6 +3158,7 @@ function roomScreen(ppl){
      <div class="rm-bld">${rmFloors(cur).map(([f,a])=>`<div class="rm-fl${r&&bOf(r)===cur&&String(r.floor).trim()===f?' mine':''}"><span class="rm-fn">קומה <b class="num">${esc(f)}</b></span><div class="rm-rs">${a.map(chip).join('')}</div></div>`).join('')}</div>`;
   return hero+nbH+`<section class="rm-sec"><h3 class="rm-h">איפה כולם?</h3><input class="search" id="rmq" type="search" placeholder="חיפוש לפי שם או מספר חדר" value="${esc(RMQ)}" autocomplete="off">${browse}</section>`}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-rmb]');if(!b)return;e.stopPropagation();RMB=b.dataset.rmb;render()},true);
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-chroom]');if(!b)return;e.stopPropagation();CHROOM=b.dataset.chroom;render()},true);
 document.addEventListener('input',e=>{if(e.target&&e.target.id==='rmq'){RMQ=e.target.value;render()}});
 const bOf=r=>r?(r.building||(r.roomNumber?String(r.roomNumber)[0]:'')):'', rLoc=r=>[bOf(r)&&'כניסה '+bOf(r),r.floor&&'קומה '+r.floor,r.roomNumber&&'חדר '+r.roomNumber].filter(Boolean).join(' · ');
 // where an item is bought: the supplier / shop, else the place (Aris order, Budapest, Hana)
@@ -5313,10 +5314,13 @@ async function ravPlayInto(a,el){if(!el)return;el.innerHTML='<p class="note" sty
 /* internal chat: text + voice only. Messages live in settings (kind:'chat'); voice chunks in photobig */
 let CHREC=null,CHT=0;const CHBLOB={};
 const chMe=()=>{if(GUEST()){const m=meG();return m?{id:m._id,nm:m.name}:null}return {id:'org:'+(ME||'מארגן'),nm:ME||'מארגן'}};
-const chMsgs=()=>S.settings.filter(x=>x.kind==='chat'&&x.ts&&x.by).sort((a,b)=>a.ts-b.ts).slice(-300);
+// two separate chats: men and women (kind 'gchat', field g:'m'|'f'). A participant sees only their own; organizers can switch between them
+let CHROOM='';
+const chRoom=()=>{if(GUEST()){const m=meG();return m&&m.gender==='אישה'?'f':'m'}return CHROOM||(ME==='יעל'?'f':'m')};
+const chMsgs=()=>{const g=chRoom();return S.settings.filter(x=>x.kind==='gchat'&&x.g===g&&x.ts&&x.by).sort((a,b)=>a.ts-b.ts).slice(-300)};
 const chSeen=()=>{try{return +localStorage.getItem('chSeen')||0}catch(e){return 0}};
 // the group chat opens for participants in the week of the trip; until then organizers can still use it among themselves
-const CHAT_OPEN='2026-11-15', chLocked=()=>GUEST()&&todayISO()<CHAT_OPEN;
+const CHAT_OPEN='2026-11-05', chLocked=()=>false;
 const chUnread=()=>{if(chLocked())return 0;const me=chMe(),s=chSeen();return chMsgs().filter(m=>m.ts>s&&(!me||m.by!==me.id)).length};
 const chOpen=()=>GUEST()?GTAB==='gy':V.tab==='chat';
 const chTime=ts=>{const d=new Date(ts);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
@@ -5331,19 +5335,20 @@ function chatHTML(){
   if(!L.length)h='<p class="note" style="text-align:center;margin:30px 0">עוד אין הודעות. אפשר להתחיל 🙂</p>';
   const rec=CHREC?`<div class="chrec"><b>● מקליט <span id="chSec">0</span> שנ׳</b><button class="btn" data-chcancel>ביטול</button><button class="btn primary" data-chstop>שליחה</button></div>`:
     `<div class="chbar"><input id="chIn" class="search" type="text" maxlength="800" placeholder="כתבו הודעה…" autocomplete="off" enterkeyhint="send"><button class="chb" data-chmic aria-label="הקלטה">🎙</button><button class="chb go" data-chsend aria-label="שליחה">➤</button></div>`;
-  return `<div class="chat">${isOrg&&todayISO()<CHAT_OPEN?'<p class="chorg">🔒 המשתתפים עוד לא רואים את הצ׳אט ולא מקבלים ממנו התראות. הוא ייפתח להם ביום ראשון, 15.11.</p>':''}<p class="note" style="margin:0 0 8px">צ׳אט פנימי של המסע: טקסט והקלטות קוליות בלבד.</p><div class="chl" id="chL">${h}</div>${rec}</div>`}
+  const room=chRoom();
+  return `<div class="chat">${isOrg?`<div class="tk-tabs ch-rooms" role="tablist"><button role="tab" data-chroom="m" aria-selected="${room==='m'}"><span>👨</span>צ׳אט הגברים</button><button role="tab" data-chroom="f" aria-selected="${room==='f'}"><span>👩</span>צ׳אט הנשים</button><span class="tk-ind" style="--x:${room==='m'?0:1}"></span></div>`:''}<p class="note" style="margin:0 0 8px">${room==='f'?'👩 צ׳אט הנשים של המסע':'👨 צ׳אט הגברים של המסע'} · טקסט והקלטות קוליות${todayISO()<'2026-11-17'?' · התראות על הודעות יתחילו ב-17.11':''}</p><div class="chl" id="chL">${h}</div>${rec}</div>`}
 async function chPost(o){if(!db)return toast('אין חיבור');const me=chMe();if(!me)return toast('לא זוהה שם');const ts=Date.now(),id='chat_'+ts.toString(36)+Math.random().toString(36).slice(2,6);
-  await db.doc('settings/'+id).set({kind:'chat',by:me.id,nm:me.nm,ts,...o});return id}
+  await db.doc('settings/'+id).set({kind:'gchat',g:chRoom(),by:me.id,nm:me.nm,ts,...o});return id}
 async function chSend(){if(blockPrev()||chLocked())return;const i=document.getElementById('chIn');if(!i)return;const t=i.value.trim().slice(0,800);if(!t)return;i.value='';try{await chPost({text:t})}catch(e){i.value=t;toast('לא נשלח. נסו שוב')}}
 async function chVoice(blob,sec){const data=await new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=no;r.readAsDataURL(blob)});
   const ts=Date.now(),id='chat_'+ts.toString(36)+Math.random().toString(36).slice(2,6),CH=700000,n=Math.ceil(data.length/CH),me=chMe();if(!me||!db)return;
   for(let i=0;i<n;i++)await db.doc('photobig/'+id+'_'+i).set({src:data.slice(i*CH,(i+1)*CH),ts});
-  await db.doc('settings/'+id).set({kind:'chat',by:me.id,nm:me.nm,ts,voice:true,n,sec,mime:blob.type||'audio/webm'})}
+  await db.doc('settings/'+id).set({kind:'gchat',g:chRoom(),by:me.id,nm:me.nm,ts,voice:true,n,sec,mime:blob.type||'audio/webm'})}
 async function chPlay(m,el){if(!el)return;el.innerHTML='<p class="note" style="margin:6px 0"><span class="gspin"></span> טוען…</p>';
   try{if(!CHBLOB[m._id]){const parts=await Promise.all([...Array(m.n||0)].map((_,i)=>db.doc('photobig/'+m._id+'_'+i).get().then(d=>d.exists?d.data().src:'')));CHBLOB[m._id]=URL.createObjectURL(await (await fetch(parts.join(''))).blob())}
     el.innerHTML=`<audio controls src="${CHBLOB[m._id]}" style="width:100%;margin-top:6px"></audio>`;try{el.querySelector('audio').play()}catch(e){}}catch(x){el.innerHTML='<p class="note">ההקלטה לא נטענה. נסו שוב.</p>'}}
 let CHN=-1,CHNT=0,CHNS=0;
-setInterval(()=>{try{if(!loaded.has('settings')||!ROLE||PREV||chLocked())return;const me=chMe();if(!me)return;
+setInterval(()=>{try{if(!loaded.has('settings')||!ROLE||PREV||chLocked()||(GUEST()&&todayISO()<'2026-11-17'))return;const me=chMe();if(!me)return;
   const vis=document.visibilityState==='visible'&&chOpen();if(vis)return;
   const lim=Math.max(chSeen(),CHNS),nw=chMsgs().filter(m=>m.ts>lim&&m.by!==me.id),n=nw.length;if(!n||Date.now()-CHNT<3*60000)return;CHNT=Date.now();CHNS=nw[nw.length-1].ts;
   const t='💬 '+(n===1?'הודעה חדשה בצ׳אט':n+' הודעות חדשות בצ׳אט');
@@ -7257,7 +7262,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='f1e5f58d31';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='4e6fd8d395';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>

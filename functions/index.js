@@ -27,6 +27,7 @@ async function send(trip, filter, title, body, tab, tag) {
 const guests = r => r.role === 'guest';
 const orgs = r => r.role === 'org';
 const CHAT_OPEN = Date.parse('2026-11-15T00:00:00+02:00');
+const CHAT_PUSH = Date.parse('2026-11-17T00:00:00+02:00');
 const owners = t => String((t && t.owner) || '').split(/,\s*/).map(x => x.trim()).filter(Boolean);
 
 exports.tripPush = functions.region('europe-west1').firestore.document('trips/{trip}/{col}/{id}').onWrite(async (change, ctx) => {
@@ -61,8 +62,11 @@ exports.tripPush = functions.region('europe-west1').firestore.document('trips/{t
       return send(trip, () => true, '⭐ הרגע של היום', after.byName ? 'צילום: ' + trim(after.byName, 40) + '. היכנסו לראות' : 'היכנסו לראות את התמונה שנבחרה', 'gh', 'moment');
     }
     // internal chat: at most one notification every 3 minutes per trip (window kept in chatq/{trip}, server only)
-    if (after.kind === 'chat' && !before) {
-      const ref = db.doc(`chatq/${trip}`);
+    if ((after.kind === 'chat' || after.kind === 'gchat') && !before) {
+      // two chats, men ('m') and women ('f'); notifications only from two days before the trip, and only to the same chat
+      if (Date.now() < CHAT_PUSH) return;
+      const g = after.kind === 'gchat' ? after.g : '';
+      const ref = db.doc(`chatq/${trip}${g ? '_' + g : ''}`);
       const go = await db.runTransaction(async t => {
         const d = await t.get(ref);
         if (d.exists && Date.now() - (d.data().at || 0) < 3 * 60000) return false;
@@ -72,9 +76,11 @@ exports.tripPush = functions.region('europe-west1').firestore.document('trips/{t
       if (!go) return;
       const body = trim((after.nm || '') + ': ' + (after.voice ? '🎙 הודעה קולית' : after.text), 120);
       const notSender = r => !(r.pids || []).includes(after.by) && r.by !== after.by;
-      // participants get chat notifications only from the week of the trip (the app keeps the chat locked for them until then)
-      if (Date.now() >= CHAT_OPEN) await send(trip, r => guests(r) && notSender(r), '💬 הודעה חדשה בצ׳אט המסע', body, 'gy', 'chat');
-      return send(trip, r => orgs(r) && notSender(r), '💬 הודעה חדשה בצ׳אט המסע', body, 'chat', 'chat');
+      const title = g === 'f' ? '💬 הודעה חדשה בצ׳אט הנשים' : g === 'm' ? '💬 הודעה חדשה בצ׳אט הגברים' : '💬 הודעה חדשה בצ׳אט המסע';
+      let sameRoom = () => true;
+      if (g) { const ps = await db.collection(`trips/${trip}/participants`).get(); const gen = {}; ps.forEach(d => { gen[d.id] = d.data().gender === 'אישה' ? 'f' : 'm' }); sameRoom = r => (r.pids || []).some(p => gen[p] === g); }
+      await send(trip, r => guests(r) && notSender(r) && sameRoom(r), title, body, 'gy', 'chat' + g);
+      return send(trip, r => orgs(r) && notSender(r), title, body, 'chat', 'chat' + g);
     }
     // a task for every participant
     if (after.kind === 'gtask' && !after.hidden && !before) {
