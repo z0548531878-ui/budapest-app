@@ -1,15 +1,23 @@
 {
+  "enableAllProjectMcpServers": true,
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "ponytail@ponytail": true,
+    "composio@composio": true
+  },
   "extraKnownMarketplaces": {
     "ponytail": {
       "source": {
         "source": "github",
         "repo": "DietrichGebert/ponytail"
       }
+    },
+    "composio": {
+      "source": {
+        "source": "github",
+        "repo": "ComposioHQ/composio-plugin-cc"
+      }
     }
-  },
-  "enabledPlugins": {
-    "superpowers@claude-plugins-official": true,
-    "code-review@claude-plugins-official": true,
-    "ponytail@ponytail": true
   }
 }
