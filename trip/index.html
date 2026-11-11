@@ -4184,6 +4184,7 @@ function hvSheet(id){
     if(await save('settings',nid,{...(x?strip(x):{}),kind:'handover',from,to,amt,method:val('method')||'מזומן',date:document.getElementById('hv_date').value,note:document.getElementById('hv_note').value.trim(),by:ME||'',hidden:false})){closeSheet();toast('ההעברה נרשמה')}};
   const dl=document.getElementById('hvDel');if(dl)dl.onclick=async()=>{if(!confirm('למחוק את ההעברה?'))return;if(await save('settings',x._id,{...strip(x),hidden:true})){closeSheet();toast('נמחק',()=>save('settings',x._id,{...strip(x),hidden:false}))}};
 }
+const FXL=n=>S.settings.filter(x=>x.kind==='fx'&&!x.hidden&&x.who===n&&+x.ils>0);
 function cashBook(){
   const ppl=['שלומי','איציק'];
   const rows=ppl.map(n=>{
@@ -4195,6 +4196,7 @@ function cashBook(){
     const cnt=counted()[n];
     // split of the balance by how the money moved: cash in hand vs. in the account (card / transfer / bit)
     const kind=m=>/מזומן/.test(m||'')?'cash':(m||'').trim()?'acct':'unk', sp={cash:0,acct:0,unk:0};
+    FXL(n).forEach(x=>{sp[kind(x.from||'העברה')]-=(+x.ils||0);sp.cash+=(+x.ils||0)});
     pin.forEach(x=>sp[kind(x.method)]+=paidOf(x));din.forEach(x=>sp[kind(x.method)]+=(+x.amount||0));out.forEach(x=>sp[kind(x.method)]-=(+x.paid||0));hin.forEach(x=>sp[kind(x.method)]+=(+x.amt||0));hout.forEach(x=>sp[kind(x.method)]-=(+x.amt||0));
     return {n,pin,din,out,hin,hout,inn,o,bal:inn-o,sp,cnt,gap:cnt?(+cnt.amt||0)-(inn-o):null}});
   const un=S.participants.filter(p=>paidOf(p)>0&&!holderOf(p)), und=S.donations.filter(d=>d.status==='התקבל'&&!holderOf(d));
@@ -4209,7 +4211,8 @@ const pmLbl=k=>(PMK.find(x=>x[0]===k)||['',''])[1];
 function cashSeg(head){
   const {rows,un,und,own}=cashBook(), who=V.filter.who||'', cm=V.filter.cm||'', ct=V.filter.ct||'';
   const sgn=v=>(v<0?'−':'')+ils(Math.abs(v));
-  const card1=r=>`<button class="cashcard ${who===r.n?'on':''}" data-filter="who" data-val="${who===r.n?'':esc(r.n)}"><span class="av">${esc(r.n[0])}</span><div class="main"><b>${esc(r.n)}</b><span>נכנס <span class="num">${ils(r.inn)}</span> · יצא <span class="num">${ils(r.o)}</span></span>${r.cnt?`<span class="gap ${Math.abs(r.gap)<1?'ok':'bad'}">${Math.abs(r.gap)<1?'הספירה תואמת ✓':`פער בספירה: <span class="num">${r.gap<0?'−':'+'}${ils(Math.abs(r.gap))}</span>`} · ${fmtDate((r.cnt.at||'').slice(0,10))}</span>`:''}</div><div class="bal num ${r.bal<0?'neg':''}">${sgn(r.bal)}<small>יתרה</small></div></button>`;
+  const eurL=n=>{const L=FXL(n);if(!L.length)return '';const e=L.reduce((t,x)=>t+(+x.eur||0),0),i=L.reduce((t,x)=>t+(+x.ils||0),0);return `<span class="gap ok">💶 מזומן ביורו: <span class="num">${e.toLocaleString('he-IL')} €</span> (שולם <span class="num">${ils(i)}</span>)</span>`};
+  const card1=r=>`<button class="cashcard ${who===r.n?'on':''}" data-filter="who" data-val="${who===r.n?'':esc(r.n)}"><span class="av">${esc(r.n[0])}</span><div class="main"><b>${esc(r.n)}</b><span>נכנס <span class="num">${ils(r.inn)}</span> · יצא <span class="num">${ils(r.o)}</span></span>${eurL(r.n)}${r.cnt?`<span class="gap ${Math.abs(r.gap)<1?'ok':'bad'}">${Math.abs(r.gap)<1?'הספירה תואמת ✓':`פער בספירה: <span class="num">${r.gap<0?'−':'+'}${ils(Math.abs(r.gap))}</span>`} · ${fmtDate((r.cnt.at||'').slice(0,10))}</span>`:''}</div><div class="bal num ${r.bal<0?'neg':''}">${sgn(r.bal)}<small>יתרה</small></div></button>`;
   // every money movement of the selected people, as one list
   const sel=who?rows.filter(r=>r.n===who):rows;
   const mv=[];
@@ -4219,7 +4222,10 @@ function cashSeg(head){
     r.din.forEach(d=>mv.push({h:r.n,dir:1,k:pmKind(d.method),t:'תרומה: '+d.donor,sub:d.method||'',amt:+d.amount||0,edit:'donations/'+d._id}));
     r.out.forEach(e=>mv.push({h:r.n,dir:-1,k:pmKind(e.method),t:e.name,sub:[e.category,e.method].filter(Boolean).join(' · '),amt:+e.paid||0,edit:'expenses/'+e._id}));
     r.hin.forEach(x=>mv.push({h:r.n,dir:1,k:pmKind(x.method),hv:x._id,t:'🔁 התקבל מ'+x.from,sub:[x.method,x.date&&fmtDate(x.date),x.note].filter(Boolean).join(' · '),amt:+x.amt||0}));
-    r.hout.forEach(x=>mv.push({h:r.n,dir:-1,k:pmKind(x.method),hv:x._id,t:'🔁 הועבר ל'+x.to,sub:[x.method,x.date&&fmtDate(x.date),x.note].filter(Boolean).join(' · '),amt:+x.amt||0}))});
+    r.hout.forEach(x=>mv.push({h:r.n,dir:-1,k:pmKind(x.method),hv:x._id,t:'🔁 הועבר ל'+x.to,sub:[x.method,x.date&&fmtDate(x.date),x.note].filter(Boolean).join(' · '),amt:+x.amt||0}));
+    // shekels changed into euro cash: leaves the account, comes back as cash in the same box (net zero)
+    FXL(r.n).forEach(x=>{const sub=[(+x.eur).toLocaleString('he-IL')+' € · שער '+(+x.ils/+x.eur).toFixed(3),x.date&&fmtDate(x.date),x.note].filter(Boolean).join(' · ');
+      mv.push({h:r.n,dir:-1,k:pmKind(x.from||'העברה'),t:'💱 הומר ליורו',sub,amt:+x.ils||0});mv.push({h:r.n,dir:1,k:'cash',t:'💶 מזומן ביורו',sub,amt:+x.ils||0})})});
   // totals per method for the selected people (before the method/type filters)
   const tot={};PMK.forEach(([k])=>tot[k]={i:0,o:0});mv.forEach(m=>tot[m.k][m.dir>0?'i':'o']+=m.amt);
   const TI=mv.filter(m=>m.dir>0).reduce((t,m)=>t+m.amt,0),TO=mv.filter(m=>m.dir<0).reduce((t,m)=>t+m.amt,0);
@@ -7299,7 +7305,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='cc3de446ea';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='c7e717a825';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
