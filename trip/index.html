@@ -4265,7 +4265,7 @@ const dobHash=async(pid,iso)=>{const b=await crypto.subtle.digest('SHA-256',new 
 const dobParse=t=>{t=String(t||'').trim();let m=t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);if(m)return m[1]+'-'+m[2].padStart(2,'0')+'-'+m[3].padStart(2,'0');
   m=t.match(/^(\d{1,2})\D+(\d{1,2})\D+(\d{4})$/)||t.replace(/\D/g,'').match(/^(\d{2})(\d{2})(\d{4})$/);return m?m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0'):''};
 let DOBBUSY=false;
-async function dobSync(){if(GUEST()||!db||DOBBUSY||!(window.crypto&&crypto.subtle))return;DOBBUSY=true;try{for(const p of (S.participants||[])){if(!p.birthDate)continue;const h=await dobHash(p._id,p.birthDate);if(p.dobH!==h){p.dobH=h;await db.collection('participants').doc(p._id).set({dobH:h},{merge:true})}}}catch(e){diagE('dob',e)}DOBBUSY=false}
+async function dobSync(){if(GUEST()||!db||DOBBUSY||!(window.crypto&&crypto.subtle))return;DOBBUSY=true;try{for(const p of (S.participants||[])){if(!p.birthDate)continue;const h=await dobHash(p._id,p.birthDate);if(p.dobH!==h&&S.participants.some(x=>x._id===p._id)){p.dobH=h;await db.collection('participants').doc(p._id).update({dobH:h}).catch(()=>{})}}}catch(e){diagE('dob',e)}DOBBUSY=false}
 const PDK=['passNo','nationality','birthDate'];let PD={},PDSUB=false,PDMIG=false;
 function pdOverlay(){if(GUEST())return;(S.participants||[]).forEach(p=>{const x=PD[p._id];if(x)PDK.forEach(k=>{if(x[k])p[k]=x[k]})})}
 function pdSub(){if(PDSUB||!db||GUEST())return;PDSUB=true;db.doc('photobig/pp_all').onSnapshot(d=>{PD=d.exists?d.data():{};pdOverlay();dobSync();later()},e=>{PDSUB=false;diagE('pd',e)})}
@@ -7306,7 +7306,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='8c6d7f7da7';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='fa0db59e90';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
