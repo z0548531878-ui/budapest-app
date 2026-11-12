@@ -4199,9 +4199,10 @@ function cashBook(){
     FXL(n).forEach(x=>{sp[kind(x.from||'העברה')]-=(+x.ils||0);sp.cash+=(+x.ils||0)});
     pin.forEach(x=>sp[kind(x.method)]+=paidOf(x));din.forEach(x=>sp[kind(x.method)]+=(+x.amount||0));out.forEach(x=>sp[kind(x.method)]-=(+x.paid||0));hin.forEach(x=>sp[kind(x.method)]+=(+x.amt||0));hout.forEach(x=>sp[kind(x.method)]-=(+x.amt||0));
     return {n,pin,din,out,hin,hout,inn,o,bal:inn-o,sp,cnt,gap:cnt?(+cnt.amt||0)-(inn-o):null}});
-  const un=S.participants.filter(p=>paidOf(p)>0&&!holderOf(p)), und=S.donations.filter(d=>d.status==='התקבל'&&!holderOf(d));
+  const un=S.participants.filter(p=>paidOf(p)>0&&!holderOf(p)), und=S.donations.filter(d=>d.status==='התקבל'&&!holderOf(d)&&!d.inKind);
   // paid out of someone else's pocket (or nobody wrote who paid): they're owed the money back
-  const own=payParts().filter(e=>!ppl.includes(payerOf(e)));
+  // a donor who paid a supplier directly (inKind) is a donation in goods: not money owed back, not cash in a box
+  const own=payParts().filter(e=>!ppl.includes(payerOf(e))&&!e.inKind);
   return {rows,un,und,own};
 }
 // payment method buckets for the cash book: card / bit / transfer / cash / not written
@@ -7305,7 +7306,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='c7e717a825';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='8c6d7f7da7';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
