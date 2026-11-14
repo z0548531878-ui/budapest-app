@@ -2901,6 +2901,18 @@ html:has(#scrim.open) #app :is(*,*::before,*::after){animation-play-state:paused
 .ch-quick{flex:0 0 100%;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}.ch-quick::-webkit-scrollbar{display:none}
 .ch-quick button{flex:0 0 auto;height:30px;padding:0 12px;border-radius:99px;border:1px solid rgba(214,178,98,.3);background:#1b1812;color:#f0d28c;font:700 13.5px var(--body)}
 .chbar .search{border-radius:22px!important;min-height:46px}.chb{width:46px!important;height:46px!important}
+.bag-c{padding:14px!important;margin-bottom:12px}
+.bag-h{display:flex;align-items:center;gap:10px}
+.bag-n{font-size:26px;line-height:1}
+.bag-t{flex:1;min-width:0;display:flex;flex-direction:column}
+.bag-t b{font-size:16px}.bag-t small{color:#a69a7d;font-size:12.5px;margin-top:2px}
+.bag-p{font-weight:800;color:var(--gold2,#e0b25a)}
+.bag-l{margin-top:10px;display:flex;flex-direction:column;gap:2px}
+.bag-r{display:flex;align-items:center;gap:10px;padding:7px 4px;border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer}
+.bag-r:last-child{border-bottom:0}
+.bag-r .check{width:26px;height:26px;flex:0 0 auto}
+.bag-i{flex:1;font-size:14.5px}
+.bag-r.on .bag-i{opacity:.55;text-decoration:line-through}
 @media (prefers-reduced-motion:no-preference){
  .chr:last-child .chm{animation:chPop .35s cubic-bezier(.2,1.4,.4,1) both}
  #view.enter .ch-head{animation:pgIn .5s cubic-bezier(.2,.85,.25,1.06) both!important}
@@ -3138,7 +3150,7 @@ const F={
  donations:{one:'תרומה',g:1,fields:[{k:'donor',l:'תורם (שם מלא כמו ברשימת המשתתפים, כדי שיופיע אצלו באפליקציה)',t:'text'},{k:'amount',l:'סכום (₪)',t:'number'},{k:'purpose',l:'מיועד ל',t:'chips',o:['כללי','סידורים','זמירות','תהילים','הדפסות']},{k:'status',l:'מצב',t:'seg',o:['התחייב','התקבל']},{k:'method',l:'איך התקבל',t:'chips',o:['אשראי','העברה לאיציק','מזומן לאיציק','העברה לשלומי','מזומן לשלומי']},{k:'holder',l:'אצל מי הכסף',t:'seg',o:['שלומי','איציק']},{k:'notes',l:'הערות',t:'textarea'}],def:{status:'התחייב',purpose:'כללי',amount:0}},
  schedule:{one:'אירוע',fields:[{k:'day',l:'יום',t:'seg',o:TRIP_DAYS.map(d=>d.k)},{k:'time',l:'שעה',t:'text',half:1,ph:'18:00'},{k:'place',l:'מקום',t:'text',half:1},{k:'title',l:'מה קורה',t:'text'},{k:'owner',l:'אחראי',t:'owner'},{k:'notes',l:'הערות',t:'textarea'},{k:'menu',l:'תפריט',t:'textarea'}],def:{}},
  flights:{one:'טיסה',g:1,fields:[{k:'label',l:'שם',t:'text'},{k:'dir',l:'כיוון',t:'seg',o:['הלוך','חזור']},{k:'group',l:'קבוצה (כמו בכרטיס המשתתף)',t:'text'},{k:'flightNo',l:'מספר טיסה',t:'text',half:1},{k:'date',l:'תאריך',t:'date',half:1},{k:'dep',l:'המראה',t:'text',half:1},{k:'arr',l:'נחיתה',t:'text',half:1},{k:'notes',l:'הערות',t:'textarea'}],def:{dir:'חזור'}},
- packing:{one:'פריט',fields:[{k:'item',l:'פריט',t:'text'},{k:'where',l:'קונים בארץ או בבודפשט',t:'seg',o:['בארץ','בבודפשט']},{k:'buyer',l:'מי קונה',t:'owner'},{k:'kit',l:'ערכה',t:'chips',o:()=>KIT_NAMES},{k:'prio',l:'מתי קונים',t:'seg',o:['דחוף','רגיל','הרגע האחרון']},{k:'shop',l:'איפה קונים (חנות / ספק / אתר)',t:'text',ph:'למשל: מאיר בורה, ויינר, עלי אקספרס',dl:()=>[...new Set(S.packing.map(x=>(x.shop||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'he'))},{k:'per',l:'כמות לכל חדר (רק בערכה לחדר)',t:'number',half:1},{k:'qty',l:'כמות סה״כ',t:'number',half:1},{k:'cost',l:'עלות (₪)',t:'number',half:1},{k:'packer',l:'מי אחראי על האריזה',t:'owner'},{k:'placer',l:'מי אחראי על ההנחה במקום',t:'owner'},{k:'ordered',l:'🛒 הוזמן',t:'toggle',ks:1},{k:'arrived',l:'📦 הגיע',t:'toggle',ks:1},{k:'packed',l:'🧳 נארז',t:'toggle',ks:1},{k:'placed',l:'📍 הונח במקום',t:'toggle',ks:1},{k:'notes',l:'הערות',t:'text'}],def:{qty:1,cost:0,done:false}},
+ packing:{one:'פריט',fields:[{k:'item',l:'פריט',t:'text'},{k:'where',l:'קונים בארץ או בבודפשט',t:'seg',o:['בארץ','בבודפשט']},{k:'buyer',l:'מי קונה',t:'owner'},{k:'kit',l:'ערכה',t:'chips',o:()=>KIT_NAMES},{k:'prio',l:'מתי קונים',t:'seg',o:['דחוף','רגיל','הרגע האחרון']},{k:'shop',l:'איפה קונים (חנות / ספק / אתר)',t:'text',ph:'למשל: מאיר בורה, ויינר, עלי אקספרס',dl:()=>[...new Set(S.packing.map(x=>(x.shop||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'he'))},{k:'per',l:'כמות לכל חדר (רק בערכה לחדר)',t:'number',half:1},{k:'qty',l:'כמות סה״כ',t:'number',half:1},{k:'cost',l:'עלות (₪)',t:'number',half:1},{k:'bag',l:'🧳 מזוודה',t:'chips',o:()=>BAGS().map(b=>b.n)},{k:'bagQty',l:'כמה נכנס למזוודה (אם לא הכל)',t:'number',half:1},{k:'packer',l:'מי אחראי על האריזה',t:'owner'},{k:'placer',l:'מי אחראי על ההנחה במקום',t:'owner'},{k:'ordered',l:'🛒 הוזמן',t:'toggle',ks:1},{k:'arrived',l:'📦 הגיע',t:'toggle',ks:1},{k:'packed',l:'🧳 נארז',t:'toggle',ks:1},{k:'placed',l:'📍 הונח במקום',t:'toggle',ks:1},{k:'notes',l:'הערות',t:'text'}],def:{qty:1,cost:0,done:false}},
  rooms:{one:'חדר',fields:[{k:'occupants',l:'דיירים',t:'text'},{k:'building',l:'כניסה',t:'text',half:1},{k:'floor',l:'קומה',t:'text',half:1},{k:'roomNumber',l:'מספר חדר',t:'text',half:1},{k:'type',l:'סוג',t:'seg',o:['חדר לזוג','חדר ליחיד']},{k:'kitReady',l:'הסט הונח בחדר',t:'toggle'},{k:'notes',l:'הערות',t:'text'}],def:{type:'חדר לזוג',kitReady:false}},
  messages:{one:'הודעה',g:1,fields:[{k:'title',l:'נושא',t:'text'},{k:'date',l:'מתי לשלוח',t:'date'},{k:'text',l:'נוסח ההודעה',t:'textarea'},{k:'sent',l:'נשלחה',t:'toggle'}],def:{sent:false}},
  files:{one:'מסמך',fields:[{k:'name',l:'שם המסמך',t:'text'},{k:'category',l:'סוג',t:'chips',o:DOC_CATS},{k:'url',l:'קישור (גוגל דרייב, וואטסאפ או כל קישור)',t:'text'},{k:'notes',l:'הערות',t:'textarea'}],def:{}},
@@ -4416,12 +4428,12 @@ const TILE_DEFS=()=>{const pk=S.packing.filter(x=>!x.sug||kst(x,'ordered')),pd=p
  ['flights','plane','טיסות',`${S.flights.length} טיסות`,'c6'],
  ['files','file','מסמכים',`${S.files.filter(f=>f._id!=='f00').length} מסמכים · ${S.contacts.length} אנשים`,'c8'],
  ['attendance','people','ספירת נוכחות','לאוטובוס','c9'],
- ['reqs','tasks','בקשות ואישורים',`${pendN()} ממתינות`,'c12'], ['announce','chat','הודעות',`${annList().length} פורסמו · ${msgDue().length} לשלוח`,'c13'], ['trivia','spark','טריוויה','משחק לאוטובוס','c10'],['rav','mic','הקלטה / סרטון של הרב',(()=>{const n=S.settings.filter(x=>x.kind==='audio'&&!x.hidden).length;return n?n+' פורסמו':'להעלאה לכולם'})(),'c14'],['tasks','tasks','משימות',`${S.tasks.filter(t=>t.status!=='בוצע').length} פתוחות`,'c3'],['photos','cam','תמונות מהמסע',PHL?`${PH.length} תמונות · העלאה`:'צפייה והעלאה','c7'],['myroom','bed','החדר שלי',(()=>{const r=orgRoom();return r&&r.roomNumber?'חדר '+r.roomNumber+' · כל השיבוצים':'כל השיבוצים'})(),'c5'],['rides','car','נסיעות לשדה',`${S.settings.filter(x=>x.kind==='ride'&&!x.hidden).length} נסיעות`,'c4'],
+ ['reqs','tasks','בקשות ואישורים',`${pendN()} ממתינות`,'c12'], ['announce','chat','הודעות',`${annList().length} פורסמו · ${msgDue().length} לשלוח`,'c13'], ['trivia','spark','טריוויה','משחק לאוטובוס','c10'],['rav','mic','הקלטה / סרטון של הרב',(()=>{const n=S.settings.filter(x=>x.kind==='audio'&&!x.hidden).length;return n?n+' פורסמו':'להעלאה לכולם'})(),'c14'],['tasks','tasks','משימות',`${S.tasks.filter(t=>t.status!=='בוצע').length} פתוחות`,'c3'],['photos','cam','תמונות מהמסע',PHL?`${PH.length} תמונות · העלאה`:'צפייה והעלאה','c7'],['bags','box','מזוודות',(()=>{const a=S.packing.filter(x=>x.item&&x.bag);return BAGS().length?`${BAGS().length} מזוודות · ${a.filter(x=>kst(x,'packed')).length}/${a.length} נארזו`:'מה נכנס לכל מזוודה'})(),'c11'],['myroom','bed','החדר שלי',(()=>{const r=orgRoom();return r&&r.roomNumber?'חדר '+r.roomNumber+' · כל השיבוצים':'כל השיבוצים'})(),'c5'],['rides','car','נסיעות לשדה',`${S.settings.filter(x=>x.kind==='ride'&&!x.hidden).length} נסיעות`,'c4'],
  ['roles','spark','תפקידים',`${Object.keys(rolesMap()).length} עם תפקיד`,'c11'],
  ]};
 // trivia link: carries the user's full name so the game does not ask for it (not in organizer preview)
 const trvHref=()=>{let nm='';try{nm=GUEST()?(PREV?'':(meG()||{}).name||''):(typeof ME==='string'?ME:'')}catch(e){}nm=String(nm||'').trim();return (GUEST()?'trivia/?lock=1':'trivia/')+(nm.split(/\s+/).length>=2?(GUEST()?'&':'?')+'name='+encodeURIComponent(nm):'')};
-const TORD=['passports','people','tasks','announce','program','reqs','trivia','appusers','photos','myroom','rides','rav','roles','flights','rooms','kits','shops','files','attendance'];
+const TORD=['passports','people','tasks','announce','program','reqs','trivia','appusers','photos','myroom','rides','rav','roles','flights','rooms','kits','bags','shops','files','attendance'];
 // gold = something there is waiting for you; the rest stay dark, so the eye goes straight to what's open
 const tileHot=k=>{try{return ({reqs:pendN()>0,passports:S.participants.some(p=>!p.passport),announce:msgDue().length>0})[k]||false}catch(e){return false}};
 const msgDue=()=>{const t=todayISO();return S.messages.filter(m=>!m.sent&&m.date&&m.date<=t)};
@@ -6618,6 +6630,20 @@ const ORGP={'שלומי':'שלומי זינגר','איציק':'איציק שרי
 const orgSelf=()=>{const n=ORGP[ME]||'';return S.participants.find(p=>p.name===n)||(ME?S.participants.find(p=>String(p.name||'').startsWith(ME+' ')):null)||null};
 const orgRoom=()=>{const me=orgSelf();return me&&me.roomId?S.rooms.find(x=>x._id===me.roomId):null};
 SUB.myroom=function(){const me=orgSelf();return subHead('החדר שלי','')+(RHID()?'<p class="note" style="margin:0 0 10px">🔒 השיבוץ עדיין לא פורסם למשתתפים. רק המארגנים רואים אותו.</p>':'')+roomScreen(me?coupleOf(me):[])};
+/* ===== suitcases: what travels in which bag; bags live in settings/bags, items point to a bag by its code ===== */
+const BAGS=()=>{const d=S.settings.find(x=>x._id==='bags');return (d&&Array.isArray(d.list)?d.list:[]).filter(b=>b&&b.n)};
+const bagItems=n=>S.packing.filter(x=>x.item&&x.bag===n).sort((a,b)=>(a.bagOrder||a.order||0)-(b.bagOrder||b.order||0));
+SUB.bags=function(){
+  const L=BAGS(), all=S.packing.filter(x=>x.item&&x.bag), done=all.filter(x=>kst(x,'packed')).length;
+  const qty=x=>x.bagQty?`${x.bagQty} מתוך ${x.qty}`:(x.qty||1);
+  const card=(b,i)=>{const it=bagItems(b.n), pk=it.filter(x=>kst(x,'packed')).length, pct=it.length?Math.round(pk/it.length*100):0;
+    return `<div class="card bag-c" style="--d:${i*50}ms"><div class="bag-h"><span class="bag-n">${esc(b.icon||'🧳')}</span><div class="bag-t"><b>${esc(b.title||('מזוודה '+b.n))}</b><small>${[b.who,b.when,b.type,b.dest&&('← '+b.dest)].filter(Boolean).map(esc).join(' · ')}</small></div><span class="bag-p num">${pk}/${it.length}</span></div>
+     <div class="prog"><i data-w="${pct}%" style="width:0"></i></div>
+     ${b.note?`<p class="note" style="margin:8px 0 0">${esc(b.note)}</p>`:''}
+     <div class="bag-l">${it.map(x=>{const on=kst(x,'packed');return `<div class="bag-r ${on?'on':''}" data-edit="packing/${x._id}" role="button" tabindex="0"><button class="check ${on?'on':''}" data-kst="${x._id}|packed" aria-pressed="${on}" aria-label="סימון שנארז">${on?CHECK:''}</button><span class="bag-i">${esc(x.item)}</span><b class="num">${esc(String(qty(x)))}</b></div>`}).join('')||'<div class="empty"><b>עוד אין פריטים במזוודה</b></div>'}</div></div>`};
+  return subHead('מזוודות',`<span class="cnt num">${L.length}</span>`)+`<div class="khero"><div><b class="num">${L.length}</b><span>מזוודות</span></div><div><b class="num">${done}/${all.length}</b><span>פריטים נארזו</span></div></div>
+   <p class="note">לכל מזוודה: מי לוקח, מתי ומה בפנים. ✓ מסמן שהפריט נארז. כדי להעביר פריט למזוודה אחרת לוחצים עליו ובוחרים "🧳 מזוודה".</p>
+   ${L.map(card).join('')||'<div class="card"><div class="empty"><b>עוד לא הוגדרו מזוודות</b></div></div>'}`};
 SUB.photos=function(){return subHead('תמונות מהמסע',PHL?`<span class="cnt num">${PH.length}</span>`:'')+photosHTML()};
 SUB.rides=function(){
   const dir=rideDir(), isOut=dir==='out', L=rideList(dir);
@@ -7306,7 +7332,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='fa0db59e90';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='b170fc653e';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
