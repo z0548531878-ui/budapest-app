@@ -6637,7 +6637,7 @@ SUB.bags=function(){
   const L=BAGS(), all=S.packing.filter(x=>x.item&&x.bag), done=all.filter(x=>kst(x,'packed')).length;
   const qty=x=>x.bagQty?`${x.bagQty} מתוך ${x.qty}`:(x.qty||1);
   const card=(b,i)=>{const it=bagItems(b.n), pk=it.filter(x=>kst(x,'packed')).length, pct=it.length?Math.round(pk/it.length*100):0;
-    return `<div class="card bag-c" style="--d:${i*50}ms"><div class="bag-h"><span class="bag-n">${esc(b.icon||'🧳')}</span><div class="bag-t"><b>${esc(b.title||('מזוודה '+b.n))}</b><small>${[b.who,b.when,b.type,b.dest&&('← '+b.dest)].filter(Boolean).map(esc).join(' · ')}</small></div><span class="bag-p num">${pk}/${it.length}</span></div>
+    return `<div class="card bag-c" style="--d:${i*50}ms"><div class="bag-h"><span class="bag-n">${esc(b.icon||'🧳')}</span><div class="bag-t"><b>${esc(b.title||('מזוודה '+b.n))}</b><small>${[b.who,b.when,b.type,b.kg&&('⚖ '+b.kg),b.dest&&('← '+b.dest)].filter(Boolean).map(esc).join(' · ')}</small></div><span class="bag-p num">${pk}/${it.length}</span></div>
      <div class="prog"><i data-w="${pct}%" style="width:0"></i></div>
      ${b.note?`<p class="note" style="margin:8px 0 0">${esc(b.note)}</p>`:''}
      <div class="bag-l">${it.map(x=>{const on=kst(x,'packed');return `<div class="bag-r ${on?'on':''}" data-edit="packing/${x._id}" role="button" tabindex="0"><button class="check ${on?'on':''}" data-kst="${x._id}|packed" aria-pressed="${on}" aria-label="סימון שנארז">${on?CHECK:''}</button><span class="bag-i">${esc(x.item)}</span><b class="num">${esc(String(qty(x)))}</b></div>`}).join('')||'<div class="empty"><b>עוד אין פריטים במזוודה</b></div>'}</div></div>`};
@@ -7332,7 +7332,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='b170fc653e';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='ba09d2b2de';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
