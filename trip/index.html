@@ -5992,6 +5992,7 @@ function guestHTML0(){
     const open=triviaOpen(), og=flightGroups(ppl,'הלוך'), openT=S.tasks.filter(t=>t.open==='כן'&&t.status!=='בוצע'&&!t.owner&&!t.claimBy).length, mineT=myTasks(ppl).filter(t=>t.status!=='בוצע').length, un=annUnread();
     const first=og[0]&&og[0].f, passBlock=me&&me.kerOnly?`<div class="fx"><div class="fx-h"><b>🚌 נפגשים בשדה התעופה בבודפשט</b></div><div class="fx-note" style="font-size:15px;line-height:1.7">יום חמישי 19.11 · הקבוצה נוחתת ב-<b class="num">11:15</b> (LY 2369)<br>מחכים לנו <b>ליד האוטובוס</b> ביציאה מהטרמינל, ומשם נוסעים יחד לקרעסטיר.<br>לא צריך לשלוח צילום דרכון.</div></div>`:first?passHTML(first):(og[0]&&og[0].solo?'<div class="fx"><div class="fx-h"><b>✈ הטיסה שלכם · הלוך</b></div><div class="fx-note">מזמינים טיסה בעצמם</div></div>':'');
     const extraOut=og.slice(1).map(g=>guestFlightCard(g,ppl,'הלוך')).join('');
+    const mb=myBags(ppl), bagBlock=mb.length?`<div class="gsec-t" style="margin:18px 4px 8px;font-weight:800;color:#e0b25a">🧳 ${mb.length>1?'המזוודות שאתם לוקחים':'המזוודה שאתם לוקחים'} בשביל המסע</div>${bagsBody(true,mb)}`:'';
     let n=0;
     const cube=(k,ic,l,sub,badge)=>`<button class="gc${GNEW[k]?' nw':''}" data-gnav="${k}" style="--i:${n++}">${GNEW[k]?'<span class="gc-nw">חדש</span>':''}<span class="gc-i">${ic}</span><span class="gc-t">${l}</span><span class="gc-s">${sub}</span>${badge?`<span class="gc-b num">${badge}</span>`:''}</button>`;
     const L=annList()[0];
@@ -6048,7 +6049,7 @@ function guestHTML0(){
     const help=`<section class="ghelp g3" aria-label="עזרה"><small class="gh-t">צריכים עזרה? כתבו לנו בוואטסאפ</small>
       <div class="gh-l">${ORGS.map(([n,t])=>`<a class="gh-w" href="${waLink(t)}" target="_blank" rel="noopener" aria-label="וואטסאפ ל${n}">${IX.wa||'💬'}<span>${n}</span></a>`).join('')}<a class="gh-w sos" href="tel:112" aria-label="חירום 112">112</a></div></section>`;
     return pv+`<div class="ghome">${SKY}<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(coupleLabel(ppl,me)||'')}</b>${dayMood()?`<span class="mood">${dayMood()}</span>`:''}</div><a class="trvp" href="${trvHref()}"><i class="trvp-sp" aria-hidden="true">${I.spark}</i><span class="trvp-t">טריוויה<br>על גלגלים</span><b class="trvp-go">לשחק ‹</b></a></div>
-     ${TRIPDAY()?(todayISO()==='2026-11-19'&&first&&Date.now()<depAt(first)+4*36e5?passBlock:''):passBlock+extraOut}${nowCard('data-gnav="gl"')}${voiceCard()}${chCard(1)}${ravCard()}${momentHTML()}${banner}${ciTasks(ppl).filter(c=>!c.done).map(ciCard).join('')}${TRIPDAY()?boardHTML(ppl)+tripDayBlock(ppl):ready+boardHTML(ppl)}${way}
+     ${TRIPDAY()?(todayISO()==='2026-11-19'&&first&&Date.now()<depAt(first)+4*36e5?passBlock:''):passBlock+extraOut}${bagBlock}${nowCard('data-gnav="gl"')}${voiceCard()}${chCard(1)}${ravCard()}${momentHTML()}${banner}${ciTasks(ppl).filter(c=>!c.done).map(ciCard).join('')}${TRIPDAY()?boardHTML(ppl)+tripDayBlock(ppl):ready+boardHTML(ppl)}${way}
      <div class="gcb">
       ${(()=>{/* most used first; the order changes once the trip starts */
         const C={gs:()=>me&&me.kitter?cube('gs',I.box,'סידור ערכות',(()=>{const rp=roomsPlaced();return rp.t?`${rp.n}/${rp.t} חדרים`:'באיזה חדר'})(),(()=>{const rp=roomsPlaced();return rp.t-rp.n||''})()):'',
@@ -6635,19 +6636,22 @@ SUB.myroom=function(){const me=orgSelf();return subHead('החדר שלי','')+(R
 /* ===== suitcases: what travels in which bag; bags live in settings/bags, items point to a bag by its code ===== */
 const BAGS=()=>{const d=S.settings.find(x=>x._id==='bags');return (d&&Array.isArray(d.list)?d.list:[]).filter(b=>b&&b.n)};
 const bagItems=n=>S.packing.filter(x=>x.item&&x.bag===n).sort((a,b)=>(a.bagOrder||a.order||0)-(b.bagOrder||b.order||0));
-function bagsBody(ro){
-  const L=BAGS(), all=S.packing.filter(x=>x.item&&x.bag), done=all.filter(x=>kst(x,'packed')).length;
+function bagsBody(ro,only){
+  const L=BAGS().filter(b=>!only||only.includes(b.n)), all=S.packing.filter(x=>x.item&&x.bag), done=all.filter(x=>kst(x,'packed')).length;
   const qty=x=>x.bagQty?`${x.bagQty} מתוך ${x.qty}`:(x.qty||1);
   const card=(b,i)=>{const it=bagItems(b.n), pk=it.filter(x=>kst(x,'packed')).length, pct=it.length?Math.round(pk/it.length*100):0;
     return `<div class="card bag-c" style="--d:${i*50}ms"><div class="bag-h"><span class="bag-n">${esc(b.icon||'🧳')}</span><div class="bag-t"><b>${esc(b.title||('מזוודה '+b.n))}</b><small>${[b.who,b.when,b.type,b.kg&&('⚖ '+b.kg),b.dest&&('← '+b.dest)].filter(Boolean).map(esc).join(' · ')}</small></div><span class="bag-p num">${pk}/${it.length}</span></div>
      <div class="prog"><i data-w="${pct}%" style="width:0"></i></div>
      ${b.note?`<p class="note" style="margin:8px 0 0">${esc(b.note)}</p>`:''}
      <div class="bag-l">${it.map(x=>{const on=kst(x,'packed');return `<div class="bag-r ${on?'on':''}"${ro?'':` data-edit="packing/${x._id}" role="button" tabindex="0"`}>${ro?`<span class="check ${on?'on':''}">${on?CHECK:''}</span>`:`<button class="check ${on?'on':''}" data-kst="${x._id}|packed" aria-pressed="${on}" aria-label="סימון שנארז">${on?CHECK:''}</button>`}<span class="bag-i">${esc(x.item)}</span><b class="num">${esc(String(qty(x)))}</b></div>`}).join('')||'<div class="empty"><b>עוד אין פריטים במזוודה</b></div>'}</div></div>`};
+  if(only)return L.map(card).join('');
   return `<div class="khero"><div><b class="num">${L.length}</b><span>מזוודות</span></div><div><b class="num">${done}/${all.length}</b><span>פריטים נארזו</span></div></div>
    <p class="note">${ro?'לכל מזוודה: מי לוקח, מתי ומה בפנים. ✓ = כבר נארז.':'לכל מזוודה: מי לוקח, מתי ומה בפנים. ✓ מסמן שהפריט נארז. כדי להעביר פריט למזוודה אחרת לוחצים עליו ובוחרים "🧳 מזוודה".'}</p>
    ${L.map(card).join('')||'<div class="card"><div class="empty"><b>עוד לא הוגדרו מזוודות</b></div></div>'}`}
 SUB.bags=function(){return subHead('מזוודות',`<span class="cnt num">${BAGS().length}</span>`)+bagsBody(false)};
 // participants the organizers let in (settings/bags.access) see the same list, read-only
+// the bags a participant (or their spouse) carries: settings/bags list[].pids
+const myBags=ppl=>{const ids=(ppl||[]).map(p=>p&&p._id).filter(Boolean);return BAGS().filter(b=>Array.isArray(b.pids)&&b.pids.some(x=>ids.includes(x))).map(b=>b.n)};
 const bagOK=me=>{const d=S.settings.find(x=>x._id==='bags');return !!(me&&d&&Array.isArray(d.access)&&d.access.includes(me._id))};
 SUB.photos=function(){return subHead('תמונות מהמסע',PHL?`<span class="cnt num">${PH.length}</span>`:'')+photosHTML()};
 SUB.rides=function(){
@@ -7337,7 +7341,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='448299fcb3';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='20096f5471';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
