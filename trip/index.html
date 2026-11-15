@@ -3233,7 +3233,7 @@ function insights(){
   const noOwn=open.filter(x=>!x.owner&&x.priority!=='גבוהה'); if(noOwn.length)add('info','tasks',`${noOwn.length} משימות פתוחות בלי אחראי`,'כדאי לחלק לפני שזה מתגלגל לרגע האחרון','tasks',{seg:'all'});
   if(m.gap<0)add('bad','money',`חסרים ${ils(-m.gap)} כדי לסגור את התקציב`,`ההוצאות הצפויות ${ils(m.est)}, ההכנסות ${ils(m.income)}. אפשר לגייס תרומה, לקצץ או לעדכן מחיר`,'money',{seg:'sum'});
   if(m.unpaid.length){const owe=m.unpaid.reduce((s,x)=>s+owedOf(x),0);add(D<=21?'bad':'warn','money',`${m.unpaid.length} משתתפים עוד לא שילמו`,`בערך ${ils(owe)} בחוץ · אפשר לשלוח תזכורת בוואטסאפ מהמסך`,'money',{seg:'participants',filter:{pay:'open'}})}
-  const noPass=S.participants.filter(p=>!p.passport); if(noPass.length)add(D<=21?'bad':'warn','people',`${noPass.length} צילומי דרכון חסרים`,'צריך לפני הנפקת כרטיסים ורשימת המלון','more',{sub:'passports',filter:{pp:'miss'}});
+  const noPass=S.participants.filter(p=>!p.passport&&!p.kerOnly); if(noPass.length)add(D<=21?'bad':'warn','people',`${noPass.length} צילומי דרכון חסרים`,'צריך לפני הנפקת כרטיסים ורשימת המלון','more',{sub:'passports',filter:{pp:'miss'}});
   // a passport that is expired or ends too early must be renewed: that one is never 'later'
   const passBad=S.participants.filter(p=>passState(p)[0]==='bad'); if(passBad.length)add('bad','people',`${passBad.length} דרכונים שפג תוקפם או שהתוקף קצר מדי`,passBad.slice(0,3).map(p=>p.name+' ('+(p.passExp?p.passExp.split('-').reverse().join('.'):'')+')').join(' · ')+(passBad.length>3?' ועוד':''),'more',{sub:'passports',filter:{pp:'bad'}});
   const passNoEn=S.participants.filter(p=>p.passport&&!p.nameEn); if(passNoEn.length)add('warn','people',`${passNoEn.length} משתתפים בלי שם באנגלית`,'צריך לשיבוץ המלון ולכרטיסי הטיסה','more',{sub:'passports',filter:{pp:'miss'}});
@@ -4287,7 +4287,7 @@ function pdMigrate(){if(GUEST()||!db||PDMIG)return;const mv=(S.participants||[])
   db.doc('photobig/pp_all').set(upd,{merge:true}).then(()=>bt.commit()).then(()=>{PDMIG=false}).catch(e=>{PDMIG=false;diagE('pdmig',e)})}
 async function pdSave(p,k,v){const x={...(PD[p._id]||{}),[k]:v};PD={...PD,[p._id]:x};p[k]=v;try{await db.doc('photobig/pp_all').set({[p._id]:{[k]:v}},{merge:true});if(k==='birthDate')dobSync();return true}catch(e){diagE('pdsave',e);toast('השמירה נכשלה');return false}}
 // ok / warn (valid, but only just) / bad (expired or too short) / miss (still to be filled in)
-function passState(p){const t=todayISO();
+function passState(p){if(p&&p.kerOnly)return ['ok','לא נדרש דרכון (מצטרף בבודפשט)'];const t=todayISO();
   if(p.passExp&&p.passExp<t)return ['bad','פג תוקף'];
   if(p.passExp&&p.passExp<PASS_MIN)return ['bad','תוקף קצר'];
   if(!p.passExp&&!p.nameEn)return ['miss','לא הוזן'];
@@ -5990,7 +5990,7 @@ function guestHTML0(){
   const head=(t,extra='')=>pv+`<button class="gback" data-gnav="gh"><span>›</span><b>חזרה למסך הבית</b></button><div class="page-title"><h2>${t}</h2>${extra}</div>`;
   if(GTAB==='gh'){
     const open=triviaOpen(), og=flightGroups(ppl,'הלוך'), openT=S.tasks.filter(t=>t.open==='כן'&&t.status!=='בוצע'&&!t.owner&&!t.claimBy).length, mineT=myTasks(ppl).filter(t=>t.status!=='בוצע').length, un=annUnread();
-    const first=og[0]&&og[0].f, passBlock=first?passHTML(first):(og[0]&&og[0].solo?'<div class="fx"><div class="fx-h"><b>✈ הטיסה שלכם · הלוך</b></div><div class="fx-note">מזמינים טיסה בעצמם</div></div>':'');
+    const first=og[0]&&og[0].f, passBlock=me&&me.kerOnly?`<div class="fx"><div class="fx-h"><b>🚌 נפגשים בשדה התעופה בבודפשט</b></div><div class="fx-note" style="font-size:15px;line-height:1.7">יום חמישי 19.11 · הקבוצה נוחתת ב-<b class="num">11:15</b> (LY 2369)<br>מחכים לנו <b>ליד האוטובוס</b> ביציאה מהטרמינל, ומשם נוסעים יחד לקרעסטיר.<br>לא צריך לשלוח צילום דרכון.</div></div>`:first?passHTML(first):(og[0]&&og[0].solo?'<div class="fx"><div class="fx-h"><b>✈ הטיסה שלכם · הלוך</b></div><div class="fx-note">מזמינים טיסה בעצמם</div></div>':'');
     const extraOut=og.slice(1).map(g=>guestFlightCard(g,ppl,'הלוך')).join('');
     let n=0;
     const cube=(k,ic,l,sub,badge)=>`<button class="gc${GNEW[k]?' nw':''}" data-gnav="${k}" style="--i:${n++}">${GNEW[k]?'<span class="gc-nw">חדש</span>':''}<span class="gc-i">${ic}</span><span class="gc-t">${l}</span><span class="gc-s">${sub}</span>${badge?`<span class="gc-b num">${badge}</span>`:''}</button>`;
@@ -7337,7 +7337,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='d66e449029';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='448299fcb3';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
