@@ -5858,7 +5858,7 @@ async function certMake(){const me=meG();if(!me){toast('צריך להיכנס ע
     try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],text:'מסע גיבוש הונגריה 🇭🇺'});return}}catch(e){if(e&&e.name==='AbortError')return}
     const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);toast('התעודה נשמרה')},'image/png')}
 /* ===== personal letters: one per couple, built from the live data (flights, bags, roles, room), shared as an image ===== */
-const LTR_AIRJOIN=/גדלוביץ|פרידמן|שטרן|אייזנבך|יחיאל/, LTR_HOTEL=/אליעד|אלטשולר/;
+const LTR_EARLY=/גדלוביץ|שטרן|יחיאל/, LTR_AIRJOIN=/גדלוביץ|פרידמן|שטרן|אייזנבך|יחיאל/, LTR_HOTEL=/אליעד|אלטשולר/;
 const ltrSep=ppl=>ppl.some(p=>LTR_AIRJOIN.test(p.name||'')||LTR_HOTEL.test(p.name||'')||(p.outbound&&p.outbound!=='קבוצתי'));
 const LTR_MEET={time:'05:40',where:'טרמינל 3, אזור D, דלפקי אל על 78 עד 99'};
 const ltrCouples=()=>{const seen=new Set(),L=[],org=Object.values(TEAM_FULL);S.participants.forEach(p=>{if(seen.has(p._id))return;const ppl=coupleOf(p);ppl.forEach(x=>seen.add(x._id));if(!ppl.some(x=>org.includes(x.name)))L.push(ppl)});
@@ -5876,9 +5876,14 @@ function ltrData(ppl,me){
     P.push(['בדרך לקרעסטיר',`נשיר, נלמד ונשחק במשחק הטריוויה שהכנו. בקרעסטיר מחכה לנו סעודת הישועות, עם דברי תורה וניגונים${rav?', ונשמח מאוד לשמוע מהרב כמה מילים לכבוד המעמד':''}. אחר כך נעלה לציונו של רבי ישעיה מקרעסטיר זי״ע לתפילה ותהילים, וב-20:00 ניסע חזרה לבודפשט. בסביבות 23:00 נגיע למלון סילבר קראון.`]);
   }else{
     const noKer=ppl.some(p=>LTR_HOTEL.test(p.name||''));
-    const own=(fo&&out!=='קבוצתי')?`${T('הטיסה שלך','הטיסה שלכם')} לבודפשט: ${ltrDay(fo.date)}, טיסה ${fo.flightNo}, ממריאה ב-${fo.dep} ונוחתת ב-${fo.arr}. `:`את הטיסה לבודפשט ${T('אתה מסדר','אתם מסדרים')} בעצמ${T('ך','כם')}. `;
-    if(noKer)P.push(['ההגעה לבודפשט',own+`הקבוצה נוסעת ביום חמישי לקרעסטיר וחוזרת למלון בסביבות 23:00. נשמח מאוד לפגוש ${T('אותך','אתכם')} במלון סילבר קראון!`]);
-    else{P.push(['ביום חמישי, 19.11',own+`הקבוצה נוחתת בבודפשט ב-11:15 בטיסת אל על ${(S.flights.find(f=>f.dir==='הלוך'&&(f.group||'קבוצתי')==='קבוצתי')||{}).flightNo||'LY 2369'}. ${T('נפגוש אותך','נפגוש אתכם')} בשדה התעופה בבודפשט, ומשם עולים כולנו יחד לאוטובוס ויוצאים לקרעסטיר.`]);
+    const fx=(fo&&out!=='קבוצתי')?fo:null, early=(fx&&fx.date&&fx.date<'2026-11-19')||(!fx&&LTR_EARLY.test(ppl.map(p=>p.name).join(' '))), Y=T('אתה','אתם'), K=T('אותך','אתכם');
+    const fl=fx?` בטיסה ${fx.flightNo}${fx.dep?`, שממריאה ב-${fx.dep}`:''}${fx.arr?` ונוחתת ב-${fx.arr}`:''}`:'';
+    const gf=(S.flights.find(f=>f.dir==='הלוך'&&(f.group||'קבוצתי')==='קבוצתי')||{}).flightNo||'LY 2369';
+    if(noKer)P.push(['ההגעה לבודפשט',(fx?`${Y} ${T('נוחת','נוחתים')} בבודפשט ${ltrDay(fx.date)}${fl}. `:`את הטיסה לבודפשט ${Y} ${T('מסדר','מסדרים')} בעצמ${T('ך','כם')}. `)+`הקבוצה נוסעת ביום חמישי לקרעסטיר וחוזרת למלון בסביבות 23:00. נשמח מאוד לפגוש ${K} במלון סילבר קראון!`]);
+    else if(early){P.push(['ביום רביעי, 18.11',`${Y} ${T('מגיע','מגיעים')} לבודפשט יום לפני כולנו${fl}, ${T('ישן','ישנים')} במלון סילבר קראון, ומתחילים להתארגן.`]);
+      P.push(['ביום חמישי, 19.11',`הקבוצה נוחתת בבודפשט ב-11:15 בטיסת אל על ${gf}. ${T('נפגוש אותך','נפגוש אתכם')} בשדה התעופה, ליד האוטובוס, ומשם יוצאים כולנו יחד לקרעסטיר.`]);
+      P.push(['בדרך לקרעסטיר','נשיר, נלמד ונשחק במשחק הטריוויה שהכנו. בקרעסטיר מחכה לנו סעודת הישועות, עם דברי תורה וניגונים. אחר כך נעלה לציונו של רבי ישעיה מקרעסטיר זי״ע לתפילה ותהילים, וב-20:00 ניסע חזרה לבודפשט. בסביבות 23:00 נחזור למלון.'])}
+    else{P.push(['ביום חמישי, 19.11',(fx?`${Y} ${T('נוחת','נוחתים')} בבודפשט${fl}. `:`${Y} ${T('מגיע','מגיעים')} לבודפשט ביום חמישי בעצמ${T('ך','כם')}. `)+`הקבוצה נוחתת ב-11:15 בטיסת אל על ${gf}. ${T('נפגוש אותך','נפגוש אתכם')} בשדה התעופה בבודפשט, ליד האוטובוס, ומשם יוצאים כולנו יחד לקרעסטיר.`]);
       P.push(['בדרך לקרעסטיר','נשיר, נלמד ונשחק במשחק הטריוויה שהכנו. בקרעסטיר מחכה לנו סעודת הישועות, עם דברי תורה וניגונים. אחר כך נעלה לציונו של רבי ישעיה מקרעסטיר זי״ע לתפילה ותהילים, וב-20:00 ניסע חזרה לבודפשט. בסביבות 23:00 נגיע למלון סילבר קראון.'])}
   }
   const r=(p0.roomId&&S.rooms.find(x=>x._id===p0.roomId))||roomOf(p0);
@@ -7432,7 +7437,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='e2f308e63b';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='2994ff946a';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
