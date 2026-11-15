@@ -4163,7 +4163,10 @@ async function autoApply(){
     toast(`Claude עדכן ${n} דברים`);setTimeout(()=>burst(document.getElementById('actBtn')),200);
   }catch(e){console.warn('autoApply',e)}finally{autoBusy=false}
 }
-setInterval(autoApply,120000);
+// scheduled announcements: saved hidden with showAt; an organizer's open app reveals them on time (the reveal is what sends the push)
+function annRelease(){try{if(!db||ROLE!=='org'||PREV||ORG_RO||!loaded.has('settings'))return;const now=Date.now();
+  S.settings.filter(x=>x.kind==='ann'&&x.hidden&&+x.showAt>0&&now>=+x.showAt&&now<+x.showAt+36e6).forEach(x=>db.collection('settings').doc(x._id).set({hidden:false,showAt:0,ts:now},{merge:true}).catch(()=>{}))}catch(e){}}
+setInterval(autoApply,120000);setInterval(annRelease,30000);setTimeout(annRelease,5000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)autoApply()});
 
 
@@ -7453,7 +7456,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='911feaff78';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='376c5f4f4d';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
