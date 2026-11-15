@@ -5858,6 +5858,8 @@ async function certMake(){const me=meG();if(!me){toast('צריך להיכנס ע
     try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],text:'מסע גיבוש הונגריה 🇭🇺'});return}}catch(e){if(e&&e.name==='AbortError')return}
     const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);toast('התעודה נשמרה')},'image/png')}
 /* ===== personal letters: one per couple, built from the live data (flights, bags, roles, room), shared as an image ===== */
+const LTR_AIRJOIN=/גדלוביץ|פרידמן|שטרן|אייזנבך|יחיאל/, LTR_HOTEL=/אליעד|אלטשולר/;
+const ltrSep=ppl=>ppl.some(p=>LTR_AIRJOIN.test(p.name||'')||LTR_HOTEL.test(p.name||'')||(p.outbound&&p.outbound!=='קבוצתי'));
 const LTR_MEET={time:'05:40',where:'טרמינל 3, אזור D, דלפקי אל על 78 עד 99'};
 const ltrCouples=()=>{const seen=new Set(),L=[],org=Object.values(TEAM_FULL);S.participants.forEach(p=>{if(seen.has(p._id))return;const ppl=coupleOf(p);ppl.forEach(x=>seen.add(x._id));if(!ppl.some(x=>org.includes(x.name)))L.push(ppl)});
   return L.sort((a,b)=>(/^הרב/.test(b[0].name)-/^הרב/.test(a[0].name))||String(a[0].name).split(' ').pop().localeCompare(String(b[0].name).split(' ').pop(),'he'))};
@@ -5869,12 +5871,16 @@ function ltrData(ppl,me){
   const out=p0.outbound||'קבוצתי', ret=p0.returnGroup||'', P=[];
   P.push(['',`בעוד ימים ספורים אנחנו יוצאים יחד למסע שכולנו מחכים לו כל כך${rav?', ואנחנו מתרגשים במיוחד לצאת אליו כשאתם בראש החבורה':''}. כדי ש${T('תוכל','תוכלו')} להתארגן בנחת ובראש שקט, ריכזנו כאן את כל מה שחשוב לדעת${solo?' לך':''}.`]);
   const fo=S.flights.find(f=>f.dir==='הלוך'&&(f.group||'קבוצתי')===out);
-  if(out==='קבוצתי'){
+  if(!ltrSep(ppl)){
     P.push(['ביום חמישי, 19.11',`נבקש להגיע לנתב״ג בשעה ${LTR_MEET.time}, ל${LTR_MEET.where}. שם נפגשים כולם, ואנחנו נהיה שם לעזור בכל מה שצריך. הטיסה שלנו${fo?', אל על '+fo.flightNo+',':''} ממריאה ב-${fo?fo.dep:'08:40'} ונוחתת בבודפשט ב-${fo?fo.arr:'11:15'}. בשדה מחכה לנו אוטובוס, ומשם יוצאים לקרעסטיר.`]);
     P.push(['בדרך לקרעסטיר',`נשיר, נלמד ונשחק במשחק הטריוויה שהכנו. בקרעסטיר מחכה לנו סעודת הישועות, עם דברי תורה וניגונים${rav?', ונשמח מאוד לשמוע מהרב כמה מילים לכבוד המעמד':''}. אחר כך נעלה לציונו של רבי ישעיה מקרעסטיר זי״ע לתפילה ותהילים, וב-20:00 ניסע חזרה לבודפשט. בסביבות 23:00 נגיע למלון סילבר קראון.`]);
-  }else if(fo){
-    P.push(['הטיסה שלכם לבודפשט',`${ltrDay(fo.date)}, טיסה ${fo.flightNo}, ממריאה ב-${fo.dep} ונוחתת ב-${fo.arr}.${fo.notes?' '+fo.notes+'.':''} נתראה במלון סילבר קראון!`]);
-  }else P.push(['ההגעה לבודפשט',`את הדרך לבודפשט ${T('אתה מסדר','אתם מסדרים')} בעצמ${T('ך','כם')}. נשמח מאוד לפגוש ${T('אותך','אתכם')} במלון סילבר קראון, ונתאם איתכם את המפגש.`]);
+  }else{
+    const noKer=ppl.some(p=>LTR_HOTEL.test(p.name||''));
+    const own=(fo&&out!=='קבוצתי')?`${T('הטיסה שלך','הטיסה שלכם')} לבודפשט: ${ltrDay(fo.date)}, טיסה ${fo.flightNo}, ממריאה ב-${fo.dep} ונוחתת ב-${fo.arr}. `:`את הטיסה לבודפשט ${T('אתה מסדר','אתם מסדרים')} בעצמ${T('ך','כם')}. `;
+    if(noKer)P.push(['ההגעה לבודפשט',own+`הקבוצה נוסעת ביום חמישי לקרעסטיר וחוזרת למלון בסביבות 23:00. נשמח מאוד לפגוש ${T('אותך','אתכם')} במלון סילבר קראון!`]);
+    else{P.push(['ביום חמישי, 19.11',own+`הקבוצה נוחתת בבודפשט ב-11:15 בטיסת אל על ${(S.flights.find(f=>f.dir==='הלוך'&&(f.group||'קבוצתי')==='קבוצתי')||{}).flightNo||'LY 2369'}. ${T('נפגוש אותך','נפגוש אתכם')} בשדה התעופה בבודפשט, ומשם עולים כולנו יחד לאוטובוס ויוצאים לקרעסטיר.`]);
+      P.push(['בדרך לקרעסטיר','נשיר, נלמד ונשחק במשחק הטריוויה שהכנו. בקרעסטיר מחכה לנו סעודת הישועות, עם דברי תורה וניגונים. אחר כך נעלה לציונו של רבי ישעיה מקרעסטיר זי״ע לתפילה ותהילים, וב-20:00 ניסע חזרה לבודפשט. בסביבות 23:00 נגיע למלון סילבר קראון.'])}
+  }
   const r=(p0.roomId&&S.rooms.find(x=>x._id===p0.roomId))||roomOf(p0);
   if(r&&r.roomNumber&&!RHID())P.push(['','במלון יחכו '+T('לך','לכם')+' בקבלה הדרכון והמפתח לחדר '+r.roomNumber+'.']);
   P.push(['ביום שישי','מחכה לנו ארוחת בוקר כשרה במלון, מ-08:30 עד 10:30, ובשעה 09:00 שחרית במניין בבית הכנסת שבמלון. אחר כך זמן חופשי לקניות ולטיול ברחובות העיר. ב-13:00 נתכנס לארוחת ״טועמיה״ כשרה במלון, ומ-14:30 מתארגנים לשבת. ב-15:15 נצטלם כולנו לתמונה קבוצתית בפתח המלון, וב-15:45 מדליקים נרות בלובי.']);
@@ -5888,7 +5894,7 @@ function ltrData(ppl,me){
   P.push(['מזג האוויר','בבודפשט קריר: בחמישי ובשישי בין 6 ל-12 מעלות, ובשבת בין 1 ל-7, עם סיכוי לגשם קל. כדאי לקחת מעיל חם, צעיף, כובע וכפפות. ובשורה טובה: בבודפשט יש עירוב, כך שמותר לטלטל בשבת.']);
   P.push([T('ושלא תשכח:','ושלא תשכחו:'),'דרכון בתוקף, eSIM לגלישה, ביטוח נסיעות, טלית ותפילין, בגדי שבת ובגדים להחלפה, מטען נייד ומתאם לשקע אירופאי, תרופות קבועות ומעט מזומן ביורו.']);
   P.push(['','לכל שאלה ובכל שעה, אנחנו כאן: שלומי ⁦053-962-6126⁩ · איציק ⁦054-303-0492⁩']);
-  return {to,P,flags:[out!=='קבוצתי'&&'הלוך נפרד',ret&&ret!=='מוצ״ש'&&('חזור: '+ret),bg.length&&'🧳 מזוודה'].filter(Boolean)}}
+  return {to,P,flags:[ltrSep(ppl)&&(ppl.some(p=>LTR_HOTEL.test(p.name||''))?'מגיעים ישר למלון':'פוגשים אותנו בשדה בבודפשט'),ret&&ret!=='מוצ״ש'&&('חזור: '+ret),bg.length&&'🧳 מזוודה'].filter(Boolean)}}
 async function ltrMake(ppl,me){
   try{await Promise.all(['900 52px "Frank Ruhl Libre"','500 30px "Frank Ruhl Libre"','700 30px Assistant'].map(f=>document.fonts.load(f)))}catch(e){}
   const d=ltrData(ppl,me),W=1080,PX=96,TW=W-PX*2,c=document.createElement('canvas'),x=c.getContext('2d');
@@ -7426,7 +7432,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='e5aae84c8a';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='e2f308e63b';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
