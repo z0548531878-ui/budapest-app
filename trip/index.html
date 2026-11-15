@@ -6744,7 +6744,7 @@ function bagsBody(ro,only){
   const L=BAGS().filter(b=>!only||only.includes(b.n)), all=S.packing.filter(x=>x.item&&x.bag), done=all.filter(x=>kst(x,'packed')).length;
   const qty=x=>x.bagQty?`${x.bagQty} מתוך ${x.qty}`:(x.qty||1);
   const card=(b,i)=>{const it=bagItems(b.n), pk=it.filter(x=>kst(x,'packed')).length, pct=it.length?Math.round(pk/it.length*100):0;
-    return `<div class="card bag-c" style="--d:${i*50}ms"><div class="bag-h"><span class="bag-n">${esc(b.icon||'🧳')}</span><div class="bag-t"><b>${esc(b.title||('מזוודה '+b.n))}</b><small>${[b.who,b.when,b.type,b.kg&&('⚖ '+b.kg),b.dest&&('← '+b.dest)].filter(Boolean).map(esc).join(' · ')}</small></div><span class="bag-p num">${pk}/${it.length}</span></div>
+    return `<div class="card bag-c" style="--d:${i*50}ms"><div class="bag-h"><span class="bag-n">${esc(b.icon||'🧳')}</span><div class="bag-t"><b>${esc(b.title||('מזוודה '+b.n))}</b><small>${[b.who&&('👤 '+b.who),b.when&&('✈ '+b.when),b.ways&&('↔ '+b.ways),b.src&&('🧳 '+b.src),b.dest&&('📍 '+b.dest),b.kg&&('⚖ '+b.kg),b.type].filter(Boolean).map(esc).join('<br>')}</small></div><span class="bag-p num">${pk}/${it.length}</span></div>
      <div class="prog"><i data-w="${pct}%" style="width:0"></i></div>
      ${b.note?`<p class="note" style="margin:8px 0 0">${esc(b.note)}</p>`:''}
      <div class="bag-l">${it.map(x=>{const on=kst(x,'packed');return `<div class="bag-r ${on?'on':''}"${ro?'':` data-edit="packing/${x._id}" role="button" tabindex="0"`}>${ro?`<span class="check ${on?'on':''}">${on?CHECK:''}</span>`:`<button class="check ${on?'on':''}" data-kst="${x._id}|packed" aria-pressed="${on}" aria-label="סימון שנארז">${on?CHECK:''}</button>`}<span class="bag-i">${esc(x.item)}</span><b class="num">${esc(String(qty(x)))}</b></div>`}).join('')||'<div class="empty"><b>עוד אין פריטים במזוודה</b></div>'}</div></div>`};
@@ -6753,7 +6753,7 @@ function bagsBody(ro,only){
   const sel=BAGSEL&&L.find(b=>b.n===BAGSEL);
   if(sel)return `<button class="btn" data-bagopen="" style="margin:4px 0 12px">› כל המזוודות</button>`+card(sel,0);
   const row=(b,i)=>{const it=bagItems(b.n), pk=it.filter(x=>kst(x,'packed')).length;
-    return `<button class="card bag-row" data-bagopen="${esc(b.n)}" style="--d:${i*40}ms"><span class="bag-num num">${/^\d+$/.test(b.n)?esc(b.n):esc(b.icon||'🧳')}</span><span class="bag-rt"><b>${esc((b.who||'').replace(/^⚠\s*/,''))||'—'}</b><small>${esc((b.title||'').replace(/^מזוודה \d+ – /,''))}</small><small>${[b.when,b.kg&&('⚖ '+b.kg)].filter(Boolean).map(esc).join(' · ')}</small>${b.type?`<small class="bag-fee">${esc(b.type)}</small>`:''}</span><span class="bag-p num">${pk}/${it.length}</span></button>`};
+    return `<button class="card bag-row" data-bagopen="${esc(b.n)}" style="--d:${i*40}ms"><span class="bag-num num">${/^\d+$/.test(b.n)?esc(b.n):esc(b.icon||'🧳')}</span><span class="bag-rt"><b>${esc((b.who||'').replace(/^⚠\s*/,''))||'—'}</b><small>${esc((b.title||'').replace(/^מזוודה \d+ – /,''))}</small><small>${[b.when&&('✈ '+b.when),b.ways&&('↔ '+b.ways)].filter(Boolean).map(esc).join(' · ')}</small>${b.dest?`<small>📍 ${esc(b.dest)}</small>`:''}${b.src?`<small>🧳 ${esc(b.src)}</small>`:''}${b.type?`<small class="bag-fee">${esc(b.type)}</small>`:''}</span><span class="bag-p num">${pk}/${it.length}</span></button>`};
   return `<div class="khero"><div><b class="num">${L.length}</b><span>מזוודות</span></div><div><b class="num">${done}/${all.length}</b><span>פריטים נארזו</span></div></div>
    <p class="note">לוחצים על מזוודה כדי לראות מה אמור להיות בפנים.</p>${L.map(row).join('')}`;
   return `<div class="khero"><div><b class="num">${L.length}</b><span>מזוודות</span></div><div><b class="num">${done}/${all.length}</b><span>פריטים נארזו</span></div></div>
@@ -7453,7 +7453,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='d15d280ac2';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='304d543d83';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
