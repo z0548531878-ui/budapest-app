@@ -5859,13 +5859,13 @@ async function certMake(){const me=meG();if(!me){toast('צריך להיכנס ע
     const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);toast('התעודה נשמרה')},'image/png')}
 /* ===== personal letters: one per couple, built from the live data (flights, bags, roles, room), shared as an image ===== */
 const LTR_MEET={time:'05:40',where:'טרמינל 3, אזור D, דלפקי אל על 78 עד 99'};
-const ltrCouples=()=>{const seen=new Set(),L=[];S.participants.forEach(p=>{if(seen.has(p._id))return;const ppl=coupleOf(p);ppl.forEach(x=>seen.add(x._id));L.push(ppl)});
+const ltrCouples=()=>{const seen=new Set(),L=[],org=Object.values(TEAM_FULL);S.participants.forEach(p=>{if(seen.has(p._id))return;const ppl=coupleOf(p);ppl.forEach(x=>seen.add(x._id));if(!ppl.some(x=>org.includes(x.name)))L.push(ppl)});
   return L.sort((a,b)=>(/^הרב/.test(b[0].name)-/^הרב/.test(a[0].name))||String(a[0].name).split(' ').pop().localeCompare(String(b[0].name).split(' ').pop(),'he'))};
 const ltrRav=ppl=>ppl.some(p=>/^הרב/.test(p.name||''));
 const ltrDay=(iso,grp)=>{if(grp==='מוצ״ש')return 'במוצאי שבת';try{return 'ב'+new Date(iso+'T12:00:00').toLocaleDateString('he-IL',{weekday:'long'})+', '+iso.split('-').reverse().slice(0,2).map(Number).join('.')}catch(e){return ''}};
-function ltrData(ppl){
-  const p0=ppl[0], rav=ltrRav(ppl), solo=ppl.length<2, y=solo?'':'ם', T=(a,b)=>solo?a:b;
-  const to=rav?'לכבוד הרב והרבנית שיחיו':`${coupleLabel(ppl,p0)} ${solo?'היקר':'היקרים'}`;
+function ltrData(ppl,me){
+  me=me||ppl[0];const p0=ppl[0], rav=ltrRav(ppl), solo=ppl.length<2, y=solo?'':'ם', T=(a,b)=>solo?a:b;
+  const to=rav?'לכבוד הרב והרבנית שיחיו':`${coupleLabel(ppl,me)} ${solo?'היקר':'היקרים'}`;
   const out=p0.outbound||'קבוצתי', ret=p0.returnGroup||'', P=[];
   P.push(['',`בעוד ימים ספורים אנחנו יוצאים יחד למסע שכולנו מחכים לו כל כך${rav?', ואנחנו מתרגשים במיוחד לצאת אליו כשאתם בראש החבורה':''}. כדי ש${T('תוכל','תוכלו')} להתארגן בנחת ובראש שקט, ריכזנו כאן את כל מה שחשוב לדעת${solo?' לך':''}.`]);
   const fo=S.flights.find(f=>f.dir==='הלוך'&&(f.group||'קבוצתי')===out);
@@ -5883,19 +5883,15 @@ function ltrData(ppl){
   const fr=ret&&ret!=='עצמאי'?S.flights.find(f=>f.dir==='חזור'&&f.group===ret):null;
   if(fr)P.push(['הטיסה הביתה',`${ltrDay(fr.date,ret)}, טיסת אל על ${fr.flightNo}, ממריאה ב-${fr.dep} ונוחתת בארץ ב-${fr.arr}${/למחרת/.test(fr.notes||'')?' (למחרת)':''}.${ret==='מוצ״ש'?' יוצאים מהמלון ב-17:20, מיד אחרי ההבדלה.':(fr.notes?' '+String(fr.notes).replace(/נחיתה למחרת\s*·?\s*/,'')+'.':'')}`]);
   else if(ret==='עצמאי')P.push(['החזרה',`את הטיסה הביתה ${T('אתה מסדר','אתם מסדרים')} בעצמ${T('ך','כם')}.`]);
-  const bg=BAGS().filter(b=>myBags(ppl).includes(b.n));
-  bg.forEach(b=>{const it=bagItems(b.n).map(x=>x.item).filter(Boolean);
-    P.push([`🧳 ${b.title||'מזוודה '+b.n}`,`${T('אתה לוקח','אתם לוקחים')} איתכם את המזוודה הזו${[b.type,b.kg&&'כ-'+b.kg,b.when,b.dest&&'יעד: '+b.dest].filter(Boolean).length?' ('+[b.type,b.kg&&'כ-'+b.kg,b.when,b.dest&&'יעד: '+b.dest].filter(Boolean).join(' · ')+')':''}.${it.length?' בתוכה: '+it.slice(0,10).join(', ')+(it.length>10?' ועוד':'')+'.':''}${b.note?' '+b.note:''} תודה ענקית על העזרה!`])});
-  const RM=rolesMap(), roles=[];ppl.forEach(p=>{(RM[p.name]||[]).filter(o=>o.k!=='task'&&!(o.k==='carry'&&bg.length)).forEach(o=>{const t=(solo?'':p.name.split(' ')[0]+': ')+String(o.t).replace(/\s+/g,' ').trim();if(!roles.includes(t))roles.push(t)})});
-  if(roles.length)P.push([T('התפקיד שלך במסע','התפקידים שלכם במסע'),roles.join(' · ')+'. תודה שאתם חלק מהעשייה!']);
-  P.push(['כבודה',`נבקש לקחת טרולי ותיק גב לכל אחד. אין מזוודות לבטן המטוס${bg.length?', מלבד המזוודה שבאחריותכם':''}.`]);
+  const bg=myBags(ppl);
+  P.push(['כבודה',bg.length?`נבקש לקחת טרולי ותיק גב לכל אחד, ובנוסף לוודא שהמזוודה שבאחריותכם מוכנה ויוצאת איתכם.`:`נבקש לקחת רק טרולי ותיק גב לכל אחד. אין מזוודות לבטן המטוס.`]);
   P.push(['מזג האוויר','בבודפשט קריר: בחמישי ובשישי בין 6 ל-12 מעלות, ובשבת בין 1 ל-7, עם סיכוי לגשם קל. כדאי לקחת מעיל חם, צעיף, כובע וכפפות. ובשורה טובה: בבודפשט יש עירוב, כך שמותר לטלטל בשבת.']);
   P.push([T('ושלא תשכח:','ושלא תשכחו:'),'דרכון בתוקף, eSIM לגלישה, ביטוח נסיעות, טלית ותפילין, בגדי שבת ובגדים להחלפה, מטען נייד ומתאם לשקע אירופאי, תרופות קבועות ומעט מזומן ביורו.']);
   P.push(['','לכל שאלה ובכל שעה, אנחנו כאן: שלומי ⁦053-962-6126⁩ · איציק ⁦054-303-0492⁩']);
-  return {to,P,flags:[out!=='קבוצתי'&&'הלוך נפרד',ret&&ret!=='מוצ״ש'&&('חזור: '+ret),bg.length&&('🧳 '+bg.length),roles.length&&(roles.length+' תפקידים')].filter(Boolean)}}
-async function ltrMake(ppl){
+  return {to,P,flags:[out!=='קבוצתי'&&'הלוך נפרד',ret&&ret!=='מוצ״ש'&&('חזור: '+ret),bg.length&&'🧳 מזוודה'].filter(Boolean)}}
+async function ltrMake(ppl,me){
   try{await Promise.all(['900 52px "Frank Ruhl Libre"','500 30px "Frank Ruhl Libre"','700 30px Assistant'].map(f=>document.fonts.load(f)))}catch(e){}
-  const d=ltrData(ppl),W=1080,PX=96,TW=W-PX*2,c=document.createElement('canvas'),x=c.getContext('2d');
+  const d=ltrData(ppl,me),W=1080,PX=96,TW=W-PX*2,c=document.createElement('canvas'),x=c.getContext('2d');
   const wrap=(t,font)=>{x.font=font;const out=[];String(t).split(' ').forEach(w=>{const l=out.length?out[out.length-1]:null;if(l!==null&&x.measureText(l+' '+w).width<=TW)out[out.length-1]=l+' '+w;else out.push(w)});return out};
   const HF='900 34px "Frank Ruhl Libre",serif',BF='500 30px "Frank Ruhl Libre",serif',LH=50;
   const blocks=d.P.map(([h,t])=>({h,hl:h?wrap(h,HF):[],bl:wrap(t,BF)}));
@@ -5919,21 +5915,30 @@ async function ltrMake(ppl){
   x.textAlign='center';x.fillStyle='#efe0b8';x.font='500 31px "Frank Ruhl Libre",serif';x.fillText(T0ltr(ppl),W/2,y+30);
   x.fillStyle='#d9c28a';x.font='500 28px "Frank Ruhl Libre",serif';x.fillText('בהערכה ובאהבה גדולה,',W/2,y+82);
   x.fillStyle='#e6c36d';x.font='900 62px "Frank Ruhl Libre",serif';x.fillText('שלומי ואיציק',W/2,y+155);
-  return new Promise(r=>c.toBlob(b=>r(b),'image/jpeg',.92))}
+  return new Promise(r=>c.toBlob(b=>r(b),'image/png'))}
 const T0ltr=ppl=>ppl.length<2?'אנחנו מחכים לך בהתרגשות, ונתראה בעזרת ה׳!':'אנחנו מחכים לכם בהתרגשות, ונתראה בעזרת ה׳!';
 SUB.letters=function(){const L=ltrCouples();
-  return subHead('מכתבים אישיים',`<span class="cnt num">${L.length}</span>`)+`<p class="note">מכתב לכל זוג, לפי הטיסות, המזוודות והתפקידים שלו באפליקציה. לוחצים על זוג, בודקים את המכתב ושולחים בוואטסאפ.</p>
+  return subHead('מכתבים אישיים',`<span class="cnt num">${L.length}</span>`)+`<p class="note">מכתב לכל זוג לפי הטיסות שלו. לוחצים על זוג, בודקים, ושולחים בוואטסאפ לכל אחד מבני הזוג, עם השם שלו ראשון.</p>
    <div class="card">${L.map(ppl=>{const d=ltrData(ppl);return `<div class="row" data-ltr="${ppl[0]._id}" role="button" tabindex="0"><div class="main"><b>${esc(d.to.replace(/ היקרים?$/,''))}</b>${d.flags.length?`<small>${esc(d.flags.join(' · '))}</small>`:''}</div><span aria-hidden="true">‹</span></div>`}).join('')}</div>`};
-let LTRF=null;
-document.addEventListener('click',async e=>{const t=e.target;
-  const o=t.closest&&t.closest('[data-ltr]');if(o){const p=S.participants.find(x=>x._id===o.dataset.ltr);if(!p)return;toast('מכינים את המכתב…');
-    const ppl=coupleOf(p),b=await ltrMake(ppl);if(!b){toast('המכתב לא נוצר. נסו שוב');return}
-    LTRF=new File([b],'מכתב-'+String(ppl[0].name).split(' ').pop()+'.jpg',{type:'image/jpeg'});const u=URL.createObjectURL(b);
-    const v=document.createElement('div');v.id='ltrv';v.setAttribute('dir','rtl');v.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.88);display:flex;flex-direction:column';
-    v.innerHTML=`<div style="flex:1;overflow:auto;padding:14px"><img src="${u}" alt="" style="width:100%;max-width:560px;display:block;margin:0 auto;border-radius:10px"></div><div style="display:flex;gap:10px;padding:12px 14px calc(12px + env(safe-area-inset-bottom));background:#140e07"><button class="btn primary" data-ltr-share style="flex:2">שיתוף בוואטסאפ</button><button class="btn ghost" data-ltr-x style="flex:1">סגירה</button></div>`;
+const waNum=ph=>{let d=String(ph||'').replace(/\D/g,'');if(d.startsWith('00'))d=d.slice(2);if(d.startsWith('0'))d='972'+d.slice(1);return d.length>=11?d:''};
+let LTR=null;
+document.addEventListener('click',async e=>{const t=e.target;if(!t.closest)return;
+  const o=t.closest('[data-ltr]');if(o){const p=S.participants.find(x=>x._id===o.dataset.ltr);if(!p)return;toast('מכינים את המכתבים…');
+    const ppl=coupleOf(p),L=[];for(const m of ppl){const b=await ltrMake(ppl,m);if(b)L.push({m,b,f:new File([b],'מכתב-'+String(m.name).split(' ')[0]+'.png',{type:'image/png'})})}
+    if(!L.length){toast('המכתב לא נוצר. נסו שוב');return}LTR=L;const u=URL.createObjectURL(L[0].b);
+    const v=document.createElement('div');v.id='ltrv';v.setAttribute('dir','rtl');v.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.9);display:flex;flex-direction:column';
+    v.innerHTML=`<div style="flex:1;overflow:auto;padding:14px"><img src="${u}" alt="" style="width:100%;max-width:560px;display:block;margin:0 auto;border-radius:10px"></div>
+     <div style="display:flex;flex-wrap:wrap;gap:8px;padding:12px 14px calc(12px + env(safe-area-inset-bottom));background:#140e07">
+     ${L.map((x,i)=>`<button class="btn primary" data-ltr-wa="${i}" style="flex:1 1 40%"${waNum(x.m.phone)?'':' disabled'}>וואטסאפ ל${esc(String(x.m.name).replace(/^הרב(נית)? /,'').split(' ')[0])}</button>`).join('')}
+     <button class="btn ghost" data-ltr-share style="flex:1">שיתוף אחר</button><button class="btn ghost" data-ltr-x style="flex:1">סגירה</button></div>
+     <p style="margin:0;padding:0 14px 10px;background:#140e07;color:#d9c28a;font-size:13px;text-align:center">המכתב מועתק, וואטסאפ נפתח בצ׳אט שלו. שם לוחצים לחיצה ארוכה ← "הדבקה" ← שליחה.</p>`;
     v._u=u;document.body.appendChild(v);return}
-  if(t.closest&&t.closest('[data-ltr-x]')){const v=document.getElementById('ltrv');if(v){URL.revokeObjectURL(v._u);v.remove()}return}
-  if(t.closest&&t.closest('[data-ltr-share]')&&LTRF){const f=LTRF;
+  if(t.closest('[data-ltr-x]')){const v=document.getElementById('ltrv');if(v){URL.revokeObjectURL(v._u);v.remove()}return}
+  const w=t.closest('[data-ltr-wa]');if(w&&LTR){const x=LTR[+w.dataset.ltrWa],n=waNum(x.m.phone);if(!n){toast('אין מספר טלפון');return}
+    let ok=false;try{await navigator.clipboard.write([new ClipboardItem({'image/png':x.b})]);ok=true}catch(er){}
+    if(!ok){try{if(navigator.canShare&&navigator.canShare({files:[x.f]})){await navigator.share({files:[x.f]});return}}catch(er){if(er&&er.name==='AbortError')return}}
+    toast('המכתב הועתק. מדביקים בצ׳אט');location.href='https://wa.me/'+n;return}
+  if(t.closest('[data-ltr-share]')&&LTR){const f=LTR[0].f;
     try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}}catch(er){if(er&&er.name==='AbortError')return}
     const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);toast('המכתב נשמר')}});
 const chNow=()=>S.settings.filter(x=>x.kind==='challenge'&&!x.hidden).sort((a,b)=>(b.at||0)-(a.at||0))[0];
@@ -7421,7 +7426,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='6be19e069d';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='e5aae84c8a';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
