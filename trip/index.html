@@ -4426,6 +4426,7 @@ const TILE_DEFS=()=>{const pk=S.packing.filter(x=>!x.sug||kst(x,'ordered')),pd=p
  ['shops','box','קניות',(()=>{const a=S.packing.filter(x=>x.item&&!x.sug);return `${a.filter(x=>!kst(x,'ordered')).length} עוד לא הוזמנו`})(),'c4'],
  ['rooms','bed','חדרים',`${S.rooms.length} · ${rk} עם סט`,'c5'],
  ['flights','plane','טיסות',`${S.flights.length} טיסות`,'c6'],
+ ['letters','file','מכתבים אישיים',`${ltrCouples().length} זוגות`,'c7'],
  ['files','file','מסמכים',`${S.files.filter(f=>f._id!=='f00').length} מסמכים · ${S.contacts.length} אנשים`,'c8'],
  ['attendance','people','ספירת נוכחות','לאוטובוס','c9'],
  ['reqs','tasks','בקשות ואישורים',`${pendN()} ממתינות`,'c12'], ['announce','chat','הודעות',`${annList().length} פורסמו · ${msgDue().length} לשלוח`,'c13'], ['trivia','spark','טריוויה','משחק לאוטובוס','c10'],['rav','mic','הקלטה / סרטון של הרב',(()=>{const n=S.settings.filter(x=>x.kind==='audio'&&!x.hidden).length;return n?n+' פורסמו':'להעלאה לכולם'})(),'c14'],['tasks','tasks','משימות',`${S.tasks.filter(t=>t.status!=='בוצע').length} פתוחות`,'c3'],['photos','cam','תמונות מהמסע',PHL?`${PH.length} תמונות · העלאה`:'צפייה והעלאה','c7'],['bags','box','מזוודות',(()=>{const a=S.packing.filter(x=>x.item&&x.bag);return BAGS().length?`${BAGS().length} מזוודות · ${a.filter(x=>kst(x,'packed')).length}/${a.length} נארזו`:'מה נכנס לכל מזוודה'})(),'c11'],['myroom','bed','החדר שלי',(()=>{const r=orgRoom();return r&&r.roomNumber?'חדר '+r.roomNumber+' · כל השיבוצים':'כל השיבוצים'})(),'c5'],['rides','car','נסיעות לשדה',`${S.settings.filter(x=>x.kind==='ride'&&!x.hidden).length} נסיעות`,'c4'],
@@ -4433,13 +4434,13 @@ const TILE_DEFS=()=>{const pk=S.packing.filter(x=>!x.sug||kst(x,'ordered')),pd=p
  ]};
 // trivia link: carries the user's full name so the game does not ask for it (not in organizer preview)
 const trvHref=()=>{let nm='';try{nm=GUEST()?(PREV?'':(meG()||{}).name||''):(typeof ME==='string'?ME:'')}catch(e){}nm=String(nm||'').trim();return (GUEST()?'trivia/?lock=1':'trivia/')+(nm.split(/\s+/).length>=2?(GUEST()?'&':'?')+'name='+encodeURIComponent(nm):'')};
-const TORD=['passports','people','tasks','announce','program','reqs','trivia','appusers','photos','myroom','rides','rav','roles','flights','rooms','kits','bags','shops','files','attendance'];
+const TORD=['passports','people','tasks','announce','program','reqs','trivia','appusers','photos','myroom','rides','rav','roles','flights','letters','rooms','kits','bags','shops','files','attendance'];
 // gold = something there is waiting for you; the rest stay dark, so the eye goes straight to what's open
 const tileHot=k=>{try{return ({reqs:pendN()>0,passports:S.participants.some(p=>!p.passport),announce:msgDue().length>0})[k]||false}catch(e){return false}};
 const msgDue=()=>{const t=todayISO();return S.messages.filter(m=>!m.sent&&m.date&&m.date<=t)};
 // short names that fit a quarter-width tile (the full name stays as its label for screen readers)
 const TSUBS={trivia:'לאוטובוס',photos:'מהמסע',rav:'דברי הרב'};
-const TSHORT={myroom:'החדר שלי',appusers:'באפליקציה',reqs:'בקשות',rav:'הקלטות',photos:'תמונות',rides:'נסיעות',attendance:'נוכחות'};
+const TSHORT={letters:'מכתבים',myroom:'החדר שלי',appusers:'באפליקציה',reqs:'בקשות',rav:'הקלטות',photos:'תמונות',rides:'נסיעות',attendance:'נוכחות'};
 const homeTiles=()=>`<section class="sec"><div class="sec-h"><h3>הכל במקום אחד</h3><span class="sec-k"><i></i>מחכה לטיפול</span></div><div class="cubes tiles">${TILE_DEFS().filter(x=>!['tasks','shops','program'].includes(x[0])).sort((a,b)=>TORD.indexOf(a[0])-TORD.indexOf(b[0])).map(([k,ic,l0,s0,c],i)=>{const l=TSHORT[k]||l0;let s=String(s0||'').split(' · ')[0].split(' + ')[0];if(s.length>11)s=TSUBS[k]||'';return (k==='trivia'?`<a class="cube ${c}" href="${trvHref()}" style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></a>`:`<button class="cube ${c}${tileHot(k)?' hot':''}" aria-label="${esc(l0+(s?' · '+s:''))}" ${k==='tasks'?'data-go="tasks"':`data-go="more" data-opts='{"sub":"${k}"}'`} style="--i:${i}"><span class="ci">${I[ic]}</span><b>${l}</b><small>${s}</small></button>`)}).join('')}</div></section>`;
 
 
@@ -5856,6 +5857,85 @@ async function certMake(){const me=meG();if(!me){toast('צריך להיכנס ע
   c.toBlob(async b=>{if(!b){toast('התעודה לא נוצרה. נסו שוב');return}const f=new File([b],'תעודת-המסע.png',{type:'image/png'});
     try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],text:'מסע גיבוש הונגריה 🇭🇺'});return}}catch(e){if(e&&e.name==='AbortError')return}
     const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);toast('התעודה נשמרה')},'image/png')}
+/* ===== personal letters: one per couple, built from the live data (flights, bags, roles, room), shared as an image ===== */
+const LTR_MEET={time:'05:40',where:'טרמינל 3, אזור D, דלפקי אל על 78 עד 99'};
+const ltrCouples=()=>{const seen=new Set(),L=[];S.participants.forEach(p=>{if(seen.has(p._id))return;const ppl=coupleOf(p);ppl.forEach(x=>seen.add(x._id));L.push(ppl)});
+  return L.sort((a,b)=>(/^הרב/.test(b[0].name)-/^הרב/.test(a[0].name))||String(a[0].name).split(' ').pop().localeCompare(String(b[0].name).split(' ').pop(),'he'))};
+const ltrRav=ppl=>ppl.some(p=>/^הרב/.test(p.name||''));
+const ltrDay=(iso,grp)=>{if(grp==='מוצ״ש')return 'במוצאי שבת';try{return 'ב'+new Date(iso+'T12:00:00').toLocaleDateString('he-IL',{weekday:'long'})+', '+iso.split('-').reverse().slice(0,2).map(Number).join('.')}catch(e){return ''}};
+function ltrData(ppl){
+  const p0=ppl[0], rav=ltrRav(ppl), solo=ppl.length<2, y=solo?'':'ם', T=(a,b)=>solo?a:b;
+  const to=rav?'לכבוד הרב והרבנית שיחיו':`${coupleLabel(ppl,p0)} ${solo?'היקר':'היקרים'}`;
+  const out=p0.outbound||'קבוצתי', ret=p0.returnGroup||'', P=[];
+  P.push(['',`בעוד ימים ספורים אנחנו יוצאים יחד למסע שכולנו מחכים לו כל כך${rav?', ואנחנו מתרגשים במיוחד לצאת אליו כשאתם בראש החבורה':''}. כדי ש${T('תוכל','תוכלו')} להתארגן בנחת ובראש שקט, ריכזנו כאן את כל מה שחשוב לדעת${solo?' לך':''}.`]);
+  const fo=S.flights.find(f=>f.dir==='הלוך'&&(f.group||'קבוצתי')===out);
+  if(out==='קבוצתי'){
+    P.push(['ביום חמישי, 19.11',`נבקש להגיע לנתב״ג בשעה ${LTR_MEET.time}, ל${LTR_MEET.where}. שם נפגשים כולם, ואנחנו נהיה שם לעזור בכל מה שצריך. הטיסה שלנו${fo?', אל על '+fo.flightNo+',':''} ממריאה ב-${fo?fo.dep:'08:40'} ונוחתת בבודפשט ב-${fo?fo.arr:'11:15'}. בשדה מחכה לנו אוטובוס, ומשם יוצאים לקרעסטיר.`]);
+    P.push(['בדרך לקרעסטיר',`נשיר, נלמד ונשחק במשחק הטריוויה שהכנו. בקרעסטיר מחכה לנו סעודת הישועות, עם דברי תורה וניגונים${rav?', ונשמח מאוד לשמוע מהרב כמה מילים לכבוד המעמד':''}. אחר כך נעלה לציונו של רבי ישעיה מקרעסטיר זי״ע לתפילה ותהילים, וב-20:00 ניסע חזרה לבודפשט. בסביבות 23:00 נגיע למלון סילבר קראון.`]);
+  }else if(fo){
+    P.push(['הטיסה שלכם לבודפשט',`${ltrDay(fo.date)}, טיסה ${fo.flightNo}, ממריאה ב-${fo.dep} ונוחתת ב-${fo.arr}.${fo.notes?' '+fo.notes+'.':''} נתראה במלון סילבר קראון!`]);
+  }else P.push(['ההגעה לבודפשט',`את הדרך לבודפשט ${T('אתה מסדר','אתם מסדרים')} בעצמ${T('ך','כם')}. נשמח מאוד לפגוש ${T('אותך','אתכם')} במלון סילבר קראון, ונתאם איתכם את המפגש.`]);
+  const r=(p0.roomId&&S.rooms.find(x=>x._id===p0.roomId))||roomOf(p0);
+  if(r&&r.roomNumber&&!RHID())P.push(['','במלון יחכו '+T('לך','לכם')+' בקבלה הדרכון והמפתח לחדר '+r.roomNumber+'.']);
+  P.push(['ביום שישי','מחכה לנו ארוחת בוקר כשרה במלון, מ-08:30 עד 10:30, ובשעה 09:00 שחרית במניין בבית הכנסת שבמלון. אחר כך זמן חופשי לקניות ולטיול ברחובות העיר. ב-13:00 נתכנס לארוחת ״טועמיה״ כשרה במלון, ומ-14:30 מתארגנים לשבת. ב-15:15 נצטלם כולנו לתמונה קבוצתית בפתח המלון, וב-15:45 מדליקים נרות בלובי.']);
+  P.push(['את השבת',`נקבל יחד במנחה ובקבלת שבת ב-16:00, בבית הכנסת שבמלון. ב-18:00 נצעד לסעודת ליל שבת במסעדת חנה, כשבע דקות הליכה מהמלון${rav?', ונתכבד בקידוש של הרב':''}. ב-20:30 נמשיך לזיץ ״עונג שבת״, בשירה ובדברי תורה אל תוך הלילה.`]);
+  P.push(['בשבת בבוקר',`נתחיל בקפה ועוגה בלובי ב-09:30, ושחרית ומוסף ב-10:00. ב-12:00 סעודת שבת וסעודה שלישית במסעדת חנה, ואחריה מנוחה וזמן חופשי. ב-16:00 מנחה, ב-16:30 ${rav?'נשמח לשמוע מהרב':'נשמע מהרב'} דברי סיכום למסע, וב-16:52 ניפרד מהשבת בערבית ובהבדלה מוזיקלית.`]);
+  const fr=ret&&ret!=='עצמאי'?S.flights.find(f=>f.dir==='חזור'&&f.group===ret):null;
+  if(fr)P.push(['הטיסה הביתה',`${ltrDay(fr.date,ret)}, טיסת אל על ${fr.flightNo}, ממריאה ב-${fr.dep} ונוחתת בארץ ב-${fr.arr}${/למחרת/.test(fr.notes||'')?' (למחרת)':''}.${ret==='מוצ״ש'?' יוצאים מהמלון ב-17:20, מיד אחרי ההבדלה.':(fr.notes?' '+String(fr.notes).replace(/נחיתה למחרת\s*·?\s*/,'')+'.':'')}`]);
+  else if(ret==='עצמאי')P.push(['החזרה',`את הטיסה הביתה ${T('אתה מסדר','אתם מסדרים')} בעצמ${T('ך','כם')}.`]);
+  const bg=BAGS().filter(b=>myBags(ppl).includes(b.n));
+  bg.forEach(b=>{const it=bagItems(b.n).map(x=>x.item).filter(Boolean);
+    P.push([`🧳 ${b.title||'מזוודה '+b.n}`,`${T('אתה לוקח','אתם לוקחים')} איתכם את המזוודה הזו${[b.type,b.kg&&'כ-'+b.kg,b.when,b.dest&&'יעד: '+b.dest].filter(Boolean).length?' ('+[b.type,b.kg&&'כ-'+b.kg,b.when,b.dest&&'יעד: '+b.dest].filter(Boolean).join(' · ')+')':''}.${it.length?' בתוכה: '+it.slice(0,10).join(', ')+(it.length>10?' ועוד':'')+'.':''}${b.note?' '+b.note:''} תודה ענקית על העזרה!`])});
+  const RM=rolesMap(), roles=[];ppl.forEach(p=>{(RM[p.name]||[]).filter(o=>o.k!=='task'&&!(o.k==='carry'&&bg.length)).forEach(o=>{const t=(solo?'':p.name.split(' ')[0]+': ')+String(o.t).replace(/\s+/g,' ').trim();if(!roles.includes(t))roles.push(t)})});
+  if(roles.length)P.push([T('התפקיד שלך במסע','התפקידים שלכם במסע'),roles.join(' · ')+'. תודה שאתם חלק מהעשייה!']);
+  P.push(['כבודה',`נבקש לקחת טרולי ותיק גב לכל אחד. אין מזוודות לבטן המטוס${bg.length?', מלבד המזוודה שבאחריותכם':''}.`]);
+  P.push(['מזג האוויר','בבודפשט קריר: בחמישי ובשישי בין 6 ל-12 מעלות, ובשבת בין 1 ל-7, עם סיכוי לגשם קל. כדאי לקחת מעיל חם, צעיף, כובע וכפפות. ובשורה טובה: בבודפשט יש עירוב, כך שמותר לטלטל בשבת.']);
+  P.push([T('ושלא תשכח:','ושלא תשכחו:'),'דרכון בתוקף, eSIM לגלישה, ביטוח נסיעות, טלית ותפילין, בגדי שבת ובגדים להחלפה, מטען נייד ומתאם לשקע אירופאי, תרופות קבועות ומעט מזומן ביורו.']);
+  P.push(['','לכל שאלה ובכל שעה, אנחנו כאן: שלומי ⁦053-962-6126⁩ · איציק ⁦054-303-0492⁩']);
+  return {to,P,flags:[out!=='קבוצתי'&&'הלוך נפרד',ret&&ret!=='מוצ״ש'&&('חזור: '+ret),bg.length&&('🧳 '+bg.length),roles.length&&(roles.length+' תפקידים')].filter(Boolean)}}
+async function ltrMake(ppl){
+  try{await Promise.all(['900 52px "Frank Ruhl Libre"','500 30px "Frank Ruhl Libre"','700 30px Assistant'].map(f=>document.fonts.load(f)))}catch(e){}
+  const d=ltrData(ppl),W=1080,PX=96,TW=W-PX*2,c=document.createElement('canvas'),x=c.getContext('2d');
+  const wrap=(t,font)=>{x.font=font;const out=[];String(t).split(' ').forEach(w=>{const l=out.length?out[out.length-1]:null;if(l!==null&&x.measureText(l+' '+w).width<=TW)out[out.length-1]=l+' '+w;else out.push(w)});return out};
+  const HF='900 34px "Frank Ruhl Libre",serif',BF='500 30px "Frank Ruhl Libre",serif',LH=50;
+  const blocks=d.P.map(([h,t])=>({h,hl:h?wrap(h,HF):[],bl:wrap(t,BF)}));
+  let H=430;blocks.forEach(b=>{H+=b.hl.length*48+b.bl.length*LH+28});H+=260;
+  c.width=W;c.height=H;x.direction='rtl';
+  const g=x.createRadialGradient(W/2,120,40,W/2,400,H);g.addColorStop(0,'#4a361b');g.addColorStop(.35,'#2a1e0f');g.addColorStop(1,'#140e07');x.fillStyle=g;x.fillRect(0,0,W,H);
+  x.strokeStyle='rgba(201,162,75,.08)';x.lineWidth=1;for(let yy=0;yy<H+80;yy+=38){for(let xx=0;xx<W+44;xx+=44){x.beginPath();x.arc(xx+(Math.round(yy/38)%2?22:0),yy,44,0,7);x.stroke()}}
+  x.strokeStyle='#c9a24b';x.lineWidth=3;x.strokeRect(30,30,W-60,H-60);x.lineWidth=1.2;x.strokeRect(40,40,W-80,H-80);
+  const lg=await new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src='logo.webp'});
+  x.save();x.shadowColor='rgba(201,162,75,.5)';x.shadowBlur=50;x.fillStyle='#c9a24b';x.beginPath();x.arc(W/2,170,106,0,7);x.fill();x.restore();
+  x.fillStyle='#0a0806';x.beginPath();x.arc(W/2,170,100,0,7);x.fill();
+  if(lg){x.save();x.beginPath();x.arc(W/2,170,96,0,7);x.clip();x.drawImage(lg,W/2-96,74,192,192);x.restore()}
+  x.textAlign='center';x.fillStyle='#e6c36d';x.font='900 52px "Frank Ruhl Libre",serif';x.fillText(d.to,W/2,345);
+  x.strokeStyle='#c9a24b';x.lineWidth=1.5;x.beginPath();x.moveTo(W/2-150,382);x.lineTo(W/2-18,382);x.moveTo(W/2+18,382);x.lineTo(W/2+150,382);x.stroke();
+  x.fillStyle='#e6c36d';x.save();x.translate(W/2,382);x.rotate(Math.PI/4);x.fillRect(-6,-6,12,12);x.restore();
+  let y=440;x.textAlign='right';
+  blocks.forEach((b,i)=>{const last=i===blocks.length-1;
+    if(last){x.textAlign='center';x.fillStyle='#f3dc9a';x.font='700 30px Assistant,sans-serif';b.bl.forEach(l=>{x.fillText(l,W/2,y+10);y+=LH});y+=28;return}
+    x.fillStyle='#e6c36d';x.font=HF;b.hl.forEach(l=>{x.fillText(l,W-PX,y);y+=48});
+    x.fillStyle='#efe0b8';x.font=BF;b.bl.forEach(l=>{x.fillText(l,W-PX,y);y+=LH});y+=28});
+  x.textAlign='center';x.fillStyle='#efe0b8';x.font='500 31px "Frank Ruhl Libre",serif';x.fillText(T0ltr(ppl),W/2,y+30);
+  x.fillStyle='#d9c28a';x.font='500 28px "Frank Ruhl Libre",serif';x.fillText('בהערכה ובאהבה גדולה,',W/2,y+82);
+  x.fillStyle='#e6c36d';x.font='900 62px "Frank Ruhl Libre",serif';x.fillText('שלומי ואיציק',W/2,y+155);
+  return new Promise(r=>c.toBlob(b=>r(b),'image/jpeg',.92))}
+const T0ltr=ppl=>ppl.length<2?'אנחנו מחכים לך בהתרגשות, ונתראה בעזרת ה׳!':'אנחנו מחכים לכם בהתרגשות, ונתראה בעזרת ה׳!';
+SUB.letters=function(){const L=ltrCouples();
+  return subHead('מכתבים אישיים',`<span class="cnt num">${L.length}</span>`)+`<p class="note">מכתב לכל זוג, לפי הטיסות, המזוודות והתפקידים שלו באפליקציה. לוחצים על זוג, בודקים את המכתב ושולחים בוואטסאפ.</p>
+   <div class="card">${L.map(ppl=>{const d=ltrData(ppl);return `<div class="row" data-ltr="${ppl[0]._id}" role="button" tabindex="0"><div class="main"><b>${esc(d.to.replace(/ היקרים?$/,''))}</b>${d.flags.length?`<small>${esc(d.flags.join(' · '))}</small>`:''}</div><span aria-hidden="true">‹</span></div>`}).join('')}</div>`};
+let LTRF=null;
+document.addEventListener('click',async e=>{const t=e.target;
+  const o=t.closest&&t.closest('[data-ltr]');if(o){const p=S.participants.find(x=>x._id===o.dataset.ltr);if(!p)return;toast('מכינים את המכתב…');
+    const ppl=coupleOf(p),b=await ltrMake(ppl);if(!b){toast('המכתב לא נוצר. נסו שוב');return}
+    LTRF=new File([b],'מכתב-'+String(ppl[0].name).split(' ').pop()+'.jpg',{type:'image/jpeg'});const u=URL.createObjectURL(b);
+    const v=document.createElement('div');v.id='ltrv';v.setAttribute('dir','rtl');v.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.88);display:flex;flex-direction:column';
+    v.innerHTML=`<div style="flex:1;overflow:auto;padding:14px"><img src="${u}" alt="" style="width:100%;max-width:560px;display:block;margin:0 auto;border-radius:10px"></div><div style="display:flex;gap:10px;padding:12px 14px calc(12px + env(safe-area-inset-bottom));background:#140e07"><button class="btn primary" data-ltr-share style="flex:2">שיתוף בוואטסאפ</button><button class="btn ghost" data-ltr-x style="flex:1">סגירה</button></div>`;
+    v._u=u;document.body.appendChild(v);return}
+  if(t.closest&&t.closest('[data-ltr-x]')){const v=document.getElementById('ltrv');if(v){URL.revokeObjectURL(v._u);v.remove()}return}
+  if(t.closest&&t.closest('[data-ltr-share]')&&LTRF){const f=LTRF;
+    try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}}catch(er){if(er&&er.name==='AbortError')return}
+    const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);toast('המכתב נשמר')}});
 const chNow=()=>S.settings.filter(x=>x.kind==='challenge'&&!x.hidden).sort((a,b)=>(b.at||0)-(a.at||0))[0];
 const chLive=()=>{const c=chNow();return c&&Date.now()-(c.at||0)<8*36e5?c:null};
 let PHCH='';
@@ -7341,7 +7421,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='2f2513854a';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='6be19e069d';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
