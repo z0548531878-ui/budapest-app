@@ -2911,7 +2911,23 @@ html:has(#scrim.open) #app :is(*,*::before,*::after){animation-play-state:paused
 .bag-r{display:flex;align-items:center;gap:10px;padding:7px 4px;border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer}
 .bag-r:last-child{border-bottom:0}
 .bag-r .check{width:26px;height:26px;flex:0 0 auto}
-.bag-i{flex:1;font-size:14.5px}
+.bag-i{flex:1;font-size:14.5px;min-width:0;display:flex;flex-direction:column;gap:3px}
+.bag-w{font-size:12px;color:#a69a7d;display:flex;align-items:center;flex-wrap:wrap;gap:4px}
+.bag-w b{color:#e9d9a8;font-weight:800}.bag-w b.nil{color:#e07a5f;font-weight:700}
+.bag-wi{width:62px;padding:4px 6px;border-radius:8px;border:1px solid rgba(214,178,98,.35);background:rgba(0,0,0,.25);color:inherit;font:700 13px var(--body);text-align:center}
+.bag-kg{margin:12px 0 4px;padding:12px;border-radius:14px;background:rgba(120,190,120,.10);border:1px solid rgba(120,190,120,.35)}
+.bag-kg.near{background:rgba(233,196,106,.12);border-color:rgba(233,196,106,.5)}
+.bag-kg.over{background:rgba(224,122,95,.14);border-color:rgba(224,122,95,.6)}
+.bag-kgt{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 10px}
+.bag-kgt b{font-size:38px;line-height:1;font-weight:900}.bag-kgt span{font-weight:700}
+.bag-kgt em{font-style:normal;font-weight:800;font-size:13.5px;margin-inline-start:auto}
+.bag-kg.over .bag-kgt em,.bag-kg.over .bag-kgt b{color:#ff9b82}
+.bag-kgb{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;font-size:13px;color:#cdb98a;align-items:center}
+.bag-miss{color:#e07a5f;font-weight:700}
+.bag-kgs{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;min-width:58px;padding:6px 8px;border-radius:12px;background:rgba(120,190,120,.12);border:1px solid rgba(120,190,120,.35)}
+.bag-kgs b{font-size:22px;line-height:1.1;font-weight:900}.bag-kgs small{font-size:11px;color:#a69a7d}
+.bag-kgs.near{background:rgba(233,196,106,.14);border-color:rgba(233,196,106,.5)}
+.bag-kgs.over{background:rgba(224,122,95,.16);border-color:rgba(224,122,95,.6)}.bag-kgs.over b,.bag-kgs.over small{color:#ff9b82}
 .bag-r.on .bag-i{opacity:.55;text-decoration:line-through}
 .bag-row{display:flex;align-items:center;gap:12px;width:100%;text-align:right;padding:14px!important;margin-bottom:10px;font:inherit;color:inherit}
 .bag-num{flex:0 0 44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#e9c46a,#b8862d);color:#1a1408;font-weight:900;font-size:22px;display:flex;align-items:center;justify-content:center}
@@ -6750,25 +6766,41 @@ SUB.myroom=function(){const me=orgSelf();return subHead('החדר שלי','')+(R
 const BAGS=()=>{const d=S.settings.find(x=>x._id==='bags');return (d&&Array.isArray(d.list)?d.list:[]).filter(b=>b&&b.n)};
 const bagItems=n=>S.packing.filter(x=>x.item&&x.bag===n).sort((a,b)=>(a.bagOrder||a.order||0)-(b.bagOrder||b.order||0));
 let BAGSEL='';
+// weights: each packing item has wg = grams per unit; the empty suitcase (tare) and the airline limit live in settings/bagkg so bag-list updates never wipe them
+const BKG=()=>S.settings.find(x=>x._id==='bagkg')||null;
+const bagQ=x=>(+x.bagQty>0?+x.bagQty:(+x.qty||1));
+const itemKg=x=>(+x.wg||0)*bagQ(x)/1000;
+const kgF=n=>(Math.round((+n||0)*10)/10).toLocaleString('he-IL',{maximumFractionDigits:1});
+const bagKg=b=>{const k=BKG()||{},it=bagItems(b.n),tare=+((k.tare||{})[b.n])||0,items=it.reduce((s,x)=>s+itemKg(x),0),lim=+((k.lim||{})[b.n])||0,tot=tare+items;
+  return {tare,items,lim,tot,miss:it.filter(x=>!(+x.wg>0)).length,has:tare>0||it.some(x=>+x.wg>0),over:lim>0&&tot>lim,near:lim>0&&tot<=lim&&tot>lim-1}};
 function bagsBody(ro,only){
   const L=BAGS().filter(b=>!only||only.includes(b.n)), all=S.packing.filter(x=>x.item&&x.bag), done=all.filter(x=>kst(x,'packed')).length;
   const qty=x=>x.bagQty?`${x.bagQty} מתוך ${x.qty}`:(x.qty||1);
   const card=(b,i)=>{const it=bagItems(b.n), pk=it.filter(x=>kst(x,'packed')).length, pct=it.length?Math.round(pk/it.length*100):0;
-    return `<div class="card bag-c" style="--d:${i*50}ms"><div class="bag-h"><span class="bag-n">${esc(b.icon||'🧳')}</span><div class="bag-t"><b>${esc(b.title||('מזוודה '+b.n))}</b><small>${[b.who&&('👤 '+b.who),b.when&&('✈ '+b.when),b.ways&&('↔ '+b.ways),b.src&&('🧳 '+b.src),b.dest&&('📍 '+b.dest),b.kg&&('⚖ '+b.kg),b.type].filter(Boolean).map(esc).join('<br>')}</small></div><span class="bag-p num">${pk}/${it.length}</span></div>
+    return `<div class="card bag-c" style="--d:${i*50}ms"><div class="bag-h"><span class="bag-n">${esc(b.icon||'🧳')}</span><div class="bag-t"><b>${esc(b.title||('מזוודה '+b.n))}</b><small>${[b.who&&('👤 '+b.who),b.when&&('✈ '+b.when),b.ways&&('↔ '+b.ways),b.src&&('🧳 '+b.src),b.dest&&('📍 '+b.dest),!bagKg(b).has&&b.kg&&('⚖ '+b.kg),b.type].filter(Boolean).map(esc).join('<br>')}</small></div><span class="bag-p num">${pk}/${it.length}</span></div>
+     ${(()=>{const k=bagKg(b);if(!k.has&&ro)return '';const inp=(a,v)=>ro?kgF(v):`<input class="bag-wi" type="number" inputmode="decimal" step="0.1" min="0" ${a}="${esc(b.n)}" value="${v||''}" placeholder="—" aria-label="ק״ג">`;
+       return `<div class="bag-kg ${k.over?'over':k.near?'near':''}"><div class="bag-kgt"><b class="num">${kgF(k.tot)}</b><span>ק״ג צפוי</span>${k.lim?`<em>${k.over?`⚠ חריגה של ${kgF(k.tot-k.lim)} ק״ג`:k.near?`קרוב לגבול · נשאר ${kgF(k.lim-k.tot)} ק״ג`:`נשאר ${kgF(k.lim-k.tot)} ק״ג`}</em>`:''}</div>
+        <div class="bag-kgb"><span>🧳 מזוודה ריקה ${inp('data-bagtare',k.tare)} ק״ג</span><span>+ 📦 תכולה <b class="num">${kgF(k.items)}</b> ק״ג</span><span>✈ מגבלה ${inp('data-baglim',k.lim)} ק״ג</span>${k.miss?`<span class="bag-miss">⚠ ${k.miss} פריטים בלי משקל</span>`:''}</div></div>`})()}
      <div class="prog"><i data-w="${pct}%" style="width:0"></i></div>
      ${b.note?`<p class="note" style="margin:8px 0 0">${esc(b.note)}</p>`:''}
-     <div class="bag-l">${it.map(x=>{const on=kst(x,'packed');return `<div class="bag-r ${on?'on':''}"${ro?'':` data-edit="packing/${x._id}" role="button" tabindex="0"`}>${ro?`<span class="check ${on?'on':''}">${on?CHECK:''}</span>`:`<button class="check ${on?'on':''}" data-kst="${x._id}|packed" aria-pressed="${on}" aria-label="סימון שנארז">${on?CHECK:''}</button>`}<span class="bag-i">${esc(x.item)}</span><b class="num">${esc(String(qty(x)))}</b></div>`}).join('')||'<div class="empty"><b>עוד אין פריטים במזוודה</b></div>'}</div></div>`};
+     <div class="bag-l">${it.map(x=>{const on=kst(x,'packed');return `<div class="bag-r ${on?'on':''}"${ro?'':` data-edit="packing/${x._id}" role="button" tabindex="0"`}>${ro?`<span class="check ${on?'on':''}">${on?CHECK:''}</span>`:`<button class="check ${on?'on':''}" data-kst="${x._id}|packed" aria-pressed="${on}" aria-label="סימון שנארז">${on?CHECK:''}</button>`}<span class="bag-i"><span>${esc(x.item)}</span><small class="bag-w">${ro?(+x.wg>0?`${kgF(x.wg)} ג׳ ליח׳ × ${bagQ(x)} = <b>${kgF(itemKg(x))} ק״ג</b>`:''):`<input class="bag-wi" type="number" inputmode="decimal" step="1" min="0" data-bagw="${x._id}" value="${+x.wg>0?x.wg:''}" placeholder="—" aria-label="גרם ליחידה"> ג׳ ליח׳ × ${bagQ(x)} = <b class="${+x.wg>0?'':'nil'}">${+x.wg>0?kgF(itemKg(x))+' ק״ג':'אין משקל'}</b>`}</small></span><b class="num">${esc(String(qty(x)))}</b></div>`}).join('')||'<div class="empty"><b>עוד אין פריטים במזוודה</b></div>'}</div></div>`};
   if(only)return L.map(card).join('');
   // list view: one big row per bag (number, who, short meta); tap opens what goes inside
   const sel=BAGSEL&&L.find(b=>b.n===BAGSEL);
   if(sel)return `<button class="btn" data-bagopen="" style="margin:4px 0 12px">› כל המזוודות</button>`+card(sel,0);
   const row=(b,i)=>{const it=bagItems(b.n), pk=it.filter(x=>kst(x,'packed')).length;
-    return `<button class="card bag-row" data-bagopen="${esc(b.n)}" style="--d:${i*40}ms"><span class="bag-num num">${/^\d+$/.test(b.n)?esc(b.n):esc(b.icon||'🧳')}</span><span class="bag-rt"><b>${esc((b.who||'').replace(/^⚠\s*/,''))||'—'}</b><small>${esc((b.title||'').replace(/^מזוודה \d+ – /,''))}</small><small>${[b.when&&('✈ '+b.when),b.ways&&('↔ '+b.ways)].filter(Boolean).map(esc).join(' · ')}</small>${b.dest?`<small>📍 ${esc(b.dest)}</small>`:''}${b.src?`<small>🧳 ${esc(b.src)}</small>`:''}${b.type?`<small class="bag-fee">${esc(b.type)}</small>`:''}</span><span class="bag-p num">${pk}/${it.length}</span></button>`};
+    return `<button class="card bag-row" data-bagopen="${esc(b.n)}" style="--d:${i*40}ms"><span class="bag-num num">${/^\d+$/.test(b.n)?esc(b.n):esc(b.icon||'🧳')}</span><span class="bag-rt"><b>${esc((b.who||'').replace(/^⚠\s*/,''))||'—'}</b><small>${esc((b.title||'').replace(/^מזוודה \d+ – /,''))}</small><small>${[b.when&&('✈ '+b.when),b.ways&&('↔ '+b.ways)].filter(Boolean).map(esc).join(' · ')}</small>${b.dest?`<small>📍 ${esc(b.dest)}</small>`:''}${b.src?`<small>🧳 ${esc(b.src)}</small>`:''}${b.type?`<small class="bag-fee">${esc(b.type)}</small>`:''}<small>📦 ${pk}/${it.length} נארזו</small></span>${(()=>{const k=bagKg(b);return k.has?`<span class="bag-kgs ${k.over?'over':k.near?'near':''}"><b class="num">${kgF(k.tot)}</b><small>${k.lim?`מתוך ${kgF(k.lim)}`:'ק״ג'}</small>${k.over?'<small>⚠ חריגה</small>':''}</span>`:`<span class="bag-p num">${pk}/${it.length}</span>`})()}</button>`};
   return `<div class="khero"><div><b class="num">${L.length}</b><span>מזוודות</span></div><div><b class="num">${done}/${all.length}</b><span>פריטים נארזו</span></div></div>
    <p class="note">לוחצים על מזוודה כדי לראות מה אמור להיות בפנים.</p>${L.map(row).join('')}`;
   return `<div class="khero"><div><b class="num">${L.length}</b><span>מזוודות</span></div><div><b class="num">${done}/${all.length}</b><span>פריטים נארזו</span></div></div>
    <p class="note">${ro?'לכל מזוודה: מי לוקח, מתי ומה בפנים. ✓ = כבר נארז.':'לכל מזוודה: מי לוקח, מתי ומה בפנים. ✓ מסמן שהפריט נארז. כדי להעביר פריט למזוודה אחרת לוחצים עליו ובוחרים "🧳 מזוודה".'}</p>
    ${L.map(card).join('')||'<div class="card"><div class="empty"><b>עוד לא הוגדרו מזוודות</b></div></div>'}`}
+document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('.bag-wi'))e.stopPropagation()},true);
+document.addEventListener('keydown',e=>{const i=e.target.closest&&e.target.closest('.bag-wi');if(!i)return;e.stopPropagation();if(e.key==='Enter'){e.preventDefault();i.blur()}},true);
+document.addEventListener('change',async e=>{const i=e.target.closest&&e.target.closest('.bag-wi');if(!i)return;const v=Math.max(0,parseFloat(String(i.value).replace(',','.'))||0);
+  if(i.dataset.bagw){const x=find('packing',i.dataset.bagw);if(x&&await save('packing',x._id,{...strip(x),wg:v}))toast('המשקל עודכן');return}
+  const k=i.dataset.bagtare?'tare':'lim',n=i.dataset.bagtare||i.dataset.baglim,d=BKG(),base=d?strip(d):{kind:'bagkg',tare:{},lim:{}};
+  if(await save('settings','bagkg',{...base,[k]:{...(base[k]||{}),[n]:v}}))toast('נשמר')});
 SUB.prep=function(){
   const L=S.participants.filter(p=>p.name&&!p.kerOnly).sort((a,b)=>a.name.localeCompare(b.name,'he'));
   const fl=p=>elalFlights([p]);
@@ -7476,7 +7508,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='77eda9b79b';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='cc9e8f1f88';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
