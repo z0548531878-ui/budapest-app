@@ -4437,12 +4437,12 @@ const TILE_DEFS=()=>{const pk=S.packing.filter(x=>!x.sug||kst(x,'ordered')),pd=p
  ['letters','file','מכתבים אישיים',`${ltrCouples().length} זוגות`,'c7'],
  ['files','file','מסמכים',`${S.files.filter(f=>f._id!=='f00').length} מסמכים · ${S.contacts.length} אנשים`,'c8'],
  ['attendance','people','ספירת נוכחות','לאוטובוס','c9'],
- ['reqs','tasks','בקשות ואישורים',`${pendN()} ממתינות`,'c12'], ['announce','chat','הודעות',`${annList().length} פורסמו · ${msgDue().length} לשלוח`,'c13'], ['trivia','spark','טריוויה','משחק לאוטובוס','c10'],['rav','mic','הקלטה / סרטון של הרב',(()=>{const n=S.settings.filter(x=>x.kind==='audio'&&!x.hidden).length;return n?n+' פורסמו':'להעלאה לכולם'})(),'c14'],['tasks','tasks','משימות',`${S.tasks.filter(t=>t.status!=='בוצע').length} פתוחות`,'c3'],['photos','cam','תמונות מהמסע',PHL?`${PH.length} תמונות · העלאה`:'צפייה והעלאה','c7'],['bags','box','מזוודות',(()=>{const a=S.packing.filter(x=>x.item&&x.bag);return BAGS().length?`${BAGS().length} מזוודות · ${a.filter(x=>kst(x,'packed')).length}/${a.length} נארזו`:'מה נכנס לכל מזוודה'})(),'c11'],['myroom','bed','החדר שלי',(()=>{const r=orgRoom();return r&&r.roomNumber?'חדר '+r.roomNumber+' · כל השיבוצים':'כל השיבוצים'})(),'c5'],['rides','car','נסיעות לשדה',`${S.settings.filter(x=>x.kind==='ride'&&!x.hidden).length} נסיעות`,'c4'],
+ ['reqs','tasks','בקשות ואישורים',`${pendN()} ממתינות`,'c12'], ['announce','chat','הודעות',`${annList().length} פורסמו · ${msgDue().length} לשלוח`,'c13'], ['trivia','spark','טריוויה','משחק לאוטובוס','c10'],['rav','mic','הקלטה / סרטון של הרב',(()=>{const n=S.settings.filter(x=>x.kind==='audio'&&!x.hidden).length;return n?n+' פורסמו':'להעלאה לכולם'})(),'c14'],['tasks','tasks','משימות',`${S.tasks.filter(t=>t.status!=='בוצע').length} פתוחות`,'c3'],['photos','cam','תמונות מהמסע',PHL?`${PH.length} תמונות · העלאה`:'צפייה והעלאה','c7'],['prep','plane','ביטוח וצ׳ק־אין',(()=>{const L=S.participants.filter(p=>p.name&&!p.kerOnly);return `🛡 ${L.filter(p=>p.insDone).length}/${L.length} · ✈ צ׳ק־אין`})(),'c4'],['bags','box','מזוודות',(()=>{const a=S.packing.filter(x=>x.item&&x.bag);return BAGS().length?`${BAGS().length} מזוודות · ${a.filter(x=>kst(x,'packed')).length}/${a.length} נארזו`:'מה נכנס לכל מזוודה'})(),'c11'],['myroom','bed','החדר שלי',(()=>{const r=orgRoom();return r&&r.roomNumber?'חדר '+r.roomNumber+' · כל השיבוצים':'כל השיבוצים'})(),'c5'],['rides','car','נסיעות לשדה',`${S.settings.filter(x=>x.kind==='ride'&&!x.hidden).length} נסיעות`,'c4'],
  ['roles','spark','תפקידים',`${Object.keys(rolesMap()).length} עם תפקיד`,'c11'],
  ]};
 // trivia link: carries the user's full name so the game does not ask for it (not in organizer preview)
 const trvHref=()=>{let nm='';try{nm=GUEST()?(PREV?'':(meG()||{}).name||''):(typeof ME==='string'?ME:'')}catch(e){}nm=String(nm||'').trim();return (GUEST()?'trivia/?lock=1':'trivia/')+(nm.split(/\s+/).length>=2?(GUEST()?'&':'?')+'name='+encodeURIComponent(nm):'')};
-const TORD=['bags','passports','people','tasks','announce','program','reqs','trivia','appusers','photos','myroom','rides','rav','roles','flights','letters','rooms','kits','shops','files','attendance'];
+const TORD=['bags','prep','passports','people','tasks','announce','program','reqs','trivia','appusers','photos','myroom','rides','rav','roles','flights','letters','rooms','kits','shops','files','attendance'];
 // gold = something there is waiting for you; the rest stay dark, so the eye goes straight to what's open
 const tileHot=k=>{try{return ({reqs:pendN()>0,passports:S.participants.some(p=>!p.passport),announce:msgDue().length>0})[k]||false}catch(e){return false}};
 const msgDue=()=>{const t=todayISO();return S.messages.filter(m=>!m.sent&&m.date&&m.date<=t)};
@@ -5673,7 +5673,9 @@ const coupleOf=p=>p?[p,...(p.spouse?S.participants.filter(x=>x._id===p.spouse):[
 const fullNm=n=>(typeof TEAM_FULL!=='undefined'&&TEAM_FULL[n])||n;
 const ownersOf=t=>String(t.owner||'').split(/,\s*/).map(x=>fullNm(x.trim())).filter(Boolean);
 const orgPhone=()=>{const p=S.participants.find(x=>x.name==='שלומי זינגר');return (p&&p.phone)||'053-962-6126'};
-const reqList=()=>S.settings.filter(x=>x.kind==='req').sort((a,b)=>(b.ts||0)-(a.ts||0));
+// a participant's 'done' report (check-in / insurance) is saved as a request marked report, so the organizers get the same push; it stays out of the requests screen
+function repReport(ppl,txt){try{const me=meG();if(!me||PREV)return;const ts=Date.now();gset('settings/rep_'+ts,{kind:'req',report:true,by:me._id,byName:ppl.map(p=>p.name).join(' ו'),cat:'דיווח',text:txt,status:'בוצע',note:'',ts})}catch(e){}}
+const reqList=()=>S.settings.filter(x=>x.kind==='req'&&!x.report).sort((a,b)=>(b.ts||0)-(a.ts||0));
 const annForMe=a=>{if(!a.to||!a.to.length||!GUEST())return true;const ids=coupleOf(meG()).map(p=>p._id);return a.to.some(x=>ids.includes(x))};
 const annList=()=>S.settings.filter(x=>x.kind==='ann'&&!x.hidden&&annForMe(x)).sort((a,b)=>(b.ts||0)-(a.ts||0));
 const claims=()=>S.tasks.filter(t=>t.claimStatus==='ממתין לאישור');
@@ -5685,7 +5687,7 @@ function gSigs(){const me=meG();if(!me)return {};const ppl=coupleOf(me),ids=ppl.
   if(L('schedule'))o.gl=fpH(S.schedule.filter(x=>!x.hidden).map(x=>{const y={...x};delete y._id;return y}).sort((a,b)=>JSON.stringify(a)<JSON.stringify(b)?-1:1));
   if(L('rooms')&&L('participants')){const rid=(ppl.find(p=>p.roomId)||{}).roomId,r=gRoom(rid);o.gr=fpH(r?[pick(r,['roomNumber','floor','building','notes','beds']),S.participants.filter(p=>p.roomId===rid).map(p=>p.name).sort()]:0)}
   if(L('tasks')&&L('settings'))o.gt=fpH([myTasks(ppl).map(t=>pick(t,['title','status','due','claimStatus'])),S.tasks.filter(t=>t.open==='כן'&&t.status!=='בוצע'&&!t.owner).map(t=>t.title),gtList().map(t=>t._id)]);
-  if(L('settings')){o.gq=fpH(S.settings.filter(x=>x.kind==='req'&&ids.includes(x.by)).map(x=>pick(x,['status','note'])));
+  if(L('settings')){o.gq=fpH(S.settings.filter(x=>x.kind==='req'&&!x.report&&ids.includes(x.by)).map(x=>pick(x,['status','note'])));
     o.gm=fpH(annList().map(x=>x._id));o.gd=fpH(S.settings.filter(x=>x.kind==='ride'&&!x.hidden).map(x=>[x._id,(x.join||[]).length]))}
   if(L('participants'))o.gp=fpH(S.participants.map(p=>[p.name,p.phone]).sort());
   if(typeof PHL!=='undefined'&&PHL&&PH.length)o.gi=fpH(PH[0]._id);
@@ -6495,7 +6497,7 @@ document.addEventListener('click',e=>{
     const r=find('rooms',gk.dataset.gKit);if(!r)return;const on=!r.kitReady;try{navigator.vibrate&&navigator.vibrate(12)}catch(x){}
     gset('rooms/'+r._id,{kitReady:on,kitBy:on?me.name:'',kitAt:on?new Date().toISOString():''}).then(ok=>{if(ok)toast(on?`חדר ${r.roomNumber||''}: הסט הונח`:'הסימון בוטל')});return}
   const ci=T.closest('[data-g-ci],[data-g-ciu]');if(ci){if(blockPrev())return;const fid=ci.dataset.gCi||ci.dataset.gCiu,on=!!ci.dataset.gCi;
-    const c=ciTasks(ppl).find(x=>x.f._id===fid);(c?c.on:ppl).forEach(p=>{const l=ciDoneOf(p).filter(x=>x!==fid);if(on)l.push(fid);gset('participants/'+p._id,{ciDone:l.join(',')})});if(on)toast('מעולה! נסיעה טובה ✈');return}
+    const c=ciTasks(ppl).find(x=>x.f._id===fid);(c?c.on:ppl).forEach(p=>{const l=ciDoneOf(p).filter(x=>x!==fid);if(on)l.push(fid);gset('participants/'+p._id,{ciDone:l.join(',')})});if(on){toast('מעולה! נסיעה טובה ✈');const ff=(S.flights||[]).find(x=>x._id===fid);repReport(c?c.on:ppl,'✈ עשו צ׳ק־אין'+(ff?' לטיסת '+(ff.dir||'')+' '+(ff.flightNo||''):''))}return}
   if(T.closest('[data-moment]')){const m=momentNow();if(m){photosSub();PHI=0;phShow([{_id:m.pid,th:m.th,byName:m.byName,ts:m.at,by:''}])}return}
   if(T.closest('[data-cert]')){certMake();return}
   if(T.closest('[data-nodrv]')){toast('מספר הדרייבר יתווסף בקרוב');return}
@@ -6513,7 +6515,7 @@ document.addEventListener('click',e=>{
   if(T.closest('[data-ocr]')){document.getElementById('ocrF').click();return}
   if(T.closest('[data-pkadd]')){const i=document.getElementById('pkNew'),v=(i&&i.value||'').trim();if(!v)return;const {x}=packLoad();x.push({t:v.slice(0,60),on:false});try{localStorage.setItem('chkx',JSON.stringify(x))}catch(z){}packSync();render();setTimeout(()=>{const n=document.getElementById('pkNew');if(n)n.focus()},50);return}
   const pkd=T.closest('[data-chkxdel]');if(pkd){e.preventDefault();const {x}=packLoad();x.splice(+pkd.dataset.chkxdel,1);try{localStorage.setItem('chkx',JSON.stringify(x))}catch(z){}packSync();render();return}
-  const ins=T.closest('[data-g-ins],[data-g-insu]');if(ins){if(blockPrev())return;const on=ins.hasAttribute('data-g-ins');ppl.forEach(p=>gset('participants/'+p._id,{insDone:on}));if(on)toast('נרשם. נסיעה בטוחה!');return}
+  const ins=T.closest('[data-g-ins],[data-g-insu]');if(ins){if(blockPrev())return;const on=ins.hasAttribute('data-g-ins');ppl.forEach(p=>gset('participants/'+p._id,{insDone:on}));if(on){toast('נרשם. נסיעה בטוחה!');repReport(ppl,'🛡 הזמינו ביטוח נסיעות')}return}
   const gt=T.closest('[data-g-gt],[data-g-gtu]');if(gt){if(blockPrev())return;const id=gt.dataset.gGt||gt.dataset.gGtu,on=!!gt.dataset.gGt,d={};ppl.forEach(p=>d[p._id]=on);
     gset('settings/'+id,{done:d}).then(ok=>{if(ok&&on)toast('נרשם. תודה!')});return}
   if(T.closest('[data-ride-pub]')){if(blockPrev()||!me)return;const dd=rideDir(),home=dd==='home',from=home?'נתב״ג':(DRAFT.rdFrom||rLeg(dd).from).trim(),to=home?(DRAFT.rdTo||'').trim():rLeg(dd).to,time=(DRAFT.rdTime||'').trim();if(home&&!to){toast('כתבו לאן נוסעים');return}if(!from){toast('כתבו מאיפה יוצאים');return}if(!time){toast('בחרו שעת יציאה');return}
@@ -6762,6 +6764,19 @@ function bagsBody(ro,only){
   return `<div class="khero"><div><b class="num">${L.length}</b><span>מזוודות</span></div><div><b class="num">${done}/${all.length}</b><span>פריטים נארזו</span></div></div>
    <p class="note">${ro?'לכל מזוודה: מי לוקח, מתי ומה בפנים. ✓ = כבר נארז.':'לכל מזוודה: מי לוקח, מתי ומה בפנים. ✓ מסמן שהפריט נארז. כדי להעביר פריט למזוודה אחרת לוחצים עליו ובוחרים "🧳 מזוודה".'}</p>
    ${L.map(card).join('')||'<div class="card"><div class="empty"><b>עוד לא הוגדרו מזוודות</b></div></div>'}`}
+SUB.prep=function(){
+  const L=S.participants.filter(p=>p.name&&!p.kerOnly).sort((a,b)=>a.name.localeCompare(b.name,'he'));
+  const fl=p=>elalFlights([p]);
+  const ciOk=p=>{const f=fl(p);return !f.length?null:f.every(x=>ciDoneOf(p).includes(x.f._id))};
+  const ciTxt=p=>{const f=fl(p);if(!f.length)return '<span class="pill p-mute">לא אל על</span>';return f.map(x=>{const d=ciDoneOf(p).includes(x.f._id);return `<span class="pill ${d?'p-ok':'p-warn'}">${x.dir} ${d?'✓':'✗'}</span>`}).join(' ')};
+  const f=V.f||'all', insN=L.filter(p=>p.insDone).length, ciL=L.filter(p=>ciOk(p)!==null), ciN=ciL.filter(ciOk).length;
+  const rows=L.filter(p=>f==='all'||(f==='noins'&&!p.insDone)||(f==='noci'&&ciOk(p)===false));
+  const reps=S.settings.filter(x=>x.kind==='req'&&x.report).sort((a,b)=>(b.ts||0)-(a.ts||0)).slice(0,15);
+  return subHead('ביטוח וצ׳ק־אין',`<span class="cnt num">${L.length}</span>`)+`<div class="khero"><div><b class="num">${insN}/${L.length}</b><span>🛡 ביטוח</span></div><div><b class="num">${ciN}/${ciL.length}</b><span>✈ צ׳ק־אין (אל על)</span></div></div>
+   <div class="chips" role="group">${[['all','כולם',L.length],['noins','בלי ביטוח',L.length-insN],['noci','בלי צ׳ק־אין',ciL.length-ciN]].map(([k,l,n])=>`<button class="chip" data-filter="f" data-val="${k}" aria-pressed="${f===k}">${l} <span class="num">${n}</span></button>`).join('')}</div>
+   <p class="note">המשתתפים מסמנים באפליקציה שלהם "הזמנתי ביטוח" ו"עשיתי צ׳ק־אין", ומיד מגיעה התראה למארגנים.</p>
+   ${rows.map(p=>`<div class="card" data-edit="participants/${p._id}" role="button" tabindex="0" style="padding:11px 13px;margin-bottom:8px;display:flex;align-items:center;gap:10px"><b style="flex:1;font-size:15px">${esc(p.name)}</b><span class="pill ${p.insDone?'p-ok':'p-warn'}">🛡 ${p.insDone?'✓':'✗'}</span>${ciTxt(p)}</div>`).join('')||'<div class="card"><div class="empty"><b>אין אף אחד בסינון הזה</b></div></div>'}
+   ${reps.length?`<div class="ghead"><span>דיווחים אחרונים</span></div>`+reps.map(r=>`<div class="card" style="padding:10px 13px;margin-bottom:6px"><b>${esc(r.byName||'')}</b> · ${esc(r.text||'')}<small class="note" style="display:block;margin:2px 0 0">${new Date(r.ts||0).toLocaleString('he-IL',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'})}</small></div>`).join(''):''}`};
 SUB.bags=function(){return subHead('מזוודות',`<span class="cnt num">${BAGS().length}</span>`)+bagsBody(false)};
 // participants the organizers let in (settings/bags.access) see the same list, read-only
 // the bags a participant (or their spouse) carries: settings/bags list[].pids
@@ -7456,7 +7471,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='e38e2072c6';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='6f211eeb74';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
