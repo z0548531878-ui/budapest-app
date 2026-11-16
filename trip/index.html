@@ -5577,7 +5577,10 @@ function gxCard(x,c,i){return `<article class="gxc" style="--i:${i}"><span class
   ${x.hrs?`<small class="gx-s">🕒 ${hrsHTML(x.hrs)}</small>`:''}</div>
   <div class="gx-a"><a class="gx-b go" href="${gxPlaceGo(x)}" target="_blank" rel="noopener" aria-label="ניווט אל ${esc(x.n)}">${IX.nav}</a>${x.tel?`<a class="gx-b" href="tel:${x.tel}" aria-label="התקשרות">📞</a>`:''}</div></article>`}
 function gxScreen(){let L=GX[GXC]||[];if(GXC==='kosher'&&GXK!=='all')L=L.filter(x=>x.k===GXK);
-  return `<div class="card" style="padding:12px 14px;margin-bottom:10px;border-inline-start:4px solid #3a7bd5"><b style="font-size:16px">🛁 מקווה גברים בקרעסטיר</b>
+  return `<div class="card" style="padding:12px 14px;margin-bottom:10px;border-inline-start:4px solid #3a7bd5"><b style="font-size:16px">🛁 מקווה גברים בבודפשט</b>
+  <div style="margin-top:8px"><b>מקווה הקהילה האורתודוקסית (Kazinczy)</b><small style="display:block;opacity:.8">Kazinczy utca 16, קומה 1 · ליד בית הכנסת קזינצי · פתוח כל יום כולל שבת, בבוקר בלבד</small>
+  <a class="chip" style="display:inline-flex;margin-top:5px" href="https://waze.com/ul?q=${encodeURIComponent('Kazinczy utca 16, Budapest')}&navigate=yes" target="_blank" rel="noopener">Waze</a> <a class="chip" style="display:inline-flex;margin-top:5px" href="${mapsGo('Kazinczy utca 16, 1075 Budapest')}" target="_blank" rel="noopener">מפות</a></div>
+  <b style="font-size:16px;display:block;margin-top:12px;padding-top:10px;border-top:1px solid rgba(128,128,128,.25)">🛁 מקווה גברים בקרעסטיר</b>
   <div style="margin-top:8px"><b>בית ההארחה של פרידלנדר (Reb Shaya'la Guest House)</b><small style="display:block;opacity:.8">Sipos köz 3, Bodrogkeresztúr · בדרך לציון · מקווה ובית מדרש</small>
   <a class="chip" style="display:inline-flex;margin-top:5px" href="https://waze.com/ul?q=${encodeURIComponent('Sipos köz 3, Bodrogkeresztúr')}&navigate=yes" target="_blank" rel="noopener">Waze</a> <a class="chip" style="display:inline-flex;margin-top:5px" href="${mapsGo('Sipos köz 3, 3916 Bodrogkeresztúr')}" target="_blank" rel="noopener">מפות</a></div>
   <div style="margin-top:9px"><b>בית רבי שייע'לה (בית הכנסת)</b><small style="display:block;opacity:.8">Kossuth u. 67, Bodrogkeresztúr · בית כנסת פעיל ומקווה</small>
@@ -7476,7 +7479,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='93dbdb5f00';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='3e9157d9ab';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
