@@ -3810,6 +3810,7 @@ view.addEventListener('click',e=>{
   if(t.id==='countBtn'){countSheet();return}
   if(t.id==='hvBtn'){hvSheet();return}
   const hvr=t.closest('[data-hv]');if(hvr){hvSheet(hvr.dataset.hv);return}
+  const txo=t.closest('[data-txopen]');if(txo){txSheet(txo.dataset.txopen,txo.dataset.txw);return}
   if(t.closest('[data-export]')){exportXlsx();return}
   const nw=t.closest('[data-new]');if(nw){editor(nw.dataset.new,null);return}
   const sb=t.closest('[data-sub]');if(sb){if(V.tab!=='more')V.tab='more';V.sub=sb.dataset.sub;V.filter={};render(true);window.scrollTo({top:0});return}
@@ -4189,7 +4190,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)autoApply(
 const holderOf=x=>x.holder||(/איציק/.test(x.method||'')?'איציק':/שלומי/.test(x.method||'')?'שלומי':'');
 const payerOf=e=>String(e.paidBy||'').split(/,\s*/)[0];
 // one expense paid in parts by different people (e.g. the hotel: deposit by Itzik, balance by Shlomi): e.pays=[{by,amt,method,date,ref}]
-const payParts=()=>S.expenses.flatMap(e=>Array.isArray(e.pays)&&e.pays.length?e.pays.filter(p=>+p.amt).map(p=>({...e,paid:+p.amt,paidBy:p.by||'',method:p.method||e.method})):(+e.paid?[e]:[]));
+const payParts=()=>S.expenses.flatMap(e=>Array.isArray(e.pays)&&e.pays.length?e.pays.filter(p=>+p.amt).map(p=>({...e,paid:+p.amt,paidBy:p.by||'',method:p.method||e.method,tx:p.tx||'',pdate:p.date||''})):(+e.paid?[e]:[]));
 const counted=()=>(find('settings','cash')||{}).counts||{};
 function countSheet(){
   const {rows}=cashBook();
@@ -4201,6 +4202,13 @@ function countSheet(){
     if(await save('settings','cash',{...strip(find('settings','cash')||{}),counts})){closeSheet();toast('הספירה נשמרה')}};
 }
 // handing money from one organizer's box to the other's: new, or edit / delete an existing one
+function txSheet(tx,who){
+  const L=payParts().filter(e=>e.tx===tx&&(!who||payerOf(e)===who)),tot=L.reduce((t,e)=>t+(+e.paid||0),0),e0=L[0]||{};
+  sheet(`<h3>💸 ${esc(tx)}</h3><p class="note" style="margin-top:0">${esc([who,e0.method,e0.pdate&&fmtDate(e0.pdate)].filter(Boolean).join(' · '))} · העברה אחת ששילמה <span class="num">${L.length}</span> שורות הוצאה. לוחצים על שורה כדי לפתוח אותה.</p>
+   <div class="card" style="padding:0 12px">${L.map(e=>`<div class="row" data-edit="expenses/${e._id}" role="button" tabindex="0"><div class="main"><div class="t">${esc(e.name)}</div><div class="m"><span>${esc(e.category||'')}</span></div></div><span class="amt num">${ils(e.paid)}</span></div>`).join('')}</div>
+   <div style="display:flex;justify-content:space-between;align-items:baseline;margin:12px 4px 4px"><b>סה״כ ההעברה</b><b class="num" style="font-size:20px">${ils(tot)}</b></div>
+   <div class="sheet-acts"><span class="sp"></span><button class="btn" data-close>סגירה</button></div>`);
+  document.querySelector('.sheet').addEventListener('click',e=>{const ed=e.target.closest('[data-edit]');if(ed){const [c,i]=ed.dataset.edit.split('/');editor(c,i)}})}
 function hvSheet(id){
   const x=id?find('settings',id):null, d=x||{from:'איציק',to:'שלומי',method:'מזומן',date:todayISO(),amt:''}, P=['שלומי','איציק'], M=['מזומן','העברה','ביט','אשראי'];
   const seg=(k,o,v)=>`<div class="chips" id="hv_${k}">${o.map(n=>`<button type="button" class="chip" data-v="${esc(n)}" aria-pressed="${v===n}">${esc(n)}</button>`).join('')}</div>`;
@@ -4257,7 +4265,10 @@ function cashSeg(head){
     Object.values(g).forEach(ps=>{const c=coupleOf(ps[0]),part=ps.some(x=>x.status==='שולם חלקית');
       mv.push({h:r.n,dir:1,k:pmKind(ps[0].method),t:coupleLabel(c,ps[0])||ps[0].name,sub:[ps.length<c.length?'רק '+ps.map(x=>firstN(x.name)).join(' ו'):'',ps[0].method||'',part?'תשלום חלקי':''].filter(Boolean).join(' · '),amt:ps.reduce((t,x)=>t+paidOf(x),0),edit:'participants/'+ps[0]._id})});
     r.din.forEach(d=>mv.push({h:r.n,dir:1,k:pmKind(d.method),t:'תרומה: '+d.donor,sub:d.method||'',amt:+d.amount||0,edit:'donations/'+d._id}));
-    r.out.forEach(e=>mv.push({h:r.n,dir:-1,k:pmKind(e.method),t:e.name,sub:[e.category,e.method].filter(Boolean).join(' · '),amt:+e.paid||0,edit:'expenses/'+e._id}));
+    // one transfer that paid several expense lines (same tx) shows as a single movement; tapping it lists the lines
+    const og={};r.out.forEach((e,i)=>{const k=e.tx?'tx|'+e.tx:'e|'+i;(og[k]=og[k]||[]).push(e)});
+    Object.values(og).forEach(es=>{const e=es[0];if(!e.tx){mv.push({h:r.n,dir:-1,k:pmKind(e.method),t:e.name,sub:[e.category,e.method].filter(Boolean).join(' · '),amt:+e.paid||0,edit:'expenses/'+e._id});return}
+      mv.push({h:r.n,dir:-1,k:pmKind(e.method),t:'💸 '+e.tx,sub:[e.method,e.pdate&&fmtDate(e.pdate),es.length>1?es.length+' שורות הוצאה':e.name].filter(Boolean).join(' · '),amt:es.reduce((t,x)=>t+(+x.paid||0),0),tx:e.tx})});
     r.hin.forEach(x=>mv.push({h:r.n,dir:1,k:pmKind(x.method),hv:x._id,t:'🔁 התקבל מ'+x.from,sub:[x.method,x.date&&fmtDate(x.date),x.note].filter(Boolean).join(' · '),amt:+x.amt||0}));
     r.hout.forEach(x=>mv.push({h:r.n,dir:-1,k:pmKind(x.method),hv:x._id,t:'🔁 הועבר ל'+x.to,sub:[x.method,x.date&&fmtDate(x.date),x.note].filter(Boolean).join(' · '),amt:+x.amt||0}));
     // shekels changed into euro cash: leaves the account, comes back as cash in the same box (net zero)
@@ -4274,7 +4285,7 @@ function cashSeg(head){
   const flt=chips('who',[['','שתי הקופות'],...rows.map(r=>[r.n,'אצל '+r.n])],who)+chips('ct',[['','הכנסות והוצאות'],['in','⬇ הכנסות'],['out','⬆ הוצאות']],ct)+chips('cm',[['','כל אמצעי התשלום'],...usedK],cm);
   const L=mv.filter(m=>(!cm||m.k===cm)&&(!ct||(ct==='in'?m.dir>0:m.dir<0))).sort((a,b)=>b.dir-a.dir||a.t.localeCompare(b.t,'he'));
   const LI=L.filter(m=>m.dir>0).reduce((t,m)=>t+m.amt,0),LO=L.filter(m=>m.dir<0).reduce((t,m)=>t+m.amt,0);
-  const mrow=m=>`<div class="row" ${m.edit?`data-edit="${m.edit}"`:`data-hv="${m.hv}"`} role="button" tabindex="0"><div class="main"><div class="t">${esc(m.t)}</div><div class="m"><span>${esc([who?'':m.h,m.sub].filter(Boolean).join(' · '))}</span></div></div><span class="amt num" style="color:${m.dir>0?'var(--ok)':'var(--bad)'}">${m.dir>0?'+':'−'}${ils(m.amt)}</span></div>`;
+  const mrow=m=>`<div class="row" ${m.tx?`data-txopen="${esc(m.tx)}" data-txw="${esc(m.h)}"`:m.edit?`data-edit="${m.edit}"`:`data-hv="${m.hv}"`} role="button" tabindex="0"><div class="main"><div class="t">${esc(m.t)}</div><div class="m"><span>${esc([who?'':m.h,m.sub].filter(Boolean).join(' · '))}</span></div></div><span class="amt num" style="color:${m.dir>0?'var(--ok)':'var(--bad)'}">${m.dir>0?'+':'−'}${ils(m.amt)}</span></div>`;
   const list=`<div class="ghead"><span>${[ct==='in'?'הכנסות':ct==='out'?'הוצאות':'תנועות',cm?pmLbl(cm):''].filter(Boolean).join(' · ')} <small class="num">(${L.length})</small></span><span class="num">${ct==='out'?'−'+ils(LO):ct==='in'?ils(LI):sgn(LI-LO)}</span></div>`+card(L.map(mrow).join(''),'<b>אין תנועות בסינון הזה</b>');
   const unk=un.length+und.length;
   const ownBy={};own.forEach(e=>{const k=payerOf(e)||'';(ownBy[k]=ownBy[k]||[]).push(e)});
@@ -7508,7 +7519,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='2e13612a32';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='0aee851e30';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
