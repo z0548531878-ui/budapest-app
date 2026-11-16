@@ -2914,7 +2914,7 @@ html:has(#scrim.open) #app :is(*,*::before,*::after){animation-play-state:paused
 .bag-i{flex:1;font-size:14.5px;min-width:0;display:flex;flex-direction:column;gap:3px}
 .bag-w{font-size:12px;color:#a69a7d;display:flex;align-items:center;flex-wrap:wrap;gap:4px}
 .bag-w b{color:#e9d9a8;font-weight:800}.bag-w b.nil{color:#e07a5f;font-weight:700}
-.bag-wi{width:62px;padding:4px 6px;border-radius:8px;border:1px solid rgba(214,178,98,.35);background:rgba(0,0,0,.25);color:inherit;font:700 13px var(--body);text-align:center}
+.bag-wi{width:76px;padding:4px 4px;border-radius:8px;border:1px solid rgba(214,178,98,.35);background:rgba(0,0,0,.25);color:inherit;font:700 13px var(--body);text-align:center}
 .bag-kg{margin:12px 0 4px;padding:12px;border-radius:14px;background:rgba(120,190,120,.10);border:1px solid rgba(120,190,120,.35)}
 .bag-kg.near{background:rgba(233,196,106,.12);border-color:rgba(233,196,106,.5)}
 .bag-kg.over{background:rgba(224,122,95,.14);border-color:rgba(224,122,95,.6)}
@@ -7508,7 +7508,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='cc9e8f1f88';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='2e13612a32';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
