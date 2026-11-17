@@ -5978,7 +5978,7 @@ const LTR_MEET={time:'05:40',where:'טרמינל 3, אזור D, דלפקי אל 
 const ltrCouples=()=>{const seen=new Set(),L=[],org=Object.values(TEAM_FULL);S.participants.forEach(p=>{if(seen.has(p._id))return;const ppl=coupleOf(p);ppl.forEach(x=>seen.add(x._id));L.push(ppl)});
   return L.sort((a,b)=>(/^הרב/.test(b[0].name)-/^הרב/.test(a[0].name))||String(a[0].name).split(' ').pop().localeCompare(String(b[0].name).split(' ').pop(),'he'))};
 // what is personal in each room: the couple's own letter and a siddur in each person's nusach
-const ROOMTIP='בכל חדר: תחתית ממותגת מתחת לכל פחית ובקבוק · 2 עלונים – אחד עם הכריכה למעלה ואחד הפוך, על התוכנייה · המכתב האישי של הזוג · סידורים לפי הנוסח שכתוב ליד החדר';
+const ROOMTIP='בכל חדר: מדבקת "בתיאבון" על העוגה · תחתית ממותגת מתחת לכל פחית ובקבוק · 2 עלונים – אחד עם הכריכה למעלה ואחד הפוך, על התוכנייה · המכתב האישי של הזוג · סידורים לפי הנוסח שכתוב ליד החדר';
 const roomPpl=r=>{const P=S.participants.filter(p=>roomOf(p)===r);P.slice().forEach(p=>coupleOf(p).forEach(x=>{if(!P.includes(x)&&!roomOf(x))P.push(x)}));return P};
 const roomNeeds=r=>{const P=roomPpl(r);if(!P.length)return '';const cps=[];P.forEach(p=>{const c=coupleOf(p),k=c.map(x=>x._id).sort().join();if(!cps.some(x=>x.k===k))cps.push({k,c})});
   const ns={};P.forEach(p=>{const n=p.siddurNusach||p.nusach||'❓ נוסח לא ידוע';ns[n]=(ns[n]||0)+1});
@@ -6995,7 +6995,7 @@ function mpStages(){
      mpRow('kvit4','לתת את 4 סטי הקוויטל לזוג אלטשולר והזוג אליעד','הם לא היו בקרעסטיר · במלון'),
      mpRow('hsigns','לתלות במלון את שלטי ההכוונה','השלטים במזוודה של שוקי לב · סלוטייפ בערכת ההפקה'),
      mpRow('fridge','את העוגות של פינת הקפה במלון – למקרר הגדול בחדר שלך','הן במזוודה של חיים בלוך · נשארות במקרר עד שישי בבוקר',mpUl(kit('ערכה לפינת קפה').filter(x=>/עוג|פס /.test(x.item||'')).map(li))),
-     mpRow('roomkit','להכין את הסט לחדר',`לכל אחד מ־<span class="num">${rooms}</span> החדרים · <b>תחתית ממותגת מתחת לכל פחית ובקבוק</b> · <b>2 עלונים: אחד עם הכריכה למעלה, ואחד הפוך – על התוכנייה</b>`,mpUl(roomKit.map(({x,per})=>`<li><span>${esc(x.item)}</span><b class="num">${per}</b><small>${esc(mpWhere(x))}</small></li>`))),
+     mpRow('roomkit','להכין את הסט לחדר',`לכל אחד מ־<span class="num">${rooms}</span> החדרים · <b>תחתית ממותגת מתחת לכל פחית ובקבוק</b> · <b>2 עלונים: אחד עם הכריכה למעלה, ואחד הפוך – על התוכנייה</b> · <b>מדבקת "בתיאבון" על כל עוגה</b> (המדבקות במזוודה של יוסי אליעד)`,mpUl(roomKit.map(({x,per})=>`<li><span>${esc(x.item)}</span><b class="num">${per}</b><small>${esc(mpWhere(x))}</small></li>`))),
      mpRow('rooms','להניח סט בכל חדר – עם המכתב האישי והסידורים בנוסח של מי שגר בו',`<b class="num">${rp.n}</b> מתוך <span class="num">${rp.t}</span> חדרים כבר סומנו · ברשימת החדרים כתוב ליד כל חדר של מי המכתב ואיזה נוסח סידור לשים בו`,GUEST()?`<button class="mp-a" data-gnav="gs">🛏 לרשימת החדרים</button>`:`<button class="mp-a" data-sub="rooms">🛏 לרשימת החדרים</button>`),
      mpRow('tohana','להקפיץ לחנה את כל מה שלעונג שבת ולשבת בבוקר, ולמסור לשלום הולד','הלילה, או מחר בבוקר · השתייה שקנית + מה שהגיע מהארץ:',mpUl([...kit('ערכה לעונג שבת'),...kit('ערכה לשבת בבוקר')].filter(x=>!/פירות/.test(x.item||'')).map(li)))]},
    {k:'s6',when:'שישי 20.11',t:'הכנות לשבת',intro:'שאר הקניות נעשו ביום חמישי בבוקר',rows:[
@@ -7774,7 +7774,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='dc9716a1ea';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='03f56dd8ca';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
