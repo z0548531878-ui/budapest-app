@@ -2911,6 +2911,32 @@ html:has(#scrim.open) #app :is(*,*::before,*::after){animation-play-state:paused
 .bag-r{display:flex;align-items:center;gap:10px;padding:7px 4px;border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer}
 .bag-r:last-child{border-bottom:0}
 .bag-r .check{width:26px;height:26px;flex:0 0 auto}
+.mpt{display:flex;gap:6px;margin:12px 0;padding:5px;border-radius:16px;background:rgba(255,255,255,.05);position:sticky;top:6px;z-index:4;backdrop-filter:blur(8px)}
+.mpt button{flex:1;min-height:46px;border-radius:12px;border:0;background:transparent;color:#cdb98a;font:800 14px var(--body);cursor:pointer;line-height:1.2}
+.mpt button[aria-selected="true"]{background:#d6b262;color:#17140e}
+.mps{padding:18px 16px;border-radius:20px;border:2px solid rgba(214,178,98,.45);background:rgba(255,255,255,.04);display:flex;flex-direction:column;gap:10px}
+.mps.on{border-color:#4f9d69;background:rgba(79,157,105,.1)}
+.mps-top{display:flex;justify-content:space-between;gap:8px;font-size:14px;color:#cdb98a;font-weight:700}.mps-top b{font-size:18px;color:#e9d9a8}
+.mps-st{font-size:14px;font-weight:800;color:#d6b262}
+.mps-dots{display:flex;flex-wrap:wrap;gap:3px}.mps-dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.12)}.mps-dots i.d{background:#4f9d69}.mps-dots i.c{outline:2px solid #e9d9a8;outline-offset:1px;background:#d6b262}
+.mps-t{margin:4px 0 0;font-size:25px;line-height:1.3;font-weight:900}
+.mps-sub{margin:0;font-size:17px;line-height:1.5;color:#d9cba6}
+.mps-e .mp-l li{font-size:16px;padding:9px 12px}.mps-e .mp-l li b{font-size:17px}
+.mps-by{margin:0;font-weight:800;color:#8fd3a3;font-size:15px}
+.mps-done{min-height:62px;border-radius:16px;border:0;background:#4f9d69;color:#fff;font:900 21px var(--body);cursor:pointer;margin-top:6px}
+.mps-done.undo{background:transparent;border:2px solid rgba(255,255,255,.25);color:#cdb98a;font-size:16px;min-height:50px}
+.mps-nav{display:flex;gap:8px}.mps-nav button{flex:1;min-height:50px;border-radius:14px;border:1px solid rgba(214,178,98,.45);background:rgba(214,178,98,.08);color:#e9d9a8;font:800 15px var(--body);cursor:pointer}.mps-nav button:disabled{opacity:.35}
+.mps-home,.mps-go{display:block;width:100%;min-height:54px;margin:14px 0;border-radius:16px;border:1px solid rgba(214,178,98,.45);background:rgba(214,178,98,.1);color:#e9d9a8;font:800 17px var(--body);cursor:pointer}
+.mps-go{background:#d6b262;color:#17140e;border:0;font-size:19px;min-height:60px}
+.mpk{display:flex;flex-direction:column;gap:6px;width:100%;margin-top:4px}
+.mpk-r{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 12px;border-radius:14px;background:rgba(0,0,0,.22);border:1px solid rgba(214,178,98,.2)}
+.mpk-r b{flex:1;font-size:15px}.mpk-r span{display:flex;gap:6px}
+.mpk-r a{width:46px;height:42px;border-radius:12px;display:grid;place-items:center;background:rgba(214,178,98,.15);text-decoration:none;font-size:19px}
+.mpk-r.miss small{color:#e0a07a;font-weight:700}
+.mpsum-hi{font-size:18px;line-height:1.5;margin:6px 2px 10px}
+.mpsum{margin:10px 0;padding:14px;border-radius:18px;border:1px solid rgba(214,178,98,.3);background:rgba(255,255,255,.04)}
+.mpsum header{display:flex;flex-direction:column;gap:2px;margin-bottom:6px}.mpsum header span{font-size:13px;font-weight:800;color:#d6b262}.mpsum header b{font-size:20px}
+.mpsum p{margin:0 0 6px;font-size:17px;line-height:1.6;color:#e6dcc2}.mpsum.q>b{display:block;font-size:18px;margin-bottom:6px}
 .mp-hero{display:flex;align-items:center;gap:14px;padding:16px;border-radius:18px;background:linear-gradient(135deg,rgba(214,178,98,.2),rgba(214,178,98,.05));border:1px solid rgba(214,178,98,.4)}
 .mp-hero>div:last-child{flex:1;display:flex;flex-direction:column;gap:4px}.mp-hero small{color:#cdb98a;font-weight:700;font-size:13px}.mp-hero b{font-size:21px}.mp-hero span{font-size:13px;color:#b9ab88}
 .mp-ring{flex:0 0 74px;height:74px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#6fbf86 calc(var(--p)*1%),rgba(255,255,255,.08) 0)}
@@ -6902,14 +6928,14 @@ function mpStages(){
   const backBags=BAGS().filter(b=>/חזור/.test(b.ways||''));
   return [
    {k:'s1',when:'עד רביעי 18.11',t:'לפני הטיסה – בארץ',rows:[
-     mpRow('b1get','לקבל הערב את מזוודה 1 – כבר ארוזה ומוכנה','שלישי 17.11 בלילה · משלומי, יעל שרייבר וחיים בלוך · לבדוק שיש בה הכל:',mpUl(items('1').map(liB))+mpCall('שלומי זינגר','שלומי')+mpCall('יעל שרייבר','יעל')+mpCall('חיים בלוך','חיים')),
+     mpRow('b1get','לקבל הערב את מזוודה 1 – כבר ארוזה ומוכנה','שלישי 17.11 בלילה · משלומי, יעל שרייבר וחיים בלוך · לבדוק שיש בה הכל:',mpUl(items('1').map(liB))),
      mpRow('b1kg','לשקול את מזוודה 1',`צפי: <b class="num">${kgF(k1.tot)}</b> ק״ג · המגבלה בוויז ${kgF(k1.lim||26)} ק״ג${k1.over?' · ⚠ כבדה מדי':''}`,'רולאפ האוטובוס לא אצלך – הוא אצל בני דרחי.'),
-     mpRow('b2zv','לוודא שקיבלת את הדברים של צביקה ולהעביר לו',`למזוודה של צביקה · צפי <b class="num">${kgF(k2.tot)}</b> ק״ג מתוך ${kgF(k2.lim||10)}`,mpUl(items('2').map(liB))+mpCall('צביקה גדלוביץ','צביקה')),
+     mpRow('b2zv','לוודא שקיבלת את הדברים של צביקה ולהעביר לו',`למזוודה של צביקה · צפי <b class="num">${kgF(k2.tot)}</b> ק״ג מתוך ${kgF(k2.lim||10)}`,mpUl(items('2').map(liB))),
      mpRow('wzci','צ׳ק־אין לוויז W6 2328','רביעי 18.11 · המראה 19:30 מנתב״ג'),
-     mpRow('eur','לקבל משלומי יורו במזומן לקניות','בערך 590 € · לשמור קבלות',mpCall('שלומי זינגר','שלומי'))]},
+     mpRow('eur','לקבל משלומי יורו במזומן לקניות','בערך 590 € · לשמור קבלות')]},
    {k:'s2',when:'רביעי 18.11 · נחיתה 22:05',t:'נחיתה, רכב ומלון',rows:[
      mpRow('land','נחתתי בבודפשט','W6 2328 · עם צביקה ומשפחת יחיאל · צביקה איתך כל הדרך – בטיסה, ברכב ובקרעסטיר'),
-     mpRow('car','שאטל של Klass Wagen ואיסוף הרכב','יוצאים מטרמינל 2A, חוצים את הכביש מאזור 4 ויורדים לחניון T1 ליד חניית הדיפלומטים. השאטל לוקח למשרד ב-Vecsés, Új Ecseri út 2.',`<a class="mp-a" href="tel:+3614743966">📞 Klass Wagen</a><a class="mp-a" href="https://www.klasswagen.com/en/shuttle/budapest" target="_blank" rel="noopener">🚐 הזמנת שאטל</a>`),
+     mpRow('car','שאטל של Klass Wagen ואיסוף הרכב','יוצאים מטרמינל 2A, חוצים את הכביש מאזור 4 ויורדים לחניון T1 ליד חניית הדיפלומטים. השאטל לוקח למשרד ב-Vecsés, Új Ecseri út 2.',`<a class="mp-a" href="https://www.klasswagen.com/en/shuttle/budapest" target="_blank" rel="noopener">🚐 הזמנת שאטל</a>`),
      mpRow('hotel','נסיעה למלון וצ׳ק־אין',esc(HOTEL.name),mpNav(HOTEL.q,'ניווט למלון')),
      mpRow('store','להשאיר את מזוודות 1 ו־2 במלון','בחדר או באחסון · תיקי האוטובוס ממלאים בלילה · המזוודות עצמן נשארות במלון ולא נוסעות לשדה')]},
    {k:'s3',when:'רביעי בלילה',t:'מילוי 60 תיקים לאוטובוס',rows:[
@@ -6928,7 +6954,8 @@ function mpStages(){
      mpRow('belly','לבטן האוטובוס – המזוודות של',[...new Set(busBags.map(b=>b.who||''))].map(esc).join(' · ')),
      mpRow('rollup','להוציא את רולאפ האוטובוס ולהעמיד','במזוודה של בני דרחי')]},
    {k:'s5',when:'חמישי · קרעסטיר ואחרי',t:'סידור החדרים',intro:`אתה, צביקה ובני דרחי חוזרים מוקדם מקרעסטיר ברכב ומסדרים את החדרים · יוסי אליעד נוחת 19:30 ומצטרף במלון · הקבוצה מגיעה בערך ב־23:00`,rows:[
-     mpRow('early','לצאת מוקדם מקרעסטיר למלון','עם צביקה ובני דרחי · המזוודות שקיבלת בשדה והאלכוהול שנשאר ברכב',mpCall('צביקה גדלוביץ','צביקה')+mpCall('בני דרחי','בני')),
+     mpRow('kerk','בקרעסטיר: הסעודה אצל פרידלנדר','איש הקשר שלנו שם הוא דרקסלר – כל שאלה בקרעסטיר מולו'),
+     mpRow('early','לצאת מוקדם מקרעסטיר למלון','עם צביקה ובני דרחי · המזוודות שקיבלת בשדה והאלכוהול שנשאר ברכב'),
      mpRow('keys','צ׳ק־אין: מפתח ודרכון לכל זוג בקבלה','שהכל יחכה לקבוצה ב־23:00'),
      mpRow('roomkit','להכין את הסט לחדר',`לכל אחד מ־<span class="num">${rooms}</span> החדרים:`,mpUl(roomKit.map(({x,per})=>`<li><span>${esc(x.item)}</span><b class="num">${per}</b><small>${esc(mpWhere(x))}</small></li>`))),
      mpRow('rooms','להניח סט בכל חדר',`<b class="num">${rp.n}</b> מתוך <span class="num">${rp.t}</span> חדרים כבר סומנו`,GUEST()?`<button class="mp-a" data-gnav="gs">🛏 לרשימת החדרים</button>`:`<button class="mp-a" data-sub="rooms">🛏 לרשימת החדרים</button>`)]},
@@ -6943,22 +6970,68 @@ function mpStages(){
      mpRow('carret','להחזיר את הרכב ל־Klass Wagen','Vecsés, Új Ecseri út 2 · לפני הטיסה',mpNav('Klass Wagen Vecsés Új Ecseri út 2','ניווט')),
      mpRow('flyback','טיסה הביתה – W6 ראשון 05:00','בחזור רק תיק מתחת למושב')]}]}
 const mpCount=()=>{let t=0,d=0;mpStages().forEach(s=>s.rows.forEach(r=>{t++;if(mpOn(r.k))d++}));return {t,d}};
+// contacts for each task: from the contacts list (so a number added there shows up here), with fixed numbers for outside services
+const mpK=id=>{const c=q=>(S.contacts||[]).find(x=>((x.name||'')+' '+(x.person||'')).includes(q)),p=n=>mpP(n);
+  const P=(n,lab)=>{const x=p(n);return x?{lab:lab||x.name,ph:x.phone}:null};
+  const C=(q,lab)=>{const x=c(q);return x&&x.phone?{lab:lab||x.name,ph:x.phone}:{lab:lab||q,ph:''}};
+  return ({hana:C('מסעדת חנה','שלום הולד · מסעדת חנה'),hotel:C('סילבר קראון','קבלה · מלון סילבר קראון'),chanuka:C('הרב חנוכה','הרב חנוכה · גר במלון'),bus:C('דני ברק','דני ברק · האוטובוס'),
+    drex:C('דרקסלר','דרקסלר · איש הקשר שלנו אצל פרידלנדר'),klass:{lab:'Klass Wagen · הרכב',ph:'+3614743966'},kp:{lab:'קושר פיאץ · הסופר הכשר',ph:'+36305722165'},
+    shlomi:P('שלומי זינגר','שלומי'),itzik:P('איציק שרייבר','איציק'),zvika:P('צביקה גדלוביץ','צביקה'),benny:P('בני דרחי','בני דרחי'),yossi:P('יוסי אליעד','יוסי אליעד'),
+    yael:P('יעל שרייבר','יעל שרייבר'),chaim:P('חיים בלוך','חיים בלוך'),medic:C('שימי ורקר','שימי ורקר · חובש')})[id]||null};
+const MPWHO={b1get:['shlomi','yael','chaim'],b1kg:['shlomi'],b2zv:['zvika'],eur:['shlomi'],land:['zvika'],car:['klass'],hotel:['hotel','chanuka'],store:['hotel'],
+  milkthu:['kp'],alc:['hana'],land2:['shlomi','itzik'],bus:['bus'],belly:['bus'],rollup:['benny'],
+  kerk:['drex'],early:['zvika','benny','drex'],keys:['hotel','chanuka'],roomkit:['zvika','benny','yossi'],rooms:['zvika','benny','yossi'],
+  milkfri:['kp'],coffee:['hotel','chanuka'],candles:['hotel','chanuka'],oneg:['hotel'],shab:['hotel','chanuka'],carret:['klass'],flyback:['zvika']};
+const mpWho=r=>(MPWHO[r.k]||(/^b[tf]_/.test(r.k)?['shlomi']:[])).map(mpK).filter(Boolean);
+const mpCards=L=>L.length?`<div class="mpk">${L.map(c=>c.ph?`<div class="mpk-r"><b>${esc(c.lab)}</b><span><a href="${telLink(c.ph)}" aria-label="חיוג">📞</a><a href="${waLink(c.ph)}" target="_blank" rel="noopener" aria-label="וואטסאפ">💬</a></span></div>`:`<div class="mpk-r miss"><b>${esc(c.lab)}</b><small>המספר יתווסף בקרוב</small></div>`).join('')}</div>`:'';
+let MPV=null, MPI=null;
+function mpFlat(){const st=mpStages(),L=[];st.forEach((s,i)=>s.rows.forEach(r=>{r.s=s;r.si=i;r.n=L.length+1;L.push(r)}));return {st,L}}
+function mpSummary(){const k=x=>mpK(x),b=n=>(BAGS().find(x=>x.n===n)||{}).who||'';
+  const car=['4','5','6','7'].map(b).filter(Boolean).join(', ');
+  const d=(t,h,txt,who)=>`<section class="mpsum"><header><span>${t}</span><b>${h}</b></header><p>${txt}</p>${mpCards(who.map(k).filter(Boolean))}</section>`;
+  return `<p class="mpsum-hi">היי משה 👋 ככה זה נראה בגדול. הפירוט המלא, משימה אחרי משימה, בלשונית "משימה אחרי משימה".</p>
+  ${d('שלישי בערב','הערב','מקבל ממני, מיעל ומחיים את המזוודה <b>כבר ארוזה</b>. בודק שיש בה הכל ושוקל – עד 26 ק״ג. את הדברים של צביקה מעביר לו.',['shlomi','yael','chaim'])}
+  ${d('רביעי 18.11','טיסה, רכב ומלון','טסים עם צביקה בוויז ב־19:30 ונוחתים ב־22:05. לוקחים שאטל ל־Klass Wagen, מקבלים את הרכב ונוסעים למלון. בלילה ממלאים 60 תיקים לאוטובוס.',['zvika','klass','hotel'])}
+  ${d('חמישי בבוקר','קניות ושדה','בבוקר קונים את כל השתייה – לאוטובוס, לחדרים ולשבת. חלב לאוטובוס <b>רק בסופר הכשר</b>. אוספים משלום הולד בחנה את האלכוהול לקרעסטיר, עם ספייר. <b>המזוודות שלכם נשארות במלון – הרכב יוצא לשדה ריק.</b> הקבוצה נוחתת ב־11:15, האוטובוס מגיע ב־11:30 ואתה מסדר אותו. לרכב מקבלים מזוודות מ: '+esc(car)+'.',['kp','hana','bus'])}
+  ${d('חמישי בקרעסטיר','קרעסטיר וסידור החדרים','הסעודה אצל פרידלנדר – איש הקשר שלנו שם הוא דרקסלר. יוצאים מוקדם עם צביקה ובני דרחי למלון, עושים צ׳ק־אין ומסדרים סט בכל אחד מ־'+(S.rooms.length||31)+' החדרים. יוסי אליעד מצטרף בערב. הקבוצה מגיעה בערך ב־23:00.',['drex','zvika','benny','yossi'])}
+  ${d('שישי 20.11','הכנות לשבת','בבוקר חלב לשבת מהסופר הכשר. מסדרים את פינת הקפה בלובי, פינת הנרות עד 15:45, ובליל שבת את עונג השבת. הרב חנוכה גר במלון.',['kp','hotel','chanuka'])}
+  ${d('מוצ״ש וראשון','חזרה','מחזירים את הרכב ל־Klass Wagen וטסים בראשון ב־05:00 – עם תיק יד בלבד.',['klass'])}
+  <section class="mpsum q"><b>יש שאלה? אנחנו פה</b>${mpCards(['shlomi','itzik','medic'].map(k).filter(Boolean))}</section>
+  <button class="mps-go" data-mpv="step">👉 מתחילים – משימה אחרי משימה</button>`}
 function mplanBody(){
-  const st=mpStages(),by=MPB(),c=mpCount(),pct=c.t?Math.round(c.d/c.t*100):0;let n=0,next=null;
-  st.forEach(s=>s.rows.forEach(r=>{r.n=++n;r.s=s;if(!next&&!mpOn(r.k))next=r}));
-  const row=r=>{const on=mpOn(r.k);return `<div class="mp-r ${on?'on':''}${next===r?' cur':''}${r.c?' buy':''}" id="mpr_${r.n}"><button class="mp-x" data-mp="${esc(r.k)}" aria-pressed="${on}" aria-label="${on?'בוצע – לחיצה מבטלת':'לסמן שבוצע'}"><span>${on?'✓':r.n}</span></button><div class="mp-t"><button class="mp-hit" data-mp="${esc(r.k)}"><b>${r.t}</b>${r.sub?`<small>${r.sub}</small>`:''}</button>${on&&by[r.k]?`<span class="mp-by">✓ ${esc(by[r.k])}</span>`:''}${r.extra?`<div class="mp-e">${r.extra}</div>`:''}</div></div>`};
-  const over=st.map((s,i)=>{const dn=s.rows.filter(r=>mpOn(r.k)).length,p=s.rows.length?Math.round(dn/s.rows.length*100):0;return `<button class="mp-ov ${dn===s.rows.length?'done':''}" data-mpgo="${s.k}"><span class="mp-on">${dn===s.rows.length?'✓':i+1}</span><span class="mp-ot"><b>${esc(s.t)}</b><small>${esc(s.when)}</small><i class="mp-bar"><i style="width:${p}%"></i></i></span><span class="mp-oc num">${dn}/${s.rows.length}</span></button>`}).join('');
-  const nx=next?`<section class="mp-next"><small>👉 הצעד הבא · שלב ${st.indexOf(next.s)+1}: ${esc(next.s.t)}</small><b>${next.t}</b>${next.sub?`<span>${next.sub}</span>`:''}<div class="mp-nb"><button class="mp-done" data-mp="${esc(next.k)}">✓ בוצע</button><button class="mp-a" data-mpgo="${next.s.k}" data-mpn="${next.n}">לפרטים ›</button></div></section>`:`<section class="mp-next ok"><b>🎉 הכל בוצע!</b><span>תודה, משה</span></section>`;
-  const secs=st.map((s,i)=>{const dn=s.rows.filter(r=>mpOn(r.k)).length,all=dn===s.rows.length;
-    return `<section class="mp-s ${all?'done':''}" id="mps_${s.k}"><header class="mp-sh"><span class="mp-n">${all?'✓':i+1}</span><span class="mp-h"><small>${esc(s.when)}</small><b>${esc(s.t)}</b></span><span class="mp-c num">${dn}/${s.rows.length}</span></header>${s.intro?`<p class="mp-i">${s.intro}</p>`:''}${s.rows.map(row).join('')}</section>`}).join('');
-  return `<section class="mp-hero"><div class="mp-ring" style="--p:${pct}"><b class="num">${pct}%</b></div><div><small>${GUEST()?'המשימות שלך, לפי הסדר':'מעקב אחרי משה – המפיק בשטח'}</small><b>${c.t-c.d?`בוצעו <span class="num">${c.d}</span> מתוך <span class="num">${c.t}</span>`:'הכל בוצע! 🎉'}</b><span>${GUEST()?'מסמנים ✓ כל משימה שבוצעה · שלומי ואיציק רואים מיד':'כל סימון של משה מופיע כאן מיד, עם שעה'}</span></div></section>
-   ${nx}<div class="mp-ovs">${over}</div>${secs}`}
-document.addEventListener('click',e=>{const g=e.target.closest&&e.target.closest('[data-mpgo]');if(!g)return;e.preventDefault();e.stopPropagation();const el=document.getElementById(g.dataset.mpn?'mpr_'+g.dataset.mpn:'mps_'+g.dataset.mpgo);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})},true);
-document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-mp]');if(!b)return;e.preventDefault();e.stopPropagation();
-  const k=b.dataset.mp,on=!mpOn(k),who=GUEST()?((meG()||{}).name||''):(typeof ME==='string'?ME:'');
-  if(!on&&!confirm0())return;
-  gset('settings/mplan',{kind:'mplan',done:{[k]:on},by:{[k]:on?firstN(who)+' · '+new Date().toLocaleString('he-IL',{weekday:'short',hour:'2-digit',minute:'2-digit'}):''}}).then(ok=>{if(ok&&on)toast('✓ סומן')})},true);
-const confirm0=()=>true;
+  const {st,L}=mpFlat(),by=MPB(),dn=L.filter(r=>mpOn(r.k)).length,pct=L.length?Math.round(dn/L.length*100):0;
+  const first=L.findIndex(r=>!mpOn(r.k));
+  const v=MPV||(GUEST()?(dn?'step':'sum'):'all');
+  const tabs=`<div class="mpt" role="tablist">${[['sum','📝 תקציר'],['step','👉 משימה אחרי משימה'],['all','📋 כל המשימות']].map(([k,l])=>`<button role="tab" data-mpv="${k}" aria-selected="${v===k}">${l}</button>`).join('')}</div>`;
+  const hero=`<section class="mp-hero"><div class="mp-ring" style="--p:${pct}"><b class="num">${pct}%</b></div><div><small>${GUEST()?'התפקיד שלך במסע':'מעקב אחרי משה – המפיק בשטח'}</small><b>${dn<L.length?`בוצעו <span class="num">${dn}</span> מתוך <span class="num">${L.length}</span>`:'הכל בוצע! 🎉'}</b><span>${GUEST()?'כל ✓ שלך מגיע מיד לשלומי ולאיציק':'כל סימון של משה מופיע כאן מיד, עם שעה'}</span></div></section>`;
+  const home=GUEST()?`<button class="mps-home" data-gnav="gh">🏠 חזרה למסך הבית</button>`:`<button class="mps-home" data-back>› חזרה</button>`;
+  if(v==='sum')return hero+tabs+mpSummary()+home;
+  if(v==='step'){
+    let i=MPI==null?(first<0?L.length-1:first):Math.max(0,Math.min(L.length-1,MPI));MPI=i;const r=L[i],on=mpOn(r.k);
+    return hero+tabs+`<section class="mps ${on?'on':''}">
+      <div class="mps-top"><span>משימה <b class="num">${r.n}</b> מתוך <span class="num">${L.length}</span></span><span>${esc(r.s.when)}</span></div>
+      <div class="mps-st">שלב ${r.si+1} · ${esc(r.s.t)}</div>
+      <div class="mps-dots">${L.map((x,j)=>`<i class="${mpOn(x.k)?'d':''}${j===i?' c':''}"></i>`).join('')}</div>
+      <h3 class="mps-t">${r.t}</h3>${r.sub?`<p class="mps-sub">${r.sub}</p>`:''}${r.s.intro&&r.s.rows[0]===r?`<p class="mps-sub">${r.s.intro}</p>`:''}
+      ${r.extra?`<div class="mp-e mps-e">${r.extra}</div>`:''}${mpCards(mpWho(r))}
+      ${on&&by[r.k]?`<p class="mps-by">✓ בוצע · ${esc(by[r.k])}</p>`:''}
+      <button class="mps-done ${on?'undo':''}" data-mpdone="${esc(r.k)}" data-i="${i}">${on?'↺ לבטל את הסימון':'✓ בוצע – לבאה'}</button>
+      <div class="mps-nav"><button data-mpi="${i-1}" ${i?'':'disabled'}>› הקודמת</button><button data-mpi="${first<0?i:first}" ${first<0||first===i?'disabled':''}>⏩ הבאה שלא בוצעה</button><button data-mpi="${i+1}" ${i<L.length-1?'':'disabled'}>הבאה ‹</button></div></section>`+home}
+  // full list – for following everything
+  const next=first<0?null:L[first];
+  const row=r=>{const on=mpOn(r.k);return `<div class="mp-r ${on?'on':''}${next===r?' cur':''}${r.c?' buy':''}" id="mpr_${r.n}"><button class="mp-x" data-mp="${esc(r.k)}" aria-pressed="${on}" aria-label="${on?'בוצע – לחיצה מבטלת':'לסמן שבוצע'}"><span>${on?'✓':r.n}</span></button><div class="mp-t"><button class="mp-hit" data-mpi="${r.n-1}" data-mpv="step"><b>${r.t}</b>${r.sub?`<small>${r.sub}</small>`:''}</button>${on&&by[r.k]?`<span class="mp-by">✓ ${esc(by[r.k])}</span>`:''}${r.extra?`<div class="mp-e">${r.extra}</div>`:''}${on?'':mpCards(mpWho(r))}</div></div>`};
+  const over=st.map((s,i)=>{const d=s.rows.filter(r=>mpOn(r.k)).length,p=s.rows.length?Math.round(d/s.rows.length*100):0;return `<button class="mp-ov ${d===s.rows.length?'done':''}" data-mpgo="${s.k}"><span class="mp-on">${d===s.rows.length?'✓':i+1}</span><span class="mp-ot"><b>${esc(s.t)}</b><small>${esc(s.when)}</small><i class="mp-bar"><i style="width:${p}%"></i></i></span><span class="mp-oc num">${d}/${s.rows.length}</span></button>`}).join('');
+  const secs=st.map((s,i)=>{const d=s.rows.filter(r=>mpOn(r.k)).length,all=d===s.rows.length;
+    return `<section class="mp-s ${all?'done':''}" id="mps_${s.k}"><header class="mp-sh"><span class="mp-n">${all?'✓':i+1}</span><span class="mp-h"><small>${esc(s.when)}</small><b>${esc(s.t)}</b></span><span class="mp-c num">${d}/${s.rows.length}</span></header>${s.intro?`<p class="mp-i">${s.intro}</p>`:''}${s.rows.map(row).join('')}</section>`}).join('');
+  return hero+tabs+(next?`<section class="mp-next"><small>👉 הצעד הבא · משימה ${next.n}</small><b>${next.t}</b><div class="mp-nb"><button class="mp-done" data-mp="${esc(next.k)}">✓ בוצע</button><button class="mp-a" data-mpi="${next.n-1}" data-mpv="step">לפרטים ›</button></div></section>`:'')+`<div class="mp-ovs">${over}</div>${secs}`+home}
+const mpSet=(k,on)=>{const who=GUEST()?((meG()||{}).name||''):(typeof ME==='string'?ME:'');
+  return gset('settings/mplan',{kind:'mplan',done:{[k]:on},by:{[k]:on?firstN(who)+' · '+new Date().toLocaleString('he-IL',{weekday:'short',hour:'2-digit',minute:'2-digit'}):''}})};
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target;if(!t)return;
+  const g=t.closest('[data-mpgo]');if(g){e.preventDefault();e.stopPropagation();const el=document.getElementById('mps_'+g.dataset.mpgo);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});return}
+  const nv=t.closest('[data-mpi],[data-mpv]');if(nv&&!nv.disabled&&!t.closest('[data-mp]')){e.preventDefault();e.stopPropagation();if(nv.dataset.mpv)MPV=nv.dataset.mpv;if(nv.dataset.mpi!=null&&nv.dataset.mpi!=='')MPI=+nv.dataset.mpi;render();window.scrollTo({top:0});return}
+  const dn=t.closest('[data-mpdone]');if(dn){e.preventDefault();e.stopPropagation();const k=dn.dataset.mpdone,on=!mpOn(k);
+    mpSet(k,on).then(ok=>{if(!ok)return;if(on){toast('✓ מעולה');MPI=+dn.dataset.i+1;window.scrollTo({top:0})}render()});return}
+  const b=t.closest('[data-mp]');if(b){e.preventDefault();e.stopPropagation();const k=b.dataset.mp,on=!mpOn(k);mpSet(k,on).then(ok=>{if(ok&&on)toast('✓ סומן')})}},true);
 SUB.mplan=function(){return subHead('התוכנית של משה – המפיק בשטח')+mplanBody()};
 
 SUB.bags=function(){return subHead('מזוודות',`<span class="cnt num">${BAGS().length}</span>`)+bagsBody(false)};
@@ -7655,7 +7728,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='aae1e5d28a';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='ce4330ef45';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
