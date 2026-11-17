@@ -5974,9 +5974,10 @@ const LTR_MEET={time:'05:40',where:'טרמינל 3, אזור D, דלפקי אל 
 const ltrCouples=()=>{const seen=new Set(),L=[],org=Object.values(TEAM_FULL);S.participants.forEach(p=>{if(seen.has(p._id))return;const ppl=coupleOf(p);ppl.forEach(x=>seen.add(x._id));L.push(ppl)});
   return L.sort((a,b)=>(/^הרב/.test(b[0].name)-/^הרב/.test(a[0].name))||String(a[0].name).split(' ').pop().localeCompare(String(b[0].name).split(' ').pop(),'he'))};
 // what is personal in each room: the couple's own letter and a siddur in each person's nusach
+const ROOMTIP='בכל חדר: תחתית ממותגת מתחת לכל פחית ובקבוק · 2 עלונים – אחד עם הכריכה למעלה ואחד הפוך, על התוכנייה · המכתב האישי של הזוג · סידורים לפי הנוסח שכתוב ליד החדר';
 const roomPpl=r=>{const P=S.participants.filter(p=>roomOf(p)===r);P.slice().forEach(p=>coupleOf(p).forEach(x=>{if(!P.includes(x)&&!roomOf(x))P.push(x)}));return P};
 const roomNeeds=r=>{const P=roomPpl(r);if(!P.length)return '';const cps=[];P.forEach(p=>{const c=coupleOf(p),k=c.map(x=>x._id).sort().join();if(!cps.some(x=>x.k===k))cps.push({k,c})});
-  const ns={};P.forEach(p=>{const n=p.nusach||'❓ נוסח לא ידוע';ns[n]=(ns[n]||0)+1});
+  const ns={};P.forEach(p=>{const n=p.siddurNusach||p.nusach||'❓ נוסח לא ידוע';ns[n]=(ns[n]||0)+1});
   return `<span class="rneed"><span>✉ ${cps.length>1?cps.length+' מכתבים: ':'המכתב של '}${cps.map(x=>esc(x.c.map(p=>firstN(p.name)).join(' ו')+' '+famKey(x.c[0].name).last)).join(' · ')}</span><span>📖 ${P.length===1?'סידור אחד':P.length+' סידורים'}: ${Object.entries(ns).map(([n,c])=>esc(n)+(c>1?' ×'+c:'')).join(' + ')}</span></span>`};
 const ltrRav=ppl=>ppl.some(p=>/^הרב/.test(p.name||''));
 const ltrDay=(iso,grp)=>{if(grp==='מוצ״ש')return 'במוצאי שבת';try{return 'ב'+new Date(iso+'T12:00:00').toLocaleDateString('he-IL',{weekday:'long'})+', '+iso.split('-').reverse().slice(0,2).map(Number).join('.')}catch(e){return ''}};
@@ -6320,7 +6321,7 @@ function guestHTML0(){
     const rp=roomsPlaced(),rooms=S.rooms.slice().sort((a,b)=>String(a.roomNumber||'zzz').localeCompare(String(b.roomNumber||'zzz'),undefined,{numeric:true})||byOrder(a,b)),
       rows=GKIT==='todo'?rooms.filter(r=>!r.kitReady):GKIT==='done'?rooms.filter(r=>r.kitReady):rooms,pct=rp.t?Math.round(rp.n/rp.t*100):0;
     return head('סידור ערכות בחדרים')+`<div class="gsh"><div><b class="num">${rp.n}</b><span>מתוך <span class="num">${rp.t}</span> חדרים</span></div><div class="prog"><i style="width:${pct}%"></i></div></div>
-     ${KITLOCK()?'<div class="lockbar">🔒 הסימון נפתח ביום המסע, 19.11. עד אז אפשר לראות את רשימת החדרים.</div>':'<p class="note">לוחצים על חדר כשהסט הונח בו. המארגנים רואים את העדכון מיד.</p>'}
+     ${KITLOCK()?'<div class="lockbar">🔒 הסימון נפתח ביום המסע, 19.11. עד אז אפשר לראות את רשימת החדרים.</div>':'<p class="note">לוחצים על חדר כשהסט הונח בו. המארגנים רואים את העדכון מיד.</p>'}<div class="card" style="padding:12px 14px;font-size:14.5px;line-height:1.55">📌 ${ROOMTIP}</div>
      <div class="seg">${[['todo','נשארו',rp.t-rp.n],['done','הונחו',rp.n],['all','הכל',rp.t]].map(([k,l,c])=>`<button data-gkit="${k}" aria-pressed="${GKIT===k}">${l}<span class="c num">${c}</span></button>`).join('')}</div>
      <div class="gsrooms">${rows.map(r=>`<button class="gsr ${r.kitReady?'on':''}" data-g-kit="${r._id}" aria-pressed="${!!r.kitReady}" ${KITLOCK()?'aria-disabled="true"':''}><span class="gsn"><b class="num">${esc(r.roomNumber||'—')}</b><small>${bOf(r)?'כניסה '+esc(bOf(r))+' · ':''}${r.floor?'קומה '+esc(r.floor):'קומה ?'}</small></span><span class="main"><b>${esc(r.occupants||'')}</b><small>${esc(r.type||'')}${r.kitReady&&r.kitBy?` · הונח ${esc(firstN(r.kitBy))}`:''}</small>${roomNeeds(r)}</span><span class="gsc" aria-hidden="true">${r.kitReady?'✓':''}</span></button>`).join('')||card('',GKIT==='todo'?'<b>כל החדרים מוכנים 🎉</b>':'<b>אין חדרים כאן</b>')}</div>`}
   if(GTAB==='gt'){
@@ -6971,7 +6972,7 @@ function mpStages(){
      mpRow('early','אחרי הסעודה, כשכולם עולים לציון – לצאת לבודפשט','עם צביקה ובני דרחי · ברכב: המזוודות מהשדה והאלכוהול שנשאר')]},
    {k:'s5b',when:'חמישי בערב · במלון',t:'סידור החדרים',intro:`אתה, צביקה ובני דרחי · יוסי אליעד נוחת 19:30 ומצטרף במלון · הקבוצה מגיעה בערך ב־23:00`,rows:[
      mpRow('keys','צ׳ק־אין: מפתח ודרכון לכל זוג בקבלה','שהכל יחכה לקבוצה ב־23:00'),
-     mpRow('roomkit','להכין את הסט לחדר',`לכל אחד מ־<span class="num">${rooms}</span> החדרים:`,mpUl(roomKit.map(({x,per})=>`<li><span>${esc(x.item)}</span><b class="num">${per}</b><small>${esc(mpWhere(x))}</small></li>`))),
+     mpRow('roomkit','להכין את הסט לחדר',`לכל אחד מ־<span class="num">${rooms}</span> החדרים · <b>תחתית ממותגת מתחת לכל פחית ובקבוק</b> · <b>2 עלונים: אחד עם הכריכה למעלה, ואחד הפוך – על התוכנייה</b>`,mpUl(roomKit.map(({x,per})=>`<li><span>${esc(x.item)}</span><b class="num">${per}</b><small>${esc(mpWhere(x))}</small></li>`))),
      mpRow('rooms','להניח סט בכל חדר – עם המכתב האישי והסידורים בנוסח של מי שגר בו',`<b class="num">${rp.n}</b> מתוך <span class="num">${rp.t}</span> חדרים כבר סומנו · ברשימת החדרים כתוב ליד כל חדר של מי המכתב ואיזה נוסח סידור לשים בו`,GUEST()?`<button class="mp-a" data-gnav="gs">🛏 לרשימת החדרים</button>`:`<button class="mp-a" data-sub="rooms">🛏 לרשימת החדרים</button>`),
      mpRow('tohana','להקפיץ לחנה את כל מה שלעונג שבת ולשבת בבוקר, ולמסור לשלום הולד','הלילה, או מחר בבוקר · השתייה שקנית + מה שהגיע מהארץ:',mpUl([...kit('ערכה לעונג שבת'),...kit('ערכה לשבת בבוקר')].filter(x=>!/פירות/.test(x.item||'')).map(li)))]},
    {k:'s6',when:'שישי 20.11',t:'הכנות לשבת',intro:'שאר הקניות נעשו ביום חמישי בבוקר',rows:[
@@ -7747,7 +7748,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='79a7428b78';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='b7a3b90a42';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
