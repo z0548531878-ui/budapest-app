@@ -6972,6 +6972,8 @@ function mpStages(){
      mpRow('early','אחרי הסעודה, כשכולם עולים לציון – לצאת לבודפשט','עם צביקה ובני דרחי · ברכב: המזוודות מהשדה והאלכוהול שנשאר')]},
    {k:'s5b',when:'חמישי בערב · במלון',t:'סידור החדרים',intro:`אתה, צביקה ובני דרחי · יוסי אליעד נוחת 19:30 ומצטרף במלון · הקבוצה מגיעה בערך ב־23:00`,rows:[
      mpRow('keys','צ׳ק־אין: מפתח ודרכון לכל זוג בקבלה','שהכל יחכה לקבוצה ב־23:00'),
+     mpRow('hrolls','להעמיד בכניסה למלון את 2 הרולאפים','אחד – Welcome למלון · השני – תוכנית השבת · שניהם במזוודה של מאיר בורה'),
+     mpRow('fridge','את העוגות של פינת הקפה במלון – למקרר הגדול בחדר שלך','הן במזוודה של חיים בלוך · נשארות במקרר עד שישי בבוקר',mpUl(kit('ערכה לפינת קפה').filter(x=>/עוג|פס /.test(x.item||'')).map(li))),
      mpRow('roomkit','להכין את הסט לחדר',`לכל אחד מ־<span class="num">${rooms}</span> החדרים · <b>תחתית ממותגת מתחת לכל פחית ובקבוק</b> · <b>2 עלונים: אחד עם הכריכה למעלה, ואחד הפוך – על התוכנייה</b>`,mpUl(roomKit.map(({x,per})=>`<li><span>${esc(x.item)}</span><b class="num">${per}</b><small>${esc(mpWhere(x))}</small></li>`))),
      mpRow('rooms','להניח סט בכל חדר – עם המכתב האישי והסידורים בנוסח של מי שגר בו',`<b class="num">${rp.n}</b> מתוך <span class="num">${rp.t}</span> חדרים כבר סומנו · ברשימת החדרים כתוב ליד כל חדר של מי המכתב ואיזה נוסח סידור לשים בו`,GUEST()?`<button class="mp-a" data-gnav="gs">🛏 לרשימת החדרים</button>`:`<button class="mp-a" data-sub="rooms">🛏 לרשימת החדרים</button>`),
      mpRow('tohana','להקפיץ לחנה את כל מה שלעונג שבת ולשבת בבוקר, ולמסור לשלום הולד','הלילה, או מחר בבוקר · השתייה שקנית + מה שהגיע מהארץ:',mpUl([...kit('ערכה לעונג שבת'),...kit('ערכה לשבת בבוקר')].filter(x=>!/פירות/.test(x.item||'')).map(li)))]},
@@ -6979,7 +6981,8 @@ function mpStages(){
      mpRow('milkfri','חלב לשבת – לקנות בבוקר בסופר הכשר',milkFri.map(x=>`${esc(x.item)} × ${+x.qty||1}`).join(' · ')+' · קושר פיאץ, Dohány utca 36 · שישי עד 14:00 · לפינת הקפה במלון',KP),
      mpRow('hanaset','במסעדת חנה: להעמיד רולאפ ולתלות שלטי הכוונה','רולאפ חנה – במזוודה של בני דרחי · השלטים וערכת ההפקה – אצלך',mpNav('Hanna Kosher Restaurant Kazinczy 29 Budapest','ניווט לחנה')),
      mpRow('place','למסור לשלום הולד את הפלייסמטים','הוא והצוות שלו מסדרים איתם את השולחנות לליל שבת',mpUl(kit('ערכה לליל שבת').map(li))),
-     mpRow('coffee','פינת הקפה בלובי המלון','',mpUl(kit('ערכה לפינת קפה').map(li))),
+     mpRow('coffee','שישי בבוקר – לפתוח את פינת הקפה בלובי','מורידים מהמקרר בחדר <b>בערך חצי מהעוגות</b> ופותחים את כל הדברים של פינת הקפה · החצי השני נשאר במקרר לשבת בבוקר',mpUl(kit('ערכה לפינת קפה').map(li))),
+     mpRow('cakes2','שבת בבוקר – להוריד את שאר העוגות לפינת הקפה','מהמקרר בחדר שלך'),
      mpRow('candles','15:45 – פינת הנרות בלובי המלון','',mpUl(kit('ערכה להדלקת נרות שבת').map(li))),
      mpRow('oneg','20:30 – עונג שבת בחנה: לסדר את השולחנות כשכולם יוצאים לסיבוב','יחד עם צביקה והזוג הופמן'),
      mpRow('havd','מוצאי שבת – סט ההבדלה','',mpUl(kit('ערכה להבדלה').map(li)))]},
@@ -6998,7 +7001,7 @@ const mpK=id=>{const c=q=>(S.contacts||[]).find(x=>((x.name||'')+' '+(x.person||
     yael:P('יעל שרייבר','יעל שרייבר'),ari:P('ארי הופמן','ארי הופמן'),ruti:P('רותי הופמן','רותי הופמן'),chaim:P('חיים בלוך','חיים בלוך'),medic:C('שימי ורקר','שימי ורקר · חובש')})[id]||null};
 const MPWHO={b1get:['shlomi','yael','chaim'],b1kg:['shlomi'],b2zv:['zvika'],eur:['shlomi'],land:['zvika'],car:['klass'],hotel:['hotel','chanuka'],store:['hotel'],
   milkthu:['kp'],alc:['hana'],land2:['shlomi','itzik'],bus:['zelig','bus'],belly:['zelig'],rollup:['benny'],
-  ksign:['drex'],kdes:['drex'],tohana:['hana'],hanaset:['hana'],place:['hana'],havd:['hotel'],kroll:['drex'],kvit:['drex'],kalc:['drex'],korg:['drex','itzik'],organ:['itzik'],buscafe:['zvika'],rollin:['zelig'],early:['zvika','benny','drex'],keys:['hotel','chanuka'],roomkit:['zvika','benny','yossi'],rooms:['zvika','benny','yossi'],
+  ksign:['drex'],kdes:['drex'],tohana:['hana'],hanaset:['hana'],place:['hana'],havd:['hotel'],hrolls:['hotel'],fridge:['chaim'],cakes2:['hotel'],kroll:['drex'],kvit:['drex'],kalc:['drex'],korg:['drex','itzik'],organ:['itzik'],buscafe:['zvika'],rollin:['zelig'],early:['zvika','benny','drex'],keys:['hotel','chanuka'],roomkit:['zvika','benny','yossi'],rooms:['zvika','benny','yossi'],
   milkfri:['kp'],coffee:['hotel','chanuka'],candles:['hotel','chanuka'],oneg:['zvika','ari','ruti','hana'],carret:['klass'],flyback:['zvika']};
 const mpWho=r=>(MPWHO[r.k]||(/^b[tf]_/.test(r.k)?['shlomi']:[])).map(mpK).filter(Boolean);
 const mpCards=L=>L.length?`<div class="mpk">${L.map(c=>c.ph?`<div class="mpk-r"><b>${esc(c.lab)}</b><span><a href="${telLink(c.ph)}" aria-label="חיוג">📞</a><a href="${waLink(c.ph)}" target="_blank" rel="noopener" aria-label="וואטסאפ">💬</a></span></div>`:`<div class="mpk-r miss"><b>${esc(c.lab)}</b><small>המספר יתווסף בקרוב</small></div>`).join('')}</div>`:'';
@@ -7013,8 +7016,8 @@ function mpSummary(){const k=x=>mpK(x),b=n=>(BAGS().find(x=>x.n===n)||{}).who||'
   ${d('חמישי בבוקר','קניות ואיסופים','בבוקר קונים את כל השתייה – לאוטובוס, לחדרים ולשבת. חלב לאוטובוס <b>רק בסופר הכשר</b>. אוספים משלום הולד בחנה את האלכוהול לקרעסטיר, עם ספייר. לשדה נוסעים <b>בלי המזוודות עצמן</b> – רק עם מה שבתוכן, ישר ברכב. המזוודות הריקות נשארות במלון.',['kp','hana'])}
   ${d('חמישי 11:30','בשדה – מסדרים את האוטובוס','האוטובוס מגיע ב־11:30, והקבוצה יוצאת מהשדה רק בערך ב־12:00 – עד אז הכל מסודר: תיק על כל מושב, שתייה, רולדות, ופינת הקפה בתוך האוטובוס (הדברים של צביקה + החלב). בני יוצא ראשון עם הרולאפ – מעמידים אותו בחוץ ליד האוטובוס. לוקחים מאיציק את האורגן, ולרכב מקבלים מזוודות מ: '+esc(car)+'.',['zelig','bus','itzik'])}
   ${d('חמישי בקרעסטיר','בקרעסטיר','הסעודה אצל פרידלנדר – איש הקשר שלנו שם אבי דרקסלר. קודם תולים שלטים: איפה השאטלים לציון ואיפה הסעודה. פותחים את רולאפ האוטובוס ותולים את השלט הגדול, מסדרים את סט הקוויטל על שולחן, שמים אלכוהול על כל השולחנות, ומסדרים את האורגן. את מגשי הג׳לים והפיצוחים, הזריפה והרדבול נותנים לדרקסלר – הוא פותח אותם בקינוח.',['drex'])}
-  ${d('חמישי בערב','סידור החדרים','רק אחרי הסעודה, כשכולם עולים לציון – אתה, צביקה ובני נוסעים לבודפשט. עושים צ׳ק־אין ומסדרים סט בכל אחד מ־'+(S.rooms.length||31)+' החדרים – <b>בכל חדר המכתב האישי של הזוג שגר בו, וסידורים בנוסח שלהם</b> (כתוב ליד כל חדר ברשימת החדרים). יוסי אליעד מצטרף בערב. הלילה או מחר בבוקר מקפיצים לחנה את כל מה שלעונג שבת ולשבת בבוקר ומוסרים לשלום הולד.',['zvika','benny','yossi','hana'])}
-  ${d('שישי 20.11','הכנות לשבת','בבוקר חלב לשבת מהסופר הכשר. בחנה: מעמידים רולאפ, תולים שלטים, ומוסרים לשלום הולד את הפלייסמטים לשולחנות. במלון: פינת הקפה בלובי ופינת הנרות עד 15:45. ב־20:30 עונג שבת בחנה – אתה, צביקה והזוג הופמן מסדרים את השולחנות. הרב חנוכה גר במלון.',['kp','hana','hotel','chanuka'])}
+  ${d('חמישי בערב','סידור החדרים','רק אחרי הסעודה, כשכולם עולים לציון – אתה, צביקה ובני נוסעים לבודפשט. מעמידים בכניסה למלון את 2 הרולאפים (Welcome ותוכנית השבת), שמים את העוגות של פינת הקפה במקרר בחדר שלך, ומסדרים סט בכל אחד מ־'+(S.rooms.length||31)+' החדרים – <b>בכל חדר המכתב האישי של הזוג שגר בו, וסידורים בנוסח שלהם</b> (כתוב ליד כל חדר ברשימת החדרים). יוסי אליעד מצטרף בערב. הלילה או מחר בבוקר מקפיצים לחנה את כל מה שלעונג שבת ולשבת בבוקר ומוסרים לשלום הולד.',['zvika','benny','yossi','hana'])}
+  ${d('שישי 20.11','הכנות לשבת','בבוקר חלב לשבת מהסופר הכשר. בחנה: מעמידים רולאפ, תולים שלטים, ומוסרים לשלום הולד את הפלייסמטים לשולחנות. במלון: בבוקר מורידים מהמקרר בחדר שלך חצי מהעוגות ופותחים את פינת הקפה בלובי (החצי השני – בשבת בבוקר), ופינת הנרות עד 15:45. ב־20:30 עונג שבת בחנה – אתה, צביקה והזוג הופמן מסדרים את השולחנות. הרב חנוכה גר במלון.',['kp','hana','hotel','chanuka'])}
   ${d('מוצ״ש וראשון','חזרה','מחזירים את הרכב ל־Klass Wagen וטסים בראשון ב־05:00 – עם תיק יד בלבד.',['klass'])}
   <section class="mpsum q"><b>יש שאלה? אנחנו פה</b>${mpCards(['shlomi','itzik','medic'].map(k).filter(Boolean))}</section>
   <button class="mps-go" data-mpv="step">👉 מתחילים – משימה אחרי משימה</button>`}
@@ -7748,7 +7751,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='10981cc211';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='c5bbec9f5d';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
