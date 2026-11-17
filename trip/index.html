@@ -2983,6 +2983,10 @@ html:has(#scrim.open) #app :is(*,*::before,*::after){animation-play-state:paused
 .bag-w{font-size:12px;color:#a69a7d;display:flex;align-items:center;flex-wrap:wrap;gap:4px}
 .bag-w b{color:#e9d9a8;font-weight:800}.bag-w b.nil{color:#e07a5f;font-weight:700}
 .bag-wi{width:76px;padding:4px 4px;border-radius:8px;border:1px solid rgba(214,178,98,.35);background:rgba(0,0,0,.25);color:inherit;font:700 13px var(--body);text-align:center}
+.bp{margin:12px 0 6px}.bp-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.bp-l{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}.bp-i{position:relative;flex:0 0 auto}
+.bp-i img{display:block;height:150px;width:auto;max-width:220px;object-fit:cover;border-radius:12px;border:1px solid rgba(214,178,98,.35);cursor:zoom-in}
+.bp-x{position:absolute;top:6px;inset-inline-start:6px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;font-weight:900;cursor:pointer}
 .bag-kg{margin:12px 0 4px;padding:12px;border-radius:14px;background:rgba(120,190,120,.10);border:1px solid rgba(120,190,120,.35)}
 .bag-kg.near{background:rgba(233,196,106,.12);border-color:rgba(233,196,106,.5)}
 .bag-kg.over{background:rgba(224,122,95,.14);border-color:rgba(224,122,95,.6)}
@@ -4212,7 +4216,7 @@ let autoBusy=false;
 async function decryptBlob(j){const b=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));const key=await deriveKey(TRIP_KEY,b(j.salt));
   return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b(j.iv)},key,b(j.ct))))}
 // update batches never touch the log or the trash: the rules refuse it, and one refused op sinks the whole batch
-const opOk=o=>o&&o.c&&o.id&&((COLS.includes(o.c)&&o.c!=='activity'&&o.c!=='trash')||(o.c==='photobig'&&o.id==='pp_all'));
+const opOk=o=>o&&o.c&&o.id&&((COLS.includes(o.c)&&o.c!=='activity'&&o.c!=='trash')||(o.c==='photobig'&&(o.id==='pp_all'||/^bp_/.test(o.id))));
 // deleteWhere: delete every doc in o.c whose fields equal all of o.w (for items whose ids Claude does not know)
 // perRooms: when the number of rooms changes, every per-room kit item gets qty = per × n and its cost scaled to match
 // items whose expense is already paid keep their quantity and price: automatic updates never touch them
@@ -6852,6 +6856,19 @@ SUB.myroom=function(){const me=orgSelf();return subHead('החדר שלי','')+(R
 const BAGS=()=>{const d=S.settings.find(x=>x._id==='bags');return (d&&Array.isArray(d.list)?d.list:[]).filter(b=>b&&b.n)};
 const bagItems=n=>S.packing.filter(x=>x.item&&x.bag===n).sort((a,b)=>(a.bagOrder||a.order||0)-(b.bagOrder||b.order||0));
 let BAGSEL='';
+// photos of each suitcase, so whoever collects it knows what it looks like: stored in photobig as bp_<bag>_<ts>, loaded when the suitcase is opened
+const BAGPICS={};let BPLOAD={};
+function bagPicsLoad(n,force){if(!db||(BPLOAD[n]&&!force))return;BPLOAD[n]=1;db.collection('photobig').where('bag','==',n).get().then(q=>{BAGPICS[n]=q.docs.map(d=>({...d.data(),_id:d.id})).filter(x=>x.kind==='bagpic').sort((a,b)=>a.ts-b.ts);render()}).catch(e=>{BPLOAD[n]=0;console.warn('bagpics',e)})}
+const bagPicsHTML=(b,ro)=>{bagPicsLoad(b.n);const L=BAGPICS[b.n],can=!GUEST()||!ro;
+  return `<div class="bp"><div class="bp-h"><b>📷 איך המזוודה נראית</b>${can?`<button class="mp-a" data-bpadd="${esc(b.n)}">＋ הוספת תמונה</button>`:''}</div>${L==null?'<small class="note">טוען…</small>':L.length?`<div class="bp-l">${L.map(p=>`<span class="bp-i"><img src="${p.src}" alt="תמונה של מזוודה ${esc(b.n)}" data-bpview="${esc(p._id)}" data-bpbag="${esc(b.n)}" loading="lazy">${!GUEST()?`<button class="bp-x" data-bpdel="${esc(p._id)}" data-bpbag="${esc(b.n)}" aria-label="מחיקת התמונה">✕</button>`:''}</span>`).join('')}</div>`:'<small class="note">עוד אין תמונה</small>'}</div>`};
+(()=>{const f=document.createElement('input');f.type='file';f.accept='image/*';f.multiple=true;f.hidden=true;f.id='bpFile';document.body.appendChild(f);let N='';
+  document.addEventListener('click',async e=>{const t=e.target.closest&&e.target;if(!t)return;
+    const a=t.closest('[data-bpadd]');if(a){e.preventDefault();e.stopPropagation();N=a.dataset.bpadd;f.click();return}
+    const v=t.closest('[data-bpview]');if(v){e.preventDefault();e.stopPropagation();sheet(`<img src="${v.src}" alt="" style="width:100%;border-radius:14px"><div class="sheet-acts"><span class="sp"></span><button class="btn" data-close>סגירה</button></div>`);return}
+    const d=t.closest('[data-bpdel]');if(d){e.preventDefault();e.stopPropagation();if(!confirm('למחוק את התמונה?'))return;try{await db.doc('photobig/'+d.dataset.bpdel).delete();bagPicsLoad(d.dataset.bpbag,1);toast('נמחקה')}catch(x){toast('לא הצלחתי למחוק')}}},true);
+  f.addEventListener('change',async()=>{const L=[...(f.files||[])].slice(0,6);f.value='';if(!L.length||!N)return;const me=GUEST()?meG():null,by=me?me.name:(typeof ME==='string'?ME:'');let ok=0;toast('מעלה…');
+    for(const x of L){try{const im=await shrinkImg(x,1100,.72),ts=Date.now();await db.doc('photobig/bp_'+N+'_'+ts.toString(36)).set({kind:'bagpic',bag:N,src:im.d,w:im.w,h:im.h,by,ts});ok++}catch(e){console.warn('bagpic',e)}}
+    bagPicsLoad(N,1);toast(ok?'התמונה נשמרה':'ההעלאה לא הצליחה')})})();
 // weights: each packing item has wg = grams per unit; the empty suitcase (tare) and the airline limit live in settings/bagkg so bag-list updates never wipe them
 const BKG=()=>S.settings.find(x=>x._id==='bagkg')||null;
 const bagQ=x=>(+x.bagQty>0?+x.bagQty:(+x.qty||1));
@@ -6867,6 +6884,7 @@ function bagsBody(ro,only){
      ${(()=>{const k=bagKg(b);if(!k.has&&ro)return '';const inp=(a,v)=>ro?kgF(v):`<input class="bag-wi" type="number" inputmode="decimal" step="0.1" min="0" ${a}="${esc(b.n)}" value="${v||''}" placeholder="—" aria-label="ק״ג">`;
        return `<div class="bag-kg ${k.over?'over':k.near?'near':''}"><div class="bag-kgt"><b class="num">${kgF(k.tot)}</b><span>ק״ג צפוי</span>${k.lim?`<em>${k.over?`⚠ חריגה של ${kgF(k.tot-k.lim)} ק״ג`:k.near?`קרוב לגבול · נשאר ${kgF(k.lim-k.tot)} ק״ג`:`נשאר ${kgF(k.lim-k.tot)} ק״ג`}</em>`:''}</div>
         <div class="bag-kgb"><span>🧳 מזוודה ריקה ${inp('data-bagtare',k.tare)} ק״ג</span><span>+ 📦 תכולה <b class="num">${kgF(k.items)}</b> ק״ג</span><span>✈ מגבלה ${inp('data-baglim',k.lim)} ק״ג</span>${k.miss?`<span class="bag-miss">⚠ ${k.miss} פריטים בלי משקל</span>`:''}</div></div>`})()}
+     ${bagPicsHTML(b,ro)}
      <div class="prog"><i data-w="${pct}%" style="width:0"></i></div>
      ${b.note?`<p class="note" style="margin:8px 0 0">${esc(b.note)}</p>`:''}
      <div class="bag-l">${it.map(x=>{const on=kst(x,'packed');return `<div class="bag-r ${on?'on':''}"${ro?'':` data-edit="packing/${x._id}" role="button" tabindex="0"`}>${ro?`<span class="check ${on?'on':''}">${on?CHECK:''}</span>`:`<button class="check ${on?'on':''}" data-kst="${x._id}|packed" aria-pressed="${on}" aria-label="סימון שנארז">${on?CHECK:''}</button>`}<span class="bag-i"><span>${esc(x.item)}</span><small class="bag-w">${ro?(+x.wg>0?`${kgF(x.wg)} ג׳ ליח׳ × ${bagQ(x)} = <b>${kgF(itemKg(x))} ק״ג</b>`:''):`<input class="bag-wi" type="number" inputmode="decimal" step="1" min="0" data-bagw="${x._id}" value="${+x.wg>0?x.wg:''}" placeholder="—" aria-label="גרם ליחידה"> ג׳ ליח׳ × ${bagQ(x)} = <b class="${+x.wg>0?'':'nil'}">${+x.wg>0?kgF(itemKg(x))+' ק״ג':'אין משקל'}</b>`}</small></span><b class="num">${esc(String(qty(x)))}</b></div>`}).join('')||'<div class="empty"><b>עוד אין פריטים במזוודה</b></div>'}</div></div>`};
@@ -7755,7 +7773,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='d2b3ab929e';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='59aaac35e4';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
