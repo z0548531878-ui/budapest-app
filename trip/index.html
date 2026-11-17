@@ -6864,7 +6864,9 @@ function mpStages(){
   const B=n=>BAGS().find(b=>b.n===n)||{}, items=n=>bagItems(n);
   const kit=k=>S.packing.filter(x=>x.item&&kitOf(x)===k);
   const li=(x,nw)=>`<li><span>${esc(x.item)}</span><b class="num">${mpQ(x)}</b>${nw?'':`<small>${esc(mpWhere(x))}</small>`}</li>`, liB=x=>li(x,1);
-  const buyThu=S.packing.filter(x=>mpBuy(x)&&MP_THU.includes(kitOf(x))), buyFri=S.packing.filter(x=>mpBuy(x)&&!MP_THU.includes(kitOf(x)));
+  const milk=x=>/חלב/.test(x.item||''), shabMilk=x=>milk(x)&&kitOf(x)==='ערכה לפינת קפה';
+  const buyThu=S.packing.filter(x=>mpBuy(x)&&MP_THU.includes(kitOf(x))&&!milk(x)), buyFri=S.packing.filter(x=>mpBuy(x)&&!MP_THU.includes(kitOf(x))&&!milk(x)), milkThu=S.packing.filter(x=>mpBuy(x)&&milk(x)&&!shabMilk(x)), milkFri=S.packing.filter(x=>mpBuy(x)&&shabMilk(x));
+  const KP=`<a class="mp-a" href="https://waze.com/ul?q=${encodeURIComponent('Kosher Piac Dohány utca 36 Budapest')}&navigate=yes" target="_blank" rel="noopener">🧭 קושר פיאץ</a><a class="mp-a" href="tel:+36305722165">📞 הסופר הכשר</a>`;
   const cost=L=>L.reduce((t,x)=>t+(+x.cost||0),0), eur=n=>Math.round(n/3.57);
   const buyRows=(L,p)=>L.map(x=>mpRow(p+x._id,`${esc(x.item)} × <span class="num">${+x.qty||1}</span>`,`${esc(kitOf(x))}${+x.cost?` · בערך ${ils(+x.cost)} (${eur(+x.cost)} €)`:''}`)).join('');
   // who hands Moshe each part of bag 1, by who bought it
@@ -6890,8 +6892,9 @@ function mpStages(){
    {k:'s3',when:'רביעי בלילה',t:'מילוי 60 תיקים לאוטובוס',rows:[
      mpRow('bags60','למלא 60 תיקים','בכל תיק:',mpUl(perBag.filter(x=>x._id!=='ba01').map(x=>`<li><span>${esc(x.item)}</span><b class="num">${Math.max(1,Math.floor((+x.qty||60)/60))}</b>${(+x.qty||0)>60?`<small>${(+x.qty)-60} נשארים בצד</small>`:''}</li>`))),
      mpRow('bagsrdy','לסגור את התיקים ולהכין אותם לאוטובוס','מגיעים איתך לשדה ביום חמישי בבוקר')]},
-   {k:'s4',when:'חמישי 19.11 בבוקר',t:'קניות, שדה ואוטובוס',intro:`<b>כל הקניות – בבוקר, לפני השדה</b> · שתייה לאוטובוס, לחדרים ולשבת, חלב וכל השאר · בערך ${ils(cost(buyThu)+cost(buyFri))} (${eur(cost(buyThu)+cost(buyFri))} €) · מהיורו במזומן`,rows:[
+   {k:'s4',when:'חמישי 19.11 בבוקר',t:'קניות, שדה ואוטובוס',intro:`<b>כל הקניות – בבוקר, לפני השדה</b> · שתייה לאוטובוס, לחדרים ולשבת, חלב וכל השאר · בערך ${ils(cost(buyThu)+cost(buyFri)+cost(milkThu))} (${eur(cost(buyThu)+cost(buyFri)+cost(milkThu))} €) · מהיורו במזומן · החלב לשבת – ביום שישי`,rows:[
      ...buyRows(buyThu,'bt_'),...buyRows(buyFri,'bf_'),
+     mpRow('milkthu','חלב לפינת הקפה באוטובוס – רק בסופר הכשר',milkThu.map(x=>`${esc(x.item)} × ${+x.qty||1}`).join(' · ')+' · קושר פיאץ, Dohány utca 36 · נפתח ב־8:00',KP),
      mpRow('alc','לאסוף מחנה את האלכוהול לקרעסטיר – ולקחת ספייר','מסעדת חנה, Kazinczy 29 · לקחת יותר ממה שנראה שצריך. מה שלא ייפתח בקרעסטיר חוזר איתך למלון לשבת.',mpNav('Hanna Kosher Restaurant Kazinczy 29 Budapest','ניווט לחנה')),
      mpRow('empty','⚠ הרכב יוצא לשדה ריק – בלי מזוודות 1 ו־2','המזוודות שטסת איתן נשארות במלון. אחרי קרעסטיר נוסעים ברכב עם המזוודות שמקבלים בשדה למלון, אז צריך בו מקום.'),
      mpRow('load','להעמיס ברכב רק מה שצריך לאוטובוס','60 התיקים, השתייה לאוטובוס, פינת הקפה (מזוודה 2 + 9 העוגות + חלב), רולדות הקינדר והאלכוהול לקרעסטיר · שאר הקניות נשארות במלון (במקרר מה שצריך)'),
@@ -6906,7 +6909,8 @@ function mpStages(){
      mpRow('keys','צ׳ק־אין: מפתח ודרכון לכל זוג בקבלה','שהכל יחכה לקבוצה ב־23:00'),
      mpRow('roomkit','להכין את הסט לחדר',`לכל אחד מ־<span class="num">${rooms}</span> החדרים:`,mpUl(roomKit.map(({x,per})=>`<li><span>${esc(x.item)}</span><b class="num">${per}</b><small>${esc(mpWhere(x))}</small></li>`))),
      mpRow('rooms','להניח סט בכל חדר',`<b class="num">${rp.n}</b> מתוך <span class="num">${rp.t}</span> חדרים כבר סומנו`,GUEST()?`<button class="mp-a" data-gnav="gs">🛏 לרשימת החדרים</button>`:`<button class="mp-a" data-sub="rooms">🛏 לרשימת החדרים</button>`)]},
-   {k:'s6',when:'שישי 20.11',t:'הכנות לשבת',intro:'הקניות כבר נעשו ביום חמישי בבוקר',rows:[
+   {k:'s6',when:'שישי 20.11',t:'הכנות לשבת',intro:'שאר הקניות נעשו ביום חמישי בבוקר',rows:[
+     mpRow('milkfri','חלב לשבת – לקנות בבוקר בסופר הכשר',milkFri.map(x=>`${esc(x.item)} × ${+x.qty||1}`).join(' · ')+' · קושר פיאץ, Dohány utca 36 · שישי עד 14:00 · לפינת הקפה במלון',KP),
      mpRow('coffee','פינת הקפה בלובי','',mpUl(kit('ערכה לפינת קפה').map(li))),
      mpRow('candles','15:45 – פינת הנרות בלובי','',mpUl(kit('ערכה להדלקת נרות שבת').map(li))),
      mpRow('oneg','20:30 – עונג שבת: לסדר שולחנות כשכולם בסיבוב','',mpUl(kit('ערכה לעונג שבת').map(li))),
@@ -7623,7 +7627,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='741a4af929';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='f74ed316f4';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
