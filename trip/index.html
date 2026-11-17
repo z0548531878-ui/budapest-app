@@ -2911,25 +2911,47 @@ html:has(#scrim.open) #app :is(*,*::before,*::after){animation-play-state:paused
 .bag-r{display:flex;align-items:center;gap:10px;padding:7px 4px;border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer}
 .bag-r:last-child{border-bottom:0}
 .bag-r .check{width:26px;height:26px;flex:0 0 auto}
-.mp-hero{display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;background:linear-gradient(135deg,rgba(214,178,98,.18),rgba(214,178,98,.05));border:1px solid rgba(214,178,98,.35)}
-.mp-hero>div{flex:1;display:flex;flex-direction:column;gap:3px}.mp-hero small{color:#cdb98a;font-weight:700}.mp-hero b{font-size:19px}.mp-hero span{font-size:12.5px;color:#a69a7d}
-.mp-p{font-size:30px;font-weight:900;color:#e9d9a8}
-.mp-s{margin:10px 0;border-radius:16px;border:1px solid rgba(214,178,98,.25);background:rgba(255,255,255,.03);overflow:hidden}
-.mp-s summary{list-style:none;display:flex;align-items:center;gap:12px;padding:13px 14px;cursor:pointer}.mp-s summary::-webkit-details-marker{display:none}
-.mp-n{flex:0 0 34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:900;background:rgba(214,178,98,.18);color:#e9d9a8}
-.mp-s.done .mp-n{background:#4f9d69;color:#fff}.mp-s.done{opacity:.8}
-.mp-h{flex:1;display:flex;flex-direction:column}.mp-h small{font-size:12px;color:#a69a7d}.mp-h b{font-size:16px}
-.mp-c{font-weight:800;color:#cdb98a}
-.mp-i{margin:0 14px 6px;font-size:13px;color:#cdb98a}
-.mp-r{display:flex;gap:12px;padding:12px 14px;border-top:1px solid rgba(214,178,98,.14)}
-.mp-x{flex:0 0 30px;height:30px;border-radius:9px;border:2px solid rgba(214,178,98,.55);background:transparent;display:grid;place-items:center;color:transparent;font-weight:900;cursor:pointer}
-.mp-r.on .mp-x{background:#4f9d69;border-color:#4f9d69;color:#fff}.mp-r.on .mp-t>b{text-decoration:line-through;opacity:.6}
-.mp-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}.mp-t>b{font-size:14.5px}.mp-t>small{font-size:12.5px;color:#a69a7d}
-.mp-e{margin-top:6px;font-size:13px;color:#cdb98a;display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start}
-.mp-l{list-style:none;margin:0;padding:0;width:100%;display:flex;flex-direction:column;gap:3px}
-.mp-l li{display:flex;align-items:baseline;gap:8px;font-size:13px;padding:5px 9px;border-radius:9px;background:rgba(0,0,0,.18)}
-.mp-l li span{flex:1}.mp-l li b{color:#e9d9a8}.mp-l li small{color:#a69a7d;font-size:11.5px}
-.mp-a{display:inline-flex;align-items:center;gap:4px;padding:6px 10px;border-radius:999px;border:1px solid rgba(214,178,98,.4);background:rgba(214,178,98,.08);color:inherit;font:700 12.5px var(--body);text-decoration:none;cursor:pointer}
+.mp-hero{display:flex;align-items:center;gap:14px;padding:16px;border-radius:18px;background:linear-gradient(135deg,rgba(214,178,98,.2),rgba(214,178,98,.05));border:1px solid rgba(214,178,98,.4)}
+.mp-hero>div:last-child{flex:1;display:flex;flex-direction:column;gap:4px}.mp-hero small{color:#cdb98a;font-weight:700;font-size:13px}.mp-hero b{font-size:21px}.mp-hero span{font-size:13px;color:#b9ab88}
+.mp-ring{flex:0 0 74px;height:74px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#6fbf86 calc(var(--p)*1%),rgba(255,255,255,.08) 0)}
+.mp-ring b{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:#17140e;font-size:18px;font-weight:900;color:#e9d9a8}
+.mp-next{margin:14px 0;padding:16px;border-radius:18px;background:rgba(111,191,134,.12);border:2px solid rgba(111,191,134,.6);display:flex;flex-direction:column;gap:6px}
+.mp-next small{font-weight:800;color:#8fd3a3;font-size:13px}.mp-next b{font-size:20px;line-height:1.3}.mp-next>span{font-size:14px;color:#cdb98a}
+.mp-next.ok{align-items:center;text-align:center}
+.mp-nb{display:flex;gap:10px;align-items:center;margin-top:6px}
+.mp-done{flex:1;min-height:52px;border-radius:14px;border:0;background:#4f9d69;color:#fff;font:900 18px var(--body);cursor:pointer}
+.mp-ovs{display:flex;flex-direction:column;gap:6px;margin:6px 0 16px}
+.mp-ov{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;border:1px solid rgba(214,178,98,.22);background:rgba(255,255,255,.03);color:inherit;text-align:start;cursor:pointer;font:inherit}
+.mp-on{flex:0 0 30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:900;background:rgba(214,178,98,.18);color:#e9d9a8}
+.mp-ov.done .mp-on{background:#4f9d69;color:#fff}
+.mp-ot{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}.mp-ot b{font-size:15px}.mp-ot small{font-size:12px;color:#a69a7d}
+.mp-bar{display:block;height:6px;border-radius:9px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:4px}.mp-bar i{display:block;height:100%;background:#6fbf86;border-radius:9px}
+.mp-oc{font-weight:800;color:#cdb98a}
+.mp-s{margin:16px 0;border-radius:18px;border:1px solid rgba(214,178,98,.28);background:rgba(255,255,255,.03);overflow:hidden;scroll-margin-top:70px}
+.mp-sh{display:flex;align-items:center;gap:12px;padding:14px;background:rgba(214,178,98,.1);position:sticky;top:0;z-index:1}
+.mp-n{flex:0 0 40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:18px;background:#d6b262;color:#17140e}
+.mp-s.done .mp-n{background:#4f9d69;color:#fff}
+.mp-h{flex:1;display:flex;flex-direction:column}.mp-h small{font-size:13px;color:#cdb98a;font-weight:700}.mp-h b{font-size:19px}
+.mp-c{font-weight:900;font-size:16px;color:#e9d9a8}
+.mp-i{margin:10px 14px 4px;font-size:14px;line-height:1.5;color:#cdb98a}
+.mp-r{display:flex;gap:12px;padding:14px;border-top:1px solid rgba(214,178,98,.14);scroll-margin-top:90px}
+.mp-r.cur{background:rgba(111,191,134,.08);box-shadow:inset 4px 0 0 #6fbf86}
+.mp-r.on{background:rgba(79,157,105,.1)}
+.mp-x{flex:0 0 46px;height:46px;border-radius:13px;border:2px solid rgba(214,178,98,.6);background:transparent;display:grid;place-items:center;color:#e9d9a8;font:900 17px var(--body);cursor:pointer}
+.mp-r.on .mp-x{background:#4f9d69;border-color:#4f9d69;color:#fff;font-size:22px}
+.mp-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.mp-hit{all:unset;display:flex;flex-direction:column;gap:4px;cursor:pointer}
+.mp-hit b{font-size:17px;line-height:1.35}.mp-hit small{font-size:14px;line-height:1.45;color:#b9ab88}
+.mp-r.on .mp-hit b{opacity:.65;text-decoration:line-through;text-decoration-color:rgba(255,255,255,.35)}
+.mp-r.buy{padding:9px 14px}.mp-r.buy .mp-x{flex-basis:40px;height:40px}.mp-r.buy .mp-hit b{font-size:16px}.mp-r.buy .mp-hit small{font-size:12.5px}
+.mp-q{display:inline-block;min-width:34px;padding:1px 7px;margin-inline-end:4px;border-radius:8px;background:rgba(214,178,98,.2);color:#e9d9a8;text-align:center}
+.mp-r.on .mp-e{display:none}
+.mp-by{font-size:12.5px;font-weight:700;color:#8fd3a3}
+.mp-e{margin-top:6px;display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;font-size:14px;color:#cdb98a}
+.mp-l{list-style:none;margin:0;padding:0;width:100%;display:flex;flex-direction:column;gap:4px}
+.mp-l li{display:flex;align-items:baseline;gap:8px;font-size:14.5px;padding:7px 10px;border-radius:10px;background:rgba(0,0,0,.2)}
+.mp-l li span{flex:1}.mp-l li b{color:#e9d9a8;font-size:15px}.mp-l li small{color:#a69a7d;font-size:12px}
+.mp-a{display:inline-flex;align-items:center;gap:5px;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid rgba(214,178,98,.45);background:rgba(214,178,98,.1);color:inherit;font:800 14px var(--body);text-decoration:none;cursor:pointer}
 .bag-i{flex:1;font-size:14.5px;min-width:0;display:flex;flex-direction:column;gap:3px}
 .bag-w{font-size:12px;color:#a69a7d;display:flex;align-items:center;flex-wrap:wrap;gap:4px}
 .bag-w b{color:#e9d9a8;font-weight:800}.bag-w b.nil{color:#e07a5f;font-weight:700}
@@ -6858,7 +6880,8 @@ const mpWhere=x=>x.bag?`מזוודה ${x.bag}${(()=>{const b=BAGS().find(b=>b.n=
 const mpQ=x=>+x.bagQty>0?+x.bagQty:(+x.qty||1);
 const mpBuy=x=>x.item&&x.where==='בבודפשט'&&!/אריס|חנה/.test(x.shop||'');
 const MP_THU=['ערכה לאוטובוס','פינת קפה באוטובוס','ערכה לסעודה בקרעסטיר','ערכה לחדר'];
-const mpRow=(k,t,sub='',extra='')=>{const on=mpOn(k);return `<div class="mp-r ${on?'on':''}"><button class="mp-x" data-mp="${k}" aria-pressed="${on}" aria-label="${on?'בוצע':'לסמן שבוצע'}"><span>✓</span></button><div class="mp-t"><b>${t}</b>${sub?`<small>${sub}</small>`:''}${extra?`<div class="mp-e">${extra}</div>`:''}</div></div>`};
+const mpRow=(k,t,sub='',extra='')=>({k,t,sub,extra});
+const MPB=()=>(S.settings.find(x=>x._id==='mplan')||{}).by||{};
 const mpUl=L=>L.length?`<ul class="mp-l">${L.join('')}</ul>`:'';
 function mpStages(){
   const B=n=>BAGS().find(b=>b.n===n)||{}, items=n=>bagItems(n);
@@ -6868,7 +6891,7 @@ function mpStages(){
   const buyThu=S.packing.filter(x=>mpBuy(x)&&MP_THU.includes(kitOf(x))&&!milk(x)), buyFri=S.packing.filter(x=>mpBuy(x)&&!MP_THU.includes(kitOf(x))&&!milk(x)), milkThu=S.packing.filter(x=>mpBuy(x)&&milk(x)&&!shabMilk(x)), milkFri=S.packing.filter(x=>mpBuy(x)&&shabMilk(x));
   const KP=`<a class="mp-a" href="https://waze.com/ul?q=${encodeURIComponent('Kosher Piac Dohány utca 36 Budapest')}&navigate=yes" target="_blank" rel="noopener">🧭 קושר פיאץ</a><a class="mp-a" href="tel:+36305722165">📞 הסופר הכשר</a>`;
   const cost=L=>L.reduce((t,x)=>t+(+x.cost||0),0), eur=n=>Math.round(n/3.57);
-  const buyRows=(L,p)=>L.map(x=>mpRow(p+x._id,`${esc(x.item)} × <span class="num">${+x.qty||1}</span>`,`${esc(kitOf(x))}${+x.cost?` · בערך ${ils(+x.cost)} (${eur(+x.cost)} €)`:''}`)).join('');
+  const buyRows=(L,p)=>L.map(x=>({...mpRow(p+x._id,`🛒 <span class="mp-q num">${+x.qty||1}</span> ${esc(x.item)}`,`${esc(kitOf(x))}${+x.cost?` · בערך ${ils(+x.cost)} (${eur(+x.cost)} €)`:''}`),c:1}));
   // who hands Moshe each part of bag 1, by who bought it
   const src={};items('1').forEach(x=>{const w=x.buyer==='יעל'?'יעל שרייבר':x.buyer==='שלומי'?'שלומי זינגר':(x.buyer||x.shop||'לבדוק');(src[w]=src[w]||[]).push(x)});
   const k1=bagKg(B('1')), k2=bagKg(B('2'));
@@ -6879,9 +6902,9 @@ function mpStages(){
   const backBags=BAGS().filter(b=>/חזור/.test(b.ways||''));
   return [
    {k:'s1',when:'עד רביעי 18.11',t:'לפני הטיסה – בארץ',rows:[
-     ...Object.entries(src).map(([w,L])=>mpRow('src_'+w,`לאסוף מ${esc(w)}`,`למזוודה 1`,mpUl(L.map(liB))+mpCall(w))),
-     mpRow('b1pack','לארוז את מזוודה 1 ולשקול',`צפי: <b class="num">${kgF(k1.tot)}</b> ק״ג · המגבלה בוויז ${kgF(k1.lim||26)} ק״ג${k1.over?' · ⚠ כבדה מדי':''}`,'רולאפ האוטובוס כבר לא אצלך – הוא במזוודה של בני דרחי.'),
-     mpRow('b2zv','לתאם עם צביקה את מזוודה 2 (פינת הקפה לאוטובוס)',`צפי: <b class="num">${kgF(k2.tot)}</b> ק״ג מתוך ${kgF(k2.lim||10)}`,mpUl(items('2').map(liB))+mpCall('צביקה גדלוביץ','צביקה')),
+     mpRow('b1get','לקבל הערב את מזוודה 1 – כבר ארוזה ומוכנה','שלישי 17.11 בלילה · משלומי, יעל שרייבר וחיים בלוך · לבדוק שיש בה הכל:',mpUl(items('1').map(liB))+mpCall('שלומי זינגר','שלומי')+mpCall('יעל שרייבר','יעל')+mpCall('חיים בלוך','חיים')),
+     mpRow('b1kg','לשקול את מזוודה 1',`צפי: <b class="num">${kgF(k1.tot)}</b> ק״ג · המגבלה בוויז ${kgF(k1.lim||26)} ק״ג${k1.over?' · ⚠ כבדה מדי':''}`,'רולאפ האוטובוס לא אצלך – הוא אצל בני דרחי.'),
+     mpRow('b2zv','לוודא שקיבלת את הדברים של צביקה ולהעביר לו',`למזוודה של צביקה · צפי <b class="num">${kgF(k2.tot)}</b> ק״ג מתוך ${kgF(k2.lim||10)}`,mpUl(items('2').map(liB))+mpCall('צביקה גדלוביץ','צביקה')),
      mpRow('wzci','צ׳ק־אין לוויז W6 2328','רביעי 18.11 · המראה 19:30 מנתב״ג'),
      mpRow('eur','לקבל משלומי יורו במזומן לקניות','בערך 590 € · לשמור קבלות',mpCall('שלומי זינגר','שלומי'))]},
    {k:'s2',when:'רביעי 18.11 · נחיתה 22:05',t:'נחיתה, רכב ומלון',rows:[
@@ -6919,18 +6942,23 @@ function mpStages(){
      mpRow('back','מזוודות שחוזרות לארץ','כל אחד עם מי שהביא אותה',mpUl(backBags.map(b=>`<li><span>מזוודה ${esc(b.n)}</span><small>${esc(b.who||'')}</small></li>`))),
      mpRow('carret','להחזיר את הרכב ל־Klass Wagen','Vecsés, Új Ecseri út 2 · לפני הטיסה',mpNav('Klass Wagen Vecsés Új Ecseri út 2','ניווט')),
      mpRow('flyback','טיסה הביתה – W6 ראשון 05:00','בחזור רק תיק מתחת למושב')]}]}
-const mpCount=()=>{let t=0,d=0;mpStages().forEach(s=>{const ks=(s.rows.join('').match(/data-mp="([^"]+)"/g)||[]).map(m=>m.slice(9,-1));t+=ks.length;d+=ks.filter(mpOn).length});return {t,d}};
+const mpCount=()=>{let t=0,d=0;mpStages().forEach(s=>s.rows.forEach(r=>{t++;if(mpOn(r.k))d++}));return {t,d}};
 function mplanBody(){
-  const st=mpStages(),c=mpCount(),pct=c.t?Math.round(c.d/c.t*100):0;
-  let cur=-1;
-  const secs=st.map((s,i)=>{const ks=(s.rows.join('').match(/data-mp="([^"]+)"/g)||[]).map(m=>m.slice(9,-1)),dn=ks.filter(mpOn).length,all=ks.length&&dn===ks.length;if(!all&&cur<0)cur=i;
-    return `<details class="mp-s ${all?'done':''}" ${(!all&&cur===i)||MPOPEN[s.k]?'open':''} data-mps="${s.k}"><summary><span class="mp-n">${all?'✓':i+1}</span><span class="mp-h"><small>${esc(s.when)}</small><b>${esc(s.t)}</b></span><span class="mp-c num">${dn}/${ks.length}</span></summary>${s.intro?`<p class="mp-i">${s.intro}</p>`:''}${s.rows.join('')}</details>`}).join('');
-  return `<section class="mp-hero"><div><small>התוכנית של המפיק בשטח</small><b>${c.t-c.d?`נשארו <span class="num">${c.t-c.d}</span> משימות`:'הכל בוצע! 🎉'}</b><span>מסמנים כל דבר שבוצע · שלומי ואיציק רואים את ההתקדמות</span></div><b class="mp-p num">${pct}%</b></section><div class="prog" style="margin:8px 0 14px"><i style="width:${pct}%"></i></div>${secs}`}
-let MPOPEN={};
-document.addEventListener('toggle',e=>{const d=e.target;if(d&&d.dataset&&d.dataset.mps)MPOPEN[d.dataset.mps]=d.open},true);
+  const st=mpStages(),by=MPB(),c=mpCount(),pct=c.t?Math.round(c.d/c.t*100):0;let n=0,next=null;
+  st.forEach(s=>s.rows.forEach(r=>{r.n=++n;r.s=s;if(!next&&!mpOn(r.k))next=r}));
+  const row=r=>{const on=mpOn(r.k);return `<div class="mp-r ${on?'on':''}${next===r?' cur':''}${r.c?' buy':''}" id="mpr_${r.n}"><button class="mp-x" data-mp="${esc(r.k)}" aria-pressed="${on}" aria-label="${on?'בוצע – לחיצה מבטלת':'לסמן שבוצע'}"><span>${on?'✓':r.n}</span></button><div class="mp-t"><button class="mp-hit" data-mp="${esc(r.k)}"><b>${r.t}</b>${r.sub?`<small>${r.sub}</small>`:''}</button>${on&&by[r.k]?`<span class="mp-by">✓ ${esc(by[r.k])}</span>`:''}${r.extra?`<div class="mp-e">${r.extra}</div>`:''}</div></div>`};
+  const over=st.map((s,i)=>{const dn=s.rows.filter(r=>mpOn(r.k)).length,p=s.rows.length?Math.round(dn/s.rows.length*100):0;return `<button class="mp-ov ${dn===s.rows.length?'done':''}" data-mpgo="${s.k}"><span class="mp-on">${dn===s.rows.length?'✓':i+1}</span><span class="mp-ot"><b>${esc(s.t)}</b><small>${esc(s.when)}</small><i class="mp-bar"><i style="width:${p}%"></i></i></span><span class="mp-oc num">${dn}/${s.rows.length}</span></button>`}).join('');
+  const nx=next?`<section class="mp-next"><small>👉 הצעד הבא · שלב ${st.indexOf(next.s)+1}: ${esc(next.s.t)}</small><b>${next.t}</b>${next.sub?`<span>${next.sub}</span>`:''}<div class="mp-nb"><button class="mp-done" data-mp="${esc(next.k)}">✓ בוצע</button><button class="mp-a" data-mpgo="${next.s.k}" data-mpn="${next.n}">לפרטים ›</button></div></section>`:`<section class="mp-next ok"><b>🎉 הכל בוצע!</b><span>תודה, משה</span></section>`;
+  const secs=st.map((s,i)=>{const dn=s.rows.filter(r=>mpOn(r.k)).length,all=dn===s.rows.length;
+    return `<section class="mp-s ${all?'done':''}" id="mps_${s.k}"><header class="mp-sh"><span class="mp-n">${all?'✓':i+1}</span><span class="mp-h"><small>${esc(s.when)}</small><b>${esc(s.t)}</b></span><span class="mp-c num">${dn}/${s.rows.length}</span></header>${s.intro?`<p class="mp-i">${s.intro}</p>`:''}${s.rows.map(row).join('')}</section>`}).join('');
+  return `<section class="mp-hero"><div class="mp-ring" style="--p:${pct}"><b class="num">${pct}%</b></div><div><small>${GUEST()?'המשימות שלך, לפי הסדר':'מעקב אחרי משה – המפיק בשטח'}</small><b>${c.t-c.d?`בוצעו <span class="num">${c.d}</span> מתוך <span class="num">${c.t}</span>`:'הכל בוצע! 🎉'}</b><span>${GUEST()?'מסמנים ✓ כל משימה שבוצעה · שלומי ואיציק רואים מיד':'כל סימון של משה מופיע כאן מיד, עם שעה'}</span></div></section>
+   ${nx}<div class="mp-ovs">${over}</div>${secs}`}
+document.addEventListener('click',e=>{const g=e.target.closest&&e.target.closest('[data-mpgo]');if(!g)return;e.preventDefault();e.stopPropagation();const el=document.getElementById(g.dataset.mpn?'mpr_'+g.dataset.mpn:'mps_'+g.dataset.mpgo);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})},true);
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-mp]');if(!b)return;e.preventDefault();e.stopPropagation();
   const k=b.dataset.mp,on=!mpOn(k),who=GUEST()?((meG()||{}).name||''):(typeof ME==='string'?ME:'');
-  gset('settings/mplan',{kind:'mplan',done:{[k]:on},by:{[k]:on?who+' · '+new Date().toLocaleString('he-IL',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'}):''}}).then(ok=>{if(ok&&on)toast('סומן ✓')})},true);
+  if(!on&&!confirm0())return;
+  gset('settings/mplan',{kind:'mplan',done:{[k]:on},by:{[k]:on?firstN(who)+' · '+new Date().toLocaleString('he-IL',{weekday:'short',hour:'2-digit',minute:'2-digit'}):''}}).then(ok=>{if(ok&&on)toast('✓ סומן')})},true);
+const confirm0=()=>true;
 SUB.mplan=function(){return subHead('התוכנית של משה – המפיק בשטח')+mplanBody()};
 
 SUB.bags=function(){return subHead('מזוודות',`<span class="cnt num">${BAGS().length}</span>`)+bagsBody(false)};
@@ -7627,7 +7655,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='f74ed316f4';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='aae1e5d28a';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
