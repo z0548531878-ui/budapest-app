@@ -6847,7 +6847,7 @@ SUB.prep=function(){
    ${reps.length?`<div class="ghead"><span>דיווחים אחרונים</span></div>`+reps.map(r=>`<div class="card" style="padding:10px 13px;margin-bottom:6px"><b>${esc(r.byName||'')}</b> · ${esc(r.text||'')}<small class="note" style="display:block;margin:2px 0 0">${new Date(r.ts||0).toLocaleString('he-IL',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'})}</small></div>`).join(''):''}`};
 // ===== the producer's plan (Moshe Stern): every stage before and during the trip, checked off as he goes.
 // Built from the live data (bags, purchases, room kit, rooms, flights) so it follows every change; ticks live in settings/mplan.
-const MP_FULL=['p63'], MP_HELP=['p66','p27'];
+const MP_FULL=['p63'], MP_HELP=['p66','p27','p39'];
 const mpOK=me=>!!(me&&(MP_FULL.includes(me._id)||MP_HELP.includes(me._id)));
 const MPD=()=>(S.settings.find(x=>x._id==='mplan')||{}).done||{};
 const mpOn=k=>!!MPD()[k];
@@ -6883,7 +6883,7 @@ function mpStages(){
      mpRow('wzci','צ׳ק־אין לוויז W6 2328','רביעי 18.11 · המראה 19:30 מנתב״ג'),
      mpRow('eur','לקבל משלומי יורו במזומן לקניות','בערך 590 € · לשמור קבלות',mpCall('שלומי זינגר','שלומי'))]},
    {k:'s2',when:'רביעי 18.11 · נחיתה 22:05',t:'נחיתה, רכב ומלון',rows:[
-     mpRow('land','נחתתי בבודפשט','W6 2328 · עם צביקה ומשפחת יחיאל'),
+     mpRow('land','נחתתי בבודפשט','W6 2328 · עם צביקה ומשפחת יחיאל · צביקה איתך כל הדרך – בטיסה, ברכב ובקרעסטיר'),
      mpRow('car','שאטל של Klass Wagen ואיסוף הרכב','יוצאים מטרמינל 2A, חוצים את הכביש מאזור 4 ויורדים לחניון T1 ליד חניית הדיפלומטים. השאטל לוקח למשרד ב-Vecsés, Új Ecseri út 2.',`<a class="mp-a" href="tel:+3614743966">📞 Klass Wagen</a><a class="mp-a" href="https://www.klasswagen.com/en/shuttle/budapest" target="_blank" rel="noopener">🚐 הזמנת שאטל</a>`),
      mpRow('hotel','נסיעה למלון וצ׳ק־אין',esc(HOTEL.name),mpNav(HOTEL.q,'ניווט למלון')),
      mpRow('store','להשאיר את מזוודות 1 ו־2 במלון','בחדר או באחסון · תיקי האוטובוס ממלאים בלילה · המזוודות עצמן נשארות במלון ולא נוסעות לשדה')]},
@@ -6892,16 +6892,17 @@ function mpStages(){
      mpRow('bagsrdy','לסגור את התיקים ולהכין אותם לאוטובוס','מגיעים איתך לשדה ביום חמישי בבוקר')]},
    {k:'s4',when:'חמישי 19.11 בבוקר',t:'קניות, שדה ואוטובוס',intro:`<b>כל הקניות – בבוקר, לפני השדה</b> · שתייה לאוטובוס, לחדרים ולשבת, חלב וכל השאר · בערך ${ils(cost(buyThu)+cost(buyFri))} (${eur(cost(buyThu)+cost(buyFri))} €) · מהיורו במזומן`,rows:[
      ...buyRows(buyThu,'bt_'),...buyRows(buyFri,'bf_'),
+     mpRow('alc','לאסוף מחנה את האלכוהול לקרעסטיר – ולקחת ספייר','מסעדת חנה, Kazinczy 29 · לקחת יותר ממה שנראה שצריך. מה שלא ייפתח בקרעסטיר חוזר איתך למלון לשבת.',mpNav('Hanna Kosher Restaurant Kazinczy 29 Budapest','ניווט לחנה')),
      mpRow('empty','⚠ הרכב יוצא לשדה ריק – בלי מזוודות 1 ו־2','המזוודות שטסת איתן נשארות במלון. אחרי קרעסטיר נוסעים ברכב עם המזוודות שמקבלים בשדה למלון, אז צריך בו מקום.'),
-     mpRow('load','להעמיס ברכב רק מה שצריך לאוטובוס','60 התיקים, השתייה לאוטובוס, פינת הקפה (מזוודה 2 + 9 העוגות + חלב) ורולדות הקינדר · שאר הקניות נשארות במלון (במקרר מה שצריך)'),
+     mpRow('load','להעמיס ברכב רק מה שצריך לאוטובוס','60 התיקים, השתייה לאוטובוס, פינת הקפה (מזוודה 2 + 9 העוגות + חלב), רולדות הקינדר והאלכוהול לקרעסטיר · שאר הקניות נשארות במלון (במקרר מה שצריך)'),
      mpRow('meet','08:55 – אייזנבך ואנגל כבר בשדה','ממתינים לקבוצה'),
      mpRow('land2','11:15 – הקבוצה נוחתת (LY 2369)','לקבל את המזוודות לרכב ולבטן האוטובוס'),
      mpRow('bus','11:30 – האוטובוס מגיע: לסדר אותו','האוטובוס של דני ברק · 60 מקומות',mpUl(['<li><span>תיק על כל מושב</span></li>','<li><span>פחיות שתייה</span></li>','<li><span>פינת קפה: מזוודה 2 + 9 עוגות + חלב</span></li>','<li><span>רולדות קינדר</span></li>'])),
      mpRow('car4','לקבל לרכב מזוודה מכל אחד מאלה',carBags.map(b=>esc(b.who||'')).join(' · '),carBags.map(b=>{const p=(b.pids||[])[0]&&S.participants.find(x=>x._id===b.pids[0]);return p?mpCall(p):''}).join('')),
      mpRow('belly','לבטן האוטובוס – המזוודות של',[...new Set(busBags.map(b=>b.who||''))].map(esc).join(' · ')),
      mpRow('rollup','להוציא את רולאפ האוטובוס ולהעמיד','במזוודה של בני דרחי')]},
-   {k:'s5',when:'חמישי · קרעסטיר ואחרי',t:'סידור החדרים',intro:`עם צביקה גדלוביץ ויוסי אליעד (נוחת 19:30) · יוצאים מוקדם מקרעסטיר ברכב · הקבוצה מגיעה למלון בערך ב־23:00`,rows:[
-     mpRow('early','לצאת מוקדם מקרעסטיר למלון','עם הזנזורים ובני דרחי · המזוודות שקיבלת בשדה ברכב'),
+   {k:'s5',when:'חמישי · קרעסטיר ואחרי',t:'סידור החדרים',intro:`אתה, צביקה ובני דרחי חוזרים מוקדם מקרעסטיר ברכב ומסדרים את החדרים · יוסי אליעד נוחת 19:30 ומצטרף במלון · הקבוצה מגיעה בערך ב־23:00`,rows:[
+     mpRow('early','לצאת מוקדם מקרעסטיר למלון','עם צביקה ובני דרחי · המזוודות שקיבלת בשדה והאלכוהול שנשאר ברכב',mpCall('צביקה גדלוביץ','צביקה')+mpCall('בני דרחי','בני')),
      mpRow('keys','צ׳ק־אין: מפתח ודרכון לכל זוג בקבלה','שהכל יחכה לקבוצה ב־23:00'),
      mpRow('roomkit','להכין את הסט לחדר',`לכל אחד מ־<span class="num">${rooms}</span> החדרים:`,mpUl(roomKit.map(({x,per})=>`<li><span>${esc(x.item)}</span><b class="num">${per}</b><small>${esc(mpWhere(x))}</small></li>`))),
      mpRow('rooms','להניח סט בכל חדר',`<b class="num">${rp.n}</b> מתוך <span class="num">${rp.t}</span> חדרים כבר סומנו`,GUEST()?`<button class="mp-a" data-gnav="gs">🛏 לרשימת החדרים</button>`:`<button class="mp-a" data-sub="rooms">🛏 לרשימת החדרים</button>`)]},
@@ -7622,7 +7623,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='3574609e9b';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='741a4af929';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
