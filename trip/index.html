@@ -2975,7 +2975,7 @@ html:has(#scrim.open) #app :is(*,*::before,*::after){animation-play-state:paused
 .mp-r.on .mp-e{display:none}
 .mp-by{font-size:12.5px;font-weight:700;color:#8fd3a3}
 .mp-e{margin-top:6px;display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;font-size:14px;color:#cdb98a}
-.mp-l{list-style:none;margin:0;padding:0;width:100%;display:flex;flex-direction:column;gap:4px}
+.rk-c{margin:10px 0}.rk-t{font-size:18px;margin:0 0 8px;cursor:pointer}.rk-l li{align-items:center;padding:10px 12px}.rk-l li span{display:flex;flex-direction:column;gap:2px}.rk-n{font-size:16.5px}.rk-h{font-size:13.5px;color:#f0d28c}.rk-w{font-size:12.5px;opacity:.7}.rk-q{font-size:18px!important;white-space:nowrap}.mp-l{list-style:none;margin:0;padding:0;width:100%;display:flex;flex-direction:column;gap:4px}
 .mp-l li{display:flex;align-items:baseline;gap:8px;font-size:14.5px;padding:7px 10px;border-radius:10px;background:rgba(0,0,0,.2)}
 .mp-l li span{flex:1}.mp-l li b{color:#e9d9a8;font-size:15px}.mp-l li small{color:#a69a7d;font-size:12px}
 .mp-a{display:inline-flex;align-items:center;gap:5px;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid rgba(214,178,98,.45);background:rgba(214,178,98,.1);color:inherit;font:800 14px var(--body);text-decoration:none;cursor:pointer}
@@ -4536,12 +4536,12 @@ const TILE_DEFS=()=>{const pk=S.packing.filter(x=>!x.sug||kst(x,'ordered')),pd=p
  ['letters','file','מכתבים אישיים',`${ltrCouples().length} זוגות`,'c7'],
  ['files','file','מסמכים',`${S.files.filter(f=>f._id!=='f00').length} מסמכים · ${S.contacts.length} אנשים`,'c8'],
  ['attendance','people','ספירת נוכחות','לאוטובוס','c9'],
- ['reqs','tasks','בקשות ואישורים',`${pendN()} ממתינות`,'c12'], ['announce','chat','הודעות',`${annList().length} פורסמו · ${msgDue().length} לשלוח`,'c13'], ['trivia','spark','טריוויה','משחק לאוטובוס','c10'],['rav','mic','הקלטה / סרטון של הרב',(()=>{const n=S.settings.filter(x=>x.kind==='audio'&&!x.hidden).length;return n?n+' פורסמו':'להעלאה לכולם'})(),'c14'],['tasks','tasks','משימות',`${S.tasks.filter(t=>t.status!=='בוצע').length} פתוחות`,'c3'],['photos','cam','תמונות מהמסע',PHL?`${PH.length} תמונות · העלאה`:'צפייה והעלאה','c7'],['prep','plane','ביטוח וצ׳ק־אין',(()=>{const L=S.participants.filter(p=>p.name&&!p.kerOnly);return `🛡 ${L.filter(p=>p.insDone).length}/${L.length} · ✈ צ׳ק־אין`})(),'c4'],['mplan','tasks','התוכנית של משה',(()=>{try{const c=mpCount();return c.d+'/'+c.t+' בוצעו'}catch(e){return 'המפיק בשטח'}})(),'c4'],['bags','box','מזוודות',(()=>{const a=S.packing.filter(x=>x.item&&x.bag);return BAGS().length?`${BAGS().length} מזוודות · ${a.filter(x=>kst(x,'packed')).length}/${a.length} נארזו`:'מה נכנס לכל מזוודה'})(),'c11'],['myroom','bed','החדר שלי',(()=>{const r=orgRoom();return r&&r.roomNumber?'חדר '+r.roomNumber+' · כל השיבוצים':'כל השיבוצים'})(),'c5'],['rides','car','נסיעות לשדה',`${S.settings.filter(x=>x.kind==='ride'&&!x.hidden).length} נסיעות`,'c4'],
+ ['reqs','tasks','בקשות ואישורים',`${pendN()} ממתינות`,'c12'], ['announce','chat','הודעות',`${annList().length} פורסמו · ${msgDue().length} לשלוח`,'c13'], ['trivia','spark','טריוויה','משחק לאוטובוס','c10'],['rav','mic','הקלטה / סרטון של הרב',(()=>{const n=S.settings.filter(x=>x.kind==='audio'&&!x.hidden).length;return n?n+' פורסמו':'להעלאה לכולם'})(),'c14'],['tasks','tasks','משימות',`${S.tasks.filter(t=>t.status!=='בוצע').length} פתוחות`,'c3'],['photos','cam','תמונות מהמסע',PHL?`${PH.length} תמונות · העלאה`:'צפייה והעלאה','c7'],['prep','plane','ביטוח וצ׳ק־אין',(()=>{const L=S.participants.filter(p=>p.name&&!p.kerOnly);return `🛡 ${L.filter(p=>p.insDone).length}/${L.length} · ✈ צ׳ק־אין`})(),'c4'],['roomkit','box','ערכה לחדר','מה שמים בכל חדר','c4'],['mplan','tasks','התוכנית של משה',(()=>{try{const c=mpCount();return c.d+'/'+c.t+' בוצעו'}catch(e){return 'המפיק בשטח'}})(),'c4'],['bags','box','מזוודות',(()=>{const a=S.packing.filter(x=>x.item&&x.bag);return BAGS().length?`${BAGS().length} מזוודות · ${a.filter(x=>kst(x,'packed')).length}/${a.length} נארזו`:'מה נכנס לכל מזוודה'})(),'c11'],['myroom','bed','החדר שלי',(()=>{const r=orgRoom();return r&&r.roomNumber?'חדר '+r.roomNumber+' · כל השיבוצים':'כל השיבוצים'})(),'c5'],['rides','car','נסיעות לשדה',`${S.settings.filter(x=>x.kind==='ride'&&!x.hidden).length} נסיעות`,'c4'],
  ['roles','spark','תפקידים',`${Object.keys(rolesMap()).length} עם תפקיד`,'c11'],
  ]};
 // trivia link: carries the user's full name so the game does not ask for it (not in organizer preview)
 const trvHref=()=>{let nm='';try{nm=GUEST()?(PREV?'':(meG()||{}).name||''):(typeof ME==='string'?ME:'')}catch(e){}nm=String(nm||'').trim();return (GUEST()?'trivia/?lock=1':'trivia/')+(nm.split(/\s+/).length>=2?(GUEST()?'&':'?')+'name='+encodeURIComponent(nm):'')};
-const TORD=['mplan','bags','prep','passports','people','tasks','announce','program','reqs','trivia','appusers','photos','myroom','rides','rav','roles','flights','letters','rooms','kits','shops','files','attendance'];
+const TORD=['mplan','roomkit','bags','prep','passports','people','tasks','announce','program','reqs','trivia','appusers','photos','myroom','rides','rav','roles','flights','letters','rooms','kits','shops','files','attendance'];
 // gold = something there is waiting for you; the rest stay dark, so the eye goes straight to what's open
 const tileHot=k=>{try{return ({reqs:pendN()>0,passports:S.participants.some(p=>!p.passport),announce:msgDue().length>0})[k]||false}catch(e){return false}};
 const msgDue=()=>{const t=todayISO();return S.messages.filter(m=>!m.sent&&m.date&&m.date<=t)};
@@ -6270,7 +6270,7 @@ function guestHTML0(){
      ${TRIPDAY()?(todayISO()==='2026-11-19'&&first&&Date.now()<depAt(first)+4*36e5?passBlock:''):passBlock+extraOut}${nowCard('data-gnav="gl"')}${voiceCard()}${chCard(1)}${momentHTML()}${banner}${ciTasks(ppl).filter(c=>!c.done).map(ciCard).join('')}${TRIPDAY()?boardHTML(ppl)+tripDayBlock(ppl):ready+boardHTML(ppl)}${way}
      <div class="gcb">
       ${(()=>{/* most used first; the order changes once the trip starts */
-        const C={gmp:()=>mpOK(me)?cube('gmp',I.tasks,MP_FULL.includes(me._id)?'התפקיד שלי':'סידור החדרים','שלב אחרי שלב',(()=>{const c=mpCount();return c.t-c.d||''})()):'',gs:()=>me&&me.kitter?cube('gs',I.box,'סידור ערכות',(()=>{const rp=roomsPlaced();return rp.t?`${rp.n}/${rp.t} חדרים`:'באיזה חדר'})(),(()=>{const rp=roomsPlaced();return rp.t-rp.n||''})()):'',
+        const C={grk:()=>RK_OK(me)?cube('grk',I.box,'ערכה לחדר','מה שמים בכל חדר'):'',gmp:()=>mpOK(me)?cube('gmp',I.tasks,MP_FULL.includes(me._id)?'התפקיד שלי':'סידור החדרים','שלב אחרי שלב',(()=>{const c=mpCount();return c.t-c.d||''})()):'',gs:()=>me&&me.kitter?cube('gs',I.box,'סידור ערכות',(()=>{const rp=roomsPlaced();return rp.t?`${rp.n}/${rp.t} חדרים`:'באיזה חדר'})(),(()=>{const rp=roomsPlaced();return rp.t-rp.n||''})()):'',
           gt:()=>cube('gt',I.tasks,'משימות',mineT?mineT+' שלכם':openT?openT+' פתוחות':'עזרה לצוות',pendOpen()||''),
           gv:()=>canExp()?cube('gv',I.money,'כספים','צפייה בלבד',''):'',
           gkt:()=>isProd()?cube('gkt',I.box,'ערכות','מה בכל ערכה',''):'',
@@ -6287,12 +6287,13 @@ function guestHTML0(){
           gbg:()=>bagOK(me)?cube('gbg',I.box||IX.tools,'מזוודות','מה בכל מזוודה'):(mb.length?cube('gbg',I.box||IX.tools,mb.length>1?'המזוודות שלי':'המזוודה שלי',mb.length>1?'מה בפנים':'מזוודה '+mb[0]+' · מה בפנים'):''),
           trv:()=>`<a class="gc gtrv" href="${trvHref()}" style="--i:${n++}"><i class="tsp" aria-hidden="true"></i><i class="tsp" aria-hidden="true"></i><i class="tsp" aria-hidden="true"></i><span class="gc-go" aria-hidden="true">לשחק ‹</span><span class="gc-i">${I.spark}</span><span class="gc-t">טריוויה על גלגלים</span><span class="gc-s">${open?'כל המשחקים פתוחים!':'עצמאי וראש בראש פתוחים'}</span></a>`,
           ge:()=>cube('ge',IX.coin,'חשבון משותף','מי חייב למי',(()=>{const b=me?Object.values(splitBal(me)).filter(v=>v<=-1).length:0;return b||''})())};
-        const ord=TRIPDAY()?['gmp','gs','gbg','gkt','grm','gcn','gv','gm','gfl','gi','gx','gk','gt','gz','gp','gd']:['gmp','gs','gbg','gkt','grm','gcn','gv','gm','gfl','gt','gd','gp','gx','gz','gk','gi'];
+        const ord=TRIPDAY()?['gmp','grk','gs','gbg','gkt','grm','gcn','gv','gm','gfl','gi','gx','gk','gt','gz','gp','gd']:['gmp','grk','gs','gbg','gkt','grm','gcn','gv','gm','gfl','gt','gd','gp','gx','gz','gk','gi'];
         // four per row, the same size as the actions above
         return ord.map(k=>C[k]()).filter(Boolean).join('')})()}
      </div>
      ${flightGroups(ppl,'חזור').map(g=>guestFlightCard(g,ppl,'חזור')).join('')}
      ${help}</div>`}
+  if(GTAB==='grk'&&RK_OK(me))return head('ערכה לחדר')+roomKitBody();
   if(GTAB==='gmp'&&mpOK(me))return head(MP_FULL.includes(me._id)?'התפקיד שלי במסע':'התוכנית של משה')+mplanBody();
   if(GTAB==='gfl')return head('טיסות')+flightsHTML(true);
   if(GTAB==='gx')return head('מסעדות ואטרקציות')+gxScreen();
@@ -7078,6 +7079,28 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target;if(!t)r
   const dn=t.closest('[data-mpdone]');if(dn){e.preventDefault();e.stopPropagation();const k=dn.dataset.mpdone,on=!mpOn(k);
     mpSet(k,on).then(ok=>{if(!ok)return;if(on){toast('✓ מעולה');MPI=+dn.dataset.i+1;window.scrollTo({top:0})}render()});return}
   const b=t.closest('[data-mp]');if(b){e.preventDefault();e.stopPropagation();const k=b.dataset.mp,on=!mpOn(k);mpSet(k,on).then(ok=>{if(ok&&on)toast('✓ סומן')})}},true);
+// room kit: exactly what goes into each room (organizers + the room team)
+const RK_OK=me=>!!(me&&['p27','p63','p66'].includes(me._id));
+function roomKitBody(){
+  const rooms=S.rooms.length||31, ppl=S.participants.filter(p=>p.name&&!p.kerOnly).length||61;
+  const L=S.packing.filter(x=>x.item&&kitOf(x)==='ערכה לחדר');
+  const perP=x=>/סידור|בקבוק/.test(x.item), per=x=>perP(x)?1:(+x.per>0?+x.per:Math.max(1,Math.round((+x.qty||rooms)/rooms)));
+  const ORD=[/מכתב/,/סידור/,/עלון/,/עוג/,/סכין/,/קופס/,/פרינגלס/,/במבה \//,/נוגט/,/קולה/,/מים/,/מיץ/,/תחתי/,/מגבונ/,/נייר/];
+  const rank=x=>{const i=ORD.findIndex(r=>r.test(x.item));return i<0?99:i};
+  const st=S.packing.find(x=>x._id==='kp11');
+  const nm=x=>x.item.replace(/\s*\(2 לכל חדר\)/,'').replace(/ לחדר \(טעמים מעורבים\)/,' (טעמים מעורבים)').replace(/^קופסה מחולקת/,'קופסת ויינר –');
+  const how={'סכין':'ליד העוגה','מכתב':'המכתב האישי של הזוג שגר בחדר – לפי רשימת החדרים','סידור':'בנוסח של כל אחד – כתוב ליד החדר ברשימה','עלון':'אחד עם הכריכה למעלה, ואחד הפוך – על התוכנייה','עוג':'עם מדבקת "בתיאבון" עליה','תחתי':'תחתית ממותגת מתחת לכל פחית ובקבוק'};
+  const hw=x=>{const k=Object.keys(how).find(k=>x.item.includes(k));return k?how[k]:''};
+  const rows=L.slice().sort((a,b)=>rank(a)-rank(b)).map(x=>`<li><span><b class="rk-n">${esc(nm(x))}</b>${hw(x)?`<small class="rk-h">${esc(hw(x))}</small>`:''}<small class="rk-w">${x.bag?'🧳 ':'🛒 '}${esc(mpWhere(x))}</small></span><b class="num rk-q">${perP(x)?'1 לכל אחד':per(x)}</b></li>`);
+  if(st)rows.splice(4,0,`<li><span><b class="rk-n">מדבקת "בתיאבון"</b><small class="rk-h">על העוגה</small><small class="rk-w">🧳 ${esc(mpWhere(st))}</small></span><b class="num rk-q">1</b></li>`);
+  const tot=L.slice().sort((a,b)=>rank(a)-rank(b)).map(x=>`<li><span>${esc(nm(x))}</span><b class="num">${perP(x)?ppl:per(x)*rooms}</b><small>${esc(mpWhere(x))}</small></li>`);
+  const rp=roomsPlaced();
+  return `<div class="khero"><div><b class="num">${rooms}</b><span>חדרים</span></div><div><b class="num">${rp.n}/${rp.t}</b><span>חדרים מוכנים</span></div></div>
+   <div class="card rk-c"><h3 class="rk-t">🛏 מה שמים בכל חדר</h3><p class="note" style="margin:0 0 8px">הכמות היא לחדר אחד של זוג. בחדר של אדם אחד – פריט אחד מכל מה שמסומן "לכל אחד".</p><ul class="mp-l rk-l">${rows.join('')}</ul></div>
+   <div class="card rk-c"><h3 class="rk-t">✋ לשים לב</h3><ul class="mp-l rk-l"><li><span>המכתב והסידורים שונים בכל חדר – בודקים ברשימת החדרים של מי החדר ואיזה נוסח</span></li><li><span>השתייה, המגבונים והנייר החתוך נקנים בבודפשט ביום חמישי בבוקר</span></li><li><span>כשחדר מוכן – מסמנים אותו ברשימת החדרים</span></li></ul>
+   ${GUEST()?`<button class="mp-a" data-gnav="gs">🛏 לרשימת החדרים</button>`:`<button class="mp-a" data-sub="rooms">🛏 לרשימת החדרים</button>`}</div>
+   <details class="card rk-c"><summary class="rk-t">📦 סה״כ ל־${rooms} חדרים ומאיפה זה מגיע</summary><ul class="mp-l" style="margin-top:8px">${tot.join('')}</ul></details>`}
+SUB.roomkit=function(){return subHead('ערכה לחדר')+roomKitBody()};
 SUB.mplan=function(){return subHead('התוכנית של משה – המפיק בשטח')+mplanBody()};
 
 SUB.bags=function(){return subHead('מזוודות',`<span class="cnt num">${BAGS().length}</span>`)+bagsBody(false)};
@@ -7775,7 +7798,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='e21b1302b5';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='c4e03184fe';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
