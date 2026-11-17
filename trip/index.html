@@ -6924,7 +6924,7 @@ function mpStages(){
   const buyThu=S.packing.filter(x=>mpBuy(x)&&MP_THU.includes(kitOf(x))&&!milk(x)), buyFri=S.packing.filter(x=>mpBuy(x)&&!MP_THU.includes(kitOf(x))&&!milk(x)), milkThu=S.packing.filter(x=>mpBuy(x)&&milk(x)&&!shabMilk(x)), milkFri=S.packing.filter(x=>mpBuy(x)&&shabMilk(x));
   const KP=`<a class="mp-a" href="https://waze.com/ul?q=${encodeURIComponent('Kosher Piac Dohány utca 36 Budapest')}&navigate=yes" target="_blank" rel="noopener">🧭 קושר פיאץ</a><a class="mp-a" href="tel:+36305722165">📞 הסופר הכשר</a>`;
   const cost=L=>L.reduce((t,x)=>t+(+x.cost||0),0), eur=n=>Math.round(n/3.57);
-  const buyRows=(L,p)=>L.map(x=>({...mpRow(p+x._id,`🛒 <span class="mp-q num">${+x.qty||1}</span> ${esc(x.item)}`,`${esc(kitOf(x))}${+x.cost?` · בערך ${ils(+x.cost)} (${eur(+x.cost)} €)`:''}`),c:1}));
+  const buyRows=(L,p)=>L.map(x=>({...mpRow(p+x._id,`🛒 <span class="mp-q num">${+x.qty||1}</span> ${esc(x.item)}`,`${x.shop&&!/^סופר/.test(x.shop)?`<b>📍 לקנות ב־${esc(x.shop)}</b> · `:''}${esc(kitOf(x))}${+x.cost?` · בערך ${ils(+x.cost)} (${eur(+x.cost)} €)`:''}`),c:1}));
   // who hands Moshe each part of bag 1, by who bought it
   const src={};items('1').forEach(x=>{const w=x.buyer==='יעל'?'יעל שרייבר':x.buyer==='שלומי'?'שלומי זינגר':(x.buyer||x.shop||'לבדוק');(src[w]=src[w]||[]).push(x)});
   const k1=bagKg(B('1')), k2=bagKg(B('2'));
@@ -7748,7 +7748,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='b7a3b90a42';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='10981cc211';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
