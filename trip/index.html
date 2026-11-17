@@ -6937,6 +6937,7 @@ const mpUl=L=>L.length?`<ul class="mp-l">${L.join('')}</ul>`:'';
 function mpStages(){
   const B=n=>BAGS().find(b=>b.n===n)||{}, items=n=>bagItems(n);
   const kit=k=>S.packing.filter(x=>x.item&&kitOf(x)===k);
+  const wh=id=>{const x=S.packing.find(p=>p._id===id);return x?'ב'+mpWhere(x).replace(/^מזוודה (\S+) · (.+)$/,'מזוודה של $2'):''};
   const li=(x,nw)=>`<li><span>${esc(x.item)}</span><b class="num">${mpQ(x)}</b>${nw?'':`<small>${esc(mpWhere(x))}</small>`}</li>`, liB=x=>li(x,1);
   const milk=x=>/חלב/.test(x.item||''), shabMilk=x=>milk(x)&&kitOf(x)==='ערכה לפינת קפה';
   const buyThu=S.packing.filter(x=>mpBuy(x)&&MP_THU.includes(kitOf(x))&&!milk(x)), buyFri=S.packing.filter(x=>mpBuy(x)&&!MP_THU.includes(kitOf(x))&&!milk(x)), milkThu=S.packing.filter(x=>mpBuy(x)&&milk(x)&&!shabMilk(x)), milkFri=S.packing.filter(x=>mpBuy(x)&&shabMilk(x));
@@ -6982,8 +6983,8 @@ function mpStages(){
      mpRow('rollin','לפני שנוסעים: להכניס את הרולאפ לאוטובוס','הוא נפתח שוב בקרעסטיר')]},
    {k:'s5',when:'חמישי · קרעסטיר',t:'בקרעסטיר – הסעודה אצל פרידלנדר',intro:'איש הקשר שלנו שם: אבי דרקסלר · כל שאלה בקרעסטיר – מולו',rows:[
      mpRow('ksign','קודם כל: לתלות שלטי הכוונה – איפה השאטלים לציון ואיפה הסעודה','השלטים וערכת ההפקה (סלוטייפ, מספריים) איתך ברכב'),
-     mpRow('kroll','לפתוח את רולאפ האוטובוס ולתלות את השלט הגדול (3×1)','השלט הגדול במזוודה של שלומי'),
-     mpRow('kvit','לסדר את סט הקוויטל על שולחן','מהמזוודה של שלומי · <b>4 סטים להשאיר בצד</b> – לזוג אלטשולר והזוג אליעד, שלא מגיעים לקרעסטיר:',mpUl(kit('ערכת קוויטל').concat(kit('ערכה לסעודה בקרעסטיר').filter(x=>/תהילים|קוויטל|ניילונ|עטים|מצית|נריות/.test(x.item||''))).filter((x,i,a)=>a.indexOf(x)===i).map(li))),
+     mpRow('kroll','לפתוח את רולאפ האוטובוס ולתלות את השלט הגדול (3×1)',`השלט הגדול – ${esc(wh('k018'))}`),
+     mpRow('kvit','לסדר את סט הקוויטל על שולחן',`${esc(wh('k010'))} · <b>4 סטים להשאיר בצד</b> – לזוג אלטשולר והזוג אליעד, שלא מגיעים לקרעסטיר:`,mpUl(kit('ערכת קוויטל').concat(kit('ערכה לסעודה בקרעסטיר').filter(x=>/תהילים|קוויטל|ניילונ|עטים|מצית|נריות/.test(x.item||''))).filter((x,i,a)=>a.indexOf(x)===i).map(li))),
      mpRow('kalc','לסדר את האלכוהול על כל השולחנות','מה שלא נפתח – חוזר ברכב למלון לשבת'),
      mpRow('kdes','לתת לדרקסלר את הקינוח – הוא פותח אותו בשולחנות בשלב הקינוח','אתה רק מביא ומוסר לו:',mpUl(S.packing.filter(x=>x.item&&/ויינר|זריפה|רדבול/.test(x.item)&&kitOf(x)==='ערכה לסעודה בקרעסטיר').map(li))),
      mpRow('korg','להכניס את האורגן ולסדר אותו במקום','לתאם עם דרקסלר איפה'),
@@ -7773,7 +7774,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='59aaac35e4';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='dc9716a1ea';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
