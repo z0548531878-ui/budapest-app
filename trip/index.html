@@ -7084,8 +7084,8 @@ const RK_OK=me=>!!(me&&['p27','p63','p66'].includes(me._id));
 function roomKitBody(){
   const rooms=S.rooms.length||31, ppl=S.participants.filter(p=>p.name&&!p.kerOnly).length||61;
   const L=S.packing.filter(x=>x.item&&kitOf(x)==='ערכה לחדר');
-  const perP=x=>/סידור|בקבוק/.test(x.item), per=x=>perP(x)?1:(+x.per>0?+x.per:Math.max(1,Math.round((+x.qty||rooms)/rooms)));
-  const ORD=[/מכתב/,/סידור/,/עלון/,/עוג/,/סכין/,/קופס/,/פרינגלס/,/במבה \//,/נוגט/,/קולה/,/מים/,/מיץ/,/תחתי/,/מגבונ/,/נייר/];
+  const perP=x=>/סידור/.test(x.item), per=x=>perP(x)?1:(+x.per>0?+x.per:Math.max(1,Math.round((+x.qty||rooms)/rooms)));
+  const ORD=[/מכתב/,/סידור/,/עלון/,/עוג/,/סכין/,/קופס/,/פרינגלס/,/במבה \//,/נוגט/,/^קולה רג/,/^קולה זירו/,/ספרייט/,/מיץ/,/^מים/,/סודה/,/תחתי/,/מגבונ/,/נייר/];
   const rank=x=>{const i=ORD.findIndex(r=>r.test(x.item));return i<0?99:i};
   const st=S.packing.find(x=>x._id==='kp11');
   const nm=x=>x.item.replace(/\s*\(2 לכל חדר\)/,'').replace(/ לחדר \(טעמים מעורבים\)/,' (טעמים מעורבים)').replace(/^קופסה מחולקת/,'קופסת ויינר –');
@@ -7096,8 +7096,8 @@ function roomKitBody(){
   const tot=L.slice().sort((a,b)=>rank(a)-rank(b)).map(x=>`<li><span>${esc(nm(x))}</span><b class="num">${perP(x)?ppl:per(x)*rooms}</b><small>${esc(mpWhere(x))}</small></li>`);
   const rp=roomsPlaced();
   return `<div class="khero"><div><b class="num">${rooms}</b><span>חדרים</span></div><div><b class="num">${rp.n}/${rp.t}</b><span>חדרים מוכנים</span></div></div>
-   <div class="card rk-c"><h3 class="rk-t">🛏 מה שמים בכל חדר</h3><p class="note" style="margin:0 0 8px">הכמות היא לחדר אחד של זוג. בחדר של אדם אחד – פריט אחד מכל מה שמסומן "לכל אחד".</p><ul class="mp-l rk-l">${rows.join('')}</ul></div>
-   <div class="card rk-c"><h3 class="rk-t">✋ לשים לב</h3><ul class="mp-l rk-l"><li><span>המכתב והסידורים שונים בכל חדר – בודקים ברשימת החדרים של מי החדר ואיזה נוסח</span></li><li><span>השתייה, המגבונים והנייר החתוך נקנים בבודפשט ביום חמישי בבוקר</span></li><li><span>כשחדר מוכן – מסמנים אותו ברשימת החדרים</span></li></ul>
+   <div class="card rk-c"><h3 class="rk-t">🛏 מה שמים בכל חדר</h3><p class="note" style="margin:0 0 8px">הכמות היא לחדר אחד. סידורים – אחד לכל אדם בחדר.</p><ul class="mp-l rk-l">${rows.join('')}</ul></div>
+   <div class="card rk-c"><h3 class="rk-t">✋ לשים לב</h3><ul class="mp-l rk-l"><li><span>המכתב והסידורים שונים בכל חדר – בודקים ברשימת החדרים של מי החדר ואיזה נוסח</span></li><li><span>6 בקבוקים בכל חדר: קולה, קולה זירו, ספרייט זירו, מיץ תפוזים, מים וסודה – תחתית מתחת לכל אחד</span></li><li><span>השתייה, המגבונים והנייר החתוך נקנים בבודפשט ביום חמישי בבוקר</span></li><li><span>כשחדר מוכן – מסמנים אותו ברשימת החדרים</span></li></ul>
    ${GUEST()?`<button class="mp-a" data-gnav="gs">🛏 לרשימת החדרים</button>`:`<button class="mp-a" data-sub="rooms">🛏 לרשימת החדרים</button>`}</div>
    <details class="card rk-c"><summary class="rk-t">📦 סה״כ ל־${rooms} חדרים ומאיפה זה מגיע</summary><ul class="mp-l" style="margin-top:8px">${tot.join('')}</ul></details>`}
 SUB.roomkit=function(){return subHead('ערכה לחדר')+roomKitBody()};
@@ -7798,7 +7798,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='c4e03184fe';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='f6239856c2';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
