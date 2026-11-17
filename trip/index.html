@@ -5467,7 +5467,7 @@ const RVID=a=>/^video/.test(a.mime||'');const RMEDIA=(a,u)=>RVID(a)?`<video cont
 function ravCard(){const a=ravNow();if(!a)return '';let heard=false;try{heard=localStorage.getItem('ravHeard')===a._id}catch(e){}
   return `<section class="rav ${heard?'':'new'}"><button class="rav-b" data-rav="${a._id}"><span class="rav-i">${RAVBLOB[a._id]?(RVID(a)?'🎬':'🎧'):'▶'}</span><span><small>${RVID(a)?(heard?'🎬 לצפייה חוזרת':'🎬 סרטון חדש · לקראת המסע'):(heard?'🎧 להאזנה חוזרת':'🎧 חדש · לקראת המסע')}</small><b>${esc(a.title||'דברי הרב')}</b></span></button><div id="ravG_${a._id}">${RAVSHOW===a._id&&RAVBLOB[a._id]?RMEDIA(a,RAVBLOB[a._id]):''}</div></section>`}
 async function ravPlayInto(a,el){if(!el)return;el.innerHTML='<p class="note" style="margin:6px 0"><span class="gspin"></span> טוען את ההקלטה…</p>';
-  try{const u=await ravLoad(a);RAVSHOW=a._id;el.innerHTML=RMEDIA(a,u);const au=el.querySelector('audio,video');try{au.play()}catch(e){}try{localStorage.setItem(a.voice?'vmHeard':'ravHeard',a._id)}catch(e){}}catch(x){el.innerHTML='<p class="note">ההקלטה לא נטענה. בדקו שיש אינטרנט ונסו שוב.</p>'}}
+  try{const u=await ravLoad(a);RAVSHOW=a._id;el.innerHTML=RMEDIA(a,u);const au=el.querySelector('audio,video');try{const pr=au.play();if(pr&&pr.catch)pr.catch(()=>{})}catch(e){}try{localStorage.setItem(a.voice?'vmHeard':'ravHeard',a._id)}catch(e){}}catch(x){el.innerHTML='<p class="note">ההקלטה לא נטענה. בדקו שיש אינטרנט ונסו שוב.</p>'}}
 /* internal chat: text + voice only. Messages live in settings (kind:'chat'); voice chunks in photobig */
 let CHREC=null,CHT=0;const CHBLOB={};
 const chMe=()=>{if(GUEST()){const m=meG();return m?{id:m._id,nm:m.name}:null}return {id:'org:'+(ME||'מארגן'),nm:ME||'מארגן'}};
@@ -5505,7 +5505,7 @@ async function chVoice(blob,sec){const data=await new Promise((ok,no)=>{const r=
   await db.doc('settings/'+id).set({kind:'gchat',g:chRoom(),by:me.id,nm:me.nm,ts,voice:true,n,sec,mime:blob.type||'audio/webm'})}
 async function chPlay(m,el){if(!el)return;el.innerHTML='<p class="note" style="margin:6px 0"><span class="gspin"></span> טוען…</p>';
   try{if(!CHBLOB[m._id]){const parts=await Promise.all([...Array(m.n||0)].map((_,i)=>db.doc('photobig/'+m._id+'_'+i).get().then(d=>d.exists?d.data().src:'')));CHBLOB[m._id]=URL.createObjectURL(await (await fetch(parts.join(''))).blob())}
-    el.innerHTML=`<audio controls src="${CHBLOB[m._id]}" style="width:100%;margin-top:6px"></audio>`;try{el.querySelector('audio').play()}catch(e){}}catch(x){el.innerHTML='<p class="note">ההקלטה לא נטענה. נסו שוב.</p>'}}
+    el.innerHTML=`<audio controls src="${CHBLOB[m._id]}" style="width:100%;margin-top:6px"></audio>`;try{const pr=el.querySelector('audio').play();if(pr&&pr.catch)pr.catch(()=>{})}catch(e){}}catch(x){el.innerHTML='<p class="note">ההקלטה לא נטענה. נסו שוב.</p>'}}
 let CHN=-1,CHNT=0,CHNS=0;
 setInterval(()=>{try{if(!loaded.has('settings')||!ROLE||PREV||chLocked()||(GUEST()&&todayISO()<'2026-11-17'))return;const me=chMe();if(!me)return;
   const vis=document.visibilityState==='visible'&&chOpen();if(vis)return;
@@ -7514,7 +7514,8 @@ function gSearch(){sheet(`<h3>🔍 חיפוש</h3><input class="search" id="gsQ"
 let ERRN=0;function errReport(msg,src){try{if(!db||ERRN>=5||PREV)return;msg=String(msg||'').slice(0,300);if(!msg||/ResizeObserver|Script error/.test(msg))return;const k='fxErr'+msg.slice(0,60);if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1');ERRN++;
   const ts=Date.now();db.doc('settings/err_'+ts+'_'+Math.random().toString(36).slice(2,6)).set({kind:'err',msg,src:String(src||'').slice(0,200),at:ts,role:GUEST()?'guest':ROLE||'none',who:GUEST()?((meG()||{}).name||''):(ME||''),scr:(document.getElementById('view')||{}).dataset?.scr||'',v:window.APPV||'',ua:navigator.userAgent.slice(0,140)}).catch(()=>{})}catch(e){}}
 addEventListener('error',e=>errReport(e.message,(e.filename||'')+':'+(e.lineno||'')));
-addEventListener('unhandledrejection',e=>errReport(e.reason&&(e.reason.message||e.reason),'promise'));
+// a cancelled share/fetch or a media element removed by a re-render is not a fault: don't report it
+addEventListener('unhandledrejection',e=>{const r=e.reason||{},m=String(r.message||r);if(r.name==='AbortError'||/aborted|play\(\) request was interrupted|AbortError/i.test(m)){e.preventDefault();return}errReport(r.message||r,'promise')});
 function errSheet(){const L=S.settings.filter(x=>x.kind==='err'&&!x.hidden).sort((a,b)=>b.at-a.at).slice(0,40);
   sheet(`<h3>🐞 תקלות מהשטח</h3>${L.length?`<div class="allog">${L.map(x=>`<div class="al"><div><b>${esc(x.msg)}</b><small>${esc(x.who||x.role)} · ${esc(x.scr)} · v${esc(x.v)}</small><i class="num">${esc(fmtWhen(new Date(x.at).toISOString()))}</i></div></div>`).join('')}</div><div class="sheet-acts"><span class="sp"></span><button class="btn" id="erClr" type="button">ניקוי הרשימה</button></div>`:'<p class="note">אין תקלות. הכול עובד 🎉</p>'}`);
   const c=document.getElementById('erClr');if(c)c.onclick=async()=>{const bt=db.batch();L.forEach(x=>bt.set(db.doc('settings/'+x._id),{hidden:true},{merge:true}));await bt.commit();closeSheet();toast('נוקה')}}
@@ -7754,7 +7755,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='223406c22f';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='d2b3ab929e';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
