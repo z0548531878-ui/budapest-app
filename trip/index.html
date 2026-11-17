@@ -6965,7 +6965,7 @@ function mpStages(){
    {k:'s5',when:'חמישי · קרעסטיר',t:'בקרעסטיר – הסעודה אצל פרידלנדר',intro:'איש הקשר שלנו שם: אבי דרקסלר · כל שאלה בקרעסטיר – מולו',rows:[
      mpRow('ksign','קודם כל: לתלות שלטי הכוונה – איפה השאטלים לציון ואיפה הסעודה','השלטים וערכת ההפקה (סלוטייפ, מספריים) איתך ברכב'),
      mpRow('kroll','לפתוח את רולאפ האוטובוס ולתלות את השלט הגדול (3×1)','השלט הגדול במזוודה של שלומי'),
-     mpRow('kvit','לסדר את סט הקוויטל על שולחן','מהמזוודה של שלומי:',mpUl(kit('ערכת קוויטל').concat(kit('ערכה לסעודה בקרעסטיר').filter(x=>/תהילים|קוויטל|ניילונ|עטים|מצית|נריות/.test(x.item||''))).filter((x,i,a)=>a.indexOf(x)===i).map(li))),
+     mpRow('kvit','לסדר את סט הקוויטל על שולחן','מהמזוודה של שלומי · <b>4 סטים להשאיר בצד</b> – לזוג אלטשולר והזוג אליעד, שלא מגיעים לקרעסטיר:',mpUl(kit('ערכת קוויטל').concat(kit('ערכה לסעודה בקרעסטיר').filter(x=>/תהילים|קוויטל|ניילונ|עטים|מצית|נריות/.test(x.item||''))).filter((x,i,a)=>a.indexOf(x)===i).map(li))),
      mpRow('kalc','לסדר את האלכוהול על כל השולחנות','מה שלא נפתח – חוזר ברכב למלון לשבת'),
      mpRow('kdes','לתת לדרקסלר את הקינוח – הוא פותח אותו בשולחנות בשלב הקינוח','אתה רק מביא ומוסר לו:',mpUl(S.packing.filter(x=>x.item&&/ויינר|זריפה|רדבול/.test(x.item)&&kitOf(x)==='ערכה לסעודה בקרעסטיר').map(li))),
      mpRow('korg','להכניס את האורגן ולסדר אותו במקום','לתאם עם דרקסלר איפה'),
@@ -6973,6 +6973,7 @@ function mpStages(){
    {k:'s5b',when:'חמישי בערב · במלון',t:'סידור החדרים',intro:`אתה, צביקה ובני דרחי · יוסי אליעד נוחת 19:30 ומצטרף במלון · הקבוצה מגיעה בערך ב־23:00`,rows:[
      mpRow('keys','צ׳ק־אין: מפתח ודרכון לכל זוג בקבלה','שהכל יחכה לקבוצה ב־23:00'),
      mpRow('hrolls','להעמיד בכניסה למלון את 2 הרולאפים','אחד – Welcome למלון · השני – תוכנית השבת · שניהם במזוודה של מאיר בורה'),
+     mpRow('kvit4','לתת את 4 סטי הקוויטל לזוג אלטשולר והזוג אליעד','הם לא היו בקרעסטיר · במלון'),
      mpRow('hsigns','לתלות במלון את שלטי ההכוונה','השלטים במזוודה של שוקי לב · סלוטייפ בערכת ההפקה'),
      mpRow('fridge','את העוגות של פינת הקפה במלון – למקרר הגדול בחדר שלך','הן במזוודה של חיים בלוך · נשארות במקרר עד שישי בבוקר',mpUl(kit('ערכה לפינת קפה').filter(x=>/עוג|פס /.test(x.item||'')).map(li))),
      mpRow('roomkit','להכין את הסט לחדר',`לכל אחד מ־<span class="num">${rooms}</span> החדרים · <b>תחתית ממותגת מתחת לכל פחית ובקבוק</b> · <b>2 עלונים: אחד עם הכריכה למעלה, ואחד הפוך – על התוכנייה</b>`,mpUl(roomKit.map(({x,per})=>`<li><span>${esc(x.item)}</span><b class="num">${per}</b><small>${esc(mpWhere(x))}</small></li>`))),
@@ -7753,7 +7754,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='4544cb00ff';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='223406c22f';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
