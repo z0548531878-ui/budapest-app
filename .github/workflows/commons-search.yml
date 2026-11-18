@@ -1,0 +1,22 @@
+# Read-only: search Wikimedia Commons for image files (results as annotations)
+name: Commons search
+on:
+  workflow_dispatch:
+    inputs:
+      q: { description: search text, required: true }
+permissions: { contents: read }
+jobs:
+  search:
+    runs-on: ubuntu-24.04
+    steps:
+      - env: { Q: "${{ inputs.q }}" }
+        run: |
+          python3 - <<'PY'
+          import json,os,urllib.request,urllib.parse
+          q=os.environ['Q']
+          for qq in q.split('|'):
+            u='https://commons.wikimedia.org/w/api.php?action=query&list=search&srnamespace=6&srlimit=15&format=json&srsearch='+urllib.parse.quote(qq)
+            r=json.load(urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'trivia-bot/1.0'})))
+            t=[x['title'] for x in r['query']['search']]
+            print('::notice title='+qq+'::'+' || '.join(t)[:1800])
+          PY
