@@ -94,7 +94,7 @@ test('80 players play a full group game', async ({ browser }) => {
       if (skip) return;
       const at = (st.questionStartedAt || Date.now()) + 300 + Math.random() * 8000;
       setTimeout(() => {
-        const choice = Math.random() < 0.55 ? q.c : Math.floor(Math.random() * q.a.length);
+        const choice = q.type !== 'poll' && Math.random() < 0.55 ? q.c : Math.floor(Math.random() * q.a.length);
         b.answered.add(st.qIndex);
         room.collection('answers').doc(st.qIndex + '-' + b.id).set({ playerId: b.id, qIndex: st.qIndex, choice, answeredAt: Date.now() }).catch((e: any) => errors.push('bot answer: ' + e.message));
       }, Math.max(0, at - Date.now()));
@@ -133,7 +133,8 @@ test('80 players play a full group game', async ({ browser }) => {
   const rosterById = new Map((room.roster || []).map((r: any) => [r.i, r]));
   const problems: string[] = [];
   if (total !== 50) problems.push(`game had ${total} questions, not 50`);
-  if ((room.qset || []).some((q: any) => q.type === 'poll')) problems.push('a poll question was in the game');
+  const polls = (room.qset || []).filter((q: any) => q.type === 'poll').length;
+  if (polls !== 11) problems.push(`game had ${polls} poll questions, not 11`);
   // every SDK player saw every question; every answer it sent in time was counted
   let missed = 0, miscount = 0;
   for (const b of bots) {
