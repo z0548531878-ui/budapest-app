@@ -2971,6 +2971,7 @@ html:has(#scrim.open) #app :is(*,*::before,*::after){animation-play-state:paused
 .bpk-up{background:linear-gradient(135deg,#f6e3ae,#d6b262 55%,#b8862f);box-shadow:0 10px 22px -10px rgba(214,170,80,.8)}.bpk-wa{color:#7fd1a5}
 .bpfs{opacity:0;transform:scale(.96);transition:opacity .25s,transform .3s cubic-bezier(.2,.8,.2,1)}.bpfs.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){.bps,.bps-b,.bpk,.bph,.bpk-pass,.bpk-pass::after,.bpk-pl em,.bps-ok{animation:none!important}}
+.bpm{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:10px 0}.bpm-i{display:flex;flex-direction:column;gap:6px}.bpm-i img{width:100%;border-radius:10px;background:#fff;max-height:220px;object-fit:cover;object-position:top}.bpm-i select{min-height:44px;border-radius:10px;font:600 15px var(--body)}
 .mpt5{gap:4px;padding:4px}.mpt5 button{min-height:54px;font-size:12.5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:4px 2px}.mpt5 button span{font-size:18px;line-height:1}
 .mp-stage{margin:10px 0;padding:14px 16px;border-radius:18px;background:linear-gradient(160deg,rgba(214,178,98,.16),rgba(214,178,98,.04));border:1px solid rgba(214,178,98,.45)}
 .mp-stage-h{display:flex;align-items:center;gap:12px}.mp-stage-h>div{flex:1;display:flex;flex-direction:column}.mp-stage-h small{color:#f0d28c;font-weight:800;font-size:13px}.mp-stage-h b{font-size:20px;line-height:1.25}
@@ -7214,12 +7215,15 @@ async function bpLoad(b,pdf){const key=b._id+(pdf?'_pdf':'');if(BPURL[key])retur
   const u=parts.join('');return BPURL[key]=pdf?URL.createObjectURL(await (await fetch(u)).blob()):u}
 let PDFJS=null;
 function pdfjs(){return PDFJS||(PDFJS=new Promise((ok,no)=>{const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';sc.onload=()=>{try{pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';ok(pdfjsLib)}catch(e){no(e)}};sc.onerror=e=>{PDFJS=null;no(e)};document.head.appendChild(sc)}))}
+async function bpPdfAll(file){const lib=await pdfjs(),doc=await lib.getDocument({data:await file.arrayBuffer()}).promise,out=[];for(let i=1;i<=Math.min(doc.numPages,8);i++)out.push(await bpPage(doc,i));return out}
+async function bpPage(doc,i){const pg=await doc.getPage(i),v=pg.getViewport({scale:1}),k=Math.min(3.2,1700/v.width),vp=pg.getViewport({scale:k});
+  const c=document.createElement('canvas');c.width=Math.round(vp.width);c.height=Math.round(vp.height);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);await pg.render({canvasContext:x,viewport:vp}).promise;return {d:c.toDataURL('image/jpeg',.9),w:c.width,h:c.height}}
 async function bpPdfImg(file){const lib=await pdfjs(),doc=await lib.getDocument({data:await file.arrayBuffer()}).promise,pg=await doc.getPage(1),v=pg.getViewport({scale:1}),k=Math.min(3.2,1700/v.width),vp=pg.getViewport({scale:k});
   const c=document.createElement('canvas');c.width=Math.round(vp.width);c.height=Math.round(vp.height);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);await pg.render({canvasContext:x,viewport:vp}).promise;return {d:c.toDataURL('image/jpeg',.9),w:c.width,h:c.height}}
 function bpPic(file){return new Promise((res,rej)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{const k=Math.min(1,1800/Math.max(im.naturalWidth,im.naturalHeight)),c=document.createElement('canvas');c.width=Math.round(im.naturalWidth*k);c.height=Math.round(im.naturalHeight*k);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);res({d:c.toDataURL('image/jpeg',.9),w:c.width,h:c.height})};im.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('img'))};im.src=u})}
 let BPBUSY='';
-async function bpUpload(file,pid,dir){if(!db)throw {msg:'אין חיבור'};if(file.size>10e6)throw {msg:'הקובץ גדול מדי (עד 10MB)'};
-  const isPdf=/pdf/i.test(file.type||'')||/\.pdf$/i.test(file.name||'');const img=isPdf?await bpPdfImg(file):await bpPic(file);
+async function bpUpload(file,pid,dir,pre){if(!db)throw {msg:'אין חיבור'};if(file.size>10e6)throw {msg:'הקובץ גדול מדי (עד 10MB)'};
+  const isPdf=/pdf/i.test(file.type||'')||/\.pdf$/i.test(file.name||'');const img=pre||(isPdf?await bpPdfImg(file):await bpPic(file));
   const ts=Date.now(),id='bpass_'+ts.toString(36)+Math.random().toString(36).slice(2,5),n=Math.ceil(img.d.length/BPCH);
   for(let i=0;i<n;i++)await db.doc('photobig/bp_'+id+'_'+i).set({src:img.d.slice(i*BPCH,(i+1)*BPCH),ts});
   let pn=0;if(isPdf){const u=await readURL(file);pn=Math.ceil(u.length/BPCH);for(let i=0;i<pn;i++)await db.doc('photobig/bp_'+id+'_pdf_'+i).set({src:u.slice(i*BPCH,(i+1)*BPCH),ts})}
@@ -7265,7 +7269,14 @@ async function bpShow(id){const b=bpList().find(x=>x._id===id);if(!b)return;cons
     const pd=t.closest('[data-bppdf]');if(pd){e.preventDefault();e.stopPropagation();const b=bpList().find(x=>x._id===pd.dataset.bppdf);if(!b)return;toast('פותח…');try{const u=await bpLoad(b,1);const a=document.createElement('a');a.href=u;a.target='_blank';a.download=(b.name||'boarding')+'.pdf';document.body.appendChild(a);a.click();a.remove()}catch(x){toast('לא נפתח')}return}
     const dl=t.closest('[data-bpdel2]');if(dl){e.preventDefault();e.stopPropagation();if(!confirm('למחוק את הכרטיס?'))return;try{await db.doc('settings/'+dl.dataset.bpdel2).set({hidden:true},{merge:true});toast('נמחק')}catch(x){toast('לא הצלחתי למחוק')}return}
     const dt=t.closest('[data-bpdirtab]');if(dt){e.preventDefault();BPDIR=dt.dataset.bpdirtab;render();return}},true);
-  f.addEventListener('change',async()=>{const x=(f.files||[])[0];f.value='';if(!x||!T)return;BPBUSY='מעלה את הכרטיס…';render();
+  f.addEventListener('change',async()=>{const x=(f.files||[])[0];f.value='';if(!x||!T)return;const tg=T;
+    if(/pdf/i.test(x.type||'')||/\.pdf$/i.test(x.name||'')){let pages=null;try{BPBUSY='קורא את הקובץ…';render();pages=await bpPdfAll(x)}catch(e){console.warn('pdf',e)}BPBUSY='';render();
+      if(pages&&pages.length>1){const me=S.participants.find(p=>p._id===tg.pid),pp=coupleOf(me).filter(p=>p&&p.name);
+        sheet(`<h3>בקובץ יש ${pages.length} כרטיסים</h3><p class="note">בוחרים לכל כרטיס של מי הוא – וכל אחד יקבל את שלו</p><div class="bpm">${pages.map((g,i)=>`<div class="bpm-i"><img src="${g.d}" alt="כרטיס ${i+1}"><select data-bpmp="${i}"><option value="">לא לשמור</option>${pp.map((p,j)=>`<option value="${p._id}" ${j===i?'selected':''}>${esc(p.name)}</option>`).join('')}</select></div>`).join('')}</div><div class="sheet-acts"><button class="btn primary" id="bpmOk">✓ לשמור</button><span class="sp"></span><button class="btn" data-close>ביטול</button></div>`);
+        const ok=document.getElementById('bpmOk');if(ok)ok.onclick=async()=>{const sel=[...document.querySelectorAll('[data-bpmp]')].map(e=>[+e.dataset.bpmp,e.value]).filter(([,v])=>v);closeSheet();BPBUSY='שומר את הכרטיסים…';render();let n=0;
+          for(const [i,pid] of sel){try{await bpUpload(x,pid,tg.dir,pages[i]);n++}catch(e){console.warn('bpass',e)}}BPBUSY='';render();toast(n?`✓ נשמרו ${n} כרטיסים`:'ההעלאה לא הצליחה')};return}
+      BPBUSY='מעלה את הכרטיס…';render();try{await bpUpload(x,tg.pid,tg.dir,pages&&pages[0]);toast('✓ הכרטיס נשמר')}catch(err){console.warn('bpass',err);toast(err&&err.msg||'ההעלאה לא הצליחה. אפשר לשלוח לשלומי בוואטסאפ')}BPBUSY='';render();return}
+    BPBUSY='מעלה את הכרטיס…';render();
     try{await bpUpload(x,T.pid,T.dir);toast('✓ הכרטיס נשמר')}catch(err){console.warn('bpass',err);toast(err&&err.msg||'ההעלאה לא הצליחה. אפשר לשלוח לשלומי בוואטסאפ')}BPBUSY='';render()})})();
 // room kit: exactly what goes into each room (organizers + the room team)
 const RK_OK=me=>!!(me&&['p27','p63','p66'].includes(me._id));
@@ -8024,7 +8035,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='d9f7106879';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='67c42514b5';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
