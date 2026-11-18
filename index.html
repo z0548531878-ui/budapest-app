@@ -4968,7 +4968,7 @@ const TRIP_LOCK=(()=>{try{const q=new URLSearchParams(location.search);if(q.get(
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active'); fxOnScreen(id); if(id==='s-landing') appUpdateMaybe();}
 // ---- עדכון אוטומטי: גם אפליקציה שפתוחה כבר שעות מקבלת את הגרסה החדשה ----
 // בכל עדכון מעלים את APP_BUILD ואת version.json לאותו ערך. הטעינה מחדש קורית רק במסך הפתיחה — אף פעם באמצע משחק
-const APP_BUILD = '2026-11-18-7';
+const APP_BUILD = '2026-11-18-8';
 let appNewBuild = null;
 function appUpdateCheck(){
   if(/^(localhost|127\.)/.test(location.hostname) && !window.__testUpdate) return;
@@ -5697,7 +5697,7 @@ function duelCheckOpponent(){
 }
 function duelLater(fn, ms){ if(!duel) return; const t=setTimeout(fn, ms); duel.timers.push(t); }
 // ---------- טבלת השיאים של ראש בראש: השיא של כל שחקן בדו-קרב אחד ----------
-const DUEL_SEASON = 2; // עונה 2 — הועתקה מעונה 1 בלי חמישה שחקנים
+const DUEL_SEASON = 3; // עונה 3 — איפוס לפני הטיול (18.11.2026); הקודמת נשמרת ב-duel_players_s2
 function duelPlayersRef(){ return db.collection('duel_players_s' + DUEL_SEASON); }
 async function duelSaveAndShowBoard(name, score, st, res){
   if(!duel || duel.boardDone) return; duel.boardDone = true;
@@ -6791,7 +6791,7 @@ function acLog(mode, name, score, why){
 // ---------- SOLO MODE ----------
 const SOLO_PROFILE_KEY = 'trivia_solo_profile';
 // Competition season: bump this number to start a new competition (fresh records for everyone)
-const SOLO_SEASON = 7; // עונה 7 — איפוס מלא של הטבלה (ניקוד חדש: 15 שניות, 15 נק' + נקודה לשנייה)
+const SOLO_SEASON = 8; // עונה 8 — איפוס לפני הטיול (18.11.2026); הטבלאות הקודמות נשמרות ב-solo_players_s7
 (function(){
   try{
     if(localStorage.getItem('trivia_solo_season') !== String(SOLO_SEASON)){
