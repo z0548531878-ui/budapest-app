@@ -1,0 +1,25 @@
+# Read-only on the game: download small previews of Commons files to the img-preview branch
+name: Commons thumbs
+on:
+  workflow_dispatch:
+    inputs:
+      files: { description: "File names separated by |", required: true }
+permissions: { contents: write }
+jobs:
+  thumbs:
+    runs-on: ubuntu-24.04
+    steps:
+      - env: { F: "${{ inputs.files }}" }
+        run: |
+          mkdir -p /tmp/p && cd /tmp/p
+          python3 - <<'PY'
+          import os,urllib.request,urllib.parse
+          for n,f in enumerate(os.environ['F'].split('|')):
+            u='https://commons.wikimedia.org/wiki/Special:FilePath/'+urllib.parse.quote(f.replace('File:','').strip())+'?width=500'
+            try:
+              d=urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'trivia-bot/1.0'})).read()
+              open(f'{n}.jpg','wb').write(d); print('::notice::ok',n,f,len(d))
+            except Exception as e: print('::notice::fail',n,f,e)
+          PY
+          git init -q && git checkout -q -b img-preview && git add -A && git -c user.name=bot -c user.email=bot@x commit -qm p
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" img-preview
