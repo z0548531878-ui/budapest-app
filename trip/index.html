@@ -6970,14 +6970,14 @@ function mpStages(){
      mpRow('bags60','למלא 60 תיקים','בכל תיק:',mpUl(perBag.filter(x=>x._id!=='ba01').map(x=>`<li><span>${esc(x.item)}</span><b class="num">${Math.max(1,Math.floor((+x.qty||60)/60))}</b>${(+x.qty||0)>60?`<small>${(+x.qty)-60} נשארים בצד</small>`:''}</li>`))),
      mpRow('bagsrdy','לסגור את התיקים ולהכין אותם לאוטובוס','מגיעים איתך לשדה ביום חמישי בבוקר')]},
    {k:'s4',when:'חמישי 19.11 בבוקר',t:'קניות ואיסופים בבודפשט',intro:`<b>כל הקניות – בבוקר, לפני השדה</b> · שתייה לאוטובוס, לחדרים, לעונג שבת ולשבת בבוקר · בערך ${ils(cost(buyThu)+cost(buyFri)+cost(milkThu))} (${eur(cost(buyThu)+cost(buyFri)+cost(milkThu))} €) · מהיורו במזומן · החלב לשבת – רק ביום שישי`,rows:[
-     ...buyRows(buyThu,'bt_'),...buyRows(buyFri,'bf_'),
+     ...(()=>{const KO=['ערכה לאוטובוס','ערכה לחדר','ערכה לסעודה בקרעסטיר','ערכה לעונג שבת','ערכה לשבת בבוקר'],ko=x=>{const i=KO.indexOf(kitOf(x));return (i<0?9:i)*10+(/DM/.test(x.shop||'')?5:0)};return [...buyThu.map(x=>[x,'bt_']),...buyFri.map(x=>[x,'bf_'])].sort((a,b)=>ko(a[0])-ko(b[0])||(+a[0].order||0)-(+b[0].order||0)).map(([x,p])=>buyRows([x],p)[0])})(),
      mpRow('milkthu','חלב לפינת הקפה באוטובוס – רק בסופר הכשר',milkThu.map(x=>`${esc(x.item)} × ${+x.qty||1}`).join(' · ')+' · קושר פיאץ, Dohány utca 36 · נפתח ב־8:00',KP),
      mpRow('alc','לאסוף מחנה את האלכוהול לקרעסטיר – ולקחת ספייר','מסעדת חנה, Kazinczy 29 · לקחת יותר ממה שנראה שצריך. מה שלא ייפתח בקרעסטיר חוזר איתך למלון לשבת.',mpNav('Hanna Kosher Restaurant Kazinczy 29 Budapest','ניווט לחנה')),
-     mpRow('cans','פחית לתוך כל תיק','אחרי הקנייה, לפני שנוסעים לשדה · 60 פחיות לתיקים, 40 נשארות לפינת הקפה באוטובוס'),
+     mpRow('cans','בקבוק שתייה לתוך כל תיק','אחרי הקנייה, לפני שנוסעים לשדה · 60 לתיקים (מעורב), 40 נשארים לפינת הקפה באוטובוס'),
      mpRow('empty','לשדה נוסעים בלי המזוודות עצמן – רק עם מה שבתוכן','מוציאים מהמזוודות את מה שצריך ושמים ישר ברכב. המזוודות הריקות נשארות במלון – ככה יש ברכב מקום למזוודות שמקבלים בשדה.'),
      mpRow('load','מה נכנס לרכב לשדה','60 התיקים, השתייה לאוטובוס, פינת הקפה לאוטובוס (הדברים של צביקה + 9 העוגות + החלב), רולדות הקינדר, האלכוהול לקרעסטיר, שלטי ההכוונה לקרעסטיר וערכת ההפקה (סלוטייפ, מספריים, דבק). השתייה לעונג שבת ולשבת בבוקר נשארת במלון.')]},
    {k:'s4b',when:'חמישי · 11:30 בשדה',t:'מסדרים את האוטובוס לפני שהקבוצה יוצאת',intro:'האוטובוס מגיע 11:30 · הקבוצה נוחתת 11:15 אבל יוצאת מהשדה רק בערך ב־12:00 – עד אז הכל מסודר · אייזנבך ואנגל כבר בשדה מ־08:55',rows:[
-     mpRow('bus','11:30 – האוטובוס מגיע: לסדר אותו','',mpUl(['<li><span>תיק על כל מושב – עם פחית בתוכו</span></li>','<li><span>12 הרולדות ו־40 הפחיות שנשארו – לפינת הקפה באוטובוס</span></li>'])),
+     mpRow('bus','11:30 – האוטובוס מגיע: לסדר אותו','',mpUl(['<li><span>תיק על כל מושב – עם בקבוק שתייה בתוכו</span></li>','<li><span>12 הרולדות ו־40 בקבוקי השתייה שנשארו – לפינת הקפה באוטובוס</span></li>'])),
      mpRow('buscafe','לסדר את פינת הקפה בתוך האוטובוס','הדברים שבאו עם צביקה (קפה, תה, סוכר, כוסות, כפיות) + 9 העוגות + החלב'),
      mpRow('rollup','ארי הופמן יוצא ראשון עם רולאפ האוטובוס (ביד) – להעמיד אותו בחוץ ליד האוטובוס','שכולם יראו אותו כשהם מגיעים'),
      mpRow('organ','לקחת מאיציק שרייבר את האורגן','נוסע איתך ברכב לקרעסטיר'),
@@ -7087,6 +7087,7 @@ function roomKitBody(){
   const rooms=S.rooms.length||31, ppl=S.participants.filter(p=>p.name&&!p.kerOnly).length||61;
   const L=S.packing.filter(x=>x.item&&kitOf(x)==='ערכה לחדר');
   const perP=x=>/סידור/.test(x.item), per=x=>perP(x)?1:(+x.per>0?+x.per:Math.max(1,Math.round((+x.qty||rooms)/rooms)));
+  const tq=x=>perP(x)?ppl:(+x.per>0&&+x.qty?+x.qty:per(x)*rooms);
   const ORD=[/מכתב/,/סידור/,/עלון/,/עוג/,/סכין/,/קופס/,/פרינגלס/,/במבה \//,/נוגט/,/^קולה רג/,/^קולה זירו/,/ספרייט/,/מיץ/,/^מים/,/סודה/,/תחתי/,/מגבונ/,/נייר/];
   const rank=x=>{const i=ORD.findIndex(r=>r.test(x.item));return i<0?99:i};
   const st=S.packing.find(x=>x._id==='kp11');
@@ -7095,25 +7096,25 @@ function roomKitBody(){
   const hw=x=>{const k=Object.keys(how).find(k=>x.item.includes(k));return k?how[k]:''};
   const rows=L.slice().sort((a,b)=>rank(a)-rank(b)).map(x=>`<li><span><b class="rk-n">${esc(nm(x))}</b>${hw(x)?`<small class="rk-h">${esc(hw(x))}</small>`:''}<small class="rk-w">${x.bag?'🧳 ':'🛒 '}${esc(mpWhere(x))}</small></span><b class="num rk-q">${perP(x)?'1 לכל אחד':per(x)}</b></li>`);
   if(st)rows.splice(4,0,`<li><span><b class="rk-n">מדבקת "בתיאבון"</b><small class="rk-h">על העוגה</small><small class="rk-w">🧳 ${esc(mpWhere(st))}</small></span><b class="num rk-q">1</b></li>`);
-  const tot=L.slice().sort((a,b)=>rank(a)-rank(b)).map(x=>`<li><span>${esc(nm(x))}</span><b class="num">${perP(x)?ppl:per(x)*rooms}</b><small>${esc(mpWhere(x))}</small></li>`);
+  const tot=L.slice().sort((a,b)=>rank(a)-rank(b)).map(x=>`<li><span>${esc(nm(x))}</span><b class="num">${tq(x)}</b><small>${esc(mpWhere(x))}</small></li>`);
   const rp=roomsPlaced();
   return `<div class="khero"><div><b class="num">${rooms}</b><span>חדרים</span></div><div><b class="num">${rp.n}/${rp.t}</b><span>חדרים מוכנים</span></div></div>
    <div class="card rk-c"><h3 class="rk-t">🛏 מה שמים בכל חדר</h3><p class="note" style="margin:0 0 8px">הכמות היא לחדר אחד. סידורים – אחד לכל אדם בחדר.</p><ul class="mp-l rk-l">${rows.join('')}</ul></div>
-   <div class="card rk-c"><h3 class="rk-t">✋ לשים לב</h3><ul class="mp-l rk-l"><li><span>המכתב והסידורים שונים בכל חדר – בודקים ברשימת החדרים של מי החדר ואיזה נוסח</span></li><li><span>6 בקבוקים בכל חדר: קולה, קולה זירו, ספרייט זירו, מיץ תפוזים, מים וסודה – תחתית מתחת לכל אחד</span></li><li><span>השתייה, המגבונים והנייר החתוך נקנים בבודפשט ביום חמישי בבוקר</span></li><li><span>כשחדר מוכן – מסמנים אותו ברשימת החדרים</span></li></ul>
+   <div class="card rk-c"><h3 class="rk-t">✋ לשים לב</h3><ul class="mp-l rk-l"><li><span>המכתב והסידורים שונים בכל חדר – בודקים ברשימת החדרים של מי החדר ואיזה נוסח</span></li><li><span>6 בקבוקים בכל חדר: קולה, קולה זירו, ספרייט זירו, מיץ תפוזים, מים וסודה – תחתית מתחת לכל אחד</span></li>${S.rooms.filter(r=>/שתייה/.test(r.notes||'')).map(r=>`<li><span>⚠ חדר ${esc(r.roomNumber||'')} (${esc(r.occupants||'')}): ${esc(r.notes)}</span></li>`).join('')}<li><span>השתייה, המגבונים והנייר החתוך נקנים בבודפשט ביום חמישי בבוקר</span></li><li><span>כשחדר מוכן – מסמנים אותו ברשימת החדרים</span></li></ul>
    ${GUEST()?`<button class="mp-a" data-gnav="gs">🛏 לרשימת החדרים</button>`:`<button class="mp-a" data-sub="rooms">🛏 לרשימת החדרים</button>`}</div>
    <details class="card rk-c"><summary class="rk-t">📦 סה״כ ל־${rooms} חדרים ומאיפה זה מגיע</summary><ul class="mp-l" style="margin-top:8px">${tot.join('')}</ul></details>`}
 // the other kits, same idea as the room kit: what goes in, how many, where it comes from
 const KTABS={
  kbus:{t:'ערכה לאוטובוס – לכל אחד',ic:'🚌',sub:'מה יש בכל תיק',per:60,
   sel:x=>kitOf(x)==='ערכה לאוטובוס'&&!/רולאפ/.test(x.item)&&!x.inSet,
-  ord:[/^תיק/,/כרטיס/,/קינדר/,/שוגי/,/כיף כיף/,/מסטיק/,/אטמי/,/כיסוי/,/טישו/,/מגבונ/,/פחית/],
-  how:{'^תיק':'התיק עצמו – אחד על כל מושב','כרטיס':'מזמור לתודה ותפילת הדרך','אטמי':'אטמי אוזניים וכיסוי עיניים ארוזים יחד בניילונית אחת','פחית':'בתוך התיק – קונים בבודפשט ביום חמישי בבוקר ומכניסים לתיקים'},left:'לפינת הקפה באוטובוס',
-  tips:['ממלאים את 60 התיקים במלון ביום רביעי בלילה','ביום חמישי בבוקר, אחרי הקנייה – פחית לתוך כל תיק','בשדה ב־11:30: תיק על כל מושב','12 הרולדות ו־40 הפחיות שנשארות – לפינת הקפה באוטובוס']},
+  ord:[/^תיק/,/^שתייה/,/כרטיס/,/קינדר/,/שוגי/,/כיף כיף/,/מסטיק/,/אטמי/,/כיסוי/,/טישו/,/מגבונ/],
+  grp:{re:/– לאוטובוס$/,item:'שתייה – בקבוק אחד בתוך כל תיק'},how:{'^תיק':'התיק עצמו – אחד על כל מושב','כרטיס':'מזמור לתודה ותפילת הדרך','אטמי':'אטמי אוזניים וכיסוי עיניים ארוזים יחד בניילונית אחת','^שתייה':'מעורב: קולה, קולה זירו, ספרייט זירו, מים, מיץ תפוזים (20 מכל סוג) – קונים בחמישי בבוקר ומכניסים לתיקים'},left:'לפינת הקפה באוטובוס',
+  tips:['ממלאים את 60 התיקים במלון ביום רביעי בלילה','ביום חמישי בבוקר, אחרי הקנייה – בקבוק שתייה לתוך כל תיק','בשדה ב־11:30: תיק על כל מושב','12 הרולדות ו־40 בקבוקי השתייה שנשארים – לפינת הקפה באוטובוס']},
  kbcafe:{t:'פינת קפה באוטובוס',ic:'☕',sub:'מה מסדרים באוטובוס',
   sel:x=>kitOf(x)==='פינת קפה באוטובוס'||(kitOf(x)==='ערכה לפינת קפה'&&x.bag==='2'),
   ord:[/קראנץ/,/טסטר/,/נמס/,/שחור/,/שוקו/,/תה רגיל/,/תה פירות/,/סוכר \(/,/סוכרזית/,/מקופלת/,/חלב רגיל/,/סויה/,/כוסות/,/כפיות/,/סכינים/,/צלחות/,/מפיות/,/קופסאות/],
   how:{'קראנץ':'פורסים ומניחים על צלחות','חלב':'קונים בבוקר רק בסופר הכשר – קושר פיאץ','קופסאות':'למה שנשאר מהעוגות'},
-  from:'kbus',warn:'⚠ בסוף הנסיעה, כשמגיעים למלון: לאסוף את כל פינת הקפה מהאוטובוס – קפה, תה, סוכר, שוקו, חד פעמי ומה שנשאר מהעוגות, הרולדות והפחיות – ולהעביר לפינת הקפה במלון. שום דבר לא נשאר באוטובוס.',tips:['מסדרים בשדה ב־11:30, לפני שהקבוצה עולה','12 הרולדות ו־40 הפחיות שנשארו מהתיקים – גם לפינת הקפה','בהגעה למלון: לאסוף הכל מהאוטובוס ולהעביר לפינת הקפה במלון']},
+  from:'kbus',warn:'⚠ בסוף הנסיעה, כשמגיעים למלון: לאסוף את כל פינת הקפה מהאוטובוס – קפה, תה, סוכר, שוקו, חד פעמי ומה שנשאר מהעוגות, הרולדות והפחיות – ולהעביר לפינת הקפה במלון. שום דבר לא נשאר באוטובוס.',tips:['מסדרים בשדה ב־11:30, לפני שהקבוצה עולה','12 הרולדות ו־40 בקבוקי השתייה שנשארו מהתיקים – גם לפינת הקפה','בהגעה למלון: לאסוף הכל מהאוטובוס ולהעביר לפינת הקפה במלון']},
  khcafe:{t:'פינת קפה במלון',ic:'🫖',sub:'פינת הקפה בלובי',
   sel:x=>kitOf(x)==='ערכה לפינת קפה'&&x.bag!=='2',
   ord:[/קראנץ/,/פס גבינה/,/קליק/,/מקופלת/,/טורקי/,/סוכר/,/חלב רגיל/,/סויה/,/מפות/,/צלחות/,/כפיות/,/סכינים/,/מפיות/,/קופסאות/],
@@ -7125,14 +7126,15 @@ const KTABS={
   how:{'זמירות':'אחד לכל אחד על השולחנות','פיצוחים':'פותחים ומניחים על השולחנות','ג\'לים':'פותחים ומניחים על השולחנות','פירות':'מזמינים מחנה','קעריות':'לחטיפים ולזריפה','שישיות|בירה|רדבול':'קונים בבודפשט ביום חמישי בבוקר'},
   tips:['20:30 – מסדרים את השולחנות כשכולם יוצאים לסיבוב: משה, צביקה והזוג הופמן','כל מה שהגיע מהארץ והשתייה שנקנתה – להעביר לשלום הולד בחנה בחמישי בלילה או בשישי בבוקר','החטיפים נפתחים לתוך הקעריות']}};
 const KT_OK=me=>RK_OK(me);
+const ktItems=C=>{let L=S.packing.filter(x=>x.item&&C.sel(x));if(C.grp){const G=L.filter(x=>C.grp.re.test(x.item));if(G.length){L=L.filter(x=>!G.includes(x));L.push({_id:'grp',item:C.grp.item,qty:G.reduce((t,x)=>t+(+x.qty||0),0),where:'בבודפשט',shop:'סופר בבודפשט'})}}return L};
 function kitTabBody(k){const C=KTABS[k];if(!C)return '';
-  const L=S.packing.filter(x=>x.item&&C.sel(x)), q=x=>+x.bagQty>0?+x.bagQty:(+x.qty||1);
+  const L=ktItems(C), q=x=>+x.bagQty>0?+x.bagQty:(+x.qty||1);
   const rank=x=>{const i=C.ord.findIndex(r=>r.test(x.item));return i<0?99:i};
   const hw=x=>{const k=Object.keys(C.how).find(k=>new RegExp(k).test(x.item));return k?C.how[k]:''};
   const L2=L.slice().sort((a,b)=>rank(a)-rank(b));
   const n=x=>C.per?Math.max(1,Math.floor(q(x)/C.per)):q(x), extra=x=>C.per&&q(x)-n(x)*C.per>0?`${q(x)} ביחד · ${q(x)-n(x)*C.per} נשארים – ${C.left||'בצד'}`:'';
   const rows=L2.map(x=>`<li><span><b class="rk-n">${esc(x.item)}</b>${hw(x)?`<small class="rk-h">${esc(hw(x))}</small>`:''}<small class="rk-w">${x.bag?'🧳 ':'🛒 '}${esc(mpWhere(x)||(x.where==='בבודפשט'?'קונים בבודפשט':''))}${extra(x)?' · '+esc(extra(x)):''}</small></span><b class="num rk-q">${n(x)}</b></li>`);
-  if(C.from){const F=KTABS[C.from];S.packing.filter(x=>x.item&&F.sel(x)&&F.per).forEach(x=>{const l=q(x)-Math.max(1,Math.floor(q(x)/F.per))*F.per;if(l>0)rows.push(`<li><span><b class="rk-n">${esc(x.item)} – מה שנשאר מהתיקים</b><small class="rk-w">${x.bag?'🧳 ':'🛒 '}${esc(mpWhere(x)||'קונים בבודפשט')}</small></span><b class="num rk-q">${l}</b></li>`)})}
+  if(C.from){const F=KTABS[C.from];ktItems(F).filter(()=>F.per).forEach(x=>{const l=q(x)-Math.max(1,Math.floor(q(x)/F.per))*F.per;if(l>0)rows.push(`<li><span><b class="rk-n">${esc(x.item.split(' – ')[0])} – מה שנשאר מהתיקים</b><small class="rk-w">${x.bag?'🧳 ':'🛒 '}${esc(mpWhere(x)||'קונים בבודפשט')}</small></span><b class="num rk-q">${l}</b></li>`)})}
   const bags=[...new Set(L.filter(x=>x.bag).map(x=>x.bag))].sort((a,b)=>a-b), buy=L.filter(x=>!x.bag).length;
   return `<div class="khero"><div><b class="num">${L.length}</b><span>פריטים</span></div><div><b class="num">${C.per?C.per:bags.length}</b><span>${C.per?'תיקים':'מזוודות'}</span></div>${buy?`<div><b class="num">${buy}</b><span>קונים בבודפשט</span></div>`:''}</div>
    ${C.warn?`<div class="card rk-c rk-warn"><b>${esc(C.warn)}</b></div>`:''}<div class="card rk-c"><h3 class="rk-t">${C.ic} ${C.per?'מה יש בכל תיק':'מה יש בערכה'}</h3>${C.per?'<p class="note" style="margin:0 0 8px">הכמות היא לתיק אחד – לכל נוסע.</p>':''}<ul class="mp-l rk-l">${rows.join('')||'<li><span>אין פריטים</span></li>'}</ul></div>
@@ -7836,7 +7838,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='58870fef01';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='85dfc40532';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
