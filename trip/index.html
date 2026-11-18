@@ -2912,6 +2912,21 @@ html:has(#scrim.open) #app :is(*,*::before,*::after){animation-play-state:paused
 .bag-r:last-child{border-bottom:0}
 .bag-r .check{width:26px;height:26px;flex:0 0 auto}
 .rneed{display:flex;flex-direction:column;gap:2px;margin-top:5px;font-size:13.5px;line-height:1.4;color:#e9d9a8}.rneed span{display:block}
+.mpt5{gap:4px;padding:4px}.mpt5 button{min-height:54px;font-size:12.5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:4px 2px}.mpt5 button span{font-size:18px;line-height:1}
+.mp-stage{margin:10px 0;padding:14px 16px;border-radius:18px;background:linear-gradient(160deg,rgba(214,178,98,.16),rgba(214,178,98,.04));border:1px solid rgba(214,178,98,.45)}
+.mp-stage-h{display:flex;align-items:center;gap:12px}.mp-stage-h>div{flex:1;display:flex;flex-direction:column}.mp-stage-h small{color:#f0d28c;font-weight:800;font-size:13px}.mp-stage-h b{font-size:20px;line-height:1.25}
+.mp-stage-ic{font-size:30px;width:48px;height:48px;display:grid;place-items:center;border-radius:14px;background:rgba(0,0,0,.25)}.mp-stage-c{font-size:16px;font-weight:800;color:#f0d28c}
+.mp-stage .mp-bar{margin:10px 0 2px}.mp-tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.mp-late{display:block;width:100%;margin:10px 0 0;padding:12px 14px;border-radius:14px;border:1.5px solid #ffb46a;background:rgba(255,180,106,.12);color:#ffd7a8;font:800 15px var(--body);text-align:start;cursor:pointer}
+.mp-rest{margin:12px 0;padding:10px 12px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}.mp-rest header{font-weight:800;color:#cdb98a;font-size:14px;margin:2px 4px 8px}
+.mp-rr{display:flex;align-items:center;gap:10px;padding:6px 2px;border-top:1px solid rgba(255,255,255,.06)}.mp-rr:first-of-type{border-top:0}.mp-rr .mp-hit{flex:1;text-align:start;background:none;border:0;color:inherit;font:700 15px var(--body);cursor:pointer;padding:6px 0}.mp-rr.on .mp-hit b{opacity:.5;text-decoration:line-through}
+.mp-nextst{display:flex;align-items:center;gap:8px;width:100%;margin:10px 0;padding:14px 16px;border-radius:16px;border:1px dashed rgba(214,178,98,.5);background:transparent;color:inherit;text-align:start;cursor:pointer;flex-wrap:wrap}.mp-nextst small{width:100%;color:#cdb98a;font-weight:700}.mp-nextst b{flex:1;font-size:17px}.mp-nextst span{font-size:22px;color:#d6b262}
+.mp-ov.cur,.mp-s.cur{border-color:#d6b262!important;box-shadow:0 0 0 1px #d6b262 inset}
+.mp-shop-h{display:flex;gap:8px;margin:10px 0}.mp-shop-h div{flex:1;padding:14px;border-radius:16px;background:rgba(214,178,98,.12);border:1px solid rgba(214,178,98,.35);display:flex;flex-direction:column;align-items:center}.mp-shop-h b{font-size:24px;color:#f0d28c}.mp-shop-h small{color:#cdb98a;font-weight:700}
+.mp-sg{margin:12px 0;padding:10px;border-radius:18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}.mp-sg header{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:4px 6px 10px}.mp-sg header b{font-size:18px;flex:1 1 100%}.mp-sg header small{flex:1;color:#cdb98a;font-weight:700}
+.mpb{display:flex;align-items:center;gap:12px;width:100%;margin:4px 0;padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.22);color:inherit;text-align:start;cursor:pointer}.mpb-c{flex:none;width:30px;height:30px;border-radius:9px;border:2px solid #d6b262;display:grid;place-items:center;font-weight:900;color:#17140e}.mpb.on .mpb-c{background:#7fd1a5;border-color:#7fd1a5}.mpb-t{display:flex;flex-direction:column;gap:2px}.mpb-t b{font-size:16px}.mpb-t small{color:#a69a7d;font-size:13px}.mpb.on .mpb-t b{opacity:.55;text-decoration:line-through}
+.mp-leg{margin:12px 0;padding:14px;border-radius:18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1)}.mp-leg header{display:flex;align-items:center;gap:12px;margin-bottom:8px}.mp-leg header span{font-size:28px}.mp-leg header div{display:flex;flex-direction:column}.mp-leg header b{font-size:18px}.mp-leg header small{color:#cdb98a;font-weight:700}
+.mp-leg em{display:block;font-style:normal;font-weight:800;font-size:13.5px;margin:8px 2px 4px}.mp-lin em{color:#7fd1a5}.mp-lout em{color:#ffb46a}
 .mpt{display:flex;gap:6px;margin:12px 0;padding:5px;border-radius:16px;background:rgba(255,255,255,.05);position:sticky;top:6px;z-index:4;backdrop-filter:blur(8px)}
 .mpt button{flex:1;min-height:46px;border-radius:12px;border:0;background:transparent;color:#cdb98a;font:800 14px var(--body);cursor:pointer;line-height:1.2}
 .mpt button[aria-selected="true"]{background:#d6b262;color:#17140e}
@@ -6925,7 +6940,7 @@ SUB.prep=function(){
 const MP_FULL=['p63'], MP_HELP=['p66','p27','p39'];
 const mpOK=me=>!!(me&&(MP_FULL.includes(me._id)||MP_HELP.includes(me._id)));
 const MPD=()=>(S.settings.find(x=>x._id==='mplan')||{}).done||{};
-const mpOn=k=>!!MPD()[k];
+const mpOn=k=>k==='shop'?(!!MPD()[k]||mpShopDone()):!!MPD()[k];
 const mpP=n=>S.participants.find(p=>p.name===n)||S.participants.find(p=>(p.name||'').startsWith(n));
 const mpCall=(n,lab)=>{const p=typeof n==='string'?mpP(n):n;return p&&p.phone?`<a class="mp-a" href="${telLink(p.phone)}">📞 ${esc(lab||firstN(p.name))}</a><a class="mp-a" href="${waLink(p.phone)}" target="_blank" rel="noopener">💬 וואטסאפ</a>`:''};
 const mpNav=(q,lab='ניווט')=>`<a class="mp-a" href="https://waze.com/ul?q=${encodeURIComponent(q)}&navigate=yes" target="_blank" rel="noopener">🧭 ${lab}</a>`;
@@ -6955,28 +6970,28 @@ function mpStages(){
   const carBags=['5'].map(B).filter(b=>b.n), busBags=['3','4','6','7','9'].map(B).filter(b=>b.n), kerBags=['4','6','7','9'].map(B).filter(b=>b.n);
   const backBags=BAGS().filter(b=>/חזור/.test(b.ways||''));
   return [
-   {k:'s1',when:'עד רביעי 18.11',t:'לפני הטיסה – בארץ',rows:[
+   {k:'s1',at:'2026-11-17T08:00:00+02:00',end:'2026-11-18T19:30:00+02:00',ic:'🧳',when:'עד רביעי 18.11',t:'לפני הטיסה – בארץ',rows:[
      mpRow('b1get','לקבל הערב את מזוודה 1 – כבר ארוזה ומוכנה','שלישי 17.11 בלילה · משלומי, יעל שרייבר וחיים בלוך · לבדוק שיש בה הכל:',mpUl(items('1').map(liB))),
-     mpRow('b1kg','לשקול את מזוודה 1',`צפי: <b class="num">${kgF(k1.tot)}</b> ק״ג · המגבלה בוויז ${kgF(k1.lim||26)} ק״ג${k1.over?' · ⚠ כבדה מדי':''}`,'רולאפ האוטובוס לא אצלך – ארי הופמן מביא אותו ביד.'),
-     mpRow('b2zv','לוודא שקיבלת את הדברים של צביקה ולהעביר לו',`למזוודה של צביקה · צפי <b class="num">${kgF(k2.tot)}</b> ק״ג מתוך ${kgF(k2.lim||10)}`,mpUl(items('2').map(liB))),
+     mpRow('b1kg','מזוודה 1 סגורה ושקולה – 33 ק״ג','המשקל הוגדל בוויז · רולאפ האוטובוס לא אצלך – ארי הופמן מביא אותו ביד'),
+     mpRow('b2zv','צביקה עם מזוודה 2 – פינת הקפה לאוטובוס','סגורה · בחמישי בבוקר התוכן שלה נוסע ברכב לשדה, לפינת הקפה באוטובוס',mpUl(items('2').map(liB))),
      mpRow('wzci','צ׳ק־אין לוויז W6 2328','רביעי 18.11 · המראה 19:30 מנתב״ג'),
      mpRow('eur','לקבל משלומי יורו במזומן לקניות','בערך 590 € · לשמור קבלות')]},
-   {k:'s2',when:'רביעי 18.11 · נחיתה 22:05',t:'נחיתה, רכב ומלון',rows:[
+   {k:'s2',at:'2026-11-18T19:30:00+02:00',end:'2026-11-18T23:45:00+01:00',ic:'✈',where:[[HOTEL.q,'ניווט למלון']],when:'רביעי 18.11 · נחיתה 22:05',t:'נחיתה, רכב ומלון',rows:[
      mpRow('land','נחתתי בבודפשט','W6 2328 · עם צביקה ומשפחת יחיאל · צביקה איתך כל הדרך – בטיסה, ברכב ובקרעסטיר'),
      mpRow('car','שאטל של Klass Wagen ואיסוף הרכב','יוצאים מטרמינל 2A, חוצים את הכביש מאזור 4 ויורדים לחניון T1 ליד חניית הדיפלומטים. השאטל לוקח למשרד ב-Vecsés, Új Ecseri út 2.',`<a class="mp-a" href="https://www.klasswagen.com/en/shuttle/budapest" target="_blank" rel="noopener">🚐 הזמנת שאטל</a>`),
      mpRow('hotel','נסיעה למלון וצ׳ק־אין',esc(HOTEL.name),mpNav(HOTEL.q,'ניווט למלון')),
      mpRow('store','להשאיר את מזוודות 1 ו־2 במלון','בחדר או באחסון · תיקי האוטובוס ממלאים בלילה · המזוודות עצמן נשארות במלון ולא נוסעות לשדה')]},
-   {k:'s3',when:'רביעי בלילה',t:'מילוי 60 תיקים לאוטובוס',rows:[
+   {k:'s3',at:'2026-11-18T23:45:00+01:00',end:'2026-11-19T07:00:00+01:00',ic:'🎒',kits:['kbus'],when:'רביעי בלילה',t:'מילוי 60 תיקים לאוטובוס',rows:[
      mpRow('bags60','למלא 60 תיקים','בכל תיק:',mpUl(perBag.filter(x=>x._id!=='ba01').map(x=>`<li><span>${esc(x.item)}</span><b class="num">${Math.max(1,Math.floor((+x.qty||60)/60))}</b>${(+x.qty||0)>60?`<small>${(+x.qty)-60} נשארים בצד</small>`:''}</li>`))),
      mpRow('bagsrdy','לסגור את התיקים ולהכין אותם לאוטובוס','מגיעים איתך לשדה ביום חמישי בבוקר')]},
-   {k:'s4',when:'חמישי 19.11 בבוקר',t:'קניות ואיסופים בבודפשט',intro:`<b>כל הקניות – בבוקר, לפני השדה</b> · שתייה לאוטובוס, לחדרים, לעונג שבת ולשבת בבוקר · בערך ${ils(cost(buyThu)+cost(buyFri)+cost(milkThu))} (${eur(cost(buyThu)+cost(buyFri)+cost(milkThu))} €) · מהיורו במזומן · החלב לשבת – רק ביום שישי`,rows:[
-     ...(()=>{const KO=['ערכה לאוטובוס','ערכה לחדר','ערכה לסעודה בקרעסטיר','ערכה לעונג שבת','ערכה לשבת בבוקר'],ko=x=>{const i=KO.indexOf(kitOf(x));return (i<0?9:i)*10+(/DM/.test(x.shop||'')?5:0)};return [...buyThu.map(x=>[x,'bt_']),...buyFri.map(x=>[x,'bf_'])].sort((a,b)=>ko(a[0])-ko(b[0])||(+a[0].order||0)-(+b[0].order||0)).map(([x,p])=>buyRows([x],p)[0])})(),
+   {k:'s4',at:'2026-11-19T07:00:00+01:00',end:'2026-11-19T10:45:00+01:00',ic:'🛒',where:[['Kosher Piac Dohány utca 36 Budapest','קושר פיאץ'],['Hanna Kosher Restaurant Kazinczy 29 Budapest','חנה']],kits:['kbus'],when:'חמישי 19.11 בבוקר',t:'קניות ואיסופים בבודפשט',intro:`<b>כל הקניות – בבוקר, לפני השדה</b> · בערך <b class="num">${mpShop().eur} €</b> מהיורו במזומן · החלב לשבת – רק ביום שישי`,rows:[
+     (()=>{const sh=mpShop(),n=sh.items.filter(x=>mpOn(x.k)).length;return mpRow('shop',`קניות בסופר וב־DM – לפי רשימת הקניות`,`<b class="num">${n}/${sh.items.length}</b> נקנו · בערך <b class="num">${sh.eur} €</b> מהיורו במזומן · מסמנים כל פריט ברשימה, והמשימה מסתמנת לבד`,`<button class="mp-a" data-mpv="shop">🛒 לרשימת הקניות</button>`)})(),
      mpRow('milkthu','חלב לפינת הקפה באוטובוס – רק בסופר הכשר',milkThu.map(x=>`${esc(x.item)} × ${+x.qty||1}`).join(' · ')+' · קושר פיאץ, Dohány utca 36 · נפתח ב־8:00',KP),
      mpRow('alc','לאסוף מחנה את האלכוהול לקרעסטיר – ולקחת ספייר','מסעדת חנה, Kazinczy 29 · לקחת יותר ממה שנראה שצריך. מה שלא ייפתח בקרעסטיר חוזר איתך למלון לשבת.',mpNav('Hanna Kosher Restaurant Kazinczy 29 Budapest','ניווט לחנה')),
      mpRow('cans','בקבוק שתייה לתוך כל תיק','אחרי הקנייה, לפני שנוסעים לשדה · 60 לתיקים (מעורב), 40 נשארים לפינת הקפה באוטובוס'),
      mpRow('empty','לשדה נוסעים בלי המזוודות עצמן – רק עם מה שבתוכן','מוציאים מהמזוודות את מה שצריך ושמים ישר ברכב. המזוודות הריקות נשארות במלון – ככה יש ברכב מקום למזוודות שמקבלים בשדה.'),
-     mpRow('load','מה נכנס לרכב לשדה','60 התיקים, השתייה לאוטובוס, פינת הקפה לאוטובוס (הדברים של צביקה + 9 העוגות + החלב), רולדות הקינדר, האלכוהול לקרעסטיר, שלטי ההכוונה לקרעסטיר וערכת ההפקה (סלוטייפ, מספריים, דבק). השתייה לעונג שבת ולשבת בבוקר נשארת במלון.')]},
-   {k:'s4b',when:'חמישי · 11:30 בשדה',t:'מסדרים את האוטובוס לפני שהקבוצה יוצאת',intro:'האוטובוס מגיע 11:30 · הקבוצה נוחתת 11:15 אבל יוצאת מהשדה רק בערך ב־12:00 – עד אז הכל מסודר · אייזנבך ואנגל כבר בשדה מ־08:55',rows:[
+     mpRow('load','מה נכנס לרכב לשדה','60 התיקים, השתייה לאוטובוס, פינת הקפה לאוטובוס (הדברים של צביקה + 9 העוגות + החלב), רולדות הקינדר, האלכוהול לקרעסטיר, שלטי ההכוונה לקרעסטיר וערכת ההפקה (סלוטייפ, מספריים, דבק). השתייה לעונג שבת ולשבת בבוקר נשארת במלון.',`<button class="mp-a" data-mpv="load">🚗 מה ברכב בכל קטע</button>`)]},
+   {k:'s4b',at:'2026-11-19T10:45:00+01:00',end:'2026-11-19T12:30:00+01:00',ic:'🚌',where:[['Budapest Airport Terminal 2','שדה התעופה']],kits:['kbus','kbcafe'],when:'חמישי · 11:30 בשדה',t:'מסדרים את האוטובוס לפני שהקבוצה יוצאת',intro:'האוטובוס מגיע 11:30 · הקבוצה נוחתת 11:15 אבל יוצאת מהשדה רק בערך ב־12:00 – עד אז הכל מסודר · אייזנבך ואנגל כבר בשדה מ־08:55',rows:[
      mpRow('bus','11:30 – האוטובוס מגיע: לסדר אותו','',mpUl(['<li><span>תיק על כל מושב – עם בקבוק שתייה בתוכו</span></li>','<li><span>12 הרולדות ו־40 בקבוקי השתייה שנשארו – לפינת הקפה באוטובוס</span></li>'])),
      mpRow('buscafe','לסדר את פינת הקפה בתוך האוטובוס','הדברים שבאו עם צביקה (קפה, תה, סוכר, כוסות, כפיות) + 9 העוגות + החלב'),
      mpRow('rollup','ארי הופמן יוצא ראשון עם רולאפ האוטובוס (ביד) – להעמיד אותו בחוץ ליד האוטובוס','שכולם יראו אותו כשהם מגיעים'),
@@ -6984,7 +6999,7 @@ function mpStages(){
      mpRow('car4','לרכב לקרעסטיר – רק המזוודה של שוקי לב (מזוודה 5): מגשים, זריפה, סט הקוויטל, התפריט והשלט 3×1',carBags.map(b=>esc(b.who||'')).join(' · '),carBags.map(b=>{const p=(b.pids||[])[0]&&S.participants.find(x=>x._id===b.pids[0]);return p?mpCall(p):''}).join('')),
      mpRow('belly','לבטן האוטובוס – המזוודות של (בקרעסטיר עוברות לרכב שלך)',[...new Set(busBags.map(b=>b.who||''))].map(esc).join(' · ')),
      mpRow('rollin','לפני שנוסעים: להכניס את הרולאפ לאוטובוס','הוא נפתח שוב בקרעסטיר')]},
-   {k:'s5',when:'חמישי · קרעסטיר',t:'בקרעסטיר – הסעודה אצל פרידלנדר',intro:'איש הקשר שלנו שם: אבי דרקסלר · כל שאלה בקרעסטיר – מולו',rows:[
+   {k:'s5',at:'2026-11-19T12:30:00+01:00',end:'2026-11-19T19:00:00+01:00',ic:'🍽',where:[['Bodrogkeresztúr','קרעסטיר']],when:'חמישי · קרעסטיר',t:'בקרעסטיר – הסעודה אצל פרידלנדר',intro:'איש הקשר שלנו שם: אבי דרקסלר · כל שאלה בקרעסטיר – מולו',rows:[
      mpRow('ksign','קודם כל: לתלות שלטי הכוונה – איפה השאטלים לציון ואיפה הסעודה','השלטים וערכת ההפקה (סלוטייפ, מספריים) איתך ברכב'),
      mpRow('kroll','לפתוח את רולאפ האוטובוס ולתלות את השלט הגדול (3×1)',`השלט הגדול – ${esc(wh('k018'))}`),
      mpRow('kvit','לסדר את סט הקוויטל על שולחן',`${esc(wh('k010'))} · <b>4 סטים להשאיר בצד</b> – לזוג אלטשולר והזוג אליעד, שלא מגיעים לקרעסטיר:`,mpUl(kit('ערכת קוויטל').concat(kit('ערכה לסעודה בקרעסטיר').filter(x=>/תהילים|קוויטל|ניילונ|עטים|מצית|נריות/.test(x.item||''))).filter((x,i,a)=>a.indexOf(x)===i).map(li))),
@@ -6993,7 +7008,7 @@ function mpStages(){
      mpRow('korg','להכניס את האורגן ולסדר אותו במקום','לתאם עם דרקסלר איפה'),
      mpRow('kload','בקרעסטיר: להעביר מבטן האוטובוס לרכב את המזוודות לחדרים','כדי שיגיעו למלון לפני הקבוצה · המזוודות של '+kerBags.map(b=>esc(b.who||'')).join(' · ')+' · <b>ומשלומי זינגר – 80 העלונים</b> (הוא מוציא אותם מהמזוודה שלו ומוסר לך)',mpUl(kerBags.map(b=>`<li><span>מזוודה ${esc(b.n)} · ${esc(b.who||'')}</span><small>${esc((b.title||'').replace(/^מזוודה \d+ – /,''))}</small></li>`).concat(['<li><span>80 עלונים "חיים באמונה"</span><small>משלומי, ביד</small></li>']))),
      mpRow('early','אחרי הסעודה, כשכולם עולים לציון – לצאת לבודפשט','עם צביקה ובני דרחי · ברכב: המזוודות לחדרים, העלונים והאלכוהול שנשאר')]},
-   {k:'s5b',when:'חמישי בערב · במלון',t:'סידור החדרים',intro:`אתה, צביקה ובני דרחי · יוסי אליעד נוחת 19:30 ומצטרף במלון · הקבוצה מגיעה בערך ב־23:00`,rows:[
+   {k:'s5b',at:'2026-11-19T19:00:00+01:00',end:'2026-11-20T06:00:00+01:00',ic:'🛏',where:[[HOTEL.q,'ניווט למלון']],kits:['roomkit','khcafe'],when:'חמישי בערב · במלון',t:'סידור החדרים',intro:`אתה, צביקה ובני דרחי · יוסי אליעד נוחת 19:30 ומצטרף במלון · הקבוצה מגיעה בערך ב־23:00`,rows:[
      mpRow('keys','צ׳ק־אין: מפתח ודרכון לכל זוג בקבלה','שהכל יחכה לקבוצה ב־23:00'),
      mpRow('hrolls','להעמיד בכניסה למלון את 2 הרולאפים',`אחד – Welcome למלון · השני – תוכנית השבת · ${esc(wh('kp05'))}`),
      mpRow('kvit4','לתת את 4 סטי הקוויטל לזוג אלטשולר והזוג אליעד','הם לא היו בקרעסטיר · במלון'),
@@ -7002,7 +7017,7 @@ function mpStages(){
      mpRow('roomkit','להכין את הסט לחדר',`לכל אחד מ־<span class="num">${rooms}</span> החדרים · <b>תחתית ממותגת מתחת לכל פחית ובקבוק</b> · <b>2 עלונים: אחד עם הכריכה למעלה, ואחד הפוך – על התוכנייה</b> · <b>מדבקת "בתיאבון" על כל עוגה</b> (המדבקות במזוודה של יוסי אליעד)`,mpUl(roomKit.map(({x,per})=>`<li><span>${esc(x.item)}</span><b class="num">${per}</b><small>${esc(mpWhere(x))}</small></li>`))),
      mpRow('rooms','להניח סט בכל חדר – עם המכתב האישי והסידורים בנוסח של מי שגר בו',`<b class="num">${rp.n}</b> מתוך <span class="num">${rp.t}</span> חדרים כבר סומנו · ברשימת החדרים כתוב ליד כל חדר של מי המכתב ואיזה נוסח סידור לשים בו`,GUEST()?`<button class="mp-a" data-gnav="gs">🛏 לרשימת החדרים</button>`:`<button class="mp-a" data-sub="rooms">🛏 לרשימת החדרים</button>`),
      mpRow('tohana','להקפיץ לחנה את כל מה שלעונג שבת ולשבת בבוקר, ולמסור לשלום הולד','הלילה, או מחר בבוקר · השתייה שקנית + מה שהגיע מהארץ:',mpUl([...kit('ערכה לעונג שבת'),...kit('ערכה לשבת בבוקר')].filter(x=>!/פירות/.test(x.item||'')).map(li)))]},
-   {k:'s6',when:'שישי 20.11',t:'הכנות לשבת',intro:'שאר הקניות נעשו ביום חמישי בבוקר',rows:[
+   {k:'s6',at:'2026-11-20T06:00:00+01:00',end:'2026-11-21T18:00:00+01:00',ic:'🕍',where:[[HOTEL.q,'מלון'],['Hanna Kosher Restaurant Kazinczy 29 Budapest','חנה']],kits:['khcafe','koneg'],when:'שישי 20.11',t:'הכנות לשבת',intro:'שאר הקניות נעשו ביום חמישי בבוקר',rows:[
      mpRow('milkfri','חלב לשבת – לקנות בבוקר בסופר הכשר',milkFri.map(x=>`${esc(x.item)} × ${+x.qty||1}`).join(' · ')+' · קושר פיאץ, Dohány utca 36 · שישי עד 14:00 · לפינת הקפה במלון',KP),
      mpRow('hanaset','במסעדת חנה: להעמיד רולאפ ולתלות שלטי הכוונה',`רולאפ חנה – ${esc(wh('kp07'))} · השלטים – ${esc(wh('kp03'))}`,mpNav('Hanna Kosher Restaurant Kazinczy 29 Budapest','ניווט לחנה')),
      mpRow('place','למסור לשלום הולד את הפלייסמטים','הוא והצוות שלו מסדרים איתם את השולחנות לליל שבת',mpUl(kit('ערכה לליל שבת').map(li))),
@@ -7012,7 +7027,7 @@ function mpStages(){
      mpRow('candles','15:45 – פינת הנרות בלובי המלון','',mpUl(kit('ערכה להדלקת נרות שבת').map(li))),
      mpRow('oneg','20:30 – עונג שבת בחנה: לסדר את השולחנות כשכולם יוצאים לסיבוב','יחד עם צביקה והזוג הופמן'),
      mpRow('havd','מוצאי שבת – סט ההבדלה','',mpUl(kit('ערכה להבדלה').map(li)))]},
-   {k:'s7',when:'מוצ״ש וראשון 22.11',t:'חזרה',rows:[
+   {k:'s7',at:'2026-11-21T18:00:00+01:00',end:'2026-11-22T08:00:00+01:00',ic:'🏠',where:[['Klass Wagen Vecsés Új Ecseri út 2','Klass Wagen']],when:'מוצ״ש וראשון 22.11',t:'חזרה',rows:[
      mpRow('back','מזוודות שחוזרות לארץ','כל אחד עם מי שהביא אותה',mpUl(backBags.map(b=>`<li><span>מזוודה ${esc(b.n)} · ${esc(b.who||'')}</span><small>${esc(/שוקי/.test(b.ways||'')?'עוברת לשוקי לב – מחזיר ליהודה אידלמן':(b.src||''))}</small></li>`))),
      mpRow('carret','להחזיר את הרכב ל־Klass Wagen','Vecsés, Új Ecseri út 2 · לפני הטיסה',mpNav('Klass Wagen Vecsés Új Ecseri út 2','ניווט')),
      mpRow('flyback','טיסה הביתה – W6 ראשון 05:00','בחזור רק תיק מתחת למושב')]}]}
@@ -7033,53 +7048,91 @@ const mpWho=r=>(MPWHO[r.k]||(/^b[tf]_/.test(r.k)?['shlomi']:[])).map(mpK).filter
 const mpCards=L=>L.length?`<div class="mpk">${L.map(c=>c.ph?`<div class="mpk-r"><b>${esc(c.lab)}</b><span><a href="${telLink(c.ph)}" aria-label="חיוג">📞</a><a href="${waLink(c.ph)}" target="_blank" rel="noopener" aria-label="וואטסאפ">💬</a></span></div>`:`<div class="mpk-r miss"><b>${esc(c.lab)}</b><small>המספר יתווסף בקרוב</small></div>`).join('')}</div>`:'';
 let MPV=null, MPI=null;
 function mpFlat(){const st=mpStages(),L=[];st.forEach((s,i)=>s.rows.forEach(r=>{r.s=s;r.si=i;r.n=L.length+1;L.push(r)}));return {st,L}}
-function mpSummary(){const k=x=>mpK(x),b=n=>(BAGS().find(x=>x.n===n)||{}).who||'';
-  const car=['4','5','6','7'].map(b).filter(Boolean).join(', ');
-  const d=(t,h,txt,who)=>`<section class="mpsum"><header><span>${t}</span><b>${h}</b></header><p>${txt}</p>${mpCards(who.map(k).filter(Boolean))}</section>`;
-  return `<p class="mpsum-hi">היי משה 👋 ככה זה נראה בגדול. הפירוט המלא, משימה אחרי משימה, בלשונית "משימה אחרי משימה".</p>
-  ${d('שלישי בערב','הערב','מקבל ממני, מיעל ומחיים את המזוודה <b>כבר ארוזה</b>. בודק שיש בה הכל ושוקל – עד 26 ק״ג. את הדברים של צביקה מעביר לו.',['shlomi','yael','chaim'])}
-  ${d('רביעי 18.11','טיסה, רכב ומלון','טסים עם צביקה בוויז ב־19:30 ונוחתים ב־22:05. לוקחים שאטל ל־Klass Wagen, מקבלים את הרכב ונוסעים למלון. בלילה ממלאים 60 תיקים לאוטובוס.',['zvika','klass','hotel'])}
-  ${d('חמישי בבוקר','קניות ואיסופים','בבוקר קונים את כל השתייה – לאוטובוס, לחדרים ולשבת. חלב לאוטובוס <b>רק בסופר הכשר</b>. אוספים משלום הולד בחנה את האלכוהול לקרעסטיר, עם ספייר. לשדה נוסעים <b>בלי המזוודות עצמן</b> – רק עם מה שבתוכן, ישר ברכב. המזוודות הריקות נשארות במלון.',['kp','hana'])}
-  ${d('חמישי 11:30','בשדה – מסדרים את האוטובוס','האוטובוס מגיע ב־11:30, והקבוצה יוצאת מהשדה רק בערך ב־12:00 – עד אז הכל מסודר: תיק על כל מושב, שתייה, רולדות, ופינת הקפה בתוך האוטובוס (הדברים של צביקה + החלב). ארי הופמן יוצא ראשון עם הרולאפ (הוא מביא אותו ביד) – מעמידים אותו בחוץ ליד האוטובוס. לוקחים מאיציק את האורגן, ולרכב מקבלים מזוודות מ: '+esc(car)+'.',['zelig','bus','itzik'])}
-  ${d('חמישי בקרעסטיר','בקרעסטיר','הסעודה אצל פרידלנדר – איש הקשר שלנו שם אבי דרקסלר. קודם תולים שלטים: איפה השאטלים לציון ואיפה הסעודה. פותחים את רולאפ האוטובוס ותולים את השלט הגדול, מסדרים את סט הקוויטל על שולחן, שמים אלכוהול על כל השולחנות, ומסדרים את האורגן. את מגשי הג׳לים והפיצוחים, הזריפה והרדבול נותנים לדרקסלר – הוא פותח אותם בקינוח.',['drex'])}
-  ${d('חמישי בערב','סידור החדרים','רק אחרי הסעודה, כשכולם עולים לציון – אתה, צביקה ובני נוסעים לבודפשט. מעמידים בכניסה למלון את 2 הרולאפים (Welcome ותוכנית השבת), שמים את העוגות של פינת הקפה במקרר בחדר שלך, ומסדרים סט בכל אחד מ־'+(S.rooms.length||31)+' החדרים – <b>בכל חדר המכתב האישי של הזוג שגר בו, וסידורים בנוסח שלהם</b> (כתוב ליד כל חדר ברשימת החדרים). יוסי אליעד מצטרף בערב. הלילה או מחר בבוקר מקפיצים לחנה את כל מה שלעונג שבת ולשבת בבוקר ומוסרים לשלום הולד.',['zvika','benny','yossi','hana'])}
-  ${d('שישי 20.11','הכנות לשבת','בבוקר חלב לשבת מהסופר הכשר. בחנה: מעמידים רולאפ, תולים שלטים, ומוסרים לשלום הולד את הפלייסמטים לשולחנות. במלון: בבוקר מורידים מהמקרר בחדר שלך חצי מהעוגות ופותחים את פינת הקפה בלובי (החצי השני – בשבת בבוקר), ופינת הנרות עד 15:45. ב־20:30 עונג שבת בחנה – אתה, צביקה והזוג הופמן מסדרים את השולחנות. הרב חנוכה גר במלון.',['kp','hana','hotel','chanuka'])}
-  ${d('מוצ״ש וראשון','חזרה','מחזירים את הרכב ל־Klass Wagen וטסים בראשון ב־05:00 – עם תיק יד בלבד.',['klass'])}
+// shopping list for Budapest: grouped by store, each line ticked on its own (keys bt_/bf_ as before)
+function mpShop(){const T=['ערכה לאוטובוס','פינת קפה באוטובוס','ערכה לסעודה בקרעסטיר','ערכה לחדר'],milk=x=>/חלב/.test(x.item||'');
+  const L=S.packing.filter(x=>mpBuy(x)&&!milk(x)).map(x=>({x,k:(T.includes(kitOf(x))?'bt_':'bf_')+x._id}));
+  const KO=['ערכה לאוטובוס','ערכה לחדר','ערכה לסעודה בקרעסטיר','ערכה לעונג שבת','ערכה לשבת בבוקר'],ko=x=>{const i=KO.indexOf(kitOf(x));return i<0?9:i};
+  L.sort((a,b)=>ko(a.x)-ko(b.x)||(+a.x.order||0)-(+b.x.order||0));
+  const store=x=>/DM/.test(x.shop||'')?'dm':'sup';
+  const G=[['sup','🛒 סופר רגיל','שתייה, בירה ורדבול',''],['dm','🧻 רשת DM','מגבונים ונייר חתוך לחדרים','DM drogerie Budapest']].map(([id,t,sub,q])=>({id,t,sub,q,L:L.filter(r=>store(r.x)===id)})).filter(g=>g.L.length);
+  const ils_=L.reduce((t,r)=>t+(+r.x.cost||0),0);
+  return {items:L,G,ils:ils_,eur:Math.round(ils_/3.57)}}
+const mpShopDone=()=>{const L=mpShop().items;return L.length>0&&L.every(r=>!!MPD()[r.k])};
+const MP_KL={kbus:'🎒 ערכה לאוטובוס',kbcafe:'☕ פינת קפה באוטובוס',roomkit:'🛏 ערכה לחדר',khcafe:'🫖 פינת קפה במלון',koneg:'🎶 עונג שבת'};
+const mpKit=k=>{if(GUEST()){const me=meG();if(!RK_OK(me))return '';return `<button class="mp-a" data-gnav="${k==='roomkit'?'grk':'g'+k}">${MP_KL[k]}</button>`}return `<button class="mp-a" data-sub="${k}">${MP_KL[k]}</button>`};
+const mpStageTools=s=>{const w=(s.where||[]).map(([q,l])=>mpNav(q,l)).join(''),k=(s.kits||[]).map(mpKit).join('');return w||k?`<div class="mp-tools">${w}${k}</div>`:''};
+const mpStageWho=s=>{const seen=new Set(),L=[];s.rows.forEach(r=>(MPWHO[r.k]||[]).forEach(id=>{if(!seen.has(id)){seen.add(id);const c=mpK(id);if(c)L.push(c)}}));return L.slice(0,5)};
+function mpCur(st){const t=Date.now(),T=x=>Date.parse(x);let i=st.findIndex(s=>s.at&&t>=T(s.at)&&t<T(s.end));if(i<0)i=st.findIndex(s=>s.end&&t<T(s.end));return i<0?st.length-1:i}
+const mpTime=s=>{try{const f=x=>new Date(x).toLocaleString('he-IL',{timeZone:'Europe/Budapest',weekday:'short',hour:'2-digit',minute:'2-digit'});return f(s.at)}catch(e){return ''}};
+function mpSummary(){const k=x=>mpK(x),B=n=>(BAGS().find(x=>x.n===n)||{}).who||'',ker=['4','6','7','9'].map(B).filter(Boolean).map(firstN).join(', '),sh=mpShop(),rooms=S.rooms.length||31;
+  const d=(ic,t,h,txt,who)=>`<section class="mpsum"><header><span>${ic} ${t}</span><b>${h}</b></header><p>${txt}</p>${mpCards(who.map(k).filter(Boolean))}</section>`;
+  return `<p class="mpsum-hi">היי משה 👋 כל המסע שלך בעמוד אחד. בשטח עובדים מהלשונית <b>⚡ עכשיו</b> – היא יודעת מה השעה ומראה בדיוק מה הבא.</p>
+  ${d('✈','רביעי 18.11','טיסה, רכב ומלון','טסים עם צביקה בוויז W6 2328 ב־19:30, נוחתים ב־22:05. מזוודה 1 שלך סגורה (33 ק״ג), וצביקה עם מזוודה 2 – פינת הקפה לאוטובוס. שאטל ל־Klass Wagen, לוקחים את הרכב ונוסעים למלון. המזוודות נשארות במלון.',['zvika','klass','hotel'])}
+  ${d('🎒','רביעי בלילה','ממלאים 60 תיקים','בכל תיק: כרטיס תפילת הדרך, רולדת קינדר, שוגי, כיף כיף, מסטיק, סט אטמים וכיסוי עיניים, טישו ומגבונים. מה שנשאר – לפינת הקפה באוטובוס.',[])}
+  ${d('🛒','חמישי בבוקר','קניות ואיסופים',`בסופר: כל השתייה – 100 בקבוקים לאוטובוס (20 מכל סוג), 183 לחדרים, ומה שלעונג שבת ולשבת בבוקר. ב־DM: מגבונים ונייר חתוך לחדרים. בסופר הכשר: חלב לאוטובוס. בסך הכל בערך ${sh.eur} €. <b>בקבוק שתייה לתוך כל תיק.</b> בחנה אוספים את האלכוהול לקרעסטיר עם ספייר. לשדה נוסעים רק עם מה שבתוך המזוודות.`,['kp','hana'])}
+  ${d('🚌','חמישי 11:30','בשדה – מסדרים את האוטובוס','תיק על כל מושב ופינת הקפה בתוך האוטובוס. ארי הופמן מביא את רולאפ האוטובוס ביד. לוקחים מאיציק את האורגן. לרכב נכנסת רק מזוודה 5 של שוקי (קרעסטיר); כל השאר לבטן האוטובוס.',['zelig','bus','itzik','ari'])}
+  ${d('🍽','חמישי','קרעסטיר',`קודם שלטים, רולאפ ושלט 3×1. סט הקוויטל על שולחן, אלכוהול על כל השולחנות, אורגן. המגשים, הזריפה והרדבול – לדרקסלר, והוא פותח אותם בקינוח. <b>בזמן הסעודה מעבירים מבטן האוטובוס לרכב את המזוודות של ${esc(ker)}</b>, ומשלומי את העלונים. אחרי הסעודה, כשכולם עולים לציון – יוצאים עם צביקה ובני.`,['drex','shlomi'])}
+  ${d('🛏','חמישי בערב','סידור החדרים',`מפתחות בקבלה, 2 רולאפים בכניסה, העוגות למקרר בחדר שלך. בכל אחד מ־${rooms} החדרים: המכתב של הזוג, סידורים בנוסח שלהם, 2 עלונים, עוגה עם מדבקה וסכין, קופסת ויינר, חטיפים ו־6 בקבוקים עם תחתיות (בחדר של צביקה – 3). יוסי אליעד מצטרף ב־19:30. הקבוצה מגיעה בערך ב־23:00.`,['zvika','benny','yossi','hotel'])}
+  ${d('🕍','שישי ושבת','הכנות לשבת','בבוקר חלב מהסופר הכשר. פותחים את פינת הקפה בלובי – עם כל מה שנאסף מהאוטובוס וחצי מהעוגות. בחנה: רולאפ, שלטים, פלייסמטים לשלום הולד וכל מה שלעונג שבת. 15:45 פינת הנרות. 20:30 עונג שבת בחנה עם צביקה והזוג הופמן.',['kp','hana','hotel','chanuka'])}
+  ${d('🏠','מוצ״ש וראשון','חזרה','מחזירים את הרכב ל־Klass Wagen. טיסה בראשון ב־05:00.',['klass'])}
   <section class="mpsum q"><b>יש שאלה? אנחנו פה</b>${mpCards(['shlomi','itzik','medic'].map(k).filter(Boolean))}</section>
-  <button class="mps-go" data-mpv="step">👉 מתחילים – משימה אחרי משימה</button>`}
+  <button class="mps-go" data-mpv="now">⚡ לעבודה – מה עכשיו</button>`}
+function mpShopView(){const sh=mpShop(),n=sh.items.filter(r=>mpOn(r.k)).length;
+  const line=r=>{const on=mpOn(r.k),x=r.x;return `<button class="mpb ${on?'on':''}" data-mp="${esc(r.k)}" aria-pressed="${on}"><span class="mpb-c">${on?'✓':''}</span><span class="mpb-t"><b><span class="num">${+x.qty||1}</span> × ${esc(x.item)}</b><small>${esc(kitOf(x).replace(/^ערכה ל/,''))}${+x.cost?` · ~${Math.round(+x.cost/3.57)} €`:''}</small></span></button>`};
+  const milk=S.packing.filter(x=>mpBuy(x)&&/חלב/.test(x.item||'')),mT=milk.filter(x=>kitOf(x)!=='ערכה לפינת קפה'),mF=milk.filter(x=>kitOf(x)==='ערכה לפינת קפה');
+  const KP=mpNav('Kosher Piac Dohány utca 36 Budapest','ניווט')+`<a class="mp-a" href="tel:+36305722165">📞 הסופר הכשר</a>`;
+  return `<section class="mp-shop-h"><div><b class="num">${n}/${sh.items.length}</b><small>נקנו</small></div><div><b class="num">${sh.eur} €</b><small>בערך · מהיורו במזומן</small></div></section>
+   <p class="note">חמישי בבוקר, לפני השדה. לוחצים על שורה כשהיא בעגלה. כשהכל מסומן – המשימה בתוכנית מסתמנת לבד.</p>
+   ${sh.G.map(g=>{const d=g.L.filter(r=>mpOn(r.k)).length;return `<section class="mp-sg"><header><b>${g.t}</b><small>${g.sub} · <span class="num">${d}/${g.L.length}</span></small>${g.q?mpNav(g.q,'ניווט'):''}</header>${g.L.map(line).join('')}</section>`}).join('')}
+   <section class="mp-sg"><header><b>🥛 קושר פיאץ – הסופר הכשר</b><small>חלב רק משם · Dohány utca 36</small>${KP}</header>
+    <button class="mpb ${mpOn('milkthu')?'on':''}" data-mp="milkthu"><span class="mpb-c">${mpOn('milkthu')?'✓':''}</span><span class="mpb-t"><b>חמישי: ${mT.map(x=>`${+x.qty||1} ${esc(x.item)}`).join(' · ')}</b><small>לפינת הקפה באוטובוס</small></span></button>
+    <button class="mpb ${mpOn('milkfri')?'on':''}" data-mp="milkfri"><span class="mpb-c">${mpOn('milkfri')?'✓':''}</span><span class="mpb-t"><b>שישי: ${mF.map(x=>`${+x.qty||1} ${esc(x.item)}`).join(' · ')}</b><small>לפינת הקפה במלון · שישי עד 14:00</small></span></button></section>`}
+function mpLoadView(){const B=n=>BAGS().find(x=>x.n===n)||{},bl=n=>{const b=B(n);return b.n?`<li><span>מזוודה ${esc(n)} · ${esc(b.who||'')}</span><small>${esc((b.title||'').replace(/^מזוודה \d+ – /,''))}</small></li>`:''};
+  const leg=(ic,t,when,inn,out,note)=>`<section class="mp-leg"><header><span>${ic}</span><div><b>${t}</b><small>${when}</small></div></header>${inn.length?`<div class="mp-lin"><em>⬆ נכנס לרכב</em><ul class="mp-l">${inn.join('')}</ul></div>`:''}${out&&out.length?`<div class="mp-lout"><em>⬇ יוצא מהרכב</em><ul class="mp-l">${out.join('')}</ul></div>`:''}${note?`<p class="mp-i">${note}</p>`:''}</section>`;
+  const L=t=>`<li><span>${t}</span></li>`;
+  return `<p class="note">מה נמצא ברכב בכל קטע של הדרך. המזוודות הריקות לא נוסעות – רק מה שבתוכן.</p>
+  ${leg('✈','שדה ← מלון','רביעי בלילה · אתה וצביקה',[bl('1'),bl('2')],[],'שתי המזוודות נשארות במלון. בלילה ממלאים מהן את 60 התיקים.')}
+  ${leg('🛒','מלון ← קניות ← שדה','חמישי בבוקר',[L('60 התיקים, עם בקבוק שתייה בכל אחד'),L('40 בקבוקי שתייה ו־12 רולדות שנשארו'),L('פינת הקפה לאוטובוס: מה שבמזוודה 2 + 9 העוגות + החלב'),L('האלכוהול מחנה – עם ספייר'),L('השתייה לחדרים, לעונג שבת ולשבת בבוקר'),L('שלטי ההכוונה וערכת ההפקה')],[],'המזוודות 1 ו־2 הריקות נשארות במלון. השתייה לחדרים ולשבת יכולה להישאר במלון אם אין מקום.')}
+  ${leg('🚌','שדה ← קרעסטיר','חמישי 11:30 · אתה וצביקה',[bl('5'),L('האורגן – מאיציק שרייבר'),L('האלכוהול לקרעסטיר')],[L('התיקים, השתייה ופינת הקפה – לתוך האוטובוס')],'מזוודות 3, 4, 6, 7, 9 נוסעות בבטן האוטובוס.')}
+  ${leg('🍽','קרעסטיר ← מלון','חמישי אחרי הסעודה · אתה, צביקה ובני',[bl('4'),bl('6'),bl('7'),bl('9'),L('80 עלונים – משלומי, ביד'),L('האלכוהול שלא נפתח')],[L('מזוודה 5: המגשים לדרקסלר, סט הקוויטל, התפריט והשלט'),L('האורגן והאלכוהול לשולחנות')],'את 4, 6, 7, 9 מעבירים מבטן האוטובוס לרכב בזמן הסעודה.')}
+  ${leg('🛏','במלון','חמישי בלילה',[],[L('הכל לסידור החדרים ולפינת הקפה'),L('מה שלעונג שבת – לחנה, לשלום הולד')],'')}`}
 function mplanBody(){
   const {st,L}=mpFlat(),by=MPB(),dn=L.filter(r=>mpOn(r.k)).length,pct=L.length?Math.round(dn/L.length*100):0;
-  const first=L.findIndex(r=>!mpOn(r.k));
-  const v=MPV||(GUEST()?(dn?'step':'sum'):'all');
-  const tabs=`<div class="mpt" role="tablist">${[['sum','📝 תקציר'],['step','👉 משימה אחרי משימה'],['all','📋 כל המשימות']].map(([k,l])=>`<button role="tab" data-mpv="${k}" aria-selected="${v===k}">${l}</button>`).join('')}</div>`;
-  const hero=`<section class="mp-hero"><div class="mp-ring" style="--p:${pct}"><b class="num">${pct}%</b></div><div><small>${GUEST()?'התפקיד שלך במסע':'מעקב אחרי משה – המפיק בשטח'}</small><b>${dn<L.length?`בוצעו <span class="num">${dn}</span> מתוך <span class="num">${L.length}</span>`:'הכל בוצע! 🎉'}</b><span>${GUEST()?'כל ✓ שלך מגיע מיד לשלומי ולאיציק':'כל סימון של משה מופיע כאן מיד, עם שעה'}</span></div></section>`;
+  const first=L.findIndex(r=>!mpOn(r.k)), ci=mpCur(st), cs=st[ci];
+  let v=MPV||'now';if(v==='step')v='now';if(v==='all')v='plan';
+  const tabs=`<div class="mpt mpt5" role="tablist">${[['now','⚡','עכשיו'],['plan','🗓','כל התוכנית'],['shop','🛒','קניות'],['load','🚗','ברכב'],['sum','📝','תקציר']].map(([k,i,l])=>`<button role="tab" data-mpv="${k}" aria-selected="${v===k}"><span>${i}</span>${l}</button>`).join('')}</div>`;
+  const hero=`<section class="mp-hero"><div class="mp-ring" style="--p:${pct}"><b class="num">${pct}%</b></div><div><small>${GUEST()?'התפקיד שלך במסע':'מעקב אחרי משה – המפיק בשטח'}</small><b>${dn<L.length?`בוצעו <span class="num">${dn}</span> מתוך <span class="num">${L.length}</span>`:'הכל בוצע! 🎉'}</b><span>${cs?`עכשיו: ${esc(cs.ic||'')} ${esc(cs.t)}`:''}</span></div></section>`;
   const home=GUEST()?`<button class="mps-home" data-gnav="gh">🏠 חזרה למסך הבית</button>`:`<button class="mps-home" data-back>› חזרה</button>`;
   if(v==='sum')return hero+tabs+mpSummary()+home;
-  if(v==='step'){
-    let i=MPI==null?(first<0?L.length-1:first):Math.max(0,Math.min(L.length-1,MPI));MPI=i;const r=L[i],on=mpOn(r.k);
-    return hero+tabs+`<section class="mps ${on?'on':''}">
-      <div class="mps-top"><span>משימה <b class="num">${r.n}</b> מתוך <span class="num">${L.length}</span></span><span>${esc(r.s.when)}</span></div>
-      <div class="mps-st">שלב ${r.si+1} · ${esc(r.s.t)}</div>
-      <div class="mps-dots">${L.map((x,j)=>`<i class="${mpOn(x.k)?'d':''}${j===i?' c':''}"></i>`).join('')}</div>
-      <h3 class="mps-t">${r.t}</h3>${r.sub?`<p class="mps-sub">${r.sub}</p>`:''}${r.s.intro&&r.s.rows[0]===r?`<p class="mps-sub">${r.s.intro}</p>`:''}
-      ${r.extra?`<div class="mp-e mps-e">${r.extra}</div>`:''}${mpCards(mpWho(r))}
-      ${on&&by[r.k]?`<p class="mps-by">✓ בוצע · ${esc(by[r.k])}</p>`:''}
+  if(v==='shop')return hero+tabs+mpShopView()+home;
+  if(v==='load')return hero+tabs+mpLoadView()+home;
+  if(v==='now'){
+    const late=L.filter(r=>r.si<ci&&!mpOn(r.k));
+    const inSt=L.filter(r=>r.si===ci);
+    let i=MPI!=null?Math.max(0,Math.min(L.length-1,MPI)):(()=>{const a=inSt.find(r=>!mpOn(r.k));if(a)return a.n-1;const b=L.find(r=>r.si>ci&&!mpOn(r.k));return b?b.n-1:(first<0?L.length-1:first)})();
+    MPI=i;const r=L[i],on=mpOn(r.k),s=r.s,sd=s.rows.filter(x=>mpOn(x.k)).length,nx=st[r.si+1];
+    const rest=s.rows.filter(x=>x!==r);
+    return hero+tabs+(late.length&&r.si===ci?`<button class="mp-late" data-mpv="plan">⚠ נשארו <b class="num">${late.length}</b> משימות לא מסומנות משלבים קודמים ›</button>`:'')+
+     `<section class="mp-stage"><div class="mp-stage-h"><span class="mp-stage-ic">${esc(s.ic||'')}</span><div><small>${r.si===ci?'⚡ עכשיו · ':''}${esc(s.when)}</small><b>${esc(s.t)}</b></div><span class="num mp-stage-c">${sd}/${s.rows.length}</span></div><i class="mp-bar"><i style="width:${s.rows.length?Math.round(sd/s.rows.length*100):0}%"></i></i>${s.intro?`<p class="mp-i">${s.intro}</p>`:''}${mpStageTools(s)}</section>
+     <section class="mps ${on?'on':''}"><div class="mps-top"><span>משימה <b class="num">${r.n}</b> מתוך <span class="num">${L.length}</span></span>${on&&by[r.k]?`<span>✓ ${esc(by[r.k])}</span>`:''}</div>
+      <h3 class="mps-t">${r.t}</h3>${r.sub?`<p class="mps-sub">${r.sub}</p>`:''}${r.extra?`<div class="mp-e mps-e">${r.extra}</div>`:''}${mpCards(mpWho(r))}
       <button class="mps-done ${on?'undo':''}" data-mpdone="${esc(r.k)}" data-i="${i}">${on?'↺ לבטל את הסימון':'✓ בוצע – לבאה'}</button>
-      <div class="mps-nav"><button data-mpi="${i-1}" ${i?'':'disabled'}>› הקודמת</button><button data-mpi="${first<0?i:first}" ${first<0||first===i?'disabled':''}>⏩ הבאה שלא בוצעה</button><button data-mpi="${i+1}" ${i<L.length-1?'':'disabled'}>הבאה ‹</button></div></section>`+home}
-  // full list – for following everything
-  const next=first<0?null:L[first];
-  const row=r=>{const on=mpOn(r.k);return `<div class="mp-r ${on?'on':''}${next===r?' cur':''}${r.c?' buy':''}" id="mpr_${r.n}"><button class="mp-x" data-mp="${esc(r.k)}" aria-pressed="${on}" aria-label="${on?'בוצע – לחיצה מבטלת':'לסמן שבוצע'}"><span>${on?'✓':r.n}</span></button><div class="mp-t"><button class="mp-hit" data-mpi="${r.n-1}" data-mpv="step"><b>${r.t}</b>${r.sub?`<small>${r.sub}</small>`:''}</button>${on&&by[r.k]?`<span class="mp-by">✓ ${esc(by[r.k])}</span>`:''}${r.extra?`<div class="mp-e">${r.extra}</div>`:''}${on?'':mpCards(mpWho(r))}</div></div>`};
-  const over=st.map((s,i)=>{const d=s.rows.filter(r=>mpOn(r.k)).length,p=s.rows.length?Math.round(d/s.rows.length*100):0;return `<button class="mp-ov ${d===s.rows.length?'done':''}" data-mpgo="${s.k}"><span class="mp-on">${d===s.rows.length?'✓':i+1}</span><span class="mp-ot"><b>${esc(s.t)}</b><small>${esc(s.when)}</small><i class="mp-bar"><i style="width:${p}%"></i></i></span><span class="mp-oc num">${d}/${s.rows.length}</span></button>`}).join('');
+      <div class="mps-nav"><button data-mpi="${i-1}" data-mpv="now" ${i?'':'disabled'}>› הקודמת</button><button data-mpi="${i+1}" data-mpv="now" ${i<L.length-1?'':'disabled'}>הבאה ‹</button></div></section>
+     ${rest.length?`<section class="mp-rest"><header>עוד בשלב הזה</header>${rest.map(x=>{const o=mpOn(x.k);return `<div class="mp-rr ${o?'on':''}"><button class="mp-x" data-mp="${esc(x.k)}" aria-pressed="${o}"><span>${o?'✓':x.n}</span></button><button class="mp-hit" data-mpi="${x.n-1}" data-mpv="now"><b>${x.t}</b></button></div>`}).join('')}</section>`:''}
+     ${nx?`<button class="mp-nextst" data-mpi="${(nx.rows[0]||{}).n-1}" data-mpv="now"><small>אחר כך · ${esc(nx.when)}</small><b>${esc(nx.ic||'')} ${esc(nx.t)}</b><span>‹</span></button>`:''}`+home}
+  // the whole plan, stage by stage
+  const row=r=>{const on=mpOn(r.k);return `<div class="mp-r ${on?'on':''}" id="mpr_${r.n}"><button class="mp-x" data-mp="${esc(r.k)}" aria-pressed="${on}" aria-label="${on?'בוצע – לחיצה מבטלת':'לסמן שבוצע'}"><span>${on?'✓':r.n}</span></button><div class="mp-t"><button class="mp-hit" data-mpi="${r.n-1}" data-mpv="now"><b>${r.t}</b>${r.sub?`<small>${r.sub}</small>`:''}</button>${on&&by[r.k]?`<span class="mp-by">✓ ${esc(by[r.k])}</span>`:''}${r.extra&&!on?`<div class="mp-e">${r.extra}</div>`:''}${on?'':mpCards(mpWho(r))}</div></div>`};
+  const over=st.map((s,i)=>{const d=s.rows.filter(r=>mpOn(r.k)).length,p=s.rows.length?Math.round(d/s.rows.length*100):0;return `<button class="mp-ov ${d===s.rows.length?'done':''}${i===ci?' cur':''}" data-mpgo="${s.k}"><span class="mp-on">${d===s.rows.length?'✓':esc(s.ic||String(i+1))}</span><span class="mp-ot"><b>${esc(s.t)}</b><small>${i===ci?'⚡ עכשיו · ':''}${esc(s.when)}</small><i class="mp-bar"><i style="width:${p}%"></i></i></span><span class="mp-oc num">${d}/${s.rows.length}</span></button>`}).join('');
   const secs=st.map((s,i)=>{const d=s.rows.filter(r=>mpOn(r.k)).length,all=d===s.rows.length;
-    return `<section class="mp-s ${all?'done':''}" id="mps_${s.k}"><header class="mp-sh"><span class="mp-n">${all?'✓':i+1}</span><span class="mp-h"><small>${esc(s.when)}</small><b>${esc(s.t)}</b></span><span class="mp-c num">${d}/${s.rows.length}</span></header>${s.intro?`<p class="mp-i">${s.intro}</p>`:''}${s.rows.map(row).join('')}</section>`}).join('');
-  return hero+tabs+(next?`<section class="mp-next"><small>👉 הצעד הבא · משימה ${next.n}</small><b>${next.t}</b><div class="mp-nb"><button class="mp-done" data-mp="${esc(next.k)}">✓ בוצע</button><button class="mp-a" data-mpi="${next.n-1}" data-mpv="step">לפרטים ›</button></div></section>`:'')+`<div class="mp-ovs">${over}</div>${secs}`+home}
+    return `<section class="mp-s ${all?'done':''}${i===ci?' cur':''}" id="mps_${s.k}"><header class="mp-sh"><span class="mp-n">${all?'✓':esc(s.ic||String(i+1))}</span><span class="mp-h"><small>${i===ci?'⚡ עכשיו · ':''}${esc(s.when)}</small><b>${esc(s.t)}</b></span><span class="mp-c num">${d}/${s.rows.length}</span></header>${s.intro?`<p class="mp-i">${s.intro}</p>`:''}${mpStageTools(s)}${s.rows.map(row).join('')}</section>`}).join('');
+  return hero+tabs+`<div class="mp-ovs">${over}</div>${secs}`+home}
 const mpSet=(k,on)=>{const who=GUEST()?((meG()||{}).name||''):(typeof ME==='string'?ME:'');
   return gset('settings/mplan',{kind:'mplan',done:{[k]:on},by:{[k]:on?firstN(who)+' · '+new Date().toLocaleString('he-IL',{weekday:'short',hour:'2-digit',minute:'2-digit'}):''}})};
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target;if(!t)return;
   const g=t.closest('[data-mpgo]');if(g){e.preventDefault();e.stopPropagation();const el=document.getElementById('mps_'+g.dataset.mpgo);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});return}
-  const nv=t.closest('[data-mpi],[data-mpv]');if(nv&&!nv.disabled&&!t.closest('[data-mp]')){e.preventDefault();e.stopPropagation();if(nv.dataset.mpv)MPV=nv.dataset.mpv;if(nv.dataset.mpi!=null&&nv.dataset.mpi!=='')MPI=+nv.dataset.mpi;render();window.scrollTo({top:0});return}
+  const nv=t.closest('[data-mpi],[data-mpv]');if(nv&&!nv.disabled&&!t.closest('[data-mp]')){e.preventDefault();e.stopPropagation();if(nv.dataset.mpv)MPV=nv.dataset.mpv;if(nv.dataset.mpi!=null&&nv.dataset.mpi!=='')MPI=+nv.dataset.mpi;else if(nv.dataset.mpv)MPI=null;render();window.scrollTo({top:0});return}
   const dn=t.closest('[data-mpdone]');if(dn){e.preventDefault();e.stopPropagation();const k=dn.dataset.mpdone,on=!mpOn(k);
-    mpSet(k,on).then(ok=>{if(!ok)return;if(on){toast('✓ מעולה');MPI=+dn.dataset.i+1;window.scrollTo({top:0})}render()});return}
+    mpSet(k,on).then(ok=>{if(!ok)return;if(on){toast('✓ מעולה');const {L}=mpFlat();const n=L.findIndex((r,j)=>j>+dn.dataset.i&&!mpOn(r.k));MPI=n<0?null:n;window.scrollTo({top:0})}render()});return}
   const b=t.closest('[data-mp]');if(b){e.preventDefault();e.stopPropagation();const k=b.dataset.mp,on=!mpOn(k);mpSet(k,on).then(ok=>{if(ok&&on)toast('✓ סומן')})}},true);
 // room kit: exactly what goes into each room (organizers + the room team)
 const RK_OK=me=>!!(me&&['p27','p63','p66'].includes(me._id));
@@ -7838,7 +7891,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='85dfc40532';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='2ce25c7102';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
