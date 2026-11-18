@@ -6946,6 +6946,7 @@ const bagPicsHTML=(b,ro)=>{bagPicsLoad(b.n);const L=BAGPICS[b.n],can=!GUEST()||!
     const a=t.closest('[data-bpadd]');if(a){e.preventDefault();e.stopPropagation();N=a.dataset.bpadd;f.click();return}
     const v=t.closest('[data-bpview]');if(v){e.preventDefault();e.stopPropagation();sheet(`<img src="${v.src}" alt="" style="width:100%;border-radius:14px"><div class="sheet-acts"><span class="sp"></span><button class="btn" data-close>סגירה</button></div>`);return}
     // bag photos stay: no deleting from the app
+  },true);
   f.addEventListener('change',async()=>{const L=[...(f.files||[])].slice(0,6);f.value='';if(!L.length||!N)return;const me=GUEST()?meG():null,by=me?me.name:(typeof ME==='string'?ME:'');let ok=0;toast('מעלה…');
     for(const x of L){try{const im=await shrinkImg(x,1100,.72),ts=Date.now();await db.doc('photobig/bp_'+N+'_'+ts.toString(36)).set({kind:'bagpic',bag:N,src:im.d,w:im.w,h:im.h,by,ts});ok++}catch(e){console.warn('bagpic',e)}}
     bagPicsLoad(N,1);toast(ok?'התמונה נשמרה':'ההעלאה לא הצליחה')})})();
@@ -8047,7 +8048,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='6295cebe22';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='b00c5525ea';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
