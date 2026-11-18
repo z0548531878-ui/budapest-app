@@ -2972,6 +2972,17 @@ html:has(#scrim.open) #app :is(*,*::before,*::after){animation-play-state:paused
 .bpfs{opacity:0;transform:scale(.96);transition:opacity .25s,transform .3s cubic-bezier(.2,.8,.2,1)}.bpfs.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){.bps,.bps-b,.bpk,.bph,.bpk-pass,.bpk-pass::after,.bpk-pl em,.bps-ok{animation:none!important}}
 .bpm{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:10px 0}.bpm-i{display:flex;flex-direction:column;gap:6px}.bpm-i img{width:100%;border-radius:10px;background:#fff;max-height:220px;object-fit:cover;object-position:top}.bpm-i select{min-height:44px;border-radius:10px;font:600 15px var(--body)}
+.tpop{position:fixed;inset:0;z-index:9000;background:rgba(5,4,2,0);display:flex;align-items:flex-start;justify-content:center;padding:calc(env(safe-area-inset-top) + 12px) 12px 12px;transition:background .3s}.tpop.in{background:rgba(5,4,2,.55);backdrop-filter:blur(3px)}
+.tpop-c{position:relative;overflow:hidden;width:100%;max-width:520px;max-height:80vh;overflow-y:auto;padding:16px;border-radius:24px;border:1px solid rgba(214,178,98,.6);background:radial-gradient(120% 100% at 85% 0,rgba(214,170,80,.25),transparent 60%),linear-gradient(165deg,#1f1911,#0c0a07);box-shadow:0 24px 50px -10px rgba(0,0,0,.7),0 0 0 1px rgba(255,235,170,.08) inset;transform:translateY(-120%);transition:transform .45s cubic-bezier(.2,.9,.25,1.15)}
+.tpop.in .tpop-c{transform:none}.tpop-c>*:not(.bp-foil){position:relative;z-index:1}
+.tpop-c header{display:flex;align-items:center;gap:10px;margin-bottom:10px}.tpop-c header div{flex:1;display:flex;flex-direction:column}.tpop-c header b{font-size:18px;color:#f6e7bf}.tpop-c header small{color:#cdb98a}
+.tpop-i{font-size:28px;animation:tpopBell 1.6s .5s ease-in-out 2}@keyframes tpopBell{0%,100%{transform:rotate(0)}20%{transform:rotate(-14deg)}40%{transform:rotate(12deg)}60%{transform:rotate(-8deg)}80%{transform:rotate(5deg)}}
+.tpop-x{width:40px;height:40px;border-radius:50%;border:1px solid rgba(214,178,98,.4);background:rgba(214,178,98,.1);color:#f0d28c;font-size:18px;cursor:pointer}
+.tpop-t{margin:8px 0;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid rgba(214,178,98,.25);animation:riIn .5s calc(.25s + var(--i)*.1s) cubic-bezier(.2,.85,.25,1.1) both}.tpop-t b{display:block;font-size:16.5px;line-height:1.4;color:#f3ead6}.tpop-t p{margin:6px 0 0;font-size:14px;color:#cdb98a;line-height:1.5}
+.tpop-t.done{opacity:.55}.tpop-t.done b{text-decoration:line-through}
+.tpop-a{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px}
+.tpop-close{display:block;width:100%;margin-top:10px;padding:12px;border-radius:14px;border:0;background:rgba(214,178,98,.12);color:#f0d28c;font:800 15px var(--body);cursor:pointer}
+@media (prefers-reduced-motion:reduce){.tpop-c,.tpop-i,.tpop-t{animation:none!important;transition:none!important}}
 .mpt5{gap:4px;padding:4px}.mpt5 button{min-height:54px;font-size:12.5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:4px 2px}.mpt5 button span{font-size:18px;line-height:1}
 .mp-stage{margin:10px 0;padding:14px 16px;border-radius:18px;background:linear-gradient(160deg,rgba(214,178,98,.16),rgba(214,178,98,.04));border:1px solid rgba(214,178,98,.45)}
 .mp-stage-h{display:flex;align-items:center;gap:12px}.mp-stage-h>div{flex:1;display:flex;flex-direction:column}.mp-stage-h small{color:#f0d28c;font-weight:800;font-size:13px}.mp-stage-h b{font-size:20px;line-height:1.25}
@@ -3525,7 +3536,7 @@ function money(){
 }
 
 function render(anim){
-  renderNav();renderBadge();
+  renderNav();renderBadge();setTimeout(taskPop,700);
   const v=document.getElementById('view');
   const a=document.activeElement, keep=a&&a.id&&v.contains(a)?{id:a.id,val:a.value,pos:a.selectionStart}:null;
   const html=(V.tab==='more'&&V.sub?SUB[V.sub]:VIEWS[V.tab]||VIEWS.home)(),hk=navKey()+'|'+(V.seg||'');
@@ -7206,6 +7217,19 @@ function bpStrip(ppl){ppl=(ppl||[]).filter(p=>p&&p.name);if(!ppl.length)return '
    <div class="bps-l">${L.map(({p,b})=>b?`<button class="bps-b on" data-bpshow="${esc(b._id)}"><span class="bps-qr" aria-hidden="true"></span><span><b>${esc(firstN(p.name))}</b><small>👆 לחיצה לפתיחה</small></span></button>`
      :`<button class="bps-b" data-bpup="${esc(p._id)}" data-bpdir="${esc(d)}"><span class="bps-plus">＋</span><span><b>${esc(firstN(p.name))}</b><small>להעלות כרטיס</small></span></button>`).join('')}</div>
    <button class="bps-more" data-gnav="gbp">כל הכרטיסים – הלוך וחזור ›</button></section>`}
+// a participant with a task gets it popping up on top every time the app is opened (not Moshe – he has his own plan)
+let TPOP=0,TPOPHID=0;
+document.addEventListener('visibilitychange',()=>{if(document.hidden)TPOPHID=Date.now();else if(TPOPHID&&Date.now()-TPOPHID>20*6e4){TPOP=0;setTimeout(taskPop,800)}});
+function taskPop(){try{if(TPOP||!GUEST()||document.querySelector('.tpop'))return;const me=meG();if(!me||me._id==='p63'||(GTAB&&GTAB!=='gh'))return;
+  const ppl=coupleOf(me),L=myTasks(ppl).filter(t=>t.status!=='בוצע'&&t.claimStatus!=='ממתין לאישור');if(!L.length)return;TPOP=1;
+  const ov=document.createElement('div');ov.className='tpop';
+  ov.innerHTML=`<div class="tpop-c" role="dialog" aria-label="המשימות שלך"><i class="bp-foil" aria-hidden="true"></i><header><span class="tpop-i">📌</span><div><b>${L.length>1?`יש לך ${L.length} משימות במסע`:'יש לך משימה במסע'}</b><small>${esc(firstN(me.name))}, זה מה שמחכה לך</small></div><button class="tpop-x" aria-label="סגירה">✕</button></header>
+   ${L.map((t,i)=>`<div class="tpop-t" style="--i:${i}"><b>${esc(t.title)}</b>${t.notes?`<p>${esc(t.notes)}</p>`:''}<div class="tpop-a">${t.due?`<span class="pill p-mute num">${esc(dayHe(t.due))} ${fmtDate(t.due)}</span>`:'<span></span>'}<button class="btn primary" data-g-done="${t._id}">✅ סיימתי</button></div></div>`).join('')}
+   <button class="tpop-close">סגירה · אזכיר בפתיחה הבאה</button></div>`;
+  document.body.appendChild(ov);requestAnimationFrame(()=>requestAnimationFrame(()=>ov.classList.add('in')));
+  const close=()=>{ov.classList.remove('in');setTimeout(()=>ov.remove(),350)};
+  ov.querySelector('.tpop-x').onclick=close;ov.querySelector('.tpop-close').onclick=close;
+  ov.addEventListener('click',e=>{if(e.target===ov){close();return}const d=e.target.closest('[data-g-done]');if(d){const el=d.closest('.tpop-t');setTimeout(()=>{if(el){el.classList.add('done');d.replaceWith(Object.assign(document.createElement('span'),{className:'pill p-ok',textContent:'בוצעה ✓'}))}if(!ov.querySelector('.tpop-t:not(.done)'))setTimeout(close,1100)},0)}})}catch(e){console.warn('tpop',e)}}
 // boarding passes: one per traveller per direction. The picture (and the original PDF) live in photobig in pieces, the card in settings
 const BPCH=700000,BPURL={},BP_DRIVE='https://drive.google.com/drive/folders/1mOQcXRAMMufp6_u2uyuF3AMIt5UZscPA',BP_WA='972539626126';
 const bpList=()=>S.settings.filter(x=>x.kind==='bpass'&&!x.hidden);
@@ -8048,7 +8072,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='f590a39b46';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='ba969604f5';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
