@@ -2934,6 +2934,43 @@ html:has(#scrim.open) #app :is(*,*::before,*::after){animation-play-state:paused
 .bpo{display:flex;align-items:center;gap:10px;padding:8px 6px;border-top:1px solid rgba(255,255,255,.06)}.bpo b{flex:1;font-size:15.5px}.bpo-s{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:rgba(255,255,255,.08);font-weight:900}.bpo.on .bpo-s{background:#7fd1a5;color:#0b2a1a}
 .bpfs{position:fixed;inset:0;z-index:9999;background:#fff;color:#111;display:flex;flex-direction:column}.bpfs header{display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top) + 10px) 14px 10px;border-bottom:1px solid #eee}.bpfs header b{font-size:15px}.bpfs header button{width:44px;height:44px;border-radius:50%;border:0;background:#f1f1f1;font-size:20px;cursor:pointer}
 .bpfs-b{flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:8px}.bpfs-b img{width:100%;max-width:900px;height:auto;cursor:zoom-in}.bpfs-b.zoom{justify-content:flex-start}.bpfs-b.zoom img{width:240%;max-width:none;cursor:zoom-out}.bpfs footer{text-align:center;padding:10px 10px calc(env(safe-area-inset-bottom) + 10px);color:#666;font-size:13px}
+/* boarding passes in the app's own look: dark glass, gold edges, a foil sweep and a ticket that asks to be tapped */
+.bps,.bpk,.bph{position:relative;overflow:hidden;isolation:isolate}
+.bps .bp-foil,.bpk .bp-foil{z-index:0}.bps>*:not(.bp-foil),.bpk>*:not(.bp-foil){position:relative;z-index:1}
+.bps{margin:12px 0;padding:16px 14px 10px;border-radius:26px;border:1px solid rgba(214,178,98,.5);background:radial-gradient(120% 100% at 85% 0,rgba(214,170,80,.22),transparent 60%),linear-gradient(165deg,#1c1710,#0c0a07);box-shadow:0 18px 40px -18px rgba(214,170,80,.45),inset 0 1px 0 rgba(255,235,170,.18);animation:rdyIn .8s cubic-bezier(.2,.85,.25,1.1) both}
+.bps.ok{border-color:rgba(127,209,165,.55);background:radial-gradient(120% 100% at 85% 0,rgba(127,209,165,.18),transparent 60%),linear-gradient(165deg,#13190f,#0a0c07)}
+.bps header b{font-size:17.5px;color:#f6e7bf}.bps header small{color:#cdb98a}.bps-i{font-size:30px;filter:drop-shadow(0 4px 10px rgba(214,170,80,.4))}
+.bps-ok{background:linear-gradient(135deg,#7fd1a5,#b9f0cf);color:#0b2a1a;animation:bpsPing 2.6s ease-out infinite}
+.bps-b{position:relative;border:1.5px dashed rgba(214,178,98,.55);background:rgba(214,178,98,.06);transition:transform .15s;animation:riIn .6s cubic-bezier(.2,.85,.25,1.1) both}.bps-b:nth-child(2){animation-delay:.12s}.bps-b:active{transform:scale(.97)}
+.bps-b small{color:#cdb98a}.bps-plus{background:linear-gradient(135deg,rgba(214,178,98,.35),rgba(214,178,98,.12));color:#ffe9a8}
+.bps-b.on{border:0;background:linear-gradient(135deg,#f6e3ae,#d6b262 55%,#b8862f);color:#1d1a14;box-shadow:0 10px 24px -8px rgba(214,170,80,.7),inset 0 1px 0 rgba(255,255,255,.5);animation:riIn .6s cubic-bezier(.2,.85,.25,1.1) both,bpsGlow 2.4s 1s ease-in-out infinite}
+.bps-b.on small{color:#3b2e12;font-weight:800}
+.bps-b.on::before,.bps-b.on::after{content:'';position:absolute;top:50%;width:14px;height:14px;margin-top:-7px;border-radius:50%;background:#0f0d09}.bps-b.on::before{left:-7px}.bps-b.on::after{right:-7px}
+.bps-qr{border-color:#1d1a14;background:conic-gradient(#1d1a14 0 25%,#f6e3ae 0 50%,#1d1a14 0 75%,#f6e3ae 0) 0 0/10px 10px}
+.bps-more{color:#d6b262}
+@keyframes bpsGlow{0%,100%{box-shadow:0 10px 24px -8px rgba(214,170,80,.6),0 0 0 0 rgba(255,220,140,0)}50%{box-shadow:0 10px 28px -6px rgba(214,170,80,.9),0 0 0 6px rgba(255,220,140,.12)}}
+@keyframes bpsPing{0%{box-shadow:0 0 0 0 rgba(127,209,165,.55)}70%,100%{box-shadow:0 0 0 10px rgba(127,209,165,0)}}
+.bph{border-radius:24px;background:radial-gradient(120% 100% at 85% 0,rgba(214,170,80,.22),transparent 60%),linear-gradient(165deg,#1c1710,#0c0a07);border:1px solid rgba(214,178,98,.5);animation:rdyIn .7s cubic-bezier(.2,.85,.25,1.1) both}.bph b{color:#f6e7bf}
+.bp-dh{display:flex;align-items:center;gap:8px}.bp-dh::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(214,178,98,.5))}
+.bpk{margin:12px 0 18px;border-radius:24px;background:linear-gradient(150deg,#221c11,#0f0d09);color:#f3ead6;border:1px solid rgba(214,178,98,.45);box-shadow:0 18px 40px -20px rgba(214,170,80,.5),inset 0 1px 0 rgba(255,235,170,.15);animation:bpIn .8s cubic-bezier(.2,.8,.2,1) both}
+.bpk.has{border-color:rgba(214,178,98,.75)}
+.bpk-top{background:linear-gradient(120deg,rgba(214,178,98,.28),rgba(214,178,98,.06));color:#f6e7bf;border-bottom:1px solid rgba(214,178,98,.3)}
+.bpk-route b{color:#f2cb7c;text-shadow:0 2px 14px rgba(242,203,124,.35)}.bpk-route small{color:#a69a7d}
+.bpk-pl{height:24px;align-self:center}.bpk-pl i{position:absolute;top:50%;left:8px;right:8px;border-top:2px dashed rgba(214,178,98,.4)}.bpk-pl:before{display:none}
+.bpk-pl em{position:absolute;top:50%;left:6%;font-style:normal;color:#f2cb7c;transform:translateY(-55%);animation:bpkFly 4.5s ease-in-out infinite;filter:drop-shadow(0 0 6px rgba(242,203,124,.6))}
+@keyframes bpkFly{0%{left:4%;opacity:0}12%{opacity:1}85%{opacity:1}100%{left:86%;opacity:0}}
+.bpk-grid small{color:#a69a7d}.bpk-grid b{color:#f3ead6}
+.bpk-cut{border-top-color:rgba(214,178,98,.35)}.bpk-cut:before,.bpk-cut:after{background:#0c0a07;box-shadow:inset 0 0 0 1px rgba(214,178,98,.45)}
+.bpk-pass{position:relative;overflow:hidden;gap:6px;padding:18px 16px 16px;background:linear-gradient(135deg,#f6e3ae,#d6b262 55%,#b8862f);color:#1d1a14;box-shadow:0 12px 26px -10px rgba(214,170,80,.8),inset 0 1px 0 rgba(255,255,255,.5);animation:bpsGlow 2.4s 1s ease-in-out infinite}
+.bpk-pass::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.55) 48%,transparent 62%);transform:translateX(-120%);animation:bpFoil 3.6s 1.2s ease-in-out infinite;pointer-events:none}
+.bpk-pass b{font-size:19px}.bpk-hint{color:#3b2e12!important;opacity:1!important;font-weight:700}.bpk-pass:active{transform:scale(.98)}
+.bpk-qr{width:46px;height:46px;border-radius:8px;border:4px solid #1d1a14;background:conic-gradient(#1d1a14 0 25%,#f6e3ae 0 50%,#1d1a14 0 75%,#f6e3ae 0) 0 0/12px 12px}
+.bpk-ok{background:#1d1a14!important;color:#b9f0cf!important}
+.bpk .mp-a{background:rgba(214,178,98,.1);color:#f0d28c;border-color:rgba(214,178,98,.35)}
+.bpk-none b{color:#f6e7bf}.bpk-none small{color:#a69a7d}
+.bpk-up{background:linear-gradient(135deg,#f6e3ae,#d6b262 55%,#b8862f);box-shadow:0 10px 22px -10px rgba(214,170,80,.8)}.bpk-wa{color:#7fd1a5}
+.bpfs{opacity:0;transform:scale(.96);transition:opacity .25s,transform .3s cubic-bezier(.2,.8,.2,1)}.bpfs.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.bps,.bps-b,.bpk,.bph,.bpk-pass,.bpk-pass::after,.bpk-pl em,.bps-ok{animation:none!important}}
 .mpt5{gap:4px;padding:4px}.mpt5 button{min-height:54px;font-size:12.5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:4px 2px}.mpt5 button span{font-size:18px;line-height:1}
 .mp-stage{margin:10px 0;padding:14px 16px;border-radius:18px;background:linear-gradient(160deg,rgba(214,178,98,.16),rgba(214,178,98,.04));border:1px solid rgba(214,178,98,.45)}
 .mp-stage-h{display:flex;align-items:center;gap:12px}.mp-stage-h>div{flex:1;display:flex;flex-direction:column}.mp-stage-h small{color:#f0d28c;font-weight:800;font-size:13px}.mp-stage-h b{font-size:20px;line-height:1.25}
@@ -7161,8 +7198,8 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target;if(!t)r
 function bpStrip(ppl){ppl=(ppl||[]).filter(p=>p&&p.name);if(!ppl.length)return '';
   const out=ppl.map(p=>bpFl(p,'הלוך')).find(Boolean),d=out&&Date.now()>fltAt(out)+6*36e5?'חזור':'הלוך';
   const L=ppl.map(p=>({p,b:bpOf(p._id,d),f:bpFl(p,d)})).filter(x=>x.f),all=L.length&&L.every(x=>x.b);if(!L.length)return '';
-  return `<section class="bps ${all?'ok':''}"><header><span class="bps-i">🎫</span><div><b>${all?'כרטיסי העלייה מוכנים':'כרטיס העלייה למטוס'}</b><small>${all?`טיסת ${d} · נגיעה פותחת את הכרטיס במסך מלא`:'אחרי הצ׳ק־אין מעלים לכאן – והצ׳ק־אין מסתמן לבד'}</small></div>${all?'<span class="bps-ok">✓ צ׳ק־אין</span>':''}</header>
-   <div class="bps-l">${L.map(({p,b})=>b?`<button class="bps-b on" data-bpshow="${esc(b._id)}"><span class="bps-qr" aria-hidden="true"></span><span><b>${esc(firstN(p.name))}</b><small>להצגה בשדה ›</small></span></button>`
+  return `<section class="bps ${all?'ok':''}"><i class="bp-foil" aria-hidden="true"></i><header><span class="bps-i">🎫</span><div><b>${all?'כרטיסי העלייה מוכנים':'כרטיס העלייה למטוס'}</b><small>${all?`טיסת ${d} · לוחצים על הכרטיס – והוא נפתח במסך מלא`:'אחרי הצ׳ק־אין מעלים לכאן – והצ׳ק־אין מסתמן לבד'}</small></div>${all?'<span class="bps-ok">✓ צ׳ק־אין</span>':''}</header>
+   <div class="bps-l">${L.map(({p,b})=>b?`<button class="bps-b on" data-bpshow="${esc(b._id)}"><span class="bps-qr" aria-hidden="true"></span><span><b>${esc(firstN(p.name))}</b><small>👆 לחיצה לפתיחה</small></span></button>`
      :`<button class="bps-b" data-bpup="${esc(p._id)}" data-bpdir="${esc(d)}"><span class="bps-plus">＋</span><span><b>${esc(firstN(p.name))}</b><small>להעלות כרטיס</small></span></button>`).join('')}</div>
    <button class="bps-more" data-gnav="gbp">כל הכרטיסים – הלוך וחזור ›</button></section>`}
 // boarding passes: one per traveller per direction. The picture (and the original PDF) live in photobig in pieces, the card in settings
@@ -7191,11 +7228,11 @@ async function bpUpload(file,pid,dir){if(!db)throw {msg:'אין חיבור'};if(
 // the ticket itself
 function bpTicket(p,dir,org){const f=bpFl(p,dir),b=bpOf(p._id,dir),out=dir==='הלוך',from=out?'TLV':'BUD',to=out?'BUD':'TLV';
   const nm=String(p.name||'').trim(),wa=`https://wa.me/${BP_WA}?text=${encodeURIComponent(`היי שלומי, מצרף את כרטיס העלייה למטוס של ${nm} (${dir}${f?' · '+(f.flightNo||''):''})`)}`;
-  return `<article class="bpk ${b?'has':''}"><header class="bpk-top"><span class="bpk-air">${esc(bpAir(f))}</span><span class="bpk-dir">${out?'הלוך':'חזור'} · BOARDING PASS</span></header>
-   <div class="bpk-route"><div><b>${from}</b><small>${out?'תל אביב':'בודפשט'}</small></div><span class="bpk-pl">✈</span><div><b>${to}</b><small>${out?'בודפשט':'תל אביב'}</small></div></div>
+  return `<article class="bpk ${b?'has':''}"><i class="bp-foil" aria-hidden="true"></i><header class="bpk-top"><span class="bpk-air">${esc(bpAir(f))}</span><span class="bpk-dir">${out?'הלוך':'חזור'} · BOARDING PASS</span></header>
+   <div class="bpk-route"><div><b>${from}</b><small>${out?'תל אביב':'בודפשט'}</small></div><span class="bpk-pl"><i></i><em>✈</em></span><div><b>${to}</b><small>${out?'בודפשט':'תל אביב'}</small></div></div>
    <div class="bpk-grid"><div><small>נוסע/ת</small><b>${esc(nm)}</b></div><div><small>טיסה</small><b class="num">${esc(f&&f.flightNo||'—')}</b></div><div><small>תאריך</small><b>${esc(f?bpDate(f.date):'—')}</b></div><div><small>המראה</small><b class="num">${esc(f&&f.dep||'—')}</b></div></div>
    <div class="bpk-cut" aria-hidden="true"></div>
-   ${b?`<button class="bpk-pass" data-bpshow="${esc(b._id)}"><span class="bpk-ok">✓ הכרטיס מוכן</span><b>לחצו להצגה בשדה</b><small>${esc(b.by?'הועלה ע״י '+b.by:'')}</small></button>
+   ${b?`<button class="bpk-pass" data-bpshow="${esc(b._id)}"><span class="bpk-ok">✓ הכרטיס מוכן</span><span class="bpk-qr" aria-hidden="true"></span><b>👆 לחצו לפתיחת הכרטיס</b><small class="bpk-hint">נפתח במסך מלא – להצגה בבידוק ובשער</small><small>${esc(b.by?'הועלה ע״י '+b.by:'')}</small></button>
      <div class="bpk-acts">${b.pn?`<button class="mp-a" data-bppdf="${esc(b._id)}">📄 הקובץ המקורי</button>`:''}<button class="mp-a" data-bpup="${esc(p._id)}" data-bpdir="${esc(dir)}">↻ להחליף</button>${org?`<button class="mp-a" data-bpdel2="${esc(b._id)}">🗑 למחוק</button>`:''}</div>`
    :`<div class="bpk-none"><b>עוד אין כרטיס עלייה</b><small>אחרי הצ׳ק־אין: צילום מסך של הכרטיס או קובץ PDF</small>
      <button class="bpk-up" data-bpup="${esc(p._id)}" data-bpdir="${esc(dir)}">📎 להעלות את הכרטיס</button>${org?'':`<a class="bpk-wa" href="${wa}" target="_blank" rel="noopener">💬 או לשלוח לשלומי בוואטסאפ – והוא יעלה</a>`}</div>`}</article>`}
@@ -7217,7 +7254,7 @@ function bpOrgBody(){const P=S.participants.filter(p=>p.name&&!p.kerOnly),d=BPDI
      ${g.L.map(p=>{const b=bpOf(p._id,d);return `<div class="bpo ${b?'on':''}"><span class="bpo-s">${b?'✓':'·'}</span><b>${esc(p.name)}</b>${b?`<button class="mp-a" data-bpshow="${esc(b._id)}">🎫 להציג</button>`:`<button class="mp-a" data-bpup="${esc(p._id)}" data-bpdir="${esc(d)}">📎 להעלות</button>`}</div>`}).join('')}</section>`}).join('')}`}
 SUB.bpass=function(){return subHead('כרטיסי טיסה')+bpOrgBody()};
 // full-screen pass for the gate: white, big, screen kept awake
-async function bpShow(id){const b=bpList().find(x=>x._id===id);if(!b)return;const ov=document.createElement('div');ov.className='bpfs';ov.innerHTML=`<header><b>${esc(b.name||'')} · ${esc(b.dir||'')}${b.flight?' · '+esc(b.flight):''}</b><button aria-label="סגירה">✕</button></header><div class="bpfs-b"><span class="gspin"></span></div><footer>☀ מגבירים את בהירות המסך · נגיעה בכרטיס מגדילה את הברקוד</footer>`;document.body.appendChild(ov);
+async function bpShow(id){const b=bpList().find(x=>x._id===id);if(!b)return;const ov=document.createElement('div');ov.className='bpfs';requestAnimationFrame(()=>ov.classList.add('in'));ov.innerHTML=`<header><b>${esc(b.name||'')} · ${esc(b.dir||'')}${b.flight?' · '+esc(b.flight):''}</b><button aria-label="סגירה">✕</button></header><div class="bpfs-b"><span class="gspin"></span></div><footer>☀ מגבירים את בהירות המסך · נגיעה בכרטיס מגדילה את הברקוד</footer>`;document.body.appendChild(ov);
   let wl=null;try{wl=await navigator.wakeLock.request('screen')}catch(e){}
   const close=()=>{try{wl&&wl.release()}catch(e){}ov.remove()};ov.querySelector('header button').onclick=close;
   try{const u=await bpLoad(b);const bx=ov.querySelector('.bpfs-b');bx.innerHTML=`<img src="${u}" alt="כרטיס העלייה למטוס של ${esc(b.name||'')}">`;bx.querySelector('img').onclick=()=>bx.classList.toggle('zoom')}catch(e){ov.querySelector('.bpfs-b').innerHTML='<p>הכרטיס לא נטען. בדקו את החיבור ונסו שוב.</p>'}}
@@ -7987,7 +8024,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='be2bad7b63';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='d9f7106879';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
