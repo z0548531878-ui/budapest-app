@@ -7157,6 +7157,7 @@ function mpStages(){
      mpRow('hsigns','לתלות במלון את שלטי ההכוונה',`השלטים – ${esc(wh('s17'))} · סלוטייפ בערכת ההפקה`),
      mpRow('fridge','את העוגות של פינת הקפה במלון – למקרר הגדול בחדר שלך','הן במזוודה של חיים בלוך · נשארות במקרר עד שישי בבוקר',mpUl(kit('ערכה לפינת קפה').filter(x=>/עוג|פס /.test(x.item||'')).map(li))),
      mpRow('roomkit','להכין את הסט לחדר',`לכל אחד מ־<span class="num">${rooms}</span> החדרים · <b>תחתית ממותגת מתחת לכל פחית ובקבוק</b> · <b>2 עלונים: אחד עם הכריכה למעלה, ואחד הפוך – על התוכנייה</b> · <b>מדבקת "בתיאבון" על כל עוגה</b> (המדבקות במזוודה של יוסי אליעד)`,mpUl(roomKit.map(({x,per})=>`<li><span>${esc(x.item)}</span><b class="num">${per}</b><small>${esc(mpWhere(x))}</small></li>`))),
+     mpRow('eliroom','החדר של אלי ביטון – סט קטן','הוא מצטרף חדש וישן כנראה לבד, ואת החדר הוא סגר בעצמו – לברר איתו את מספר החדר · לשים: 3 בקבוקי שתייה (קולה זירו, מים, מיץ תפוזים), 2 עלונים, סידור עדות המזרח, ופס עוגה אחד מפינת הקפה · בלי חטיפים ובלי מכתב',(()=>{const m=S.participants.find(x=>x._id==='p69');return m?mpCall(m,'📞 אלי ביטון'):''})()),
      mpRow('rooms','להניח סט בכל חדר – עם המכתב האישי והסידורים בנוסח של מי שגר בו',`<b class="num">${rp.n}</b> מתוך <span class="num">${rp.t}</span> חדרים כבר סומנו · ברשימת החדרים כתוב ליד כל חדר של מי המכתב ואיזה נוסח סידור לשים בו`,GUEST()?`<button class="mp-a" data-gnav="gs">🛏 לרשימת החדרים</button>`:`<button class="mp-a" data-sub="rooms">🛏 לרשימת החדרים</button>`),
      mpRow('tohana','להקפיץ לחנה את כל מה שלעונג שבת ולשבת בבוקר, ולמסור לשלום הולד','הלילה, או מחר בבוקר · השתייה שקנית + מה שהגיע מהארץ:',mpUl([...kit('ערכה לעונג שבת'),...kit('ערכה לשבת בבוקר')].filter(x=>!/פירות/.test(x.item||'')).map(li)))]},
    {k:'s6',at:'2026-11-20T06:00:00+01:00',end:'2026-11-21T18:00:00+01:00',ic:'🕍',where:[[HOTEL.q,'מלון'],['Hanna Kosher Restaurant Kazinczy 29 Budapest','חנה']],kits:['khcafe','koneg'],when:'שישי 20.11',t:'הכנות לשבת',intro:'שאר הקניות נעשו ביום חמישי בבוקר',rows:[
@@ -8142,7 +8143,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='07670b090c';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='5d0de3af55';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
