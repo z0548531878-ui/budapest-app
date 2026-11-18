@@ -7252,10 +7252,19 @@ function bpOrgBody(){const P=S.participants.filter(p=>p.name&&!p.kerOnly),d=BPDI
   groups.sort((a,b)=>String(a.f&&a.f.date||'9')+String(a.f&&a.f.dep||'')<String(b.f&&b.f.date||'9')+String(b.f&&b.f.dep||'')?-1:1);
   return `<div class="khero"><div><b class="num">${has.length}/${P.length}</b><span>כרטיסי ${d}</span></div><div><b class="num">${P.length-has.length}</b><span>עוד חסרים</span></div></div>
    <div class="mpt" role="tablist">${['הלוך','חזור'].map(x=>`<button role="tab" data-bpdirtab="${x}" aria-selected="${d===x}">${x==='הלוך'?'🛫 הלוך':'🛬 חזור'}</button>`).join('')}</div>
-   <div class="mp-tools" style="margin:10px 0"><a class="mp-a" href="${BP_DRIVE}" target="_blank" rel="noopener">📁 התיקייה בדרייב</a></div>
+   ${(()=>{const nd=bpList().filter(b=>!b.drive).length;return `<div class="mp-tools" style="margin:10px 0"><a class="mp-a" href="${BP_DRIVE}" target="_blank" rel="noopener">📁 התיקייה בדרייב</a>${nd?`<button class="mp-a" data-bpexp="share">📤 לשמור בדרייב מהטלפון (${nd})</button><button class="mp-a" data-bpexp="json">📦 קובץ לשליחה ל־Claude (${nd})</button>`:'<span class="note">✓ כל הכרטיסים כבר בדרייב</span>'}</div>`})()}
    ${BPBUSY?`<p class="note"><span class="gspin"></span> ${esc(BPBUSY)}</p>`:''}
    ${groups.map(g=>{const n=g.L.filter(p=>bpOf(p._id,d)).length;return `<section class="mp-sg"><header><b>${g.f?`✈ ${esc(g.f.flightNo||'')} · ${esc(bpDate(g.f.date))} · ${esc(g.f.dep||'')}`:'בלי טיסה משותפת'}</b><small class="num">${n}/${g.L.length} כרטיסים</small></header>
      ${g.L.map(p=>{const b=bpOf(p._id,d);return `<div class="bpo ${b?'on':''}"><span class="bpo-s">${b?'✓':'·'}</span><b>${esc(p.name)}</b>${b?`<button class="mp-a" data-bpshow="${esc(b._id)}">🎫 להציג</button>`:`<button class="mp-a" data-bpup="${esc(p._id)}" data-bpdir="${esc(d)}">📎 להעלות</button>`}</div>`}).join('')}</section>`}).join('')}`}
+// passes uploaded in the app that are not in the Drive folder yet: share them from the phone, or bundle them into one file for Claude
+async function bpExport(how){const L=bpList().filter(b=>!b.drive);if(!L.length){toast('הכל כבר בדרייב');return}BPBUSY='מכין את הכרטיסים…';render();
+  try{const nm=b=>`${b.name||'נוסע'} – ${b.dir||''} ${String(b.flight||'').replace(/\s+/g,'')}`.trim();
+    if(how==='json'){const out=[];for(const b of L){const img=await bpLoad(b);let pdf='';if(b.pn){const parts=await Promise.all([...Array(b.pn)].map((_,i)=>db.doc('photobig/bp_'+b._id+'_pdf_'+i).get().then(d=>d.exists?d.data().src:'')));pdf=parts.join('')}out.push({id:b._id,pid:b.pid,name:b.name,dir:b.dir,flight:b.flight,title:nm(b),img,pdf})}
+      const blob=new Blob([JSON.stringify({kind:'bpass-export',at:Date.now(),items:out})],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`boarding-passes_${new Date().toISOString().slice(0,16).replace(/[:T]/g,'-')}.json`;document.body.appendChild(a);a.click();a.remove();toast('הקובץ ירד – שלחו אותו ל־Claude')}
+    else{const files=[];for(const b of L){if(b.pn){const u=await bpLoad(b,1),bl=await (await fetch(u)).blob();files.push(new File([bl],nm(b)+'.pdf',{type:'application/pdf'}))}else{const bl=await (await fetch(await bpLoad(b))).blob();files.push(new File([bl],nm(b)+'.jpg',{type:'image/jpeg'}))}}
+      if(navigator.canShare&&navigator.canShare({files})){await navigator.share({files,title:'כרטיסי טיסה'});toast('בחרו Drive ואת התיקייה "כרטיסי טיסה"')}
+      else{for(const f of files){const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();a.remove()}toast('הקבצים ירדו לטלפון')}}}
+  catch(e){if(!(e&&e.name==='AbortError'))toast('לא הצלחתי להכין את הקבצים');console.warn('bpexp',e)}BPBUSY='';render()}
 SUB.bpass=function(){return subHead('כרטיסי טיסה')+bpOrgBody()};
 // full-screen pass for the gate: white, big, screen kept awake
 async function bpShow(id){const b=bpList().find(x=>x._id===id);if(!b)return;const ov=document.createElement('div');ov.className='bpfs';requestAnimationFrame(()=>ov.classList.add('in'));ov.innerHTML=`<header><b>${esc(b.name||'')} · ${esc(b.dir||'')}${b.flight?' · '+esc(b.flight):''}</b><button aria-label="סגירה">✕</button></header><div class="bpfs-b"><span class="gspin"></span></div><footer>☀ מגבירים את בהירות המסך · נגיעה בכרטיס מגדילה את הברקוד</footer>`;document.body.appendChild(ov);
@@ -7268,6 +7277,7 @@ async function bpShow(id){const b=bpList().find(x=>x._id===id);if(!b)return;cons
     const sh=t.closest('[data-bpshow]');if(sh){e.preventDefault();e.stopPropagation();bpShow(sh.dataset.bpshow);return}
     const pd=t.closest('[data-bppdf]');if(pd){e.preventDefault();e.stopPropagation();const b=bpList().find(x=>x._id===pd.dataset.bppdf);if(!b)return;toast('פותח…');try{const u=await bpLoad(b,1);const a=document.createElement('a');a.href=u;a.target='_blank';a.download=(b.name||'boarding')+'.pdf';document.body.appendChild(a);a.click();a.remove()}catch(x){toast('לא נפתח')}return}
     const dl=t.closest('[data-bpdel2]');if(dl){e.preventDefault();e.stopPropagation();if(!confirm('למחוק את הכרטיס?'))return;try{await db.doc('settings/'+dl.dataset.bpdel2).set({hidden:true},{merge:true});toast('נמחק')}catch(x){toast('לא הצלחתי למחוק')}return}
+    const ex=t.closest('[data-bpexp]');if(ex){e.preventDefault();e.stopPropagation();bpExport(ex.dataset.bpexp);return}
     const dt=t.closest('[data-bpdirtab]');if(dt){e.preventDefault();BPDIR=dt.dataset.bpdirtab;render();return}},true);
   f.addEventListener('change',async()=>{const x=(f.files||[])[0];f.value='';if(!x||!T)return;const tg=T;
     if(/pdf/i.test(x.type||'')||/\.pdf$/i.test(x.name||'')){let pages=null;try{BPBUSY='קורא את הקובץ…';render();pages=await bpPdfAll(x)}catch(e){console.warn('pdf',e)}BPBUSY='';render();
@@ -8035,7 +8045,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='67c42514b5';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='bf35ba50ce';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
