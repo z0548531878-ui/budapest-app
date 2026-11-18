@@ -1,22 +1,44 @@
-# Read-only: search Wikimedia Commons for image files (results as annotations)
+# Read-only: search Wikimedia Commons for image files. Full results go to branch commons-out (out.json); short summary as annotations.
 name: Commons search
 on:
   workflow_dispatch:
     inputs:
-      q: { description: search text, required: true }
-permissions: { contents: read }
+      q: { description: "search texts separated by |  (or titles:File:A.jpg|File:B.jpg to check exact files)", required: true }
+      tag: { description: "result file name", required: false, default: "out" }
+permissions: { contents: write }
 jobs:
   search:
     runs-on: ubuntu-24.04
     steps:
-      - env: { Q: "${{ inputs.q }}" }
+      - env: { Q: "${{ inputs.q }}", TAG: "${{ inputs.tag }}" }
         run: |
+          mkdir -p /tmp/p && cd /tmp/p
           python3 - <<'PY'
-          import json,os,urllib.request,urllib.parse
-          q=os.environ['Q']
-          for qq in q.split('|'):
-            u='https://commons.wikimedia.org/w/api.php?action=query&list=search&srnamespace=6&srlimit=15&format=json&srsearch='+urllib.parse.quote(qq)
-            r=json.load(urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'trivia-bot/1.0'})))
-            t=[x['title'] for x in r['query']['search']]
-            print('::notice title='+qq+'::'+' || '.join(t)[:1800])
+          import json,os,urllib.request,urllib.parse,time
+          H={'User-Agent':'trivia-bot/1.0 (github actions)'}
+          def get(u): return json.load(urllib.request.urlopen(urllib.request.Request(u,headers=H)))
+          q=os.environ['Q']; out={}
+          if q.startswith('titles:'):
+            T=[t.strip() for t in q[7:].split('|') if t.strip()]
+            for k in range(0,len(T),40):
+              part=T[k:k+40]
+              u='https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=imageinfo&iiprop=size|mime&titles='+urllib.parse.quote('|'.join(part))
+              r=get(u); norm={n['from']:n['to'] for n in r['query'].get('normalized',[])}
+              pages={p['title']:p for p in r['query']['pages'].values()}
+              for t in part:
+                p=pages.get(norm.get(t,t),{})
+                ii=(p.get('imageinfo') or [{}])[0]
+                out[t]={'exists':'missing' not in p and bool(ii),'w':ii.get('width'),'h':ii.get('height'),'mime':ii.get('mime')}
+          else:
+            for qq in [x for x in q.split('|') if x.strip()]:
+              u='https://commons.wikimedia.org/w/api.php?action=query&format=json&generator=search&gsrnamespace=6&gsrlimit=12&prop=imageinfo&iiprop=size&gsrsearch='+urllib.parse.quote(qq)
+              try:
+                r=get(u); ps=sorted(r.get('query',{}).get('pages',{}).values(),key=lambda p:p.get('index',0))
+                out[qq]=[[p['title'],(p.get('imageinfo') or [{}])[0].get('width'),(p.get('imageinfo') or [{}])[0].get('height')] for p in ps]
+              except Exception as e: out[qq]=str(e)
+              time.sleep(0.2)
+          json.dump(out,open(os.environ['TAG']+'.json','w'),ensure_ascii=False,indent=0)
+          print('::notice::done',len(out))
           PY
+          git init -q && git checkout -q -b commons-out && git add -A && git -c user.name=bot -c user.email=bot@x commit -qm r
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" commons-out
