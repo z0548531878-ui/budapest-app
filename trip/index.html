@@ -6934,18 +6934,18 @@ const orgRoom=()=>{const me=orgSelf();return me&&me.roomId?S.rooms.find(x=>x._id
 SUB.myroom=function(){const me=orgSelf();return subHead('החדר שלי','')+(RHID()?'<p class="note" style="margin:0 0 10px">🔒 השיבוץ עדיין לא פורסם למשתתפים. רק המארגנים רואים אותו.</p>':'')+roomScreen(me?coupleOf(me):[])};
 /* ===== suitcases: what travels in which bag; bags live in settings/bags, items point to a bag by its code ===== */
 const BAGS=()=>{const d=S.settings.find(x=>x._id==='bags');return (d&&Array.isArray(d.list)?d.list:[]).filter(b=>b&&b.n)};
-const bagItems=n=>S.packing.filter(x=>x.item&&x.bag===n).sort((a,b)=>(a.bagOrder||a.order||0)-(b.bagOrder||b.order||0));
+const bagItems=n=>S.packing.filter(x=>x.item&&x.bag===n&&!x.inSet).sort((a,b)=>(a.bagOrder||a.order||0)-(b.bagOrder||b.order||0));
 let BAGSEL='';
 // photos of each suitcase, so whoever collects it knows what it looks like: stored in photobig as bp_<bag>_<ts>, loaded when the suitcase is opened
 const BAGPICS={};let BPLOAD={};
 function bagPicsLoad(n,force){if(!db||(BPLOAD[n]&&!force))return;BPLOAD[n]=1;db.collection('photobig').where('bag','==',n).get().then(q=>{BAGPICS[n]=q.docs.map(d=>({...d.data(),_id:d.id})).filter(x=>x.kind==='bagpic').sort((a,b)=>a.ts-b.ts);render()}).catch(e=>{BPLOAD[n]=0;console.warn('bagpics',e)})}
 const bagPicsHTML=(b,ro)=>{bagPicsLoad(b.n);const L=BAGPICS[b.n],can=!GUEST()||!ro;
-  return `<div class="bp"><div class="bp-h"><b>📷 איך המזוודה נראית</b>${can?`<button class="mp-a" data-bpadd="${esc(b.n)}">＋ הוספת תמונה</button>`:''}</div>${L==null?'<small class="note">טוען…</small>':L.length?`<div class="bp-l">${L.map(p=>`<span class="bp-i"><img src="${p.src}" alt="תמונה של מזוודה ${esc(b.n)}" data-bpview="${esc(p._id)}" data-bpbag="${esc(b.n)}" loading="lazy">${!GUEST()?`<button class="bp-x" data-bpdel="${esc(p._id)}" data-bpbag="${esc(b.n)}" aria-label="מחיקת התמונה">✕</button>`:''}</span>`).join('')}</div>`:'<small class="note">עוד אין תמונה</small>'}</div>`};
+  return `<div class="bp"><div class="bp-h"><b>📷 איך המזוודה נראית</b>${can?`<button class="mp-a" data-bpadd="${esc(b.n)}">＋ הוספת תמונה</button>`:''}</div>${L==null?'<small class="note">טוען…</small>':L.length?`<div class="bp-l">${L.map(p=>`<span class="bp-i"><img src="${p.src}" alt="תמונה של מזוודה ${esc(b.n)}" data-bpview="${esc(p._id)}" data-bpbag="${esc(b.n)}" loading="lazy"></span>`).join('')}</div>`:'<small class="note">עוד אין תמונה</small>'}</div>`};
 (()=>{const f=document.createElement('input');f.type='file';f.accept='image/*';f.multiple=true;f.hidden=true;f.id='bpFile';document.body.appendChild(f);let N='';
   document.addEventListener('click',async e=>{const t=e.target.closest&&e.target;if(!t)return;
     const a=t.closest('[data-bpadd]');if(a){e.preventDefault();e.stopPropagation();N=a.dataset.bpadd;f.click();return}
     const v=t.closest('[data-bpview]');if(v){e.preventDefault();e.stopPropagation();sheet(`<img src="${v.src}" alt="" style="width:100%;border-radius:14px"><div class="sheet-acts"><span class="sp"></span><button class="btn" data-close>סגירה</button></div>`);return}
-    const d=t.closest('[data-bpdel]');if(d){e.preventDefault();e.stopPropagation();if(!confirm('למחוק את התמונה?'))return;try{await db.doc('photobig/'+d.dataset.bpdel).delete();bagPicsLoad(d.dataset.bpbag,1);toast('נמחקה')}catch(x){toast('לא הצלחתי למחוק')}}},true);
+    // bag photos stay: no deleting from the app
   f.addEventListener('change',async()=>{const L=[...(f.files||[])].slice(0,6);f.value='';if(!L.length||!N)return;const me=GUEST()?meG():null,by=me?me.name:(typeof ME==='string'?ME:'');let ok=0;toast('מעלה…');
     for(const x of L){try{const im=await shrinkImg(x,1100,.72),ts=Date.now();await db.doc('photobig/bp_'+N+'_'+ts.toString(36)).set({kind:'bagpic',bag:N,src:im.d,w:im.w,h:im.h,by,ts});ok++}catch(e){console.warn('bagpic',e)}}
     bagPicsLoad(N,1);toast(ok?'התמונה נשמרה':'ההעלאה לא הצליחה')})})();
@@ -8047,7 +8047,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='46392ee523';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='6295cebe22';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
