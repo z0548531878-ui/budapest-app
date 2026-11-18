@@ -6277,6 +6277,8 @@ function guestHTML0(){
       const todo=sc(needs.length?'bad':'ok',needs.length?I.tasks:`<span style="font-size:26px">✓</span>`,'עוד מעט סיימנו',needs.length?`${needs.length===1?'דבר אחד':needs.length+' דברים'}`:'הכל מסודר',needs.length?needs.map(x=>x[1]).join(' · '):'אין לכם מה להשלים',needs.length?'<span class="sc-go">‹</span>':'','button',needs.length?'data-gnav="gf"':'');
       return `<div class="gst">${pay}${pass}${nav}${todo}</div>`})();
     const ready=(()=>{
+      // once the couple has checked in for the flight out (or saved the boarding passes) this whole card steps aside
+      {const fo=flyElAl(ppl)?elalFlights(ppl).filter(x=>x.dir==='הלוך'):[];if(fo.length&&fo.every(x=>ciDoneFor(x.f,x.on)))return ''}
       const need=ppl.filter(x=>x.status!=='פטור'&&+x.amount>0),tot=need.reduce((a,x)=>a+(+x.amount||0),0),got=need.reduce((a,x)=>a+paidOf(x),0),dOp=gDon(ppl).filter(d=>d.status!=='התקבל').reduce((a,d)=>a+(+d.amount||0),0),tripOk=!need.length||got>=tot,payOk=tripOk&&!dOp,passOk=ppl.every(x=>x.passport);
       // each item counts by how much of it is done: half the payment, one passport of two
       const pf=payOk?1:(tot+dOp)?Math.min(1,got/(tot+dOp)):0, hasP=ppl.filter(x=>x.passport), sf=ppl.length?hasP.length/ppl.length:1;
@@ -7985,7 +7987,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='1436bbda6f';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='be2bad7b63';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
