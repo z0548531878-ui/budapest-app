@@ -1827,10 +1827,7 @@ body.guest .ghome .greet b{font-size:36px;text-shadow:0 0 28px rgba(240,210,140,
 .ri.bad{border-color:rgba(255,160,120,.55);background:rgba(255,140,100,.08)}.ri.mid{border-color:rgba(240,200,110,.6);background:rgba(240,200,110,.09)}.ri-p{font-style:normal;font-size:12px;font-weight:800;color:#f6dc93;background:rgba(240,200,110,.16);border-radius:99px;padding:1px 7px;margin-inline-start:4px}.ri.bad .ri-c{animation:nudge 1.4s ease-in-out infinite}
 @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}@keyframes nudge{50%{transform:translateX(-5px)}}
 .ri.rnav{background:transparent;border-style:dashed}
-@supports (animation-timeline:view()){
- .gc{animation:gcScroll linear both;animation-timeline:view();animation-range:entry 0% entry 70%}
- @keyframes gcScroll{from{opacity:0;transform:translateY(40px) scale(.9)}to{opacity:1;transform:none}}
-}
+
 .gc:active{transform:perspective(600px) rotateX(7deg) scale(.95)!important}
 .gc .gc-i{animation:floatI 4s ease-in-out infinite;animation-delay:calc(var(--i,0)*-.4s)}
 @keyframes floatI{50%{transform:translateY(-4px)}}
@@ -3535,13 +3532,20 @@ function money(){
   return {est,fin,out,pExp,pIn,pDue,coll,left,unpaid,dAll,dIn,income:pExp+dAll,gap:pExp+dAll-est};
 }
 
+let RSCR=0,RDEF=0;
+addEventListener('scroll',()=>{RSCR=Date.now()},{passive:true});addEventListener('touchmove',()=>{RSCR=Date.now()},{passive:true});
 function render(anim){
+  // a change from the server while the screen is being scrolled is drawn once the scroll stops, so nothing jumps or blinks under the finger
+  if(!anim&&Date.now()-RSCR<450){clearTimeout(RDEF);RDEF=setTimeout(()=>render(),500);return}
+  clearTimeout(RDEF);
   renderNav();renderBadge();setTimeout(taskPop,700);
   const v=document.getElementById('view');
   const a=document.activeElement, keep=a&&a.id&&v.contains(a)?{id:a.id,val:a.value,pos:a.selectionStart}:null;
   const html=(V.tab==='more'&&V.sub?SUB[V.sub]:VIEWS[V.tab]||VIEWS.home)(),hk=navKey()+'|'+(V.seg||'');
   if(!anim&&v.__k===hk&&v.__h===html)return;
+  const same=v.__k===hk,keepS=same?[...v.querySelectorAll('*')].map((el,i)=>el.scrollLeft||el.scrollTop?[i,el.className,el.scrollLeft,el.scrollTop]:null).filter(Boolean):[],y0=scrollY;
   v.__k=hk;v.__h=html;v.innerHTML=html;
+  if(same){const all=v.querySelectorAll('*');keepS.forEach(([i,c,l,t])=>{const el=all[i];if(el&&el.className===c){el.scrollLeft=l;el.scrollTop=t}});if(Math.abs(scrollY-y0)>2)window.scrollTo(0,y0)}
   // entrances play when a screen opens, not on every redraw (typing in search, a change from another phone)
   v.classList.remove('enter');v.classList.toggle('noanim',!anim); if(anim&&!reduce){void v.offsetWidth;v.classList.add('enter')}
   if(keep){const el=document.getElementById(keep.id);if(el&&'value' in el){el.value=keep.val;el.focus();try{el.setSelectionRange(keep.pos,keep.pos)}catch(e){}}}
@@ -7093,7 +7097,7 @@ function mpStages(){
      mpRow('rooms','להניח סט בכל חדר – עם המכתב האישי והסידורים בנוסח של מי שגר בו',`<b class="num">${rp.n}</b> מתוך <span class="num">${rp.t}</span> חדרים כבר סומנו · ברשימת החדרים כתוב ליד כל חדר של מי המכתב ואיזה נוסח סידור לשים בו`,GUEST()?`<button class="mp-a" data-gnav="gs">🛏 לרשימת החדרים</button>`:`<button class="mp-a" data-sub="rooms">🛏 לרשימת החדרים</button>`),
      mpRow('tohana','להקפיץ לחנה את כל מה שלעונג שבת ולשבת בבוקר, ולמסור לשלום הולד','הלילה, או מחר בבוקר · השתייה שקנית + מה שהגיע מהארץ:',mpUl([...kit('ערכה לעונג שבת'),...kit('ערכה לשבת בבוקר')].filter(x=>!/פירות/.test(x.item||'')).map(li)))]},
    {k:'s6',at:'2026-11-20T06:00:00+01:00',end:'2026-11-21T18:00:00+01:00',ic:'🕍',where:[[HOTEL.q,'מלון'],['Hanna Kosher Restaurant Kazinczy 29 Budapest','חנה']],kits:['khcafe','koneg'],when:'שישי 20.11',t:'הכנות לשבת',intro:'שאר הקניות נעשו ביום חמישי בבוקר',rows:[
-     mpRow('milkfri','חלב לשבת – לקנות בבוקר בסופר הכשר',milkFri.map(x=>`${esc(x.item)} × ${+x.qty||1}`).join(' · ')+' · קושר פיאץ, Dohány utca 36 · שישי עד 14:00 · לפינת הקפה במלון',KP),
+     mpRow('grape','בסופר הכשר: בקבוק מיץ ענבים קטן להבדלה','יחד עם החלב לשבת · קושר פיאץ · בתוך התקציב של הקניות – באשראי שלך'),mpRow('milkfri','חלב לשבת – לקנות בבוקר בסופר הכשר',milkFri.map(x=>`${esc(x.item)} × ${+x.qty||1}`).join(' · ')+' · קושר פיאץ, Dohány utca 36 · שישי עד 14:00 · לפינת הקפה במלון',KP),
      mpRow('hanaset','במסעדת חנה: להעמיד רולאפ ולתלות שלטי הכוונה',`רולאפ חנה – ${esc(wh('kp07'))} · השלטים – ${esc(wh('kp03'))}`,mpNav('Hanna Kosher Restaurant Kazinczy 29 Budapest','ניווט לחנה')),
      mpRow('place','למסור לשלום הולד את הפלייסמטים','הוא והצוות שלו מסדרים איתם את השולחנות לליל שבת',mpUl(kit('ערכה לליל שבת').map(li))),
      mpRow('coffee','שישי בבוקר – לפתוח את פינת הקפה בלובי','<b>כולל כל מה שנאסף מפינת הקפה באוטובוס</b> · מורידים מהמקרר בחדר <b>בערך חצי מהעוגות</b> ופותחים את כל הדברים של פינת הקפה · החצי השני נשאר במקרר לשבת בבוקר',mpUl(kit('ערכה לפינת קפה').map(li))),
@@ -7161,7 +7165,8 @@ function mpShopView(){const sh=mpShop(),n=sh.items.filter(r=>mpOn(r.k)).length;
    ${sh.G.map(g=>{const d=g.L.filter(r=>mpOn(r.k)).length;return `<section class="mp-sg"><header><b>${g.t}</b><small>${g.sub} · <span class="num">${d}/${g.L.length}</span></small>${g.q?mpNav(g.q,'ניווט'):''}</header>${g.L.map(line).join('')}</section>`}).join('')}
    <section class="mp-sg"><header><b>🥛 קושר פיאץ – הסופר הכשר</b><small>חלב רק משם · Dohány utca 36</small>${KP}</header>
     <button class="mpb ${mpOn('milkthu')?'on':''}" data-mp="milkthu"><span class="mpb-c">${mpOn('milkthu')?'✓':''}</span><span class="mpb-t"><b>חמישי: ${mT.map(x=>`${+x.qty||1} ${esc(x.item)}`).join(' · ')}</b><small>לפינת הקפה באוטובוס</small></span></button>
-    <button class="mpb ${mpOn('milkfri')?'on':''}" data-mp="milkfri"><span class="mpb-c">${mpOn('milkfri')?'✓':''}</span><span class="mpb-t"><b>שישי: ${mF.map(x=>`${+x.qty||1} ${esc(x.item)}`).join(' · ')}</b><small>לפינת הקפה במלון · שישי עד 14:00</small></span></button></section>`}
+    <button class="mpb ${mpOn('milkfri')?'on':''}" data-mp="milkfri"><span class="mpb-c">${mpOn('milkfri')?'✓':''}</span><span class="mpb-t"><b>שישי: ${mF.map(x=>`${+x.qty||1} ${esc(x.item)}`).join(' · ')}</b><small>לפינת הקפה במלון · שישי עד 14:00</small></span></button>
+    <button class="mpb ${mpOn('grape')?'on':''}" data-mp="grape"><span class="mpb-c">${mpOn('grape')?'✓':''}</span><span class="mpb-t"><b>שישי: בקבוק מיץ ענבים קטן</b><small>להבדלה במוצאי שבת</small></span></button></section>`}
 function mpLoadView(){const B=n=>BAGS().find(x=>x.n===n)||{},bl=n=>{const b=B(n);return b.n?`<li><span>מזוודה ${esc(n)} · ${esc(b.who||'')}</span><small>${esc((b.title||'').replace(/^מזוודה \d+ – /,''))}</small></li>`:''};
   const leg=(ic,t,when,inn,out,note)=>`<section class="mp-leg"><header><span>${ic}</span><div><b>${t}</b><small>${when}</small></div></header>${inn.length?`<div class="mp-lin"><em>⬆ נכנס לרכב</em><ul class="mp-l">${inn.join('')}</ul></div>`:''}${out&&out.length?`<div class="mp-lout"><em>⬇ יוצא מהרכב</em><ul class="mp-l">${out.join('')}</ul></div>`:''}${note?`<p class="mp-i">${note}</p>`:''}</section>`;
   const L=t=>`<li><span>${t}</span></li>`;
@@ -8072,7 +8077,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='bfade30420';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='219381cd7a';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
