@@ -3004,6 +3004,9 @@ html:has(#scrim.open) #app :is(*,*::before,*::after){animation-play-state:paused
 .glns>.gln:nth-child(odd)::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.4) 50%,transparent 65%);transform:translateX(-130%);animation:bpFoil 5s calc(1.5s + var(--i,0)*.35s) ease-in-out infinite;pointer-events:none}
 @keyframes glnIn{from{opacity:0;transform:translate3d(-28px,0,0)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.gln,.gln::after{animation:none!important}}
+.glns{gap:7px!important;margin:12px 0 6px!important}.gln{min-height:52px!important;padding:7px 14px!important;gap:12px!important;border-radius:16px!important}
+.gln-i{width:36px!important;height:36px!important;border-radius:11px!important;font-size:18px!important}.gln-i svg{width:18px!important;height:18px!important}
+.gln-t b{font-size:15.5px!important}.gln-t small{font-size:12px!important}.gln-c{font-size:19px!important}.gln-b{min-width:22px!important;height:22px!important;font-size:12px!important}
 .mpt5{gap:4px;padding:4px}.mpt5 button{min-height:54px;font-size:12.5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:4px 2px}.mpt5 button span{font-size:18px;line-height:1}
 .mp-stage{margin:10px 0;padding:14px 16px;border-radius:18px;background:linear-gradient(160deg,rgba(214,178,98,.16),rgba(214,178,98,.04));border:1px solid rgba(214,178,98,.45)}
 .mp-stage-h{display:flex;align-items:center;gap:12px}.mp-stage-h>div{flex:1;display:flex;flex-direction:column}.mp-stage-h small{color:#f0d28c;font-weight:800;font-size:13px}.mp-stage-h b{font-size:20px;line-height:1.25}
@@ -8114,7 +8117,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='54b456e98e';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='6133c8a661';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
