@@ -2980,6 +2980,24 @@ html:has(#scrim.open) #app :is(*,*::before,*::after){animation-play-state:paused
 .tpop-a{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px}
 .tpop-close{display:block;width:100%;margin-top:10px;padding:12px;border-radius:14px;border:0;background:rgba(214,178,98,.12);color:#f0d28c;font:800 15px var(--body);cursor:pointer}
 @media (prefers-reduced-motion:reduce){.tpop-c,.tpop-i,.tpop-t{animation:none!important;transition:none!important}}
+/* participant home: groups with a title, two tabs a row, gold and black like a chessboard */
+.gsecs{margin:14px 0 6px;display:flex;flex-direction:column;gap:14px}
+.hgrp{display:block!important}.hgrp-h{display:flex;align-items:baseline;gap:8px;margin:0 4px 8px;animation:glnIn .5s calc(var(--s,0)*.12s) both}.hgrp-h span{font-size:17px}.hgrp-h b{font-size:16px;color:#f2cb7c}.hgrp-h small{color:#a69a7d;font-size:12px;flex:1}
+.hgrp-h::after{content:'';flex:1;height:1px;align-self:center;background:linear-gradient(90deg,rgba(214,178,98,.45),transparent);max-width:30%}
+.glns2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.glns2>.gln{min-height:58px!important;padding:8px 10px!important;gap:8px!important;border-radius:16px!important}
+.glns2>.gln .gln-c{display:none}.glns2>.gln .gln-i{width:34px!important;height:34px!important;font-size:17px!important}
+.glns2>.gln .gln-t b{font-size:14.5px!important;line-height:1.2}.glns2>.gln .gln-t small{font-size:11.5px!important}
+.glns2>.gln .gln-b{position:absolute;top:5px;inset-inline-end:6px;min-width:20px!important;height:20px!important;font-size:11px!important}
+.glns2>.gln:nth-child(4n+1),.glns2>.gln:nth-child(4n+4){border:0;color:#1d1a14;background:linear-gradient(115deg,#f6e3ae,#d6b262 52%,#b8862f);box-shadow:0 10px 22px -14px rgba(214,170,80,.85),inset 0 1px 0 rgba(255,255,255,.55)}
+.glns2>.gln:nth-child(4n+2),.glns2>.gln:nth-child(4n+3){color:#f3ead6;border:1px solid rgba(214,178,98,.5);background:linear-gradient(160deg,#211b11,#0c0a07);box-shadow:0 10px 22px -16px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,235,170,.1)}
+.glns2>.gln:nth-child(4n+1) .gln-i,.glns2>.gln:nth-child(4n+4) .gln-i{background:rgba(29,26,20,.14);color:#1d1a14}
+.glns2>.gln:nth-child(4n+2) .gln-i,.glns2>.gln:nth-child(4n+3) .gln-i{background:rgba(214,178,98,.14);color:#f2cb7c;border:1px solid rgba(214,178,98,.3)}
+.glns2>.gln:nth-child(4n+1) .gln-t small,.glns2>.gln:nth-child(4n+4) .gln-t small{color:#3b2e12;opacity:1}.glns2>.gln:nth-child(4n+2) .gln-t small,.glns2>.gln:nth-child(4n+3) .gln-t small{color:#cdb98a}
+.glns2>.gln:nth-child(4n+1)::after,.glns2>.gln:nth-child(4n+4)::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.4) 50%,transparent 65%);transform:translateX(-130%);animation:bpFoil 5s calc(1.5s + var(--i,0)*.35s) ease-in-out infinite;pointer-events:none}
+.glns2>.gln:nth-child(4n+2)::before,.glns2>.gln:nth-child(4n+3)::before{content:'';position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:linear-gradient(110deg,transparent 30%,rgba(242,203,124,.85) 50%,transparent 70%) 0 0/250% 100%;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:glnEdge 4.5s calc(var(--i,0)*.3s) linear infinite;pointer-events:none}
+.glns2>.gln:only-child,.glns2>.gln:last-child:nth-child(odd){grid-column:1/-1}
+@media (prefers-reduced-motion:reduce){.hgrp-h,.glns2>.gln::before,.glns2>.gln::after{animation:none!important}}
 /* participant home tabs: a little life */
 .gln-i{animation:glnBob 3.6s calc(var(--i,0)*.23s) ease-in-out infinite}@keyframes glnBob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-3px) rotate(-4deg)}}
 .glns>.gln:nth-child(even)::before{content:'';position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:linear-gradient(110deg,transparent 30%,rgba(242,203,124,.85) 50%,transparent 70%) 0 0/250% 100%;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:glnEdge 4.5s calc(var(--i,0)*.3s) linear infinite;pointer-events:none}
@@ -6388,7 +6406,7 @@ function guestHTML0(){
       <div class="gh-l">${ORGS.map(([n,t])=>`<a class="gh-w" href="${waLink(t)}" target="_blank" rel="noopener" aria-label="וואטסאפ ל${n}">${IX.wa||'💬'}<span>${n}</span></a>`).join('')}<a class="gh-w sos" href="tel:112" aria-label="חירום 112">112</a></div></section>`;
     return pv+`<div class="ghome">${SKY}<div class="hello"><div class="greet"><small>${greeting()}</small><b>${esc(coupleLabel(ppl,me)||'')}</b>${dayMood()?`<span class="mood">${dayMood()}</span>`:''}</div><a class="trvp" href="${trvHref()}"><i class="trvp-sp" aria-hidden="true">${I.spark}</i><span class="trvp-t">טריוויה<br>על גלגלים</span><b class="trvp-go">לשחק ‹</b></a></div>
      ${TRIPDAY()?(todayISO()==='2026-11-19'&&first&&Date.now()<depAt(first)+4*36e5?passBlock:''):passBlock+extraOut}${nowCard('data-gnav="gl"')}${voiceCard()}${chCard(1)}${momentHTML()}${banner}${ciTasks(ppl).filter(c=>!c.done).map(ciCard).join('')}${TRIPDAY()?boardHTML(ppl)+tripDayBlock(ppl):ready+boardHTML(ppl)}
-     <div class="glns">
+     <div class="gsecs">
       ${(()=>{/* most used first; the order changes once the trip starts */
         const C={wnav:()=>lnk(mapsGo(HOTEL.q),IX.nav,'ניווט למלון','בבודפשט · גוגל מפס',1),wtaxi:()=>lnk(BOLT_URL,'🚕','הזמנת מונית','בחו״ל · Bolt',0),wdrv:()=>DRIVER_PHONE?lnk(waLink(DRIVER_PHONE,'אנחנו צריכים דרייבר לנתב״ג'),'🚐','הזמנת דרייבר','בארץ · בוואטסאפ',1):'',wsim:()=>cube('gn',IX.sim,'eSIM לחו״ל','אינטרנט בחו״ל · קוד הנחה'),
           gbp:()=>{const me=meG(),pp=coupleOf(me),n=['הלוך','חזור'].reduce((t,d)=>t+pp.filter(p=>bpOf(p._id,d)).length,0);return cube('gbp',I.plane,'כרטיס טיסה',n?`${n}/${pp.length*2} שמורים`:'להציג בשדה')},grk:()=>RK_OK(me)?cube('grk',I.box,'ערכה לחדר','מה שמים בכל חדר'):'',...Object.fromEntries(Object.keys(KTABS).map(k=>['g'+k,()=>KT_OK(me)?cube('g'+k,I.box,KTABS[k].t,KTABS[k].sub):''])),gmp:()=>mpOK(me)?cube('gmp',I.tasks,MP_FULL.includes(me._id)?'התפקיד שלי':'סידור החדרים','שלב אחרי שלב',(()=>{const c=mpCount();return c.t-c.d||''})()):'',gs:()=>me&&me.kitter?cube('gs',I.box,'סידור ערכות',(()=>{const rp=roomsPlaced();return rp.t?`${rp.n}/${rp.t} חדרים`:'באיזה חדר'})(),(()=>{const rp=roomsPlaced();return rp.t-rp.n||''})()):'',
@@ -6419,7 +6437,13 @@ function guestHTML0(){
         let ord=['gmp',...BASE.slice(0,2),...KIT,...BASE.slice(2)];
         if(mineT)ord=['gmp','gt',...ord.filter(k=>k!=='gmp'&&k!=='gt')];
         ord=[...ord,...['gkbus','gkbcafe','grk','gs','gkhcafe','gkoneg','gv','gkt','grm','gcn'].filter(k=>!ord.includes(k))];
-        return ord.map(k=>C[k]()).filter(Boolean).join('')})()}
+        // grouped so it's clear what each one is for: mine, the flight, in Budapest, the group – the groups follow the trip too
+        const away=ph==='ker'||ph==='fri'||ph==='shab';
+        const SEC={mine:['📌','שלי','משימות, מזוודה ותפקיד'],team:['🛠','צוות ההפקה','ערכות וסידורים'],fly:['✈️','טיסה ונסיעה','כרטיסים, טיסות ודרך לשדה'],bud:['🧭','בבודפשט','מקומות, ניווט וכלים'],grp:['👥','הקבוצה','הודעות, תמונות ומשתתפים']};
+        const secOf=k=>['gmp','gt','gbg'].includes(k)?'mine':/^gk[a-z]|^grk$|^gs$|^gv$|^gkt$|^grm$|^gcn$/.test(k)?'team':['gbp','gfl','gd','wdrv','wsim'].includes(k)||(k==='wtaxi'&&!away&&ph!=='home')?'fly':k==='wtaxi'&&ph==='home'?'fly':['gm','gi','gp'].includes(k)?'grp':'bud';
+        const SO=ph==='pre'||ph==='fly'||ph==='home'?['mine','fly','grp','team','bud']:['mine','grp','bud','team','fly'];
+        const H={};ord.forEach(k=>{const h=C[k]&&C[k]();if(h)(H[secOf(k)]=H[secOf(k)]||[]).push(h)});
+        return SO.filter(x=>H[x]&&H[x].length).map((x,si)=>`<div class="hgrp" style="--s:${si}"><div class="hgrp-h"><span>${SEC[x][0]}</span><b>${SEC[x][1]}</b><small>${SEC[x][2]}</small></div><div class="glns2">${H[x].join('')}</div></div>`).join('')})()}
      </div>
      ${flightGroups(ppl,'חזור').map(g=>guestFlightCard(g,ppl,'חזור')).join('')}
      ${help}</div>`}
@@ -8117,7 +8141,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='6133c8a661';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='54f6cc68e9';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
