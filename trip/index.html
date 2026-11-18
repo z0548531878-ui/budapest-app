@@ -6988,14 +6988,16 @@ document.addEventListener('change',async e=>{const i=e.target.closest&&e.target.
 SUB.prep=function(){
   const L=S.participants.filter(p=>p.name&&!p.kerOnly).sort((a,b)=>a.name.localeCompare(b.name,'he'));
   const fl=p=>elalFlights([p]);
-  const ciOk=p=>{const f=fl(p);return !f.length?null:f.every(x=>ciDoneOf(p).includes(x.f._id))};
-  const ciTxt=p=>{const f=fl(p);if(!f.length)return '<span class="pill p-mute">לא אל על</span>';return f.map(x=>{const d=ciDoneOf(p).includes(x.f._id);return `<span class="pill ${d?'p-ok':'p-warn'}">${x.dir} ${d?'✓':'✗'}</span>`}).join(' ')};
+  // the check-in that matters now: the flight out until it has left, then the flight home
+  const CD=Date.now()>Date.parse('2026-11-19T12:00:00+02:00')?'חזור':'הלוך';
+  const ciOk=p=>{const f=fl(p).filter(x=>x.dir===CD);return !f.length?null:f.every(x=>ciDoneOf(p).includes(x.f._id))};
+  const ciTxt=p=>{const f=fl(p);if(!f.length)return '<span class="pill p-mute">לא אל על</span>';return f.map(x=>{const d=ciDoneOf(p).includes(x.f._id),bp=typeof bpOf==='function'&&bpOf(p._id,x.dir);return `<span class="pill ${d?'p-ok':x.dir===CD?'p-warn':'p-mute'}">${x.dir} ${bp?'🎫':d?'✓':'✗'}</span>`}).join(' ')};
   const f=(V.filter&&V.filter.pf)||'all', insN=L.filter(p=>p.insDone).length, ciL=L.filter(p=>ciOk(p)!==null), ciN=ciL.filter(ciOk).length;
   const rows=L.filter(p=>f==='all'||(f==='ins'&&p.insDone)||(f==='noins'&&!p.insDone)||(f==='ci'&&ciOk(p)===true)||(f==='noci'&&ciOk(p)===false));
   const reps=S.settings.filter(x=>x.kind==='req'&&x.report).sort((a,b)=>(b.ts||0)-(a.ts||0)).slice(0,15);
-  return subHead('ביטוח וצ׳ק־אין',`<span class="cnt num">${L.length}</span>`)+`<div class="khero"><div><b class="num">${insN}/${L.length}</b><span>🛡 ביטוח</span></div><div><b class="num">${ciN}/${ciL.length}</b><span>✈ צ׳ק־אין (אל על)</span></div></div>
+  return subHead('ביטוח וצ׳ק־אין',`<span class="cnt num">${L.length}</span>`)+`<div class="khero"><div><b class="num">${insN}/${L.length}</b><span>🛡 ביטוח</span></div><div><b class="num">${ciN}/${ciL.length}</b><span>✈ צ׳ק־אין ${CD}</span></div></div>
    <div class="chips" role="group">${[['all','כולם',L.length],['ins','🛡 עשו ביטוח',insN],['noins','🛡 בלי ביטוח',L.length-insN],['ci','✈ עשו צ׳ק־אין',ciN],['noci','✈ בלי צ׳ק־אין',ciL.length-ciN]].map(([k,l,n])=>`<button class="chip" data-filter="pf" data-val="${k}" aria-pressed="${f===k}">${l} <span class="num">${n}</span></button>`).join('')}</div>
-   <p class="note">המשתתפים מסמנים באפליקציה שלהם "הזמנתי ביטוח" ו"עשיתי צ׳ק־אין", ומיד מגיעה התראה למארגנים.</p>
+   <p class="note">המשתתפים מסמנים באפליקציה שלהם "הזמנתי ביטוח" ו"עשיתי צ׳ק־אין". מי שכרטיס העלייה שלו שמור באפליקציה (🎫) – הצ׳ק־אין מסומן לו לבד. הספירה למעלה היא לטיסת ה${CD}.</p>
    ${rows.map(p=>`<div class="card" data-edit="participants/${p._id}" role="button" tabindex="0" style="padding:11px 13px;margin-bottom:8px;display:flex;align-items:center;gap:10px"><b style="flex:1;font-size:15px">${esc(p.name)}</b><span class="pill ${p.insDone?'p-ok':'p-warn'}">🛡 ${p.insDone?'✓':'✗'}</span>${ciTxt(p)}</div>`).join('')||'<div class="card"><div class="empty"><b>אין אף אחד בסינון הזה</b></div></div>'}
    ${reps.length?`<div class="ghead"><span>דיווחים אחרונים</span></div>`+reps.map(r=>`<div class="card" style="padding:10px 13px;margin-bottom:6px"><b>${esc(r.byName||'')}</b> · ${esc(r.text||'')}<small class="note" style="display:block;margin:2px 0 0">${new Date(r.ts||0).toLocaleString('he-IL',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'})}</small></div>`).join(''):''}`};
 // ===== the producer's plan (Moshe Stern): every stage before and during the trip, checked off as he goes.
@@ -8045,7 +8047,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='bf35ba50ce';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='21a95d6293';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
