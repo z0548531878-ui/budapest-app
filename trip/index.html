@@ -2980,6 +2980,14 @@ html:has(#scrim.open) #app :is(*,*::before,*::after){animation-play-state:paused
 .tpop-a{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px}
 .tpop-close{display:block;width:100%;margin-top:10px;padding:12px;border-radius:14px;border:0;background:rgba(214,178,98,.12);color:#f0d28c;font:800 15px var(--body);cursor:pointer}
 @media (prefers-reduced-motion:reduce){.tpop-c,.tpop-i,.tpop-t{animation:none!important;transition:none!important}}
+/* participant home tabs: a little life */
+.gln-i{animation:glnBob 3.6s calc(var(--i,0)*.23s) ease-in-out infinite}@keyframes glnBob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-3px) rotate(-4deg)}}
+.glns>.gln:nth-child(even)::before{content:'';position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:linear-gradient(110deg,transparent 30%,rgba(242,203,124,.85) 50%,transparent 70%) 0 0/250% 100%;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:glnEdge 4.5s calc(var(--i,0)*.3s) linear infinite;pointer-events:none}
+@keyframes glnEdge{from{background-position:150% 0}to{background-position:-100% 0}}
+.gln .gln-c{animation:glnNudge 2.8s calc(2s + var(--i,0)*.2s) ease-in-out infinite}@keyframes glnNudge{0%,80%,100%{transform:none}88%{transform:translateX(-4px)}}
+.gln:active .gln-i{transform:scale(.9)}
+.gln-b{animation:glnPulse 1.8s ease-in-out infinite}@keyframes glnPulse{50%{box-shadow:0 0 0 7px rgba(224,83,63,0)}}
+@media (prefers-reduced-motion:reduce){.gln-i,.gln::before,.gln-c,.gln-b{animation:none!important}}
 /* participant home: every place and tool as a full-width tab, gold and black in turn */
 .glns{display:flex;flex-direction:column;gap:10px;margin:16px 0 8px}
 .gln{position:relative;overflow:hidden;display:flex;align-items:center;gap:14px;width:100%;min-height:68px;padding:12px 16px;border-radius:20px;text-align:start;text-decoration:none;cursor:pointer;font:inherit;-webkit-tap-highlight-color:transparent;animation:glnIn .55s calc(var(--i,0)*45ms) cubic-bezier(.2,.85,.25,1.1) both;transition:transform .15s}
@@ -6397,9 +6405,17 @@ function guestHTML0(){
           gbg:()=>bagOK(me)?cube('gbg',I.box||IX.tools,'מזוודות','מה בכל מזוודה'):(mb.length?cube('gbg',I.box||IX.tools,mb.length>1?'המזוודות שלי':'המזוודה שלי',mb.length>1?'מה בפנים':'מזוודה '+mb[0]+' · מה בפנים'):''),
           trv:()=>`<a class="gc gtrv" href="${trvHref()}" style="--i:${n++}"><i class="tsp" aria-hidden="true"></i><i class="tsp" aria-hidden="true"></i><i class="tsp" aria-hidden="true"></i><span class="gc-go" aria-hidden="true">לשחק ‹</span><span class="gc-i">${I.spark}</span><span class="gc-t">טריוויה על גלגלים</span><span class="gc-s">${open?'כל המשחקים פתוחים!':'עצמאי וראש בראש פתוחים'}</span></a>`,
           ge:()=>cube('ge',IX.coin,'חשבון משותף','מי חייב למי',(()=>{const b=me?Object.values(splitBal(me)).filter(v=>v<=-1).length:0;return b||''})())};
-        // a task of yours comes first; then what is needed now, before the flight or during the trip
-        let ord=TRIPDAY()?['gmp','gm','gbp','gfl','wnav','wtaxi','gz','gx','gi','gk','wsim','gbg','gkbus','gkbcafe','grk','gs','gkhcafe','gkoneg','gd','gp','gt','gv','gkt','grm','gcn']:['gmp','gbp','gfl','gd','wdrv','gbg','gm','wsim','wnav','wtaxi','gz','gx','gk','gi','gp','gkbus','gkbcafe','grk','gs','gkhcafe','gkoneg','gt','gv','gkt','grm','gcn'];
-        if(mineT)ord=['gt',...ord.filter(k=>k!=='gt')];
+        // the order follows the trip: before the flight, flying, Kerestir, Friday, Shabbat, the way home – tasks always near the top
+        const ph=homePhase(),KIT={pre:['gkbus','gkbcafe'],fly:['gkbus','gkbcafe'],ker:['grk','gs','gkhcafe'],fri:['gkhcafe','gkoneg'],shab:['gkoneg'],home:[]}[ph]||[];
+        const BASE={pre:['gbp','gt','gfl','gd','wdrv','gm','wsim','gbg','gz','gx','gk','wnav','wtaxi','gi','gp'],
+          fly:['gbp','gt','gm','gfl','wsim','gbg','gd','wnav','gz','gk','gx','gi','gp','wtaxi'],
+          ker:['gm','gt','gz','gi','gbg','wnav','gk','gx','gp','wtaxi','gbp','gfl','wsim','gd'],
+          fri:['gm','gt','gx','wnav','wtaxi','gi','gk','gp','gz','gbg','gfl','gbp','wsim','gd'],
+          shab:['gm','gt','gi','gp','gx','gk','wnav','gz','gfl','gbp','gd','gbg','wtaxi','wsim'],
+          home:['gbp','gfl','gd','wtaxi','gm','gt','gbg','gi','gp','gx','gk','wnav','gz','wsim']}[ph];
+        let ord=['gmp',...BASE.slice(0,2),...KIT,...BASE.slice(2)];
+        if(mineT)ord=['gmp','gt',...ord.filter(k=>k!=='gmp'&&k!=='gt')];
+        ord=[...ord,...['gkbus','gkbcafe','grk','gs','gkhcafe','gkoneg','gv','gkt','grm','gcn'].filter(k=>!ord.includes(k))];
         return ord.map(k=>C[k]()).filter(Boolean).join('')})()}
      </div>
      ${flightGroups(ppl,'חזור').map(g=>guestFlightCard(g,ppl,'חזור')).join('')}
@@ -7234,6 +7250,8 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target;if(!t)r
     mpSet(k,on).then(ok=>{if(!ok)return;if(on){toast('✓ מעולה');const {L}=mpFlat();const n=L.findIndex((r,j)=>j>+dn.dataset.i&&!mpOn(r.k));MPI=n<0?null:n;window.scrollTo({top:0})}render()});return}
   const b=t.closest('[data-mp]');if(b){e.preventDefault();e.stopPropagation();const k=b.dataset.mp,on=!mpOn(k);mpSet(k,on).then(ok=>{if(ok&&on)toast('✓ סומן')})}},true);
 // home: the couple's boarding passes, right under the countdown ticket
+// where the trip is now, for the order of the home tabs
+function homePhase(){const t=Date.now(),T=x=>Date.parse(x);return t<T('2026-11-19T00:00:00+02:00')?'pre':t<T('2026-11-19T13:00:00+02:00')?'fly':t<T('2026-11-20T00:00:00+01:00')?'ker':t<T('2026-11-20T15:30:00+01:00')?'fri':t<T('2026-11-21T17:30:00+01:00')?'shab':'home'}
 function bpStrip(ppl){ppl=(ppl||[]).filter(p=>p&&p.name);if(!ppl.length)return '';
   const out=ppl.map(p=>bpFl(p,'הלוך')).find(Boolean),d=out&&Date.now()>fltAt(out)+6*36e5?'חזור':'הלוך';
   const L=ppl.map(p=>({p,b:bpOf(p._id,d),f:bpFl(p,d)})).filter(x=>x.f),all=L.length&&L.every(x=>x.b);if(!L.length)return '';
@@ -8096,7 +8114,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='b76f0672cd';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='54b456e98e';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
