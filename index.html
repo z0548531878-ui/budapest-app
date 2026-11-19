@@ -5789,7 +5789,7 @@ const TRIP_LOCK=(()=>{try{const q=new URLSearchParams(location.search);if(q.get(
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active'); fxOnScreen(id); if(id==='s-landing') appUpdateMaybe();}
 // ---- עדכון אוטומטי: גם אפליקציה שפתוחה כבר שעות מקבלת את הגרסה החדשה ----
 // בכל עדכון מעלים את APP_BUILD ואת version.json לאותו ערך. הטעינה מחדש קורית רק במסך הפתיחה — אף פעם באמצע משחק
-const APP_BUILD = '2026-11-19-3';
+const APP_BUILD = '2026-11-19-4';
 let appNewBuild = null;
 function appUpdateCheck(){
   if(/^(localhost|127\.)/.test(location.hostname) && !window.__testUpdate) return;
@@ -7326,13 +7326,13 @@ async function hostEndQuestion(){
     endingInProgress = false;
   }
 }
+const STANDINGS_EVERY = 5;
 async function hostNext(){
   if(hostEndedFlag) return;
   const finishedQ = curState.qIndex;
   const next = finishedQ+1;
-  const curTopic = QUESTIONS[finishedQ] && QUESTIONS[finishedQ].topic;
-  const nextTopic = next<QUESTIONS.length ? QUESTIONS[next].topic : null;
-  if(next>=QUESTIONS.length || curTopic!==nextTopic){
+  // מצב הקבוצה (טבלת ניקוד) מוצג רק אחרי כל 5 שאלות ובסוף המשחק
+  if(next>=QUESTIONS.length || next%STANDINGS_EVERY===0){
     await roomRef().update({phase:'standings', qIndex:finishedQ, nextQIndex:next, phaseAt:Date.now()});
   } else {
     await goToQuestion(next);
