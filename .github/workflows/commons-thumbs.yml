@@ -16,10 +16,14 @@ jobs:
           import os,urllib.request,urllib.parse
           for n,f in enumerate(os.environ['F'].split('|')):
             u='https://commons.wikimedia.org/wiki/Special:FilePath/'+urllib.parse.quote(f.replace('File:','').strip())+'?width=500'
-            try:
-              d=urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'trivia-bot/1.0'})).read()
-              open(f'{n}.jpg','wb').write(d); print('::notice::ok',n,f,len(d))
-            except Exception as e: print('::notice::fail',n,f,e)
+            import time
+            for k in range(6):
+              try:
+                d=urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'trivia-bot/1.0 (github actions)'})).read()
+                open(f'{n}.jpg','wb').write(d); print('ok',n,f,len(d)); break
+              except Exception as e:
+                print('fail',n,f,e); time.sleep(6*(k+1))
+            time.sleep(2)
           PY
           git init -q && git checkout -q -b img-preview && git add -A && git -c user.name=bot -c user.email=bot@x commit -qm p
           git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" img-preview
