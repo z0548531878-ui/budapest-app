@@ -14,9 +14,14 @@ jobs:
         run: |
           mkdir -p /tmp/p && cd /tmp/p
           python3 - <<'PY'
-          import json,os,urllib.request,urllib.parse,time
+          import json,os,urllib.request,urllib.parse,urllib.error,time
           H={'User-Agent':'trivia-bot/1.0 (github actions)'}
-          def get(u): return json.load(urllib.request.urlopen(urllib.request.Request(u,headers=H)))
+          def get(u):
+            for k in range(6):
+              try: return json.load(urllib.request.urlopen(urllib.request.Request(u,headers=H)))
+              except urllib.error.HTTPError as e:
+                if e.code!=429 or k==5: raise
+                time.sleep(5*(k+1))
           q=os.environ['Q']; out={}
           if q.startswith('titles:'):
             T=[t.strip() for t in q[7:].split('|') if t.strip()]
@@ -36,7 +41,7 @@ jobs:
                 r=get(u); ps=sorted(r.get('query',{}).get('pages',{}).values(),key=lambda p:p.get('index',0))
                 out[qq]=[[p['title'],(p.get('imageinfo') or [{}])[0].get('width'),(p.get('imageinfo') or [{}])[0].get('height')] for p in ps]
               except Exception as e: out[qq]=str(e)
-              time.sleep(0.2)
+              time.sleep(1.5)
           json.dump(out,open(os.environ['TAG']+'.json','w'),ensure_ascii=False,indent=0)
           print('::notice::done',len(out))
           PY
