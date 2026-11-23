@@ -1770,7 +1770,7 @@ button.pp{font-size:12px!important;padding:2px 5px!important;min-height:24px!imp
 .rp{display:grid;gap:10px}.rp h3{margin:0}
 .rp-hero{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.rp-hero>div{background:linear-gradient(160deg,#17140f,#0d0c09);border:1px solid var(--edge);border-radius:16px;padding:12px 10px;display:grid;gap:2px}
 .rp-hero span{font-size:12.5px;color:var(--muted)}.rp-hero b{font-size:16px;white-space:nowrap}.rp-hero small{font-size:11.5px;color:var(--muted)}
-.rp-acts{display:flex;gap:8px;flex-wrap:wrap}
+.rp-acts{display:flex;gap:8px;flex-wrap:wrap}.rp-lead{margin:0;font-size:15px;line-height:1.5;text-align:center}
 .rp-ins{background:rgba(214,178,98,.06);border:1px solid rgba(214,178,98,.25);border-radius:16px;padding:12px 14px;display:grid;gap:10px}.rp-ins h3{font-size:16px;color:#f6dc93}
 .rp-insr{display:grid;grid-template-columns:28px 1fr;gap:8px;align-items:start}.rp-insr>span{font-size:20px}.rp-insr p{margin:0;font-size:14.5px;line-height:1.45}.rp-insr small{color:var(--muted);font-size:12.5px}
 .rp-ins textarea{width:100%;box-sizing:border-box;background:#0d0c09;color:var(--ink);border:1px solid var(--edge);border-radius:12px;padding:10px;font:inherit;font-size:14.5px;line-height:1.5}
@@ -7438,12 +7438,18 @@ function repView(){
   const P=S.participants.map(p=>p.status==='פטור'?{...p,amount:std,status:'שולם',paidAmt:std,method:'',notes:''}:p);
   let E=S.expenses.map(e=>({...e}));
   if(prod.length){const add=std*prod.length,car=E.find(e=>e._id==='ep03');
-    const fl=E.find(e=>e._id==='e09');if(car&&fl){car.estimate=(+car.estimate||0)+(+fl.estimate||0);car.paid=(+car.paid||0)+(+fl.paid||0);E=E.filter(e=>e!==fl)}
+    if(car)E.filter(e=>e!==car&&(e._id==='e09'||(e.category==='הפקה'&&/מפיק/.test(e.name||'')))).forEach(fl=>{car.estimate=(+car.estimate||0)+(+fl.estimate||0);car.paid=(+car.paid||0)+(+fl.paid||0);E=E.filter(e=>e!==fl)});
     if(car){car.estimate=(+car.estimate||0)+add;car.paid=(+car.paid||0)+add;car.name='הוצאות הפקה – רכב ודלק';car.notes='';car.pays=[]}
     else E.push({_id:'rep_prod',name:'הוצאות הפקה – רכב ודלק',category:'הפקה',estimate:add,paid:add,status:'שולם',final:true})}
+  // refunds shown net: what stayed is what was given (no "paid, then got money back" lines)
+  let Dn=S.donations.map(d=>({...d}));
+  const net=(did,eid,lbl)=>{const d=Dn.find(x=>x._id===did),e=E.find(x=>x._id===eid);if(!d||!e)return;d.amount=(+d.amount||0)-(+e.estimate||0);if(lbl)d.purpose=lbl;d.notes='';E=E.filter(x=>x!==e);if(!(d.amount>0))Dn=Dn.filter(x=>x!==d)};
+  net('dsh1','erf1','כללי');net('d04','erf2');
+  {const b=E.find(x=>x._id==='eb04'),d=Dn.find(x=>x._id==='dfd1');if(b&&d){b.estimate=(+b.estimate||0)-(+d.amount||0);b.paid=(+b.paid||0)-(+d.amount||0);b.name='מזוודה 4 – אבי פדר (הלוך)';b.notes='';Dn=Dn.filter(x=>x!==d)}}
+  E=E.filter(e=>(+e.estimate||0)>0||(+e.paid||0)>0);
   if(rav.length)E.push({_id:'rep_rav',name:'אירוח הרב והרבנית',category:'הפקה',estimate:std*rav.length,paid:std*rav.length,status:'שולם',final:true});
-  return {P,E}}
-function withRep(fn){const sv=[S.participants,S.expenses];REPCB=cashBook();const v=repView();S.participants=v.P;S.expenses=v.E;try{return fn()}finally{S.participants=sv[0];S.expenses=sv[1]}}
+  return {P,E,Dn}}
+function withRep(fn){const sv=[S.participants,S.expenses,S.donations];REPCB=cashBook();const v=repView();S.participants=v.P;S.expenses=v.E;S.donations=v.Dn;try{return fn()}finally{S.participants=sv[0];S.expenses=sv[1];S.donations=sv[2]}}
 let REPOPEN={};
 const repN=v=>(Math.round((+v||0)*100)/100);
 function repData(){
@@ -7480,13 +7486,14 @@ function _repBody(){
   const st=e=>e.status==='שולם'?'<span class="pill p-ok">שולם</span>':e.status==='מקדמה'?'<span class="pill p-warn">מקדמה</span>':'<span class="pill p-mute">לא שולם</span>';
   const cb=(REPCB||cashBook()).rows;
   // income
-  const incP=D.tiers.map(t=>ln(`${t.n} × ${ils(t.a)}`,ils(t.due),`התקבל ${ils(t.paid)}${t.due-t.paid>0?' · חסר '+ils(t.due-t.paid):''}`)).join('')+(ex.length?ln('פטורים – לא משלמים',`${ex.length} נוסעים`,ex.map(p=>esc(p.name)).join(', '),'mute'):'');
-  const incD=D.dons.map(g=>`<details class="rp-sub"><summary>${ln(`${esc(g.k)} <span class="num rp-c">${g.L.length}</span>`,ils(g.all),g.all-g.inn>0?`התקבל ${ils(g.inn)} · הובטח ועוד לא הגיע ${ils(g.all-g.inn)}`:'התקבל במלואו')}</summary><div class="rp-items">${g.L.slice().sort((a,b)=>(+b.amount||0)-(+a.amount||0)).map(d=>ln(esc(d.donor||'תורם'),ils(d.amount),[d.status==='התקבל'?'✓ התקבל':'⏳ '+(d.status||'הובטח'),d.method,d.inKind?'תרומה בעין':''].filter(Boolean).join(' · '),d.status==='התקבל'?'':'warn')).join('')}</div></details>`).join('');
+  const incP=D.tiers.map(t=>ln(`<b class="num">${t.n}</b> ${t.n>1?'נוסעים':'נוסע'} × ${ils(t.a)}`,ils(t.due),[t.n<=4?t.ppl.map(p=>esc(p.name)).join(', '):'',t.due-t.paid>0?'עוד לא שולם '+ils(t.due-t.paid):''].filter(Boolean).join(' · '))).join('')+(ex.length?ln('פטורים – לא משלמים',`${ex.length} נוסעים`,ex.map(p=>esc(p.name)).join(', '),'mute'):'');
+  const incD=D.dons.map(g=>`<details class="rp-sub"><summary>${ln(`${esc(g.k)} <span class="num rp-c">${g.L.length}</span>`,ils(g.all),g.all-g.inn>0?`עוד לא התקבל ${ils(g.all-g.inn)}`:'')}</summary><div class="rp-items">${g.L.slice().sort((a,b)=>(+b.amount||0)-(+a.amount||0)).map(d=>ln(esc(d.donor||'תורם'),ils(d.amount),[d.status==='התקבל'?'':'⏳ עוד לא התקבל',d.inKind?'תרומה בעין':''].filter(Boolean).join(' · '),d.status==='התקבל'?'':'warn')).join('')}</div></details>`).join('');
   // expenses: section → expense → items
   const expC=D.cats.map(c=>{const L=c.L.slice().sort((a,b)=>(+b.estimate||0)-(+a.estimate||0));
     return sec('c_'+c.c,'📁',esc(c.c),ils(c.est),`${pct(c.est,m.est)}% מההוצאות · ${L.length} סעיפים${c.est-c.paid>0.5?' · נשאר '+ils(c.est-c.paid):''}`,bar(c.est,m.est)+L.map(e=>{const it=D.items(e._id);
-      const head=`<span class="rp-et">${esc(e.name)}</span>`,meta=[st(e),e.paidBy?'שילם: '+esc(e.paidBy):'',e.method?esc(e.method):'',!isFinal(e)?'<span class="pill p-warn">הערכה</span>':''].filter(Boolean).join(' ');
-      return `<details class="rp-sub"><summary><div class="rp-ln"><span>${head}<small>${meta}</small></span><b class="num">${ils(e.estimate)}</b></div></summary><div class="rp-items">${it.length?it.map(x=>ln(`${x.qty?`<b class="num">${esc(x.qty)}</b> × `:''}${esc(x.item)}`,ils(x.cost),[+x.qty>1&&+x.cost?ils(+x.cost/+x.qty)+' ליחידה':'',kitOf(x),x.buyer?'קנה: '+esc(x.buyer):''].filter(Boolean).join(' · '))).join(''):''}${e.notes?`<p class="rp-note">${esc(e.notes)}</p>`:''}${+e.paid&&Math.abs((+e.paid||0)-(+e.estimate||0))>0.5?ln('שולם בפועל',ils(e.paid),'','mute'):''}</div></details>`}).join(''))}).join('');
+      const head=`<span class="rp-et">${esc(e.name)}</span>`,meta=[e.status==='שולם'?'':st(e),!isFinal(e)?'<span class="pill p-warn">הערכה</span>':'',it.length?`<span class="rp-c">${it.length>1?it.length+' פריטים':'פריט 1'} ▾</span>`:''].filter(Boolean).join(' ');
+      if(!it.length)return `<div class="rp-ln"><span>${head}${meta?`<small>${meta}</small>`:''}</span><b class="num">${ils(e.estimate)}</b></div>`;
+      return `<details class="rp-sub"><summary><div class="rp-ln"><span>${head}<small>${meta}</small></span><b class="num">${ils(e.estimate)}</b></div></summary><div class="rp-items">${it.length?it.map(x=>ln(`${x.qty?`<b class="num">${esc(x.qty)}</b> × `:''}${esc(x.item)}`,ils(x.cost),[+x.qty>1&&+x.cost?ils(+x.cost/+x.qty)+' ליחידה':'',kitOf(x)].filter(Boolean).join(' · '))).join(''):''}</div></details>`}).join(''))}).join('');
   // kits
   const kitB=D.kits.map(k=>ln(esc(k.k),ils(k.cost),`${k.n} פריטים${k.k==='ערכה לחדר'&&S.rooms.length?' · '+ils(k.cost/S.rooms.length)+' לחדר':''}${/אוטובוס/.test(k.k)&&P.length?' · '+ils(k.cost/P.length)+' לנוסע':''}`)).join('');
   // open items
@@ -7501,6 +7508,7 @@ function _repBody(){
   const ins=repInsights(D);
   return `<div class="rp">
    <div class="rp-hero"><div><span>הכנסות</span><b class="num pos">${ils(m.income)}</b><small>התקבל ${ils(m.pIn+m.dIn)}</small></div><div><span>הוצאות</span><b class="num neg">${ils(m.est)}</b><small>שולם ${ils(m.out)}</small></div><div><span>מאזן</span><b class="num" style="color:${m.gap<0?'var(--bad)':'var(--ok)'}">${m.gap<0?'−':''}${ils(Math.abs(m.gap))}</b><small>${P.length} נוסעים · ${S.rooms.length} חדרים</small></div></div>
+   <p class="rp-lead">${m.gap>=0?`המסע מסתיים ביתרה של <b class="num">${ils(m.gap)}</b>`:`המסע מסתיים בגירעון של <b class="num">${ils(-m.gap)}</b>`}${(m.income-m.pIn-m.dIn)>0.5||m.left>0.5?` · עוד פתוח: לקבל ${ils(m.income-m.pIn-m.dIn)}, לשלם ${ils(m.left)}`:''}.</p>
    <div class="rp-acts"><button class="btn" id="rpPrint">🖨️ הדפסה / PDF</button><button class="btn" id="rpXls">📊 דוח מלא לאקסל</button><button class="btn" id="rpAll">${Object.keys(REPOPEN).length?'סגירת הכל':'פתיחת הכל'}</button></div>
    <section class="rp-ins"><h3>💡 תובנות</h3>${ins.map(([ic,t,s])=>`<div class="rp-insr"><span>${ic}</span><div><p>${t}</p><small>${s}</small></div></div>`).join('')}</section>
    <h3 class="rp-h2">⬇ הכנסות <span class="num">${ils(m.income)}</span></h3>
@@ -7510,8 +7518,7 @@ function _repBody(){
    ${expC}
    <h3 class="rp-h2">📦 עלות הערכות</h3>
    ${sec('kits','🎁','ערכות וקניות',ils(D.kits.reduce((s,k)=>s+k.cost,0)),'לפי ערכה · כמה עלה לחדר / לנוסע',kitB)}
-   <h3 class="rp-h2">🏦 קופות ופתוחים</h3>
-   ${sec('box','🏦','מצב הקופות',ils(cb.reduce((s,r)=>s+r.bal,0)),'שלומי ואיציק',boxB)}
+   <h3 class="rp-h2">⏳ מה עוד פתוח</h3>
    ${sec('open','⏳','מה עוד פתוח',`${ils(openSum)}`,`לשלם ${ils(openSum)} · לקבל ${ils(owed)}`,openB)}
    <section class="rp-ins"><h3>📝 לקחים למסע הבא</h3><textarea id="rpNotes" rows="6" placeholder="מה עבד, מה לשנות, ספקים מומלצים, מחירים לזכור…">${esc(notes)}</textarea><button class="btn primary" id="rpSave">שמירה</button></section>
    <p class="note">הופק ${new Date().toLocaleString('he-IL')}${ME?' · '+esc(ME):''}. "הערכה" = סכום שעוד לא סופי.</p></div>`;
@@ -7522,11 +7529,11 @@ async function repXlsx(){
   withRep(()=>repXlsxBuild(X))}
 function repXlsxBuild(X){
   const D=repData(),wb=X.utils.book_new();wb.Workbook={Views:[{RTL:true}]};
-  const rows=[];D.cats.forEach(c=>{rows.push([c.c,'','','','',repN(c.est),repN(c.paid),'','','']);c.L.slice().sort((a,b)=>(+b.estimate||0)-(+a.estimate||0)).forEach(e=>{rows.push(['',e.name,'','','',repN(e.estimate),repN(e.paid),e.status||'',e.paidBy||'',e.notes||'']);D.items(e._id).forEach(x=>rows.push(['','',x.item,+x.qty||'',+x.qty&&+x.cost?repN(+x.cost/+x.qty):'',repN(x.cost),'',kitOf(x),x.buyer||'','']))})});
-  wb.SheetNames.push('הוצאות לפי סעיפים');wb.Sheets['הוצאות לפי סעיפים']=sheetOf(X,['סעיף','הוצאה','פריט','כמות','ליחידה (₪)','סכום (₪)','שולם (₪)','מצב / ערכה','מי שילם / קנה','הערות'],rows,[4,5,6]);
-  const inc=[];D.tiers.forEach(t=>t.ppl.forEach(p=>inc.push(['משתתפים',ils(t.a)+' לנוסע',p.name,+p.amount||0,paidOf(p),p.status||'',p.method||'',holderOf(p)])));
-  D.dons.forEach(g=>g.L.forEach(d=>inc.push(['תרומות',g.k,d.donor||'',+d.amount||0,d.status==='התקבל'?+d.amount||0:0,d.status||'',d.method||'',holderOf(d)])));
-  wb.SheetNames.push('הכנסות');wb.Sheets['הכנסות']=sheetOf(X,['סוג','סעיף','שם','סכום (₪)','התקבל (₪)','מצב','איך','אצל מי'],inc,[3,4]);
+  const rows=[];D.cats.forEach(c=>{rows.push([c.c,'','','','',repN(c.est),repN(c.paid),'']);c.L.slice().sort((a,b)=>(+b.estimate||0)-(+a.estimate||0)).forEach(e=>{rows.push(['',e.name,'','','',repN(e.estimate),repN(e.paid),e.status||'']);D.items(e._id).forEach(x=>rows.push(['','',x.item,+x.qty||'',+x.qty&&+x.cost?repN(+x.cost/+x.qty):'',repN(x.cost),'',kitOf(x)]))})});
+  wb.SheetNames.push('הוצאות לפי סעיפים');wb.Sheets['הוצאות לפי סעיפים']=sheetOf(X,['סעיף','הוצאה','פריט','כמות','ליחידה (₪)','סכום (₪)','שולם (₪)','מצב / ערכה'],rows,[4,5,6]);
+  const inc=[];D.tiers.forEach(t=>t.ppl.forEach(p=>inc.push(['משתתפים',ils(t.a)+' לנוסע',p.name,+p.amount||0,paidOf(p),p.status||''])));
+  D.dons.forEach(g=>g.L.forEach(d=>inc.push(['תרומות',g.k,d.donor||'',+d.amount||0,d.status==='התקבל'?+d.amount||0:0,d.status||''])));
+  wb.SheetNames.push('הכנסות');wb.Sheets['הכנסות']=sheetOf(X,['סוג','סעיף','שם','סכום (₪)','התקבל (₪)','מצב'],inc,[3,4]);
   const ins=repInsights(D).map(([ic,t,s])=>[ic+' '+t.replace(/<[^>]+>/g,''),s.replace(/<[^>]+>/g,'')]);const notes=(S.settings.find(x=>x._id==='rep_notes')||{}).text||'';
   const sw=X.utils.aoa_to_sheet([['תובנות',''],...ins,[],['לקחים למסע הבא',notes]]);sw['!cols']=[{wch:60},{wch:60}];wb.SheetNames.unshift('תובנות');wb.Sheets['תובנות']=sw;
   download('דוח-מסע-בודפשט.xlsx',new Blob([X.write(wb,{bookType:'xlsx',type:'array'})],{type:'application/octet-stream'}));toast('✓ הדוח ירד')}
@@ -8316,7 +8323,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='99d8cd0fe6';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='5d7103dac2';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
