@@ -7438,6 +7438,7 @@ function repView(){
   const P=S.participants.map(p=>p.status==='פטור'?{...p,amount:std,status:'שולם',paidAmt:std,method:'',notes:''}:p);
   let E=S.expenses.map(e=>({...e}));
   if(prod.length){const add=std*prod.length,car=E.find(e=>e._id==='ep03');
+    const fl=E.find(e=>e._id==='e09');if(car&&fl){car.estimate=(+car.estimate||0)+(+fl.estimate||0);car.paid=(+car.paid||0)+(+fl.paid||0);E=E.filter(e=>e!==fl)}
     if(car){car.estimate=(+car.estimate||0)+add;car.paid=(+car.paid||0)+add;car.name='הוצאות הפקה – רכב ודלק';car.notes='';car.pays=[]}
     else E.push({_id:'rep_prod',name:'הוצאות הפקה – רכב ודלק',category:'הפקה',estimate:add,paid:add,status:'שולם',final:true})}
   if(rav.length)E.push({_id:'rep_rav',name:'אירוח הרב והרבנית',category:'הפקה',estimate:std*rav.length,paid:std*rav.length,status:'שולם',final:true});
@@ -8315,7 +8316,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='389c92edde';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='99d8cd0fe6';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
