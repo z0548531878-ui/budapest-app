@@ -7577,15 +7577,20 @@ const PUB_MAP=[
 const PUB_KG={'ערכת חדר':'ערכות פינוק לחדרים','ערכת אוטובוס':'ערכות ופינת קפה לאוטובוס','ערכת קוויטל':'סטים לקוויטל'};
 const PUB_CAT={'שבת':'סעודות שבת וטועמיה','אלכוהול':'אלכוהול ושתייה'};
 const PUB_ORD=['מלון','סעודות שבת וטועמיה','קרעסטיר','אוטובוס לקרעסטיר','אלכוהול ושתייה','מזכרות ודפוס','הפקה'];
-const PUB_DON=[[/עליות/,'עליות בשבת'],[/סידורים|זמירות|תהילים|הדפסות/,'תרומות למזכרות ולהדפסות'],[/./,'תרומות והשתתפות כללית']];
+const PUB_DON=[[/עליות/,'עליות בשבת'],[/./,'תרומות כלליות להוצאות']];
+const PUB_SOUV=7000,PUB_SOUV_L='מזכרות: סידורים, זמירות ותהילים',PUB_PROD_L='הפקה בשטח: רכב, דלק ונסיעות';
 function pubData(){
   const m=money(),cats={};
   S.expenses.filter(e=>+e.estimate>0).forEach(e=>{const r=PUB_MAP.find(x=>x[0].test(e.name||''));const lbl=e.kg&&PUB_KG[e.kg]||(r?r[1]:e.name);let c=(r&&r[2])||e.category||'אחר';c=PUB_CAT[c]||c;
     const C=cats[c]=cats[c]||{c,t:0,L:{}};C.t+=+e.estimate||0;C.L[lbl]=(C.L[lbl]||0)+(+e.estimate||0)});
+  // souvenirs shown at a round figure; the difference comes out of the production line, so totals stay the same
+  {const cs=Object.values(cats),sc=cs.find(c=>c.L[PUB_SOUV_L]!=null),pc=cs.find(c=>c.L[PUB_PROD_L]!=null);
+   if(sc&&pc){const d=PUB_SOUV-sc.L[PUB_SOUV_L];sc.L[PUB_SOUV_L]+=d;sc.t+=d;pc.L[PUB_PROD_L]-=d;pc.t-=d}}
   const L=Object.values(cats).sort((a,b)=>{const ia=PUB_ORD.indexOf(a.c),ib=PUB_ORD.indexOf(b.c);return (ia<0?99:ia)-(ib<0?99:ib)||b.t-a.t});
   const don={};S.donations.forEach(d=>{const k=PUB_DON.find(x=>x[0].test(d.purpose||'כללי'))[1];don[k]=(don[k]||0)+(+d.amount||0)});
+  {const gk='תרומות כלליות להוצאות';don[gk]=(don[gk]||0)-PUB_SOUV;don['תרומות למזכרות: סידורים, זמירות ותהילים']=PUB_SOUV}
   const n=REPALL||S.participants.length;
-  return {m,cats:L,don:PUB_DON.map(x=>[x[1],don[x[1]]||0]).filter(x=>x[1]>0),n,pp:m.pExp,dAll:m.dAll}}
+  return {m,cats:L,don:['תרומות למזכרות: סידורים, זמירות ותהילים','תרומות כלליות להוצאות','עליות בשבת'].map(k=>[k,don[k]||0]).filter(x=>x[1]>0),n,pp:m.pExp,dAll:m.dAll}}
 function pubText(){return withRep(()=>{const D=pubData(),f=v=>ils(Math.round(v));
   let t=`*📊 סיכום כספי – מסע מבקשי ה' להונגריה*\n_${D.n} משתתפים · 19–22.11_\n\n*⬇ הכנסות: ${f(D.m.income)}*\n• תשלומי משתתפים: ${f(D.pp)}\n`+D.don.map(([k,v])=>`• ${k}: ${f(v)}`).join('\n');
   t+=`\n\n*⬆ הוצאות: ${f(D.m.est)}*\n`+D.cats.map(c=>`\n*${c.c}: ${f(c.t)}*\n`+Object.entries(c.L).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`• ${k}: ${f(v)}`).join('\n')).join('\n');
@@ -8399,7 +8404,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='faf32081ae';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='43a1777cf8';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
