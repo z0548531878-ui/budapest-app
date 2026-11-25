@@ -7567,8 +7567,8 @@ document.addEventListener('click',async e=>{const t=e.target;if(!t.closest)retur
 /* ---- public summary for all participants: main sections only, no names, no tiny items ---- */
 const PUB_MAP=[
  [/^לינה/,'לינה במלון'],[/פינת קפה.*מלון/,'פינת קפה במלון'],[/הדלקת נרות/,'הדלקת נרות שבת בלובי','מלון',1],
- [/סעודות ליל שבת|סעודות שבת בוקר/,'סעודות שבת – מסעדת חנה'],[/אלכוהול ותוספות|פירות/,'פירות, תוספות ושתייה','עונג שבת',1],
- [/ויינר לעונג/,'כיבוד לעונג שבת','עונג שבת',1],
+ [/סעודות ליל שבת|סעודות שבת בוקר/,'סעודות שבת – מסעדת חנה'],[/אלכוהול ותוספות|פירות/,'פירות, תוספות ושתייה','עונג שבת בלילה ובבוקר',1],
+ [/ויינר לעונג/,'פיצוחים, חטיפים וג׳לים','עונג שבת בלילה ובבוקר',1],
  [/טיפ/,'טיפים לצוות'],[/אוטובוס לקרעסטיר הלוך|נסיעה באוטובוס/,'אוטובוס לקרעסטיר הלוך ושוב'],[/פינת קפה באוטובוס/,'פינת קפה באוטובוס',0,1],
  [/סעודה בקרעסטיר|פינוקים|זריפה|ויינר לקרעסטיר/,'סעודת הישועות בקרעסטיר'],
  [/^מזכרות/,'מזכרות: סידורים, זמירות ותהילים'],[/הדפסות/,'הדפסות: מודעות, רולאפים ועלונים'],
@@ -7579,16 +7579,20 @@ const PUB_MAP=[
 const PUB_SPLIT=[
  [/ארוחות כשרות במלון/,[['ארוחת בוקר במלון',.5],['טועמיה בערב שבת במלון',.5]]],
  [/הגברה/,[['הגברה לסעודת הישועות',3998/4998],['שאטלים לציון הלוך ושוב',1000/4998]]],
- [/חנה – תוספות/,[['סעודות שבת – מסעדת חנה',80000/278500,'סעודות שבת'],['פירות, תוספות ושתייה',198500/278500,'עונג שבת']]]];
+ [/חנה – תוספות/,[['סעודות שבת – מסעדת חנה',80000/278500,'סעודות שבת'],['פירות, תוספות ושתייה',198500/278500,'עונג שבת בלילה ובבוקר']]]];
 const PUB_KG={'ערכת חדר':'ערכות פינוק לחדרים','ערכת אוטובוס':'ערכות לאוטובוס','ערכת קוויטל':'סטים לקוויטל'};
-const PUB_CAT={'שבת':'עונג שבת','סעודות שבת וטועמיה':'סעודות שבת','אלכוהול':'אלכוהול ושתייה'};
-const PUB_ORD=['מלון','סעודות שבת','עונג שבת','קרעסטיר','אוטובוס לקרעסטיר','אלכוהול ושתייה','מזכרות ודפוס','הפקה'];
+const PUB_CAT={'שבת':'עונג שבת בלילה ובבוקר','עונג שבת':'עונג שבת בלילה ובבוקר','סעודות שבת וטועמיה':'סעודות שבת','אלכוהול':'אלכוהול ושתייה'};
+const PUB_ORD=['מלון','סעודות שבת','עונג שבת בלילה ובבוקר','קרעסטיר','אוטובוס לקרעסטיר','אלכוהול ושתייה','מזכרות ודפוס','הפקה'];
 const PUB_DON=[[/עליות/,'עליות בשבת'],[/./,'תרומות כלליות להוצאות הרב ולהוצאות השבת']];
 const PUB_SOUV=7000,PUB_PROD_L='הפקה בשטח: רכב, דלק ונסיעות';
 const PUB_FIX=[['מזכרות: סידורים, זמירות ותהילים',7000],['לינה במלון',39000]];
 const PUB_PART=[['אלכוהול לקרעסטיר, לשבת ולטיסה','אלכוהול לקרעסטיר ולשבת',7000,'תוספות אלכוהול לקרעסטיר ולשבת']];
 const PUB_MOVE=[['לינה במלון','אולם בית כנסת במלון',350]];
-const PUB_PARTS=[['סעודות שבת – מסעדת חנה',[['סעודת ליל שבת – מסעדת חנה (54 × 200 ₪)',10800],['סעודת שבת בבוקר – מסעדת חנה (54 × 200 ₪)',10800],['תוספת על זמנים',1100]],'תוספת על שתייה']];
+const PUB_TWEAK=[['לינה במלון',39850,'תוספת על שתייה'],['ארוחת בוקר במלון',4290,'טועמיה בערב שבת במלון'],['אולם בית כנסת במלון',345,'פינת קפה במלון'],
+ ['סעודת ליל שבת – מסעדת חנה',10746,'סעודת שבת בבוקר – מסעדת חנה'],['תוספת על זמנים',1085,'תוספת על שתייה'],['פיצוחים, חטיפים וג׳לים',838,'פירות, תוספות ושתייה'],
+ ['שאטלים לציון הלוך ושוב',1040,'הגברה לסעודת הישועות'],['פינת קפה באוטובוס',146,'ערכות לאוטובוס'],
+ ['אלכוהול לקרעסטיר ולשבת',7180,'תוספות אלכוהול לקרעסטיר ולשבת'],['שתייה לאוטובוס, לחדרים ולשבת',1815,'תוספות אלכוהול לקרעסטיר ולשבת']];
+const PUB_PARTS=[['סעודות שבת – מסעדת חנה',[['סעודת ליל שבת – מסעדת חנה',10800],['סעודת שבת בבוקר – מסעדת חנה',10800],['תוספת על זמנים',1100]],'תוספת על שתייה']];
 function pubData(){
   const m=money(),cats={};
   const put=(c,lbl,v)=>{c=PUB_CAT[c]||c;const C=cats[c]=cats[c]||{c,t:0,L:{}};C.t+=v;C.L[lbl]=(C.L[lbl]||0)+v};
@@ -7602,7 +7606,8 @@ function pubData(){
    // one line shown as a set part plus the rest
    PUB_PART.forEach(([l,a,v,b])=>{const c=at(l);if(!c)return;const tot=c.L[l];delete c.L[l];c.L[a]=Math.min(v,tot);if(tot>v)c.L[b]=tot-v});
    PUB_PARTS.forEach(([l,parts,rest])=>{const c=at(l);if(!c)return;let left=c.L[l];delete c.L[l];parts.forEach(([a,v])=>{c.L[a]=v;left-=v});if(left>0.5)c.L[rest]=left});
-   PUB_MOVE.forEach(([l,a,v])=>{const c=at(l);if(!c)return;c.L[l]-=v;c.L[a]=(c.L[a]||0)+v})}
+   PUB_MOVE.forEach(([l,a,v])=>{const c=at(l);if(!c)return;c.L[l]-=v;c.L[a]=(c.L[a]||0)+v});
+   PUB_TWEAK.forEach(([l,v,ab])=>{const c=at(l),d=at(ab);if(!c||!d)return;const x=v-c.L[l];c.L[l]+=x;c.t+=x;d.L[ab]-=x;d.t-=x});}
   const L=Object.values(cats).sort((a,b)=>{const ia=PUB_ORD.indexOf(a.c),ib=PUB_ORD.indexOf(b.c);return (ia<0?99:ia)-(ib<0?99:ib)||b.t-a.t});
   const don={};S.donations.forEach(d=>{const k=PUB_DON.find(x=>x[0].test(d.purpose||'כללי'))[1];don[k]=(don[k]||0)+(+d.amount||0)});
   {const gk='תרומות כלליות להוצאות הרב ולהוצאות השבת';don[gk]=(don[gk]||0)-PUB_SOUV;don['תרומות למזכרות: סידורים, זמירות ותהילים']=PUB_SOUV}
@@ -8421,7 +8426,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='6a984175e0';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='ccba2ff20a';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
