@@ -7444,7 +7444,7 @@ function repView(){
   // refunds shown net: what stayed is what was given (no "paid, then got money back" lines)
   let Dn=S.donations.map(d=>({...d}));
   const net=(did,eid,lbl)=>{const d=Dn.find(x=>x._id===did),e=E.find(x=>x._id===eid);if(!d||!e)return;d.amount=(+d.amount||0)-(+e.estimate||0);if(lbl)d.purpose=lbl;d.notes='';E=E.filter(x=>x!==e);if(!(d.amount>0))Dn=Dn.filter(x=>x!==d)};
-  net('dsh1','erf1','כללי');net('d04','erf2');
+  net('dsh1','erf1','כללי');net('d04','erf2');net('d04','erf3');
   {const b=E.find(x=>x._id==='eb04'),d=Dn.find(x=>x._id==='dfd1');if(b&&d){b.estimate=(+b.estimate||0)-(+d.amount||0);b.paid=(+b.paid||0)-(+d.amount||0);b.name='מזוודה 4 – אבי פדר (הלוך)';b.notes='';Dn=Dn.filter(x=>x!==d)}}
   E=E.filter(e=>(+e.estimate||0)>0||(+e.paid||0)>0);
   if(rav.length)E.push({_id:'rep_rav',name:'אירוח הרב והרבנית',category:'הפקה',estimate:std*rav.length,paid:std*rav.length,status:'שולם',final:true});
@@ -8323,7 +8323,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='5d7103dac2';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='312ccc5b71';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
