@@ -1767,6 +1767,19 @@ button.pp{font-size:12px!important;padding:2px 5px!important;min-height:24px!imp
 .gsc{width:40px;height:40px;border-radius:50%;border:2px solid rgba(214,178,98,.45);display:grid;place-items:center;font-size:22px;font-weight:900;color:#15110a}
 .gsr.on{border-color:rgba(29,127,83,.6);background:linear-gradient(160deg,rgba(29,127,83,.18),#0d0c09)}.gsr.on .gsc{background:#2fb67a;border-color:#2fb67a}
 @media (prefers-reduced-motion:no-preference){.gsr{transition:transform .15s}.gsr:active{transform:scale(.97)}.gsc{transition:background .2s,border-color .2s}}
+#pbPrintDoc{display:none}
+@media print{body.pbprint>*:not(#pbPrintDoc){display:none!important}body.pbprint,html:has(body.pbprint){background:#fff!important;background-image:none!important;color-scheme:light!important}body.pbprint::before,body.pbprint::after{display:none!important;content:none!important}
+ body.pbprint #pbPrintDoc{display:block;color:#1d1a14;font-size:12.5pt;direction:rtl;padding:6mm 4mm}
+ @page{size:A4;margin:12mm}
+ #pbPrintDoc .pp-head{display:flex;align-items:center;gap:16px;border-bottom:2.5pt solid #b08a3e;padding-bottom:12px;margin-bottom:14px}
+ #pbPrintDoc .pp-head img{width:88px;height:88px;border-radius:50%;box-shadow:0 0 0 2pt #b08a3e}
+ #pbPrintDoc h1{margin:0;font-size:28pt;color:#7a5c1e;letter-spacing:.5px}#pbPrintDoc h2{margin:0;font-size:15pt;color:#b08a3e;font-weight:600}#pbPrintDoc .pp-head p{margin:4px 0 0;color:#666;font-size:10.5pt}
+ #pbPrintDoc .pp-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0 14px}#pbPrintDoc .pp-kpi div{border:1pt solid #d9c59a;border-radius:10px;padding:8px;text-align:center;background:#fbf7ee}
+ #pbPrintDoc .pp-kpi span{display:block;font-size:9.5pt;color:#7a6a4a}#pbPrintDoc .pp-kpi b{font-size:14pt;color:#1d1a14}#pbPrintDoc .pp-kpi .g b{color:#2f7d4f}
+ #pbPrintDoc h3{display:flex;justify-content:space-between;margin:14px 0 6px;padding:6px 10px;background:#7a5c1e;color:#fff;border-radius:8px;font-size:13pt}
+ #pbPrintDoc table{width:100%;border-collapse:collapse;break-inside:avoid;margin-bottom:6px}#pbPrintDoc td{padding:5px 10px;border-bottom:.6pt solid #e8dcc0}#pbPrintDoc td:last-child{text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums;width:30%}
+ #pbPrintDoc tr.h td{font-weight:800;color:#7a5c1e;border-bottom:1.2pt solid #b08a3e;padding-top:9px}#pbPrintDoc tr.h small{color:#a08850;font-weight:600}#pbPrintDoc tr.s td{font-size:11pt;color:#333}#pbPrintDoc tr.s td:first-child{padding-inline-start:22px}
+ #pbPrintDoc .pp-end{margin-top:14px;border:1.5pt solid #b08a3e;border-radius:12px;padding:12px;text-align:center;background:#fbf7ee;break-inside:avoid}#pbPrintDoc .pp-end b{font-size:16pt;color:#2f7d4f}#pbPrintDoc .pp-end p{margin:6px 0 0;color:#555}#pbPrintDoc .pp-end .t{color:#7a5c1e;font-weight:700}}
 .pb{display:grid;gap:12px}.pb-head{text-align:center;display:grid;gap:2px}.pb-head b{font-size:18px;color:#f6dc93}.pb-head small{color:var(--muted)}
 .pb-top{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.pb-top>div{background:linear-gradient(160deg,#17140f,#0d0c09);border:1px solid var(--edge);border-radius:16px;padding:12px 8px;text-align:center;display:grid;gap:4px}.pb-top span{font-size:12.5px;color:var(--muted)}.pb-top b{font-size:16px;white-space:nowrap}
 .pb-sec{border:1px solid var(--edge);border-radius:16px;background:linear-gradient(160deg,#17140f,#0d0c09);padding:12px 14px;display:grid;gap:2px}.pb-sec h3{margin:0 0 6px;font-size:16px;color:#f6dc93;display:flex;justify-content:space-between}
@@ -7440,10 +7453,10 @@ async function bpExport(how){const L=bpList().filter(b=>!b.drive);if(!L.length){
 // in the report only: travelers who came on the group's account (producer, the rav and rebbetzin) show as paying the regular price,
 // and the same amount shows as an expense (producer → "רכב ודלק", the rav → hosting), so the totals stay true. The app's real data is not touched.
 let REPCB=null;
-function repView(){
+function repView(o){o=o||{};
   const cnt={};S.participants.forEach(p=>{const a=+p.amount||0;if(a)cnt[a]=(cnt[a]||0)+1});const std=+Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0]?.[0]||0;
   const ex=S.participants.filter(p=>p.status==='פטור'),prod=ex.filter(p=>/שטרן/.test(p.name||'')),rav=ex.filter(p=>!prod.includes(p));
-  const P=S.participants.map(p=>p.status==='פטור'?{...p,amount:std,status:'שולם',paidAmt:std,method:'',notes:''}:p);
+  const P=o.pub?S.participants.filter(p=>!rav.includes(p)).map(p=>prod.includes(p)?{...p,amount:std,status:'שולם',paidAmt:std,method:'',notes:''}:p):S.participants.map(p=>p.status==='פטור'?{...p,amount:std,status:'שולם',paidAmt:std,method:'',notes:''}:p);
   let E=S.expenses.map(e=>({...e}));
   if(prod.length){const add=std*prod.length,car=E.find(e=>e._id==='ep03');
     if(car)E.filter(e=>e!==car&&(e._id==='e09'||(e.category==='הפקה'&&/מפיק/.test(e.name||'')))).forEach(fl=>{car.estimate=(+car.estimate||0)+(+fl.estimate||0);car.paid=(+car.paid||0)+(+fl.paid||0);E=E.filter(e=>e!==fl)});
@@ -7455,9 +7468,9 @@ function repView(){
   net('dsh1','erf1','כללי');net('d04','erf2');net('d04','erf3');
   {const b=E.find(x=>x._id==='eb04'),d=Dn.find(x=>x._id==='dfd1');if(b&&d){b.estimate=(+b.estimate||0)-(+d.amount||0);b.paid=(+b.paid||0)-(+d.amount||0);b.name='מזוודה 4 – אבי פדר (הלוך)';b.notes='';Dn=Dn.filter(x=>x!==d)}}
   E=E.filter(e=>(+e.estimate||0)>0||(+e.paid||0)>0);
-  if(rav.length)E.push({_id:'rep_rav',name:'אירוח הרב והרבנית',category:'הפקה',estimate:std*rav.length,paid:std*rav.length,status:'שולם',final:true});
+  if(rav.length&&!o.pub)E.push({_id:'rep_rav',name:'אירוח הרב והרבנית',category:'הפקה',estimate:std*rav.length,paid:std*rav.length,status:'שולם',final:true});
   return {P,E,Dn}}
-function withRep(fn){const sv=[S.participants,S.expenses,S.donations];REPCB=cashBook();const v=repView();S.participants=v.P;S.expenses=v.E;S.donations=v.Dn;try{return fn()}finally{S.participants=sv[0];S.expenses=sv[1];S.donations=sv[2]}}
+let REPALL=0;function withRep(fn,o){const sv=[S.participants,S.expenses,S.donations];REPALL=sv[0].length;REPCB=cashBook();const v=repView(o);S.participants=v.P;S.expenses=v.E;S.donations=v.Dn;try{return fn()}finally{S.participants=sv[0];S.expenses=sv[1];S.donations=sv[2]}}
 let REPOPEN={};
 const repN=v=>(Math.round((+v||0)*100)/100);
 function repData(){
@@ -7558,25 +7571,25 @@ const PUB_MAP=[
  [/טיפ/,'טיפים לצוות'],[/אוטובוס לקרעסטיר הלוך|נסיעה באוטובוס/,'אוטובוס לקרעסטיר הלוך ושוב'],
  [/סעודה בקרעסטיר/,'סעודת הישועות בקרעסטיר'],[/הגברה/,'הגברה ושאטלים לציון'],[/פינוקים|זריפה|ויינר לקרעסטיר/,'כיבוד בקרעסטיר'],
  [/ויינר לעונג|הדלקת נרות/,'עונג שבת והדלקת נרות'],[/^מזכרות/,'מזכרות: סידורים, זמירות ותהילים'],[/הדפסות/,'הדפסות: מודעות, רולאפים ועלונים'],
- [/מנויים/,'עיצוב וגרפיקה'],[/^מזוודה|אורגן|גיטרה|כבודה/,'כבודה: ציוד וכלי נגינה'],[/רכב ודלק|מוניות|מפיק/,'הפקה בשטח: רכב, דלק ונסיעות'],
- [/קניות משה/,'שתייה לאוטובוס, לחדרים ולשבת','אלכוהול ושתייה'],[/אירוח הרב|בחירת מקומות/,'אירוח הרב והרבנית'],
+ [/מנויים/,'עיצוב וגרפיקה'],[/^מזוודה|אורגן|גיטרה|כבודה/,'כבודה: ציוד וכלי נגינה'],[/רכב ודלק|מוניות|מפיק|בחירת מקומות/,'הפקה בשטח: רכב, דלק ונסיעות'],
+ [/קניות משה/,'שתייה לאוטובוס, לחדרים ולשבת','אלכוהול ושתייה'],
  [/הזמנת אלכוהול|וודקה|יין/,'אלכוהול לקרעסטיר, לשבת ולטיסה']];
 const PUB_KG={'ערכת חדר':'ערכות פינוק לחדרים','ערכת אוטובוס':'ערכות ופינת קפה לאוטובוס','ערכת קוויטל':'סטים לקוויטל'};
 const PUB_CAT={'שבת':'סעודות שבת וטועמיה','אלכוהול':'אלכוהול ושתייה'};
 const PUB_ORD=['מלון','סעודות שבת וטועמיה','קרעסטיר','אוטובוס לקרעסטיר','אלכוהול ושתייה','מזכרות ודפוס','הפקה'];
-const PUB_DON=[[/עליות/,'עליות בשבת'],[/סידורים|זמירות|תהילים|הדפסות/,'תרומות למזכרות ולהדפסות'],[/הרב/,'השתתפות בהוצאות הרב והרבנית'],[/./,'תרומות כלליות']];
+const PUB_DON=[[/עליות/,'עליות בשבת'],[/סידורים|זמירות|תהילים|הדפסות/,'תרומות למזכרות ולהדפסות'],[/./,'תרומות והשתתפות כללית']];
 function pubData(){
   const m=money(),cats={};
   S.expenses.filter(e=>+e.estimate>0).forEach(e=>{const r=PUB_MAP.find(x=>x[0].test(e.name||''));const lbl=e.kg&&PUB_KG[e.kg]||(r?r[1]:e.name);let c=(r&&r[2])||e.category||'אחר';c=PUB_CAT[c]||c;
     const C=cats[c]=cats[c]||{c,t:0,L:{}};C.t+=+e.estimate||0;C.L[lbl]=(C.L[lbl]||0)+(+e.estimate||0)});
   const L=Object.values(cats).sort((a,b)=>{const ia=PUB_ORD.indexOf(a.c),ib=PUB_ORD.indexOf(b.c);return (ia<0?99:ia)-(ib<0?99:ib)||b.t-a.t});
   const don={};S.donations.forEach(d=>{const k=PUB_DON.find(x=>x[0].test(d.purpose||'כללי'))[1];don[k]=(don[k]||0)+(+d.amount||0)});
-  const n=S.participants.length;
+  const n=REPALL||S.participants.length;
   return {m,cats:L,don:PUB_DON.map(x=>[x[1],don[x[1]]||0]).filter(x=>x[1]>0),n,pp:m.pExp,dAll:m.dAll}}
 function pubText(){return withRep(()=>{const D=pubData(),f=v=>ils(Math.round(v));
   let t=`*📊 סיכום כספי – מסע מבקשי ה' להונגריה*\n_${D.n} משתתפים · 19–22.11_\n\n*⬇ הכנסות: ${f(D.m.income)}*\n• תשלומי משתתפים: ${f(D.pp)}\n`+D.don.map(([k,v])=>`• ${k}: ${f(v)}`).join('\n');
   t+=`\n\n*⬆ הוצאות: ${f(D.m.est)}*\n`+D.cats.map(c=>`\n*${c.c}: ${f(c.t)}*\n`+Object.entries(c.L).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`• ${k}: ${f(v)}`).join('\n')).join('\n');
-  const g=D.m.income-D.m.est;t+=`\n\n*${g>=0?'✅ יתרה':'⚠️ גירעון'}: ${f(Math.abs(g))}*`+(g>0?'\nהיתרה תועבר לקופת השיעור, לעלויות השיעור במהלך השנה.':'')+`\n\nעלות המסע לנוסע: ${f(D.m.est/D.n)}\nתודה לכל מי שתרם והשתתף 🤍`;return t})}
+  const g=D.m.income-D.m.est;t+=`\n\n*${g>=0?'✅ יתרה':'⚠️ גירעון'}: ${f(Math.abs(g))}*`+(g>0?'\nהיתרה תועבר לקופת השיעור, לעלויות השיעור במהלך השנה.':'')+`\n\nעלות המסע לנוסע: ${f(D.m.est/D.n)}\nתודה לכל מי שתרם והשתתף 🤍`;return t},{pub:true})}
 function pubBody(){
   if(!ready('participants','expenses','donations'))return skel(6);
   return withRep(()=>{const D=pubData(),m=D.m,g=m.income-m.est,pct=(a,b)=>b?Math.round(a/b*100):0;
@@ -7590,12 +7603,22 @@ function pubBody(){
    <section class="pb-sec pb-end">${row(g>=0?'✅ יתרה':'⚠️ גירעון',Math.abs(g))}${g>0?'<p>היתרה תועבר לקופת השיעור, לעלויות השיעור במהלך השנה.</p>':''}${row('עלות המסע לנוסע',m.est/D.n,'sub')}<p>תודה לכל מי שתרם והשתתף 🤍</p></section>
   </div>
   <div class="rp-acts" style="margin-top:10px"><button class="btn primary" id="pbCopy">📋 העתקה לוואטסאפ</button><button class="btn" id="pbShare">📤 שיתוף</button><button class="btn" id="pbPrint">🖨️ PDF</button></div>
-  <p class="note">בלי שמות ובלי פירוט פריטים. המספרים כוללים התחייבויות שעוד לא הגיעו.</p>`})}
+  <p class="note">בלי שמות ובלי פירוט פריטים. המספרים כוללים התחייבויות שעוד לא הגיעו.</p>`},{pub:true})}
 SUB.pubrep=function(){return subHead('סיכום לשיתוף')+pubBody()};
 document.addEventListener('click',async e=>{const t=e.target;if(!t.closest)return;
   if(t.closest('#pbCopy')){try{await navigator.clipboard.writeText(pubText());toast('✓ הועתק – אפשר להדביק בוואטסאפ')}catch(x){toast('לא הצלחתי להעתיק')}return}
   if(t.closest('#pbShare')){const txt=pubText();try{if(navigator.share)await navigator.share({text:txt});else{location.href='https://wa.me/?text='+encodeURIComponent(txt)}}catch(x){}return}
-  if(t.closest('#pbPrint')){window.print();return}});
+  if(t.closest('#pbPrint')){pubPrint();return}});
+function pubPrint(){withRep(()=>{const D=pubData(),m=D.m,g=m.income-m.est,f=v=>ils(Math.round(v)),pct=(a,b)=>b?Math.round(a/b*100):0;
+  const row=(l,v,c)=>`<tr class="${c||''}"><td>${l}</td><td>${f(v)}</td></tr>`;
+  const html=`<div class="pp-head"><img src="logo.webp" alt=""><div><h1>סיכום מסע</h1><h2>הכנסות והוצאות</h2><p>שיעור מבקשי ה' · בודפשט וקרעסטיר · 19–22.11.2026 · ${D.n} משתתפים</p></div></div>
+   <div class="pp-kpi"><div><span>הכנסות</span><b>${f(m.income)}</b></div><div><span>הוצאות</span><b>${f(m.est)}</b></div><div class="g"><span>${g>=0?'יתרה':'גירעון'}</span><b>${f(Math.abs(g))}</b></div><div><span>עלות לנוסע</span><b>${f(m.est/D.n)}</b></div></div>
+   <h3>הכנסות <span>${f(m.income)}</span></h3><table>${row('תשלומי משתתפים',D.pp)}${D.don.map(([k,v])=>row(k,v)).join('')}</table>
+   <h3>הוצאות <span>${f(m.est)}</span></h3>${D.cats.map(c=>`<table class="pp-cat"><tr class="h"><td>${esc(c.c)} <small>${pct(c.t,m.est)}%</small></td><td>${f(c.t)}</td></tr>${Object.entries(c.L).sort((a,b)=>b[1]-a[1]).map(([k,v])=>row(esc(k),v,'s')).join('')}</table>`).join('')}
+   <div class="pp-end"><b>${g>=0?'יתרה':'גירעון'}: ${f(Math.abs(g))}</b>${g>0?'<p>היתרה תועבר לקופת השיעור, לעלויות השיעור במהלך השנה.</p>':''}<p class="t">תודה לכל מי שתרם, עזר והשתתף 🤍</p></div>`;
+  let d=document.getElementById('pbPrintDoc');if(!d){d=document.createElement('div');d.id='pbPrintDoc';document.body.appendChild(d)}d.innerHTML=html;},{pub:true});
+  document.body.classList.add('pbprint');const done=()=>{document.body.classList.remove('pbprint');window.removeEventListener('afterprint',done)};window.addEventListener('afterprint',done);
+  const img=document.querySelector('#pbPrintDoc img');const go=()=>setTimeout(()=>window.print(),120);img&&!img.complete?(img.onload=go,img.onerror=go):go()}
 SUB.bpass=function(){return subHead('כרטיסי טיסה')+bpOrgBody()};
 // full-screen pass for the gate: white, big, screen kept awake
 async function bpShow(id){const b=bpList().find(x=>x._id===id);if(!b)return;const ov=document.createElement('div');ov.className='bpfs';requestAnimationFrame(()=>ov.classList.add('in'));ov.innerHTML=`<header><b>${esc(b.name||'')} · ${esc(b.dir||'')}${b.flight?' · '+esc(b.flight):''}</b><button aria-label="סגירה">✕</button></header><div class="bpfs-b"><span class="gspin"></span></div><footer>☀ מגבירים את בהירות המסך · נגיעה בכרטיס מגדילה את הברקוד</footer>`;document.body.appendChild(ov);
@@ -8376,7 +8399,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='50086c689d';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='faf32081ae';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
