@@ -1767,6 +1767,13 @@ button.pp{font-size:12px!important;padding:2px 5px!important;min-height:24px!imp
 .gsc{width:40px;height:40px;border-radius:50%;border:2px solid rgba(214,178,98,.45);display:grid;place-items:center;font-size:22px;font-weight:900;color:#15110a}
 .gsr.on{border-color:rgba(29,127,83,.6);background:linear-gradient(160deg,rgba(29,127,83,.18),#0d0c09)}.gsr.on .gsc{background:#2fb67a;border-color:#2fb67a}
 @media (prefers-reduced-motion:no-preference){.gsr{transition:transform .15s}.gsr:active{transform:scale(.97)}.gsc{transition:background .2s,border-color .2s}}
+.pb{display:grid;gap:12px}.pb-head{text-align:center;display:grid;gap:2px}.pb-head b{font-size:18px;color:#f6dc93}.pb-head small{color:var(--muted)}
+.pb-top{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.pb-top>div{background:linear-gradient(160deg,#17140f,#0d0c09);border:1px solid var(--edge);border-radius:16px;padding:12px 8px;text-align:center;display:grid;gap:4px}.pb-top span{font-size:12.5px;color:var(--muted)}.pb-top b{font-size:16px;white-space:nowrap}
+.pb-sec{border:1px solid var(--edge);border-radius:16px;background:linear-gradient(160deg,#17140f,#0d0c09);padding:12px 14px;display:grid;gap:2px}.pb-sec h3{margin:0 0 6px;font-size:16px;color:#f6dc93;display:flex;justify-content:space-between}
+.pb-r{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed rgba(255,255,255,.07);font-size:14.5px}.pb-r b{white-space:nowrap}.pb-r.sub{font-size:13.5px;padding:5px 0}.pb-r.sub span{color:var(--muted)}
+.pb-cat{padding:8px 0 4px}.pb-ch{display:flex;justify-content:space-between;font-size:15px}.pb-ch span{color:#f6dc93;font-size:14px}.pb-bar{height:5px;border-radius:5px;background:rgba(255,255,255,.07);margin:5px 0 3px;overflow:hidden}.pb-bar i{display:block;height:100%;background:linear-gradient(90deg,#d6b262,#f6dc93)}
+.pb-end p{margin:6px 0 0;font-size:13.5px;color:var(--muted);text-align:center}.pb-end .pb-r:first-child{font-size:17px;font-weight:800;border:0}
+@media print{.pb-sec,.pb-top>div{background:#fff!important;border-color:#bbb!important;break-inside:avoid}.pb *{color:#000!important}.pb-bar{display:none}}
 .rp{display:grid;gap:10px}.rp h3{margin:0}
 .rp-hero{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.rp-hero>div{background:linear-gradient(160deg,#17140f,#0d0c09);border:1px solid var(--edge);border-radius:16px;padding:12px 10px;display:grid;gap:2px}
 .rp-hero span{font-size:12.5px;color:var(--muted)}.rp-hero b{font-size:16px;white-space:nowrap}.rp-hero small{font-size:11.5px;color:var(--muted)}
@@ -4695,6 +4702,7 @@ function shopStat(){const rest=S.packing.slice(),bt=x=>kst(x,'ordered'),where=x=
   const todo=rest.filter(x=>!bt(x)&&!x.sug),done=rest.filter(bt),sug=rest.filter(x=>x.sug&&!bt(x));
   return {rest,todo,done,sug,where,pct:(todo.length+done.length)?Math.round(done.length/(todo.length+done.length)*100):0,il:todo.filter(x=>where(x)==='בארץ').length,hu:todo.filter(x=>where(x)==='בבודפשט').length,left:todo.reduce((s,x)=>s+(+x.cost||0),0)}}
 const TILE_DEFS=()=>{const pk=S.packing.filter(x=>!x.sug||kst(x,'ordered')),pd=pk.filter(x=>kst(x,'ordered')).length,rk=S.rooms.filter(r=>r.kitReady).length;return [
+ ['pubrep','people','סיכום לשיתוף','דוח מסודר לכל המשתתפים','c3'],
  ['report','file','דוח המסע','הכנסות והוצאות לפרטים','c8'],
  ['program','sched','לוח המסע','חמישי–שבת','c2'],
  ['people','people','משתתפים',`${S.participants.length} נוסעים`,'c1'],
@@ -4712,7 +4720,7 @@ const TILE_DEFS=()=>{const pk=S.packing.filter(x=>!x.sug||kst(x,'ordered')),pd=p
  ]};
 // trivia link: carries the user's full name so the game does not ask for it (not in organizer preview)
 const trvHref=()=>{let nm='';try{nm=GUEST()?(PREV?'':(meG()||{}).name||''):(typeof ME==='string'?ME:'')}catch(e){}nm=String(nm||'').trim();return (GUEST()?'trivia/?lock=1':'trivia/')+(nm.split(/\s+/).length>=2?(GUEST()?'&':'?')+'name='+encodeURIComponent(nm):'')};
-const TORD=['report','mplan','prep','bpass','bags','kbus','kbcafe','roomkit','khcafe','koneg','attendance','announce','rides','flights','people','passports','reqs','tasks','program','photos','rav','trivia','myroom','appusers','roles','letters','rooms','kits','shops','files'];
+const TORD=['pubrep','report','mplan','prep','bpass','bags','kbus','kbcafe','roomkit','khcafe','koneg','attendance','announce','rides','flights','people','passports','reqs','tasks','program','photos','rav','trivia','myroom','appusers','roles','letters','rooms','kits','shops','files'];
 // gold = something there is waiting for you; the rest stay dark, so the eye goes straight to what's open
 const tileHot=k=>{try{return ({reqs:pendN()>0,passports:S.participants.some(p=>!p.passport),announce:msgDue().length>0})[k]||false}catch(e){return false}};
 const msgDue=()=>{const t=todayISO();return S.messages.filter(m=>!m.sent&&m.date&&m.date<=t)};
@@ -7543,6 +7551,51 @@ document.addEventListener('click',async e=>{const t=e.target;if(!t.closest)retur
   if(t.closest('#rpXls')){repXlsx();return}
   if(t.closest('#rpAll')){const any=Object.keys(REPOPEN).length;REPOPEN={};if(!any)document.querySelectorAll('.rp details[data-rp]').forEach(d=>REPOPEN[d.dataset.rp]=1);render();return}
   if(t.closest('#rpSave')){const v=document.getElementById('rpNotes').value;if(await save('settings','rep_notes',{kind:'repnotes',text:v,hidden:true}))toast('✓ נשמר');return}});
+/* ---- public summary for all participants: main sections only, no names, no tiny items ---- */
+const PUB_MAP=[
+ [/^לינה/,'לינה במלון'],[/ארוחות כשרות במלון/,'ארוחת בוקר וטועמיה במלון'],[/פינת קפה.*מלון/,'פינת קפה במלון'],
+ [/סעודות ליל שבת|סעודות שבת בוקר/,'סעודות שבת – מסעדת חנה'],[/חנה – תוספות|אלכוהול ותוספות|פירות/,'שתייה, פירות ותוספות לשבת'],
+ [/טיפ/,'טיפים לצוות'],[/אוטובוס לקרעסטיר הלוך|נסיעה באוטובוס/,'אוטובוס לקרעסטיר הלוך ושוב'],
+ [/סעודה בקרעסטיר/,'סעודת הישועות בקרעסטיר'],[/הגברה/,'הגברה ושאטלים לציון'],[/פינוקים|זריפה|ויינר לקרעסטיר/,'כיבוד בקרעסטיר'],
+ [/ויינר לעונג|הדלקת נרות/,'עונג שבת והדלקת נרות'],[/^מזכרות/,'מזכרות: סידורים, זמירות ותהילים'],[/הדפסות/,'הדפסות: מודעות, רולאפים ועלונים'],
+ [/מנויים/,'עיצוב וגרפיקה'],[/^מזוודה|אורגן|גיטרה|כבודה/,'כבודה: ציוד וכלי נגינה'],[/רכב ודלק|מוניות|מפיק/,'הפקה בשטח: רכב, דלק ונסיעות'],
+ [/קניות משה/,'שתייה לאוטובוס, לחדרים ולשבת','אלכוהול ושתייה'],[/אירוח הרב|בחירת מקומות/,'אירוח הרב והרבנית'],
+ [/הזמנת אלכוהול|וודקה|יין/,'אלכוהול לקרעסטיר, לשבת ולטיסה']];
+const PUB_KG={'ערכת חדר':'ערכות פינוק לחדרים','ערכת אוטובוס':'ערכות ופינת קפה לאוטובוס','ערכת קוויטל':'סטים לקוויטל'};
+const PUB_CAT={'שבת':'סעודות שבת וטועמיה','אלכוהול':'אלכוהול ושתייה'};
+const PUB_ORD=['מלון','סעודות שבת וטועמיה','קרעסטיר','אוטובוס לקרעסטיר','אלכוהול ושתייה','מזכרות ודפוס','הפקה'];
+const PUB_DON=[[/עליות/,'עליות בשבת'],[/סידורים|זמירות|תהילים|הדפסות/,'תרומות למזכרות ולהדפסות'],[/הרב/,'השתתפות בהוצאות הרב והרבנית'],[/./,'תרומות כלליות']];
+function pubData(){
+  const m=money(),cats={};
+  S.expenses.filter(e=>+e.estimate>0).forEach(e=>{const r=PUB_MAP.find(x=>x[0].test(e.name||''));const lbl=e.kg&&PUB_KG[e.kg]||(r?r[1]:e.name);let c=(r&&r[2])||e.category||'אחר';c=PUB_CAT[c]||c;
+    const C=cats[c]=cats[c]||{c,t:0,L:{}};C.t+=+e.estimate||0;C.L[lbl]=(C.L[lbl]||0)+(+e.estimate||0)});
+  const L=Object.values(cats).sort((a,b)=>{const ia=PUB_ORD.indexOf(a.c),ib=PUB_ORD.indexOf(b.c);return (ia<0?99:ia)-(ib<0?99:ib)||b.t-a.t});
+  const don={};S.donations.forEach(d=>{const k=PUB_DON.find(x=>x[0].test(d.purpose||'כללי'))[1];don[k]=(don[k]||0)+(+d.amount||0)});
+  const n=S.participants.length;
+  return {m,cats:L,don:PUB_DON.map(x=>[x[1],don[x[1]]||0]).filter(x=>x[1]>0),n,pp:m.pExp,dAll:m.dAll}}
+function pubText(){return withRep(()=>{const D=pubData(),f=v=>ils(Math.round(v));
+  let t=`*📊 סיכום כספי – מסע מבקשי ה' להונגריה*\n_${D.n} משתתפים · 19–22.11_\n\n*⬇ הכנסות: ${f(D.m.income)}*\n• תשלומי משתתפים: ${f(D.pp)}\n`+D.don.map(([k,v])=>`• ${k}: ${f(v)}`).join('\n');
+  t+=`\n\n*⬆ הוצאות: ${f(D.m.est)}*\n`+D.cats.map(c=>`\n*${c.c}: ${f(c.t)}*\n`+Object.entries(c.L).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`• ${k}: ${f(v)}`).join('\n')).join('\n');
+  const g=D.m.income-D.m.est;t+=`\n\n*${g>=0?'✅ יתרה':'⚠️ גירעון'}: ${f(Math.abs(g))}*`+(g>0?'\nהיתרה תועבר לקופת השיעור, לעלויות השיעור במהלך השנה.':'')+`\n\nעלות המסע לנוסע: ${f(D.m.est/D.n)}\nתודה לכל מי שתרם והשתתף 🤍`;return t})}
+function pubBody(){
+  if(!ready('participants','expenses','donations'))return skel(6);
+  return withRep(()=>{const D=pubData(),m=D.m,g=m.income-m.est,pct=(a,b)=>b?Math.round(a/b*100):0;
+  const row=(l,v,cls)=>`<div class="pb-r ${cls||''}"><span>${l}</span><b class="num">${ils(Math.round(v))}</b></div>`;
+  return `<div class="pb" id="pbDoc">
+   <div class="pb-head"><b>סיכום כספי – מסע מבקשי ה' להונגריה</b><small>${D.n} משתתפים · 19–22.11</small></div>
+   <div class="pb-top"><div><span>הכנסות</span><b class="num pos">${ils(Math.round(m.income))}</b></div><div><span>הוצאות</span><b class="num neg">${ils(Math.round(m.est))}</b></div><div><span>${g>=0?'יתרה':'גירעון'}</span><b class="num" style="color:${g<0?'var(--bad)':'var(--ok)'}">${ils(Math.round(Math.abs(g)))}</b></div></div>
+   <section class="pb-sec"><h3>⬇ הכנסות <span class="num">${ils(Math.round(m.income))}</span></h3>${row('תשלומי משתתפים',D.pp)}${D.don.map(([k,v])=>row(k,v)).join('')}</section>
+   <section class="pb-sec"><h3>⬆ הוצאות <span class="num">${ils(Math.round(m.est))}</span></h3>
+    ${D.cats.map(c=>`<div class="pb-cat"><div class="pb-ch"><b>${esc(c.c)}</b><span class="num">${ils(Math.round(c.t))} · ${pct(c.t,m.est)}%</span></div><div class="pb-bar"><i style="width:${pct(c.t,m.est)}%"></i></div>${Object.entries(c.L).sort((a,b)=>b[1]-a[1]).map(([k,v])=>row(esc(k),v,'sub')).join('')}</div>`).join('')}</section>
+   <section class="pb-sec pb-end">${row(g>=0?'✅ יתרה':'⚠️ גירעון',Math.abs(g))}${g>0?'<p>היתרה תועבר לקופת השיעור, לעלויות השיעור במהלך השנה.</p>':''}${row('עלות המסע לנוסע',m.est/D.n,'sub')}<p>תודה לכל מי שתרם והשתתף 🤍</p></section>
+  </div>
+  <div class="rp-acts" style="margin-top:10px"><button class="btn primary" id="pbCopy">📋 העתקה לוואטסאפ</button><button class="btn" id="pbShare">📤 שיתוף</button><button class="btn" id="pbPrint">🖨️ PDF</button></div>
+  <p class="note">בלי שמות ובלי פירוט פריטים. המספרים כוללים התחייבויות שעוד לא הגיעו.</p>`})}
+SUB.pubrep=function(){return subHead('סיכום לשיתוף')+pubBody()};
+document.addEventListener('click',async e=>{const t=e.target;if(!t.closest)return;
+  if(t.closest('#pbCopy')){try{await navigator.clipboard.writeText(pubText());toast('✓ הועתק – אפשר להדביק בוואטסאפ')}catch(x){toast('לא הצלחתי להעתיק')}return}
+  if(t.closest('#pbShare')){const txt=pubText();try{if(navigator.share)await navigator.share({text:txt});else{location.href='https://wa.me/?text='+encodeURIComponent(txt)}}catch(x){}return}
+  if(t.closest('#pbPrint')){window.print();return}});
 SUB.bpass=function(){return subHead('כרטיסי טיסה')+bpOrgBody()};
 // full-screen pass for the gate: white, big, screen kept awake
 async function bpShow(id){const b=bpList().find(x=>x._id===id);if(!b)return;const ov=document.createElement('div');ov.className='bpfs';requestAnimationFrame(()=>ov.classList.add('in'));ov.innerHTML=`<header><b>${esc(b.name||'')} · ${esc(b.dir||'')}${b.flight?' · '+esc(b.flight):''}</b><button aria-label="סגירה">✕</button></header><div class="bpfs-b"><span class="gspin"></span></div><footer>☀ מגבירים את בהירות המסך · נגיעה בכרטיס מגדילה את הברקוד</footer>`;document.body.appendChild(ov);
@@ -8323,7 +8376,7 @@ try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!window.claud
 </script>
 
 <script>
-(function(){var B=window.APPV='312ccc5b71';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
+(function(){var B=window.APPV='50086c689d';function chk(){try{fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===B)return;var k='rl_'+j.v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}var d=document.getElementById('scrim');if(d)return;location.replace(location.pathname+'?v='+j.v+location.hash)}).catch(function(){})}catch(e){}}
 setTimeout(chk,1500);document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()});setInterval(chk,180000)})();
 </script>
 </body>
